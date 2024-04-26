@@ -1,13 +1,13 @@
 import type { Metadata } from 'next';
-import { Inter } from 'next/font/google';
+import { Manrope } from 'next/font/google';
 import './globals.css';
 import ConvexClientProvider from './ConvexClientProvider';
 
-const inter = Inter({ subsets: ['latin'] });
+const manrope = Manrope({ subsets: ['latin'] });
 
 export const metadata: Metadata = {
-  title: 'Notes App',
-  description: 'This is an app to take notes.',
+  title: 'Motiion',
+  description: 'Where professional dancers get hired.',
 };
 
 export default function RootLayout({
@@ -17,7 +17,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang='en'>
-      <body className={inter.className}>
+      <body className={manrope.className}>
         <ConvexClientProvider>{children}</ConvexClientProvider>
       </body>
     </html>

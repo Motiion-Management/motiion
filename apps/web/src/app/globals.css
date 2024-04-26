@@ -4,12 +4,12 @@
 @tailwind components;
 @tailwind utilities;
 
-* {
-  font-family: 'Montserrat', sans-serif;
-}
-.font-montserrat {
-  font-family: 'Montserrat', sans-serif;
-}
+/* * { */
+/*   font-family: 'Montserrat', sans-serif; */
+/* } */
+/* .font-montserrat { */
+/*   font-family: 'Montserrat', sans-serif; */
+/* } */
 
 .linear_gradient {
   background: linear-gradient(

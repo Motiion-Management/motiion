@@ -21,9 +21,8 @@ const config: Config = {
         primary: '#0D87E1', 
       },
       fontFamily: {
-        inter: ['Inter', 'sans-serif'],
-        lato: ['Lato', 'sans-serif'],
-        // montserrat : ['Montserrat', 'sans-serif'],
+        manrope: ['Manrope', 'sans-serif'],
+        montserrat : ['Montserrat', 'sans-serif'],
       },
       backgroundImage: {
         'gradient-radial': 'radial-gradient(var(--tw-gradient-stops))',
