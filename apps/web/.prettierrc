@@ -1,0 +1,10 @@
+{
+  "semi": false,
+  "trailingComma": "none",
+  "singleQuote": true,
+  "tabWidth": 2,
+  "useTabs": false,
+  "plugins": ["prettier-plugin-tailwindcss"],
+  "tailwindFunctions": ["tv"],
+  "bracketSpacing": true
+}

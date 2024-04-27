@@ -99,6 +99,12 @@ importers:
       '@radix-ui/react-slot':
         specifier: ^1.0.2
         version: 1.0.2(@types/react@18.3.0)(react@18.3.0)
+      '@vercel/analytics':
+        specifier: ^1.2.2
+        version: 1.2.2(next@14.0.4(react-dom@18.3.0(react@18.3.0))(react@18.3.0))(react@18.3.0)
+      '@vercel/speed-insights':
+        specifier: ^1.0.10
+        version: 1.0.10(next@14.0.4(react-dom@18.3.0(react@18.3.0))(react@18.3.0))(react@18.3.0)
       class-variance-authority:
         specifier: ^0.7.0
         version: 0.7.0
@@ -2069,6 +2075,40 @@ packages:
     resolution: {integrity: sha512-hHqer2mcdVC0eYnVNbWyi28AlGOPb2vjH3lP3/Bc8Lc8BjhMsDwFMm7WhoP5C1+cfbr/QJ6Er3H/L08wznXxfg==}
     peerDependencies:
       graphql: ^0.11.0 || ^0.12.0 || ^0.13.0 || ^14.0.0 || ^15.0.0
+
+  '@vercel/analytics@1.2.2':
+    resolution: {integrity: sha512-X0rctVWkQV1e5Y300ehVNqpOfSOufo7ieA5PIdna8yX/U7Vjz0GFsGf4qvAhxV02uQ2CVt7GYcrFfddXXK2Y4A==}
+    peerDependencies:
+      next: '>= 13'
+      react: ^18 || ^19
+    peerDependenciesMeta:
+      next:
+        optional: true
+      react:
+        optional: true
+
+  '@vercel/speed-insights@1.0.10':
+    resolution: {integrity: sha512-4uzdKB0RW6Ff2FkzshzjZ+RlJfLPxgm/00i0XXgxfMPhwnnsk92YgtqsxT9OcPLdJUyVU1DqFlSWWjIQMPkh0g==}
+    peerDependencies:
+      '@sveltejs/kit': ^1 || ^2
+      next: '>= 13'
+      react: ^18 || ^19
+      svelte: ^4
+      vue: ^3
+      vue-router: ^4
+    peerDependenciesMeta:
+      '@sveltejs/kit':
+        optional: true
+      next:
+        optional: true
+      react:
+        optional: true
+      svelte:
+        optional: true
+      vue:
+        optional: true
+      vue-router:
+        optional: true
 
   '@xmldom/xmldom@0.7.13':
     resolution: {integrity: sha512-lm2GW5PkosIzccsaZIz7tp8cPADSIlIHWDFTR1N0SzfinhhYgeIQjFMz4rYzanCScr3DqQLeomUDArp6MWKm+g==}
@@ -4993,6 +5033,9 @@ packages:
   serve-static@1.15.0:
     resolution: {integrity: sha512-XGuRDNjXUijsUL0vl6nSD7cwURuzEgglbOaFuZM9g3kwDXOWVTck0jLzjPzGD+TazWbboZYu52/9/XPdUgne9g==}
     engines: {node: '>= 0.8.0'}
+
+  server-only@0.0.1:
+    resolution: {integrity: sha512-qepMx2JxAa5jjfzxG79yPPq+8BuFToHd1hm7kI+Z4zAq1ftQiP7HcxMhDDItrbtwVeLg/cY2JnKnrcFkmiswNA==}
 
   set-blocking@2.0.0:
     resolution: {integrity: sha512-KiKBS8AnWGEyLzofFfmvKwpdPzqiy16LvQfK3yv/fVH7Bj13/wl3JSR1J+rfgRE9q7xUJK4qvgS8raSOeLUehw==}
@@ -8380,6 +8423,18 @@ snapshots:
       '@urql/core': 2.3.6(graphql@15.8.0)
       graphql: 15.8.0
       wonka: 4.0.15
+
+  '@vercel/analytics@1.2.2(next@14.0.4(react-dom@18.3.0(react@18.3.0))(react@18.3.0))(react@18.3.0)':
+    dependencies:
+      server-only: 0.0.1
+    optionalDependencies:
+      next: 14.0.4(react-dom@18.3.0(react@18.3.0))(react@18.3.0)
+      react: 18.3.0
+
+  '@vercel/speed-insights@1.0.10(next@14.0.4(react-dom@18.3.0(react@18.3.0))(react@18.3.0))(react@18.3.0)':
+    optionalDependencies:
+      next: 14.0.4(react-dom@18.3.0(react@18.3.0))(react@18.3.0)
+      react: 18.3.0
 
   '@xmldom/xmldom@0.7.13': {}
 
@@ -11773,6 +11828,8 @@ snapshots:
       send: 0.18.0
     transitivePeerDependencies:
       - supports-color
+
+  server-only@0.0.1: {}
 
   set-blocking@2.0.0: {}
 
