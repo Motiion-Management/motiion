@@ -11,6 +11,8 @@
   },
   "dependencies": {
     "@clerk/clerk-expo": "^0.19.27",
+    "convex": "^1.11.2",
+    "convex-helpers": "^0.1.34",
     "@packages/backend": "workspace:*",
     "@react-navigation/native": "^6.1.9",
     "@react-navigation/native-stack": "^6.9.17",
