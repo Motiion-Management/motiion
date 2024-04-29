@@ -1,10 +1,12 @@
 {
   "private": true,
   "scripts": {
-    "dev": "turbo run dev",
     "add-web": "pnpm add --filter web-app",
     "add-native": "pnpm add --filter native-app",
     "add-backend": "pnpm add --filter @packages/backend",
+    "dev": "turbo run dev",
+    "dev:web": "turbo run dev --filter web-app",
+    "dev:native": "turbo run dev --filter native-app",
     "build": "turbo run build",
     "clean": "turbo run clean && rm -rf node_modules",
     "format": "prettier --write \"**/*.{ts,tsx,js,jsx,json,md}\" --ignore-path .gitignore"
