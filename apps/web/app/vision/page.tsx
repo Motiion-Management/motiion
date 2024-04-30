@@ -16,11 +16,22 @@ import { set } from 'date-fns'
 export default function Vision() {
   const [api, setApi] = useState<CarouselApi>()
   const [current, setCurrent] = useState(1)
+  const [count, setCount] = useState(0)
+  useEffect(() => {
+    if (!api) {
+      return
+    }
+
+    setCount(api.scrollSnapList().length)
+    setCurrent(api.selectedScrollSnap() + 1)
+
+    api.on('select', () => {
+      setCurrent(api.selectedScrollSnap() + 1)
+    })
+  }, [api])
   const handleNextClick = () => {
     if (api) {
       api.scrollNext()
-      setCurrent((prev) => (prev === 3 ? prev : prev + 1))
-      console.log(api.selectedScrollSnap())
     }
   }
   return (
@@ -29,9 +40,7 @@ export default function Vision() {
         <Carousel setApi={setApi}>
           <CarouselContent>
             <>
-              <CarouselItem
-              
-              >
+              <CarouselItem>
                 <div className="mx-auto my-24 grid w-full max-w-6xl gap-2">
                   <h1 className="pb-10 text-4xl font-semibold">
                     The dance ecosystem in{' '}
@@ -76,9 +85,24 @@ export default function Vision() {
               fill="none"
             >
               <script xmlns="" />
-              <circle cx="4" cy="4" r="4" fill={api?.selectedScrollSnap() === 0 ? "#00CCB6" : "#DFE3E7"} />
-              <circle cx="22" cy="4" r="4"fill={api?.selectedScrollSnap() === 1 ? "#00CCB6" : "#DFE3E7"} />
-              <circle cx="40" cy="4" r="4" fill={api?.selectedScrollSnap() === 2 ? "#00CCB6" : "#DFE3E7"} />
+              <circle
+                cx="4"
+                cy="4"
+                r="4"
+                fill={api?.selectedScrollSnap() === 0 ? '#00CCB6' : '#DFE3E7'}
+              />
+              <circle
+                cx="22"
+                cy="4"
+                r="4"
+                fill={api?.selectedScrollSnap() === 1 ? '#00CCB6' : '#DFE3E7'}
+              />
+              <circle
+                cx="40"
+                cy="4"
+                r="4"
+                fill={api?.selectedScrollSnap() === 2 ? '#00CCB6' : '#DFE3E7'}
+              />
               <script xmlns="" />
             </svg>
           </div>
