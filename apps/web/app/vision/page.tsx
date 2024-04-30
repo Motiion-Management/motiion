@@ -42,12 +42,13 @@ export default function Vision() {
             </CarouselItem>
             <CarouselItem>
               <div className="mx-auto my-24 grid w-full max-w-6xl gap-2">
-                <h2 className="pb-10 text-4xl font-semibold">
+                <h2 className="pb-3 text-4xl font-semibold leading-[4rem]">
                   Update resume.
                   <br />
                   <span className="text-accent">Manage headshots.</span>
                   <br /> & more...
                 </h2>
+                <p className="text-xl">all-in-one platform.</p>
               </div>
             </CarouselItem>
             </>
