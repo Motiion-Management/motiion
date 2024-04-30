@@ -65,3 +65,19 @@
     @apply bg-background text-foreground;
   }
 }
+
+.splash_carousel_vision{
+  background: url("/images/Splash_Vision_BG.png");
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  height: 100vh;
+}
+.splash_carousel_features{
+  background: url("/images/Splash_Vision_BG.png");
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  height: 100vh;
+
+}

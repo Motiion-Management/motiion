@@ -29,13 +29,13 @@ export default function Vision() {
     }
   }
   return (
-    <div className="flex min-h-screen w-full flex-col ">
-      <main className="bg-background flex min-h-[calc(100vh_-_theme(spacing.16))] flex-1 flex-col justify-between gap-4 p-4 md:gap-8 md:p-10">
+    <div className="flex min-h-screen w-full flex-col">
+      <main className="splash_bg_image bg-background flex min-h-[calc(100vh_-_theme(spacing.16))] flex-1 flex-col justify-between gap-4 md:gap-8">
         <Carousel setApi={setApi}>
-          <CarouselContent>
+          <CarouselContent className="p4">
             <>
-              <CarouselItem>
-                <div className="mx-auto my-24 grid w-full max-w-6xl gap-2">
+              <CarouselItem className="splash_carousel_vision">
+                <div className="mx-auto my-24 grid w-full max-w-6xl gap-2 p-4">
                   <h1 className="pb-10 text-4xl font-semibold">
                     The dance ecosystem in{' '}
                     <span className="text-accent">motiion</span>
@@ -48,8 +48,8 @@ export default function Vision() {
                   </p>
                 </div>
               </CarouselItem>
-              <CarouselItem>
-                <div className="mx-auto my-24 grid w-full max-w-6xl gap-2">
+              <CarouselItem className="splash_carousel_features">
+                <div className="mx-auto my-24 grid w-full max-w-6xl gap-2 p-4">
                   <h2 className="pb-3 text-4xl font-semibold leading-[4rem]">
                     Update resume.
                     <br />
@@ -69,7 +69,7 @@ export default function Vision() {
             </>
           </CarouselContent>
         </Carousel>
-        <div className="mx-auto mb-8 grid w-full max-w-6xl gap-2">
+        <div className="mx-auto mb-8 grid w-full max-w-6xl gap-2 absolute bottom-8">
           <div className="flex flex-col justify-center items-center pb-3">
             <svg className="mb-2"
               xmlns="http://www.w3.org/2000/svg"
@@ -101,7 +101,7 @@ export default function Vision() {
             <hr className="w-screen" />
           <Button
             onClick={handleNextClick}
-            className="mt-4 text-background rounded-full font-semibold"
+            className="mt-4 mr-4 ml-4 text-background rounded-full font-semibold"
             size="rounded"
             variant="default"
           >
