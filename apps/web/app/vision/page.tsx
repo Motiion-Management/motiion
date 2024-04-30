@@ -101,9 +101,9 @@ export default function Vision() {
             <hr className="w-screen" />
           <Button
             onClick={handleNextClick}
-            className="mt-4 mr-4 ml-4 text-background rounded-full font-semibold"
-            size="rounded"
-            variant="default"
+            className="mt-4 mr-4 ml-4"
+           // size="default"
+           // variant="default"
           >
             Next
           </Button>
