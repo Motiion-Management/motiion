@@ -6,7 +6,7 @@ import {
   Carousel,
   CarouselItem,
   CarouselContent,
-  CarouselApi,
+  CarouselApi
 } from '@/components/ui/carousel'
 
 export default function Vision() {
@@ -69,9 +69,10 @@ export default function Vision() {
             </>
           </CarouselContent>
         </Carousel>
-        <div className="mx-auto mb-8 grid w-full max-w-6xl gap-2 absolute bottom-8">
-          <div className="flex flex-col justify-center items-center pb-3">
-            <svg className="mb-2"
+        <div className="absolute bottom-8 mx-auto mb-8 grid w-full max-w-6xl gap-2">
+          <div className="flex flex-col items-center justify-center pb-3">
+            <svg
+              className="mb-2"
               xmlns="http://www.w3.org/2000/svg"
               width="44"
               height="8"
@@ -98,13 +99,8 @@ export default function Vision() {
               />
             </svg>
           </div>
-            <hr className="w-screen" />
-          <Button
-            onClick={handleNextClick}
-            className="mt-4 mr-4 ml-4"
-           // size="default"
-           // variant="default"
-          >
+          <hr className="w-screen" />
+          <Button onClick={handleNextClick} className="m-4">
             Next
           </Button>
         </div>
