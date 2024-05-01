@@ -28,26 +28,38 @@ const sizing = v.object({
   shoes: v.optional(v.number()),
   jacket: v.optional(v.string())
 })
+const gender = v.union(
+  v.literal('Male'),
+  v.literal('Female'),
+  v.literal('Non-Binary')
+)
 
 // App Users, used for all logged in users
 export const Users = Table('users', {
   tokenId: v.string(),
+  type: v.literal('member'),
+  isAdmin: v.boolean(),
   email: v.string(),
-  name: v.optional(v.string()),
-  isAdmin: v.boolean()
-})
-
-export const Members = Table('members', {
-  userId: v.id('users'),
   firstName: v.string(),
   lastName: v.string(),
   displayName: v.optional(v.string()),
+  phone: v.number(),
   dateOfBirth: v.string(),
-  gener: v.string(),
-  contact: v.number(),
+  gender,
   location: v.id('locations'),
+  // user activity
   eventsAttended: v.array(v.id('events')),
-  pointsEarned: v.number(),
+  pointsEarned: v.number()
+})
+
+export const Resume = Table('resume', {
+  userId: v.id('users'),
+  televisionAndFilm: v.array(v.id('experiences')),
+  musicVideos: v.array(v.id('experiences')),
+  livePerformances: v.array(v.id('experiences')),
+  commercials: v.array(v.id('experiences')),
+  training: v.array(v.id('training')),
+  skills: v.array(v.id('skills')),
   height: v.optional(v.number()),
   hairColor,
   eyeColor,
@@ -64,7 +76,6 @@ export const Members = Table('members', {
       uploadDate: v.string()
     })
   ),
-  resume: v.optional(v.id('resume')),
   links: v.object({
     reel: v.optional(v.string()),
     socials: v.array(v.object({ platform: v.string(), link: v.string() })),
@@ -72,14 +83,36 @@ export const Members = Table('members', {
   })
 })
 
-export const Resume = Table('resume', {
+export const Experiences = Table('experiences', {
   userId: v.id('users'),
-  televisionAndFilm: v.array(v.id('experiences')),
-  musicVideos: v.array(v.id('experiences')),
-  livePerformances: v.array(v.id('experiences')),
-  commercials: v.array(v.id('experiences')),
-  training: v.array(v.id('training')),
-  skills: v.array(v.id('skills'))
+  visibility: visibility,
+  title: v.string(),
+  role: v.array(v.string()),
+  credits: v.array(v.string()),
+  year: v.number(),
+  link: v.optional(v.string()),
+  media: v.union(v.id('_storage'), v.string())
+})
+
+export const Training = Table('training', {
+  userId: v.id('users'),
+  visibility: visibility,
+  title: v.string(),
+  role: v.array(v.string()),
+  references: v.array(v.string()),
+  startYear: v.optional(v.number()),
+  endYear: v.optional(v.number()),
+  link: v.optional(v.string())
+})
+
+export const Skills = Table('skills', {
+  userId: v.id('users'),
+  name: v.string(),
+  proficiency: v.union(
+    v.literal('Novice'),
+    v.literal('Proficient'),
+    v.literal('Expert')
+  )
 })
 
 export const Agents = Table('agents', {
@@ -130,38 +163,6 @@ export const PointValues = Table('pointValues', {
   points: v.number()
 })
 
-export const Experiences = Table('experiences', {
-  userId: v.id('users'),
-  visibility: visibility,
-  title: v.string(),
-  role: v.array(v.string()),
-  credits: v.array(v.string()),
-  year: v.number(),
-  link: v.optional(v.string()),
-  media: v.union(v.id('_storage'), v.string())
-})
-
-export const Training = Table('training', {
-  userId: v.id('users'),
-  visibility: visibility,
-  title: v.string(),
-  role: v.array(v.string()),
-  references: v.array(v.string()),
-  startYear: v.optional(v.number()),
-  endYear: v.optional(v.number()),
-  link: v.optional(v.string())
-})
-
-export const Skills = Table('skills', {
-  userId: v.id('users'),
-  name: v.string(),
-  proficiency: v.union(
-    v.literal('Novice'),
-    v.literal('Proficient'),
-    v.literal('Expert')
-  )
-})
-
 export const EventTypes = Table('eventTypes', {
   name: v.string()
 })
@@ -203,8 +204,7 @@ export default defineSchema({
   // user
   users: Users.table.index('tokenId', ['tokenId']),
 
-  //member
-  members: Members.table.index('userId', ['userId']),
+  // resume data
   resume: Resume.table.index('userId', ['userId']),
   experiences: Experiences.table.index('userId', ['userId']),
   training: Training.table.index('userId', ['userId']),
