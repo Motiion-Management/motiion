@@ -156,11 +156,15 @@ export default function ProfileForm() {
                         }
                         geolocation={false}
                         onPick={(location) => {
+                          console.log(location)
                           field.onChange(location)
                         }}
                         options={{
-                          types: ['city'],
-                          countrySelect: true
+                          types: ['city', 'administrative'],
+                          format: {
+                            sub: (item) => `${item.city}, ${item.administrative}`,
+                            value: (item) => `${item.city}, ${item.administrative}`,
+                          },
                         }}
                       />
                     </FormControl>
