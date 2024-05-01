@@ -1,7 +1,10 @@
 'use client'
+import { useEffect, useRef } from 'react'
+import { PlaceKit } from '@placekit/autocomplete-react'
+import '@placekit/autocomplete-js/dist/placekit-autocomplete.css'
 
 import { zodResolver } from '@hookform/resolvers/zod'
-import { useForm } from 'react-hook-form'
+import { useForm, Controller } from 'react-hook-form'
 import { z } from 'zod'
 import { Button } from '@/components/ui/button'
 import {
@@ -29,6 +32,7 @@ const formSchema = z.object({
 })
 
 export default function ProfileForm() {
+  const inputRef = useRef(null)
   const form = useForm({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -43,6 +47,7 @@ export default function ProfileForm() {
   function onSubmit(values: z.infer<typeof formSchema>) {
     console.log(values)
   }
+
   return (
     <section className="p-4">
       <div>
@@ -110,12 +115,11 @@ export default function ProfileForm() {
                 <FormItem>
                   <FormLabel>I Identify As</FormLabel>
                   <FormControl>
-                    <select className='flex flex-col items-start' {...field}>
+                    <select className="flex flex-col items-start" {...field}>
                       <option value="">Select</option>
                       <option value="male">Male</option>
                       <option value="female">Female</option>
                       <option value="">Non-binary</option>
-
                     </select>
                   </FormControl>
 
@@ -138,18 +142,31 @@ export default function ProfileForm() {
             />
           </div>
           <div>
-            <FormField
+            <Controller
               control={form.control}
               name="location"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Location</FormLabel>
-                  <FormControl>
-                    <Input placeholder="Location" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
+              render={({ field }) =>(
+              
+                  <FormItem>
+                    <FormLabel>Location</FormLabel>
+                    <FormControl>
+                      <PlaceKit
+                        apiKey={
+                          `${process.env.NEXT_PUBLIC_PLACEKIT_KEY}`
+                        }
+                        geolocation={false}
+                        onPick={(location) => {
+                          field.onChange(location)
+                        }}
+                        options={{
+                          types: ['city'],
+                          countrySelect: true
+                        }}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
             />
           </div>
           <Button type="submit">Submit</Button>
