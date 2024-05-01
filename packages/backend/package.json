@@ -9,7 +9,10 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@clerk/clerk-sdk-node": "^5.0.2",
     "convex": "^1.11.2",
-    "openai": "^4.24.7"
+    "convex-helpers": "^0.1.35",
+    "openai": "^4.24.7",
+    "svix": "^1.22.0"
   }
 }
