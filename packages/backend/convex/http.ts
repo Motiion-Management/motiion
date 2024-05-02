@@ -2,6 +2,7 @@ import { httpRouter } from 'convex/server'
 
 import { internal } from './_generated/api'
 import { httpAction } from './_generated/server'
+import { NEW_USER_DEFAULTS } from './users'
 
 const http = httpRouter()
 
@@ -36,7 +37,7 @@ http.route({
     const headerPayload = request.headers
 
     try {
-      const result = await ctx.runAction(internal.clerk.fulfill, {
+      const event = await ctx.runAction(internal.clerk.fulfill, {
         payload: payloadString,
         headers: {
           'svix-id': headerPayload.get('svix-id')!,
@@ -45,34 +46,27 @@ http.route({
         }
       })
 
-      switch (result.type) {
-        case 'user.created':
-          console.log('Creating user')
-          await ctx.runMutation(internal.users.create, {
-            tokenId: result.data.id,
-            type: 'member',
-            isAdmin: false,
-            email: result.data.email_addresses[0]?.email_address,
-            firstName: result.data.first_name,
-            lastName: result.data.last_name,
-            phone: result.data.phone_numbers[0]?.phone_number,
-            pointsEarned: 0
+      switch (event.type) {
+        case 'user.created': // intentional fallthrough
+        // const customerId = await ctx.runAction(internal.stripe.createCustomer)
+        // await ctx.runAction(internal.stripe.startTrial, { customerId })
+        case 'user.updated':
+          await ctx.runAction(internal.users.updateOrCreateUserByTokenId, {
+            data: {
+              tokenId: event.data.id,
+              email: event.data.email_addresses[0]?.email_address,
+              firstName: event.data.first_name,
+              lastName: event.data.last_name,
+              phone: event.data.phone_numbers[0]?.phone_number
+            },
+            eventType: event.type
           })
 
-          // const customerId = await ctx.runAction(internal.stripe.createCustomer)
-
-          // await ctx.runAction(internal.stripe.startTrial, { customerId })
-
           break
-        case 'user.updated':
-          await ctx.runAction(internal.users.updateUserByTokenId, {
-            tokenId: result.data.id,
-            patch: {
-              email: result.data.email_addresses[0]?.email_address,
-              firstName: result.data.first_name,
-              lastName: result.data.last_name,
-              phone: result.data.phone_numbers[0]?.phone_number
-            }
+
+        case 'user.deleted':
+          await ctx.runAction(internal.users.deleteUserByTokenId, {
+            tokenId: event.data.id!
           })
           break
       }
