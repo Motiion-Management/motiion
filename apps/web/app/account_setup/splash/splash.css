@@ -1,0 +1,79 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: 225 47% 2%;
+    --foreground: 225 29% 98%;
+    --muted: 195 33% 15%;
+    --muted-foreground: 195 12% 60%;
+    --popover: 225 47% 3%;
+    --popover-foreground: 225 29% 99%;
+    --card: 225 47% 3%;
+    --card-foreground: 225 29% 99%;
+    --border: 225 8% 10%;
+    --input: 225 8% 10%;
+    --primary: 225 7% 12%;
+    --primary-foreground: 225 7% 72%;
+    --secondary: 195 7% 12%;
+    --secondary-foreground: 195 7% 72%;
+    --accent: 173.55 100% 36.47%;
+    --accent-foreground: 255 7% 72%;
+    --destructive: 19 99% 46%;
+    --destructive-foreground: 0 0% 100%;
+    --ring: 225 7% 12%;
+  }
+
+  .dark {
+    --background: 225 47% 2%;
+    --foreground: 225 29% 98%;
+    --muted: 195 33% 15%;
+    --muted-foreground: 195 12% 60%;
+    --popover: 225 47% 3%;
+    --popover-foreground: 225 29% 99%;
+    --card: 225 47% 3%;
+    --card-foreground: 225 29% 99%;
+    --border: 225 8% 10%;
+    --input: 225 8% 10%;
+    --primary: 225 7% 12%;
+    --primary-foreground: 225 7% 72%;
+    --secondary: 195 7% 12%;
+    --secondary-foreground: 195 7% 72%;
+    --accent: 173.55 100% 36.47%;
+    --accent-foreground: 255 7% 72%;
+    --destructive: 19 99% 46%;
+    --destructive-foreground: 0 0% 100%;
+    --ring: 225 7% 12%;
+  }
+}
+  
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground;
+  }
+}
+
+section{
+  background: url("/images/Account_Splash_BG.png");
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  height: 100vh;
+}
+
+progress {
+  /* Other styles */
+  border-radius: 50px; /* Adjust as needed */
+}
+progress::-webkit-progress-bar {
+  border-radius: 50px; /* Adjust as needed */
+  background-color: #000505;
+}
+progress::-webkit-progress-value {
+  border-radius: 50px; /* Adjust as needed */
+  background-color: #00CCB6;
+}

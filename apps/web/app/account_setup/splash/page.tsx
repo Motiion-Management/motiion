@@ -1,4 +1,5 @@
 'use client'
+import './splash.css'
 import { useEffect, useRef } from 'react'
 import { PlaceKit } from '@placekit/autocomplete-react'
 import '@placekit/autocomplete-js/dist/placekit-autocomplete.css'
@@ -16,7 +17,14 @@ import {
   FormLabel,
   FormMessage
 } from '@/components/ui/form'
+import {
+  Accordion,
+  AccordionItem,
+  AccordionContent,
+  AccordionTrigger
+} from '@/components/ui/accordion'
 import { Input } from '@/components/ui/input'
+import { Ghost } from 'lucide-react'
 
 const formSchema = z.object({
   firstName: z.string().min(2, {
@@ -25,6 +33,7 @@ const formSchema = z.object({
   lastName: z.string().min(2, {
     message: 'Please enter your last name.'
   }),
+  displayName: z.string(),
   dob: z.string().date(),
   gender: z.string(),
   contact: z.string(),
@@ -38,6 +47,7 @@ export default function ProfileForm() {
     defaultValues: {
       firstName: '',
       lastName: '',
+      displayName: '',
       dob: '',
       gender: '',
       contact: '',
@@ -51,17 +61,20 @@ export default function ProfileForm() {
   return (
     <section className="p-4">
       <div>
-        <div className="flex justify-between">
-          <p>Account Setup</p>
+        <div className="flex justify-between text-sm">
+          <p >Account Setup</p>
           <p>Step 1 of 3</p>
         </div>
 
-        <h2 className="my-4">Personal Information</h2>
+        <h2 className="my-4 text-xl">Personal Information</h2>
+      <div className='flex justify-center'>
+        <progress className="w-screen rounded-full" value="30" max="100"></progress>
+        </div>
       </div>
       <Form {...form}>
         <form
           onSubmit={form.handleSubmit(onSubmit)}
-          className="flex flex-col items-center space-y-8"
+          className="flex flex-col items-center space-y-8 mt-8 w-full"
         >
           <div className="flex gap-4">
             <FormField
@@ -69,9 +82,9 @@ export default function ProfileForm() {
               name="firstName"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>First Name</FormLabel>
+                  <FormLabel className="flex justify-between items-center text-sm">First Name <span className='text-xs'>Required</span></FormLabel>
                   <FormControl>
-                    <Input placeholder="First Name" {...field} />
+                    <Input style={{backgroundColor: '#007064'}} placeholder="First Name" {...field} />
                   </FormControl>
 
                   <FormMessage />
@@ -83,7 +96,7 @@ export default function ProfileForm() {
               name="lastName"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Last Name</FormLabel>
+                  <FormLabel className='flex justify-between items-center text-sm'>Last Name <span  className='text-xs'>Required</span></FormLabel>
                   <FormControl>
                     <Input placeholder="Last Name" {...field} />
                   </FormControl>
@@ -93,12 +106,34 @@ export default function ProfileForm() {
             />
           </div>
           <div>
+            <Accordion type="multiple">
+              <AccordionItem value="item-1">
+                <AccordionTrigger>+ Add Display Name</AccordionTrigger>
+                <AccordionContent>
+                  <FormField
+                    control={form.control}
+                    name="displayName"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel></FormLabel>
+                        <FormControl>
+                          <Input placeholder="Display Name" {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                </AccordionContent>
+              </AccordionItem>
+            </Accordion>
+          </div>
+          <div>
             <FormField
               control={form.control}
               name="dob"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>DOB</FormLabel>
+                  <FormLabel className="flex justify-between items-center text-sm">DOB <span className='text-xs'>Required</span></FormLabel>
                   <FormControl>
                     <Input type="date" placeholder="Last Name" {...field} />
                   </FormControl>
@@ -113,7 +148,7 @@ export default function ProfileForm() {
               name="gender"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>I Identify As</FormLabel>
+                  <FormLabel className="flex justify-between items-center text-sm">I Identify As <span className='text-xs'>Required</span></FormLabel>
                   <FormControl>
                     <select className="flex flex-col items-start" {...field}>
                       <option value="">Select</option>
@@ -132,7 +167,7 @@ export default function ProfileForm() {
               name="contact"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Contact</FormLabel>
+                  <FormLabel className="flex justify-between items-center text-sm">Contact <span className='text-xs'>Required</span></FormLabel>
                   <FormControl>
                     <Input placeholder="Phone Number" {...field} />
                   </FormControl>
@@ -145,35 +180,33 @@ export default function ProfileForm() {
             <Controller
               control={form.control}
               name="location"
-              render={({ field }) =>(
-              
-                  <FormItem>
-                    <FormLabel>Location</FormLabel>
-                    <FormControl>
-                      <PlaceKit
-                        apiKey={
-                          `${process.env.NEXT_PUBLIC_PLACEKIT_KEY}`
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel className="flex justify-between items-center text-sm">Location <span className='text-xs'>Required</span></FormLabel>
+                  <FormControl>
+                    <PlaceKit
+                      apiKey={`${process.env.NEXT_PUBLIC_PLACEKIT_KEY}`}
+                      geolocation={false}
+                      onPick={(location) => {
+                        console.log(location)
+                        field.onChange(location)
+                      }}
+                      options={{
+                        types: ['city', 'administrative'],
+                        format: {
+                          sub: (item) => `${item.city}, ${item.administrative}`,
+                          value: (item) =>
+                            `${item.city}, ${item.administrative}`
                         }
-                        geolocation={false}
-                        onPick={(location) => {
-                          console.log(location)
-                          field.onChange(location)
-                        }}
-                        options={{
-                          types: ['city', 'administrative'],
-                          format: {
-                            sub: (item) => `${item.city}, ${item.administrative}`,
-                            value: (item) => `${item.city}, ${item.administrative}`,
-                          },
-                        }}
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
+                      }}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
             />
           </div>
-          <Button type="submit">Submit</Button>
+          <Button variant="default" type="submit">Continue</Button>
         </form>
       </Form>
     </section>
