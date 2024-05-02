@@ -16,23 +16,6 @@ import { ConvexError } from 'convex/values'
 import { internal } from './_generated/api'
 import { Id } from './_generated/dataModel'
 
-export function missingEnvVariableUrl(envVarName: string, whereToGet: string) {
-  const deployment = deploymentName()
-  if (!deployment) return `Missing ${envVarName} in environment variables.`
-  return (
-    `\n  Missing ${envVarName} in environment variables.\n\n` +
-    `  Get it from ${whereToGet} .\n  Paste it on the Convex dashboard:\n` +
-    `  https://dashboard.convex.dev/d/${deployment}/settings?var=${envVarName}`
-  )
-}
-
-export function deploymentName() {
-  const url = process.env.CONVEX_CLOUD_URL
-  if (!url) return undefined
-  const regex = new RegExp('https://(.+).convex.cloud')
-  return regex.exec(url)?.[1]
-}
-
 export const authQuery = customQuery(
   query,
   customCtx(async (ctx) => {
@@ -53,7 +36,7 @@ export const authAction = customAction(
       throw new ConvexError('must be logged in')
     }
 
-    const user: any = await ctx.runQuery(internal.users.getUserById, {
+    const user: any = await ctx.runQuery(internal.users.getUserByTokenId, {
       userId
     })
 
@@ -125,16 +108,16 @@ export const adminAuthMutation = customMutation(
 )
 
 async function getUserOrThrow(ctx: QueryCtx | MutationCtx) {
-  const userId = (await ctx.auth.getUserIdentity())?.subject
+  const tokenId = (await ctx.auth.getUserIdentity())?.subject
 
-  if (!userId) {
+  if (!tokenId) {
     console.error('must be logged in')
     throw new ConvexError('must be logged in')
   }
 
   const user = await ctx.db
     .query('users')
-    .withIndex('by_userId', (q) => q.eq('userId', userId))
+    .withIndex('tokenId', (q) => q.eq('tokenId', tokenId))
     .first()
 
   if (!user) {

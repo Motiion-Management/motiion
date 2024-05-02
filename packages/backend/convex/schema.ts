@@ -52,7 +52,7 @@ export const Users = Table('users', {
   pointsEarned: v.number()
 })
 
-export const Resume = Table('resume', {
+export const Resumes = Table('resume', {
   userId: v.id('users'),
   televisionAndFilm: v.array(v.id('experiences')),
   musicVideos: v.array(v.id('experiences')),
@@ -205,7 +205,7 @@ export default defineSchema({
   users: Users.table.index('tokenId', ['tokenId']),
 
   // resume data
-  resume: Resume.table.index('userId', ['userId']),
+  resume: Resumes.table.index('userId', ['userId']),
   experiences: Experiences.table.index('userId', ['userId']),
   training: Training.table.index('userId', ['userId']),
   skills: Skills.table.index('userId', ['userId']),
