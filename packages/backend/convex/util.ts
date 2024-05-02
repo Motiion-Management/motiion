@@ -30,14 +30,14 @@ export const authQuery = customQuery(
 export const authAction = customAction(
   action,
   customCtx(async (ctx) => {
-    const userId = (await ctx.auth.getUserIdentity())?.subject
+    const tokenId = (await ctx.auth.getUserIdentity())?.subject
 
-    if (!userId) {
+    if (!tokenId) {
       throw new ConvexError('must be logged in')
     }
 
     const user: any = await ctx.runQuery(internal.users.getUserByTokenId, {
-      userId
+      tokenId
     })
 
     if (!user) {
@@ -50,7 +50,7 @@ export const authAction = customAction(
     return {
       user: {
         _id,
-        userId,
+        userId: tokenId,
         isPremium
       }
     }
@@ -65,14 +65,14 @@ export const authMutation = customMutation(
 export const adminAuthAction = customAction(
   action,
   customCtx(async (ctx) => {
-    const userId = (await ctx.auth.getUserIdentity())?.subject
+    const tokenId = (await ctx.auth.getUserIdentity())?.subject
 
-    if (!userId) {
+    if (!tokenId) {
       throw new ConvexError('must be logged in')
     }
 
-    const user: any = await ctx.runQuery(internal.users.getUserById, {
-      userId
+    const user: any = await ctx.runQuery(internal.users.getUserByTokenId, {
+      tokenId
     })
 
     if (!user) {
@@ -88,7 +88,7 @@ export const adminAuthAction = customAction(
     return {
       user: {
         _id,
-        userId
+        tokenId
       }
     }
   })
@@ -130,4 +130,30 @@ async function getUserOrThrow(ctx: QueryCtx | MutationCtx) {
 
 export const getUser = async (ctx: QueryCtx | MutationCtx | ActionCtx) => {
   return await ctx.auth.getUserIdentity()
+}
+
+type RecursivelyReplaceNullWithUndefined<T> = T extends null
+  ? undefined
+  : T extends Date
+    ? T
+    : {
+        [K in keyof T]: T[K] extends (infer U)[]
+          ? RecursivelyReplaceNullWithUndefined<U>[]
+          : RecursivelyReplaceNullWithUndefined<T[K]>
+      }
+
+export function nullsToUndefined<T>(
+  obj: T
+): RecursivelyReplaceNullWithUndefined<T> {
+  if (obj === null) {
+    return undefined as any
+  }
+
+  // object check based on: https://stackoverflow.com/a/51458052/6489012
+  if (obj?.constructor.name === 'Object') {
+    for (let key in obj) {
+      obj[key] = nullsToUndefined(obj[key]) as any
+    }
+  }
+  return obj as any
 }

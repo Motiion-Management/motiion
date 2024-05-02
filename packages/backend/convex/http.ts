@@ -5,28 +5,28 @@ import { httpAction } from './_generated/server'
 
 const http = httpRouter()
 
-http.route({
-  path: '/stripe',
-  method: 'POST',
-  handler: httpAction(async (ctx, request) => {
-    const signature = request.headers.get('stripe-signature') as string
-
-    const result = await ctx.runAction(internal.stripe.fulfill, {
-      payload: await request.text(),
-      signature
-    })
-
-    if (result.success) {
-      return new Response(null, {
-        status: 200
-      })
-    } else {
-      return new Response('Webhook Error - Stripe', {
-        status: 400
-      })
-    }
-  })
-})
+// http.route({
+//   path: '/stripe',
+//   method: 'POST',
+//   handler: httpAction(async (ctx, request) => {
+//     const signature = request.headers.get('stripe-signature') as string
+//
+//     const result = await ctx.runAction(internal.stripe.fulfill, {
+//       payload: await request.text(),
+//       signature
+//     })
+//
+//     if (result.success) {
+//       return new Response(null, {
+//         status: 200
+//       })
+//     } else {
+//       return new Response('Webhook Error - Stripe', {
+//         status: 400
+//       })
+//     }
+//   })
+// })
 
 http.route({
   path: '/clerk',
@@ -47,23 +47,32 @@ http.route({
 
       switch (result.type) {
         case 'user.created':
-          await ctx.runMutation(internal.users.createUser, {
+          console.log('Creating user')
+          await ctx.runMutation(internal.users.create, {
+            tokenId: result.data.id,
+            type: 'member',
+            isAdmin: false,
             email: result.data.email_addresses[0]?.email_address,
-            userId: result.data.id,
-            name: `${result.data.first_name} ${result.data.last_name}`,
-            profileImage: result.data.image_url
+            firstName: result.data.first_name,
+            lastName: result.data.last_name,
+            phone: result.data.phone_numbers[0]?.phone_number,
+            pointsEarned: 0
           })
 
-          const customerId = await ctx.runAction(internal.stripe.createCustomer)
+          // const customerId = await ctx.runAction(internal.stripe.createCustomer)
 
-          await ctx.runAction(internal.stripe.startTrial, { customerId })
+          // await ctx.runAction(internal.stripe.startTrial, { customerId })
 
           break
         case 'user.updated':
-          await ctx.runMutation(internal.users.updateUser, {
-            userId: result.data.id,
-            profileImage: result.data.image_url,
-            name: `${result.data.first_name} ${result.data.last_name}`
+          await ctx.runAction(internal.users.updateUserByTokenId, {
+            tokenId: result.data.id,
+            patch: {
+              email: result.data.email_addresses[0]?.email_address,
+              firstName: result.data.first_name,
+              lastName: result.data.last_name,
+              phone: result.data.phone_numbers[0]?.phone_number
+            }
           })
           break
       }

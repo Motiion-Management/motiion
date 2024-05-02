@@ -28,7 +28,7 @@ const sizing = v.object(
   })
 )
 
-const gender = v.nullable(v.literals('Male', 'Female', 'Non-Binary'))
+const gender = v.nullish(v.literals('Male', 'Female', 'Non-Binary'))
 const proficiency = v.literals('Novice', 'Proficient', 'Expert')
 
 // App Users, used for all logged in users
@@ -37,15 +37,15 @@ export const Users = Table('users', {
   type: v.literal('member'),
   isAdmin: v.boolean,
   email: v.string,
-  firstName: v.nullable(v.string),
-  lastName: v.nullable(v.string),
+  firstName: v.nullish(v.string),
+  lastName: v.nullish(v.string),
   displayName: v.nullish(v.string),
-  phone: v.nullable(v.string),
-  dateOfBirth: v.nullable(v.string),
+  phone: v.nullish(v.string),
+  dateOfBirth: v.nullish(v.string),
   gender,
-  location: v.id('locations'),
+  location: v.nullish(v.id('locations')),
   // user activity
-  eventsAttended: v.array(v.id('events')),
+  eventsAttended: v.nullish(v.array(v.id('events'))),
   pointsEarned: v.number
 })
 
