@@ -14,9 +14,22 @@ import type {
   FilterApi,
   FunctionReference,
 } from "convex/server";
-import type * as notes from "../notes.js";
-import type * as openai from "../openai.js";
-import type * as utils from "../utils.js";
+import type * as agencies from "../agencies.js";
+import type * as agents from "../agents.js";
+import type * as clerk from "../clerk.js";
+import type * as eventTypes from "../eventTypes.js";
+import type * as events from "../events.js";
+import type * as experiences from "../experiences.js";
+import type * as featuredChoreographers from "../featuredChoreographers.js";
+import type * as featuredContent from "../featuredContent.js";
+import type * as http from "../http.js";
+import type * as locations from "../locations.js";
+import type * as pointValues from "../pointValues.js";
+import type * as resume from "../resume.js";
+import type * as skills from "../skills.js";
+import type * as training from "../training.js";
+import type * as users from "../users.js";
+import type * as util from "../util.js";
 
 /**
  * A utility for referencing Convex functions in your app's API.
@@ -27,9 +40,22 @@ import type * as utils from "../utils.js";
  * ```
  */
 declare const fullApi: ApiFromModules<{
-  notes: typeof notes;
-  openai: typeof openai;
-  utils: typeof utils;
+  agencies: typeof agencies;
+  agents: typeof agents;
+  clerk: typeof clerk;
+  eventTypes: typeof eventTypes;
+  events: typeof events;
+  experiences: typeof experiences;
+  featuredChoreographers: typeof featuredChoreographers;
+  featuredContent: typeof featuredContent;
+  http: typeof http;
+  locations: typeof locations;
+  pointValues: typeof pointValues;
+  resume: typeof resume;
+  skills: typeof skills;
+  training: typeof training;
+  users: typeof users;
+  util: typeof util;
 }>;
 export declare const api: FilterApi<
   typeof fullApi,
