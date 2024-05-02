@@ -1,55 +1,52 @@
-import { defineSchema, defineTable } from 'convex/server'
-import { v } from 'convex/values'
-import { Table } from 'convex-helpers/server' // npm i convex-helpers
+import { defineSchema } from 'convex/server'
+import { Validator } from 'convex/values'
+// validators imported from this file are used in place of v.* from convex/values
+import * as validators from 'convex-helpers/validators'
+import { Table } from 'convex-helpers/server'
 
-const visibility = v.union(v.literal('Public'), v.literal('Private'))
-const hairColor = v.union(
-  v.literal('black'),
-  v.literal('brown'),
-  v.literal('blonde'),
-  v.literal('Dyed - See current headshot'),
-  v.null()
+export const nullish = <T>(validator: Validator<T>) =>
+  v.optional(v.nullable(validator))
+
+const v = {
+  ...validators,
+  nullish
+}
+const visibility = v.literals('Public', 'Private')
+const hairColor = v.nullish(
+  v.literals('black', 'brown', 'blonde', 'Dyed - See current headshot')
 )
-const eyeColor = v.union(
-  v.literal('blue'),
-  v.literal('brown'),
-  v.literal('green'),
-  v.literal('hazel'),
-  v.literal('gray'),
-  v.literal('amber'),
-  v.literal('red'),
-  v.literal('black'),
-  v.null()
+const eyeColor = v.nullish(
+  v.literals('blue', 'brown', 'green', 'hazel', 'gray', 'amber', 'red', 'black')
 )
-const sizing = v.object({
-  chest: v.optional(v.number()),
-  waist: v.optional(v.number()),
-  neck: v.optional(v.number()),
-  shoes: v.optional(v.number()),
-  jacket: v.optional(v.string())
-})
-const gender = v.union(
-  v.literal('Male'),
-  v.literal('Female'),
-  v.literal('Non-Binary')
+const sizing = v.object(
+  v.partial({
+    chest: v.number,
+    waist: v.number,
+    neck: v.number,
+    shoes: v.number,
+    jacket: v.string
+  })
 )
+
+const gender = v.nullable(v.literals('Male', 'Female', 'Non-Binary'))
+const proficiency = v.literals('Novice', 'Proficient', 'Expert')
 
 // App Users, used for all logged in users
 export const Users = Table('users', {
-  tokenId: v.string(),
+  tokenId: v.string,
   type: v.literal('member'),
-  isAdmin: v.boolean(),
-  email: v.string(),
-  firstName: v.string(),
-  lastName: v.string(),
-  displayName: v.optional(v.string()),
-  phone: v.number(),
-  dateOfBirth: v.string(),
+  isAdmin: v.boolean,
+  email: v.string,
+  firstName: v.nullable(v.string),
+  lastName: v.nullable(v.string),
+  displayName: v.nullish(v.string),
+  phone: v.nullable(v.string),
+  dateOfBirth: v.nullable(v.string),
   gender,
   location: v.id('locations'),
   // user activity
   eventsAttended: v.array(v.id('events')),
-  pointsEarned: v.number()
+  pointsEarned: v.number
 })
 
 export const Resumes = Table('resume', {
@@ -60,59 +57,53 @@ export const Resumes = Table('resume', {
   commercials: v.array(v.id('experiences')),
   training: v.array(v.id('training')),
   skills: v.array(v.id('skills')),
-  height: v.optional(v.number()),
+  height: v.nullish(v.number),
   hairColor,
   eyeColor,
   sizing,
-  representation: v.optional(v.id('agencies')),
-  yearsOfExperience: v.optional(v.number()),
-  headshots: v.array(
-    v.object({ imageId: v.id('_storage'), title: v.string() })
-  ),
+  representation: v.nullish(v.id('agencies')),
+  yearsOfExperience: v.nullish(v.number),
+  headshots: v.array(v.object({ imageId: v.id('_storage'), title: v.string })),
   resumeUploads: v.array(
     v.object({
       resumeId: v.id('_storage'),
-      title: v.string(),
-      uploadDate: v.string()
+      title: v.string,
+      uploadDate: v.string
     })
   ),
   links: v.object({
-    reel: v.optional(v.string()),
-    socials: v.array(v.object({ platform: v.string(), link: v.string() })),
-    portfolio: v.array(v.object({ title: v.string(), link: v.string() }))
+    reel: v.nullish(v.string),
+    socials: v.array(v.object({ platform: v.string, link: v.string })),
+    portfolio: v.array(v.object({ title: v.string, link: v.string }))
   })
 })
 
 export const Experiences = Table('experiences', {
   userId: v.id('users'),
   visibility: visibility,
-  title: v.string(),
-  role: v.array(v.string()),
-  credits: v.array(v.string()),
-  year: v.number(),
-  link: v.optional(v.string()),
-  media: v.union(v.id('_storage'), v.string())
+  title: v.string,
+  role: v.array(v.string),
+  credits: v.array(v.string),
+  year: v.number,
+  link: v.nullish(v.string),
+  media: v.union(v.id('_storage'), v.string)
 })
 
 export const Training = Table('training', {
   userId: v.id('users'),
   visibility: visibility,
-  title: v.string(),
-  role: v.array(v.string()),
-  references: v.array(v.string()),
-  startYear: v.optional(v.number()),
-  endYear: v.optional(v.number()),
-  link: v.optional(v.string())
+  title: v.string,
+  role: v.array(v.string),
+  references: v.array(v.string),
+  startYear: v.nullish(v.number),
+  endYear: v.nullish(v.number),
+  link: v.nullish(v.string)
 })
 
 export const Skills = Table('skills', {
   userId: v.id('users'),
-  name: v.string(),
-  proficiency: v.union(
-    v.literal('Novice'),
-    v.literal('Proficient'),
-    v.literal('Expert')
-  )
+  name: v.string,
+  proficiency
 })
 
 export const Agents = Table('agents', {
@@ -123,21 +114,21 @@ export const Agents = Table('agents', {
 export const Agencies = Table('agencies', {
   ownerId: v.id('users'),
   managerList: v.array(v.id('users')),
-  name: v.string(),
+  name: v.string,
   location: v.id('locations'),
-  contact: v.number(),
-  email: v.string(),
-  websiteUrl: v.optional(v.string()),
+  contact: v.number,
+  email: v.string,
+  websiteUrl: v.nullish(v.string),
   logo: v.id('_storage')
 })
 
 // Home Screen Configuration Tables
 export const FeaturedContent = Table('featuredContent', {
-  title: v.string(),
-  description: v.string(),
+  title: v.string,
+  description: v.string,
   media: v.id('_storage'),
-  contract: v.optional(v.id('_storage')),
-  link: v.string()
+  contract: v.nullish(v.id('_storage')),
+  link: v.string
 })
 export const FeaturedChoreographers = Table('featuredChoreographers', {
   choreographers: v.array(
@@ -149,45 +140,45 @@ export const FeaturedChoreographers = Table('featuredChoreographers', {
 })
 
 export const Locations = Table('locations', {
-  userId: v.optional(v.id('users')),
-  name: v.optional(v.string()),
-  country: v.string(),
-  state: v.string(),
-  city: v.string(),
-  zipCode: v.optional(v.string()),
-  address: v.optional(v.string())
+  userId: v.nullish(v.id('users')),
+  name: v.nullish(v.string),
+  country: v.string,
+  state: v.string,
+  city: v.string,
+  zipCode: v.nullish(v.string),
+  address: v.nullish(v.string)
 })
 
 export const PointValues = Table('pointValues', {
-  title: v.string(),
-  points: v.number()
+  title: v.string,
+  points: v.number
 })
 
 export const EventTypes = Table('eventTypes', {
-  name: v.string()
+  name: v.string
 })
 
 export const Events = Table('events', {
-  attendanceCode: v.number(),
+  attendanceCode: v.number,
   pointValue: v.id('pointValues'),
-  sponsorAgencyId: v.optional(v.id('agencies')),
+  sponsorAgencyId: v.nullish(v.id('agencies')),
   organizers: v.array(v.id('users')),
-  title: v.string(),
+  title: v.string,
   type: v.id('eventTypes'),
-  description: v.optional(v.string()),
-  websiteUrl: v.optional(v.string()),
+  description: v.nullish(v.string),
+  websiteUrl: v.nullish(v.string),
   location: v.id('locations'),
-  startDate: v.string(),
-  endDate: v.string(),
-  active: v.boolean(),
+  startDate: v.string,
+  endDate: v.string,
+  active: v.boolean,
   timeline: v.array(
     v.object({
-      title: v.string(),
-      location: v.optional(v.id('locations')),
-      description: v.optional(v.string()),
-      startDate: v.string(),
-      endDate: v.string(),
-      date: v.string()
+      title: v.string,
+      location: v.nullish(v.id('locations')),
+      description: v.nullish(v.string),
+      startDate: v.string,
+      endDate: v.string,
+      date: v.string
     })
   )
 })
