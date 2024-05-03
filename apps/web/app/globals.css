@@ -28,8 +28,11 @@
     --destructive: 349.66 99.02% 40.2%;
     --destructive-foreground: 0 0% 100%;
 
-    --border: 216 14.29% 93.14%;
     --input: 216 14.29% 93.14%;
+    --input-background: 216 14.29% 93.14%;
+    --input-foreground: 216 14.29% 93.14%;
+
+    --border: 216 14.29% 93.14%;
     --ring: 173.02 100% 16.86%;
     --radius: 0.5rem;
   }
