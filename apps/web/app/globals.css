@@ -1,5 +1,3 @@
-@import '@placekit/autocomplete-js/dist/placekit-autocomplete.css';
-
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -37,9 +35,6 @@
     --border: 216 14.29% 93.14%;
     --ring: 173.02 100% 16.86%;
     --radius: 0.5rem;
-
-    --pka-color-accent: 0, 204, 183; 
-
   }
 
   .dark {
@@ -97,25 +92,4 @@
   background-repeat: no-repeat;
   height: 100vh;
 
-}
-
-@layer base {
-  .search-root {
-    @apply text-input-foreground !border !border-input bg-input-background ring-offset-background placeholder:text-muted-foreground focus-within:ring-ring flex h-12 text-base w-full rounded-md px-3 py-2 focus-within:!outline-none focus-within:!ring-2 focus-within:!ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50
-  }
-}
-.pka-panel {
-  border-color: transparent;
-}
-.pka-panel-footer {
-  border-top-color: hsl(var(--muted));
-}
-.pka-panel-suggestion-label-name {
-    color: hsl(var(--foreground));
-}
-.pka-active {
-  color: hsl(var(--accent-foreground)) !important;
-}
-.pka-active .pka-panel-suggestion-label-name {
-  color: hsl(var(--accent-foreground)) !important;
 }

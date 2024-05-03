@@ -17,6 +17,7 @@ export type SelectFieldProps = {
   name: string
   label: string
   options: string[] | { value: string; label: string }[]
+  className?: string
   placeholder?: string
   required?: boolean
 }
@@ -24,6 +25,7 @@ export const SelectField = ({
   name,
   label,
   placeholder = 'Select',
+  className,
   options,
   required
 }: SelectFieldProps) => {
@@ -31,7 +33,7 @@ export const SelectField = ({
     <FormField
       name={name}
       render={({ field }) => (
-        <FormItem className="">
+        <FormItem className={className}>
           <FormLabel className="flex items-center justify-between text-sm">
             {label} {required && <span className="text-xs">Required</span>}
           </FormLabel>

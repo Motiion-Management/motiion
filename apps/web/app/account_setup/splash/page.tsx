@@ -1,32 +1,24 @@
 'use client'
 import './splash.css'
 
-import { PlaceKit } from '@placekit/autocomplete-react'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { useForm, Controller } from 'react-hook-form'
+import { useForm } from 'react-hook-form'
 import { z } from 'zod'
 import { Button } from '@/components/ui/button'
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage
-} from '@/components/ui/form'
+import { Form } from '@/components/ui/form'
 import {
   Accordion,
   AccordionItem,
   AccordionContent,
   AccordionTrigger
 } from '@/components/ui/accordion'
-import { Input } from '@/components/ui/input'
 import { Progress } from '@/components/ui/progress'
 import { InputField } from '@/components/ui/form-fields/input'
 import { PlusCircle } from 'lucide-react'
 import { toast } from '@/components/ui/use-toast'
 import { DatePickerField } from '@/components/ui/form-fields/date-picker'
 import { SelectField } from '@/components/ui/form-fields/select'
+import { LocationField } from '@/components/ui/form-fields/location'
 
 const formSchema = z.object({
   firstName: z.string().min(2, {
@@ -77,86 +69,41 @@ export default function ProfileForm() {
       <Form {...form}>
         <form
           onSubmit={form.handleSubmit(onSubmit)}
-          className="mt-8 flex w-full flex-col items-center gap-6"
+          className="mt-8 grid grid-cols-2 gap-4"
         >
-          <div className="grid grid-cols-2 gap-x-4">
-            <InputField required name="firstName" placeholder="First Name" />
-            <InputField required name="lastName" placeholder="Last Name" />
-            <Accordion type="multiple" className="col-span-2 w-full">
-              <AccordionItem value="item-1" className="border-none">
-                <AccordionTrigger
-                  StartIcon={PlusCircle}
-                  startIconClassName="stroke-background fill-accent h-6 w-6"
-                >
-                  Add Display Name
-                </AccordionTrigger>
-                <AccordionContent>
-                  <FormField
-                    control={form.control}
-                    name="displayName"
-                    render={({ field }) => (
-                      <FormItem className="">
-                        <FormLabel></FormLabel>
-                        <FormControl>
-                          <Input placeholder="Display Name" {...field} />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                </AccordionContent>
-              </AccordionItem>
-            </Accordion>
-          </div>
-          <DatePickerField name="dob" label="DOB" />
-          <div className="grid grid-cols-2 gap-4">
-            <SelectField
-              name="gender"
-              label="I identify as"
-              options={['Male', 'Female', 'Non-Binary']}
-            />
-
-            <InputField
-              required
-              name="phone"
-              placeholder="Phone Number"
-              label="Contact"
-            />
-          </div>
-          <Controller
-            control={form.control}
-            name="location"
-            render={({ field }) => (
-              <FormItem className="w-full">
-                <FormLabel className="flex items-center justify-between">
-                  Location <span className="text-xs">Required</span>
-                </FormLabel>
-                <FormControl>
-                  <PlaceKit
-                    apiKey={`${process.env.NEXT_PUBLIC_PLACEKIT_KEY}`}
-                    geolocation={false}
-                    className="search-root"
-                    onPick={(location) => {
-                      console.log(location)
-                      field.onChange(location)
-                    }}
-                    options={{
-                      types: ['city', 'administrative'],
-                      panel: {
-                        className: '!bg-black'
-                      },
-                      format: {
-                        sub: (item) => `${item.city}, ${item.administrative}`,
-                        value: (item) => `${item.city}, ${item.administrative}`
-                      }
-                    }}
-                  />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
+          <InputField required name="firstName" placeholder="First Name" />
+          <InputField required name="lastName" placeholder="Last Name" />
+          <Accordion type="multiple" className="col-span-2 -mt-4 w-full">
+            <AccordionItem value="item-1" className="border-none">
+              <AccordionTrigger
+                StartIcon={PlusCircle}
+                startIconClassName="stroke-card fill-accent h-6 w-6"
+              >
+                Add Display Name
+              </AccordionTrigger>
+              <AccordionContent>
+                <InputField
+                  name="displayName"
+                  placeholder="What should we call you?"
+                />
+              </AccordionContent>
+            </AccordionItem>
+          </Accordion>
+          <DatePickerField name="dob" label="DOB" className="col-span-2" />
+          <SelectField
+            name="gender"
+            label="I identify as"
+            options={['Male', 'Female', 'Non-Binary']}
           />
-          <Button className="w-full" type="submit">
+
+          <InputField
+            required
+            name="phone"
+            placeholder="Phone Number"
+            label="Contact"
+          />
+          <LocationField name="location" required className="col-span-2" />
+          <Button className="col-span-2 w-full" type="submit">
             Continue
           </Button>
         </form>

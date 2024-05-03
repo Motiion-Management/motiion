@@ -18,21 +18,23 @@ import {
 } from '@/components/ui/popover'
 // import { Input } from '../input'
 import { Button } from '../button'
-import { Anchor } from '@radix-ui/react-popover'
 
 export function DatePickerField({
   name,
-  label
+  label,
+  placeholder = 'Pick a Date',
+  className
 }: {
   name: string
   label: string
   placeholder?: string
+  className?: string
 }) {
   return (
     <FormField
       name={name}
       render={({ field: { value, onChange } }) => (
-        <FormItem className="flex w-full flex-wrap">
+        <FormItem className={cn('flex w-full flex-wrap', className)}>
           <FormLabel className="basis-full">{label}</FormLabel>
           <Popover>
             <div className={'relative flex w-full basis-full'}>
@@ -75,7 +77,7 @@ export function DatePickerField({
                       !value && 'text-muted-foreground'
                     )}
                   >
-                    {value ? format(value, 'PPP') : <span>Pick a date</span>}
+                    {value ? format(value, 'PPP') : <span>{placeholder}</span>}
                     <CalendarIcon className="stroke-muted-foreground ml-auto" />
                   </Button>
                 </FormControl>
