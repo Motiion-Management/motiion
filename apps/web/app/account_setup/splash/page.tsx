@@ -31,6 +31,8 @@ import {
   SelectTrigger,
   SelectValue
 } from '@/components/ui/select'
+import { toast } from '@/components/ui/use-toast'
+import { DatePickerField } from '@/components/ui/form-fields/date-picker'
 
 const formSchema = z.object({
   firstName: z.string().min(2, {
@@ -59,8 +61,16 @@ export default function ProfileForm() {
       location: ''
     }
   })
-  function onSubmit(values: z.infer<typeof formSchema>) {
-    console.log(values)
+
+  function onSubmit(data: z.infer<typeof formSchema>) {
+    toast({
+      title: 'You submitted the following values:',
+      description: (
+        <pre className="mt-2 w-[340px] rounded-md bg-slate-950 p-4">
+          <code className="text-white">{JSON.stringify(data, null, 2)}</code>
+        </pre>
+      )
+    })
   }
 
   return (
@@ -110,21 +120,22 @@ export default function ProfileForm() {
               </AccordionItem>
             </Accordion>
           </div>
-          <FormField
-            control={form.control}
-            name="dob"
-            render={({ field }) => (
-              <FormItem className="w-full">
-                <FormLabel className="flex items-center justify-between text-sm">
-                  DOB <span className="text-xs">Required</span>
-                </FormLabel>
-                <FormControl>
-                  <Input type="date" placeholder="mm/dd/yyyy" {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
+          <DatePickerField name="dob" label="DOB" />
+          {/* <FormField */}
+          {/*   control={form.control} */}
+          {/*   name="dob" */}
+          {/*   render={({ field }) => ( */}
+          {/*     <FormItem className="w-full"> */}
+          {/*       <FormLabel className="flex items-center justify-between text-sm"> */}
+          {/*         DOB <span className="text-xs">Required</span> */}
+          {/*       </FormLabel> */}
+          {/*       <FormControl> */}
+          {/*         <Input type="date" placeholder="mm/dd/yyyy" {...field} /> */}
+          {/*       </FormControl> */}
+          {/*       <FormMessage /> */}
+          {/*     </FormItem> */}
+          {/*   )} */}
+          {/* /> */}
           <div className="flex gap-4">
             <FormField
               control={form.control}
