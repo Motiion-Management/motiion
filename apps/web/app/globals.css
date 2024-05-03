@@ -1,3 +1,5 @@
+@import '@placekit/autocomplete-js/dist/placekit-autocomplete.css';
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -35,28 +37,40 @@
     --border: 216 14.29% 93.14%;
     --ring: 173.02 100% 16.86%;
     --radius: 0.5rem;
+
+    --pka-color-accent: 0, 204, 183; 
+
   }
 
   .dark {
     --background: 225 47% 2%;
     --foreground: 225 29% 98%;
+
     --muted: 195 33% 15%;
     --muted-foreground: 195 12% 60%;
+
     --popover: 225 47% 3%;
     --popover-foreground: 225 29% 99%;
-    --card: 225 47% 3%;
-    --card-foreground: 225 29% 99%;
-    --border: 225 8% 10%;
-    --input: 225 8% 10%;
-    --primary: 225 7% 12%;
-    --primary-foreground: 225 7% 72%;
+
+    --card: 225 6.67% 11.76%;
+    --card-foreground: 0 0% 100%;
+
+    --primary: 0 0% 100%;
+    --primary-foreground: 225 40% 1.96%;
+
     --secondary: 195 7% 12%;
     --secondary-foreground: 195 7% 72%;
-    --accent: 255 7% 12%;
-    --accent-foreground: 255 7% 72%;
+
+    --accent: 173.82 100% 40%;
+    --accent-foreground: 225 40% 1.96%;
+
     --destructive: 19 99% 46%;
     --destructive-foreground: 0 0% 100%;
-    --ring: 225 7% 12%;
+
+
+    --input: 174.1 100% 23.92%;
+    --input-background: 174.1 100% 23.92%/20%;
+    --input-foreground: 225 99% 98%;
   }
 }
   
@@ -83,4 +97,25 @@
   background-repeat: no-repeat;
   height: 100vh;
 
+}
+
+@layer base {
+  .search-root {
+    @apply text-input-foreground !border !border-input bg-input-background ring-offset-background placeholder:text-muted-foreground focus-within:ring-ring flex h-10 w-full rounded-md px-3 py-2 text-sm focus-within:!outline-none focus-within:!ring-2 focus-within:!ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50
+  }
+}
+.pka-panel {
+  border-color: transparent;
+}
+.pka-panel-footer {
+  border-top-color: hsl(var(--muted));
+}
+.pka-panel-suggestion-label-name {
+    color: hsl(var(--foreground));
+}
+.pka-active {
+  color: hsl(var(--accent-foreground)) !important;
+}
+.pka-active .pka-panel-suggestion-label-name {
+  color: hsl(var(--accent-foreground)) !important;
 }

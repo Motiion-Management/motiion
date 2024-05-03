@@ -1,9 +1,11 @@
 'use client'
 
+import { cn } from '@/lib/utils'
+import { format } from 'date-fns'
+import { CalendarIcon } from 'lucide-react'
 import { Calendar } from '@/components/ui/calendar'
 import {
   FormControl,
-  FormDescription,
   FormField,
   FormItem,
   FormLabel,
@@ -14,11 +16,12 @@ import {
   PopoverContent,
   PopoverTrigger
 } from '@/components/ui/popover'
-import { Input } from '../input'
+// import { Input } from '../input'
+import { Button } from '../button'
+import { Anchor } from '@radix-ui/react-popover'
 
 export function DatePickerField({
   name,
-  placeholder = 'MM/DD/YYYY',
   label
 }: {
   name: string
@@ -28,38 +31,71 @@ export function DatePickerField({
   return (
     <FormField
       name={name}
-      render={({ field }) => (
-        <FormItem className="flex w-full flex-col ">
-          <FormLabel>{label}</FormLabel>
+      render={({ field: { value, onChange } }) => (
+        <FormItem className="flex w-full flex-wrap">
+          <FormLabel className="basis-full">{label}</FormLabel>
           <Popover>
-            <PopoverTrigger asChild>
-              <FormControl>
-                <Input type="date" placeholder={placeholder} {...field} />
+            <div className={'relative flex w-full basis-full'}>
+              {/* Render native picker on touch devices (ios, android) (devices that don't support "hover" specifically) */}
+              {/* <FormControl> */}
+              {/*   <Input */}
+              {/*     className="no-touch:hidden z-10 w-full basis-full opacity-0" */}
+              {/*     type="date" */}
+              {/*     max={new Date().getDate()} */}
+              {/*     // value={value} */}
+              {/*     onChange={(e) => {}} */}
+              {/*     {...field} */}
+              {/*   /> */}
+              {/* </FormControl> */}
+              {/* <div className="no-touch:hidden z-1 absolute right-0 top-0 flex h-full w-full items-center justify-end px-4"> */}
+              {/*   <CalendarIcon className="stroke-muted-foreground my-auto " /> */}
+              {/* </div> */}
+              {/**/}
+              {/* <Input */}
+              {/*   className={cn( */}
+              {/*     'no-touch:hidden pointer-events-none absolute left-0 top-0 z-0 flex h-full w-full items-center justify-center text-sm', */}
+              {/*     value ? 'text-input-foreground' : 'text-muted-foreground' */}
+              {/*   )} */}
+              {/*   placeholder="Enter Date of Birth" */}
+              {/*   value={value ? format(value, 'PPP') : ''} */}
+              {/*   onChange={(e) => { */}
+              {/*     console.log(e) */}
+              {/*     onChange(e) */}
+              {/*   }} */}
+              {/*   {...field} */}
+              {/* /> */}
 
-                {/* <Button */}
-                {/*   variant={'input'} */}
-                {/*   className={cn( */}
-                {/*     'w-[240px] pl-3 text-left font-normal', */}
-                {/*     !field.value && 'text-muted-foreground' */}
-                {/*   )} */}
-                {/* > */}
-                {/*   {field.value ? ( */}
-                {/*     format(field.value, 'PPP') */}
-                {/*   ) : ( */}
-                {/*     <span>Pick a date</span> */}
-                {/*   )} */}
-                {/*   <CalendarIcon className="ml-auto h-4 w-4 opacity-50" /> */}
-                {/* </Button> */}
-              </FormControl>
-            </PopoverTrigger>
-            <PopoverContent className="w-auto p-0" align="start">
+              {/* Render the Calendar component in a popover on all others (devices that do support "hover" specifically) */}
+              <PopoverTrigger asChild>
+                <FormControl>
+                  <Button
+                    variant={'input'}
+                    className={cn(
+                      'w-full basis-full',
+                      !value && 'text-muted-foreground'
+                    )}
+                  >
+                    {value ? format(value, 'PPP') : <span>Pick a date</span>}
+                    <CalendarIcon className="stroke-muted-foreground ml-auto" />
+                  </Button>
+                </FormControl>
+              </PopoverTrigger>
+            </div>
+
+            <PopoverContent
+              className="my-auto h-fit w-full sm:w-auto"
+              sideOffset={-50}
+              align="start"
+              side="bottom"
+              collisionPadding={10}
+            >
               <Calendar
                 mode="single"
-                selected={field.value}
-                onSelect={field.onChange}
-                disabled={(date) =>
-                  date > new Date() || date < new Date('1900-01-01')
-                }
+                defaultMonth={value || new Date()}
+                selected={value}
+                onSelect={(props) => {
+                  onChange(props)
+                }}
                 initialFocus
               />
             </PopoverContent>

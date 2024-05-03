@@ -121,21 +121,6 @@ export default function ProfileForm() {
             </Accordion>
           </div>
           <DatePickerField name="dob" label="DOB" />
-          {/* <FormField */}
-          {/*   control={form.control} */}
-          {/*   name="dob" */}
-          {/*   render={({ field }) => ( */}
-          {/*     <FormItem className="w-full"> */}
-          {/*       <FormLabel className="flex items-center justify-between text-sm"> */}
-          {/*         DOB <span className="text-xs">Required</span> */}
-          {/*       </FormLabel> */}
-          {/*       <FormControl> */}
-          {/*         <Input type="date" placeholder="mm/dd/yyyy" {...field} /> */}
-          {/*       </FormControl> */}
-          {/*       <FormMessage /> */}
-          {/*     </FormItem> */}
-          {/*   )} */}
-          {/* /> */}
           <div className="flex gap-4">
             <FormField
               control={form.control}
@@ -176,7 +161,7 @@ export default function ProfileForm() {
             name="location"
             render={({ field }) => (
               <FormItem className="w-full">
-                <FormLabel className="flex items-center justify-between text-sm">
+                <FormLabel className="flex items-center justify-between">
                   Location <span className="text-xs">Required</span>
                 </FormLabel>
                 <FormControl>
