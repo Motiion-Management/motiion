@@ -24,15 +24,9 @@ import { Input } from '@/components/ui/input'
 import { Progress } from '@/components/ui/progress'
 import { InputField } from '@/components/ui/form-fields/input'
 import { PlusCircle } from 'lucide-react'
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue
-} from '@/components/ui/select'
 import { toast } from '@/components/ui/use-toast'
 import { DatePickerField } from '@/components/ui/form-fields/date-picker'
+import { SelectField } from '@/components/ui/form-fields/select'
 
 const formSchema = z.object({
   firstName: z.string().min(2, {
@@ -42,27 +36,21 @@ const formSchema = z.object({
     message: 'Please enter your last name.'
   }),
   displayName: z.string(),
-  dob: z.string().date(),
+  dob: z.date(),
   gender: z.string(),
-  contact: z.string(),
+  phone: z.string(),
   location: z.string()
 })
 
+type FormSchema = z.infer<typeof formSchema>
+
 export default function ProfileForm() {
-  const form = useForm({
+  const form = useForm<FormSchema>({
     resolver: zodResolver(formSchema),
-    defaultValues: {
-      firstName: '',
-      lastName: '',
-      displayName: '',
-      dob: '',
-      gender: '',
-      contact: '',
-      location: ''
-    }
+    defaultValues: {}
   })
 
-  function onSubmit(data: z.infer<typeof formSchema>) {
+  function onSubmit(data: FormSchema) {
     toast({
       title: 'You submitted the following values:',
       description: (
@@ -122,36 +110,12 @@ export default function ProfileForm() {
           </div>
           <DatePickerField name="dob" label="DOB" />
           <div className="grid grid-cols-2 gap-4">
-            <FormField
-              control={form.control}
+            <SelectField
               name="gender"
-              render={({ field }) => (
-                <FormItem className="">
-                  <FormLabel className="flex items-center justify-between text-sm">
-                    I identify as <span className="text-xs">Required</span>
-                  </FormLabel>
-                  <Select
-                    onValueChange={field.onChange}
-                    defaultValue={field.value}
-                  >
-                    <FormControl>
-                      <SelectTrigger className="h-12">
-                        <SelectValue
-                          placeholder="Select"
-                          className="text-base"
-                        />
-                      </SelectTrigger>
-                    </FormControl>
-                    <SelectContent>
-                      <SelectItem value="Male">Male</SelectItem>
-                      <SelectItem value="Female">Female</SelectItem>
-                      <SelectItem value="Non-Binary">Non-Binary</SelectItem>
-                    </SelectContent>
-                  </Select>
-                  <FormMessage />
-                </FormItem>
-              )}
+              label="I identify as"
+              options={['Male', 'Female', 'Non-Binary']}
             />
+
             <InputField
               required
               name="phone"
