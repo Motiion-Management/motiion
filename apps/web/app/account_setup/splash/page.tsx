@@ -98,7 +98,7 @@ export default function ProfileForm() {
               <AccordionItem value="item-1" className="border-none">
                 <AccordionTrigger
                   StartIcon={PlusCircle}
-                  startIconClassName="stroke-background fill-accent"
+                  startIconClassName="stroke-background fill-accent h-6 w-6"
                 >
                   Add Display Name
                 </AccordionTrigger>
@@ -121,12 +121,12 @@ export default function ProfileForm() {
             </Accordion>
           </div>
           <DatePickerField name="dob" label="DOB" />
-          <div className="flex gap-4">
+          <div className="grid grid-cols-2 gap-4">
             <FormField
               control={form.control}
               name="gender"
               render={({ field }) => (
-                <FormItem>
+                <FormItem className="">
                   <FormLabel className="flex items-center justify-between text-sm">
                     I identify as <span className="text-xs">Required</span>
                   </FormLabel>
@@ -135,8 +135,11 @@ export default function ProfileForm() {
                     defaultValue={field.value}
                   >
                     <FormControl>
-                      <SelectTrigger className="w-[180px]">
-                        <SelectValue placeholder="Select" />
+                      <SelectTrigger className="h-12">
+                        <SelectValue
+                          placeholder="Select"
+                          className="text-base"
+                        />
                       </SelectTrigger>
                     </FormControl>
                     <SelectContent>
