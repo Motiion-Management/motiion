@@ -1,5 +1,4 @@
 'use client'
-import './splash.css'
 
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useForm } from 'react-hook-form'
@@ -12,7 +11,6 @@ import {
   AccordionContent,
   AccordionTrigger
 } from '@/components/ui/accordion'
-import { Progress } from '@/components/ui/progress'
 import { InputField } from '@/components/ui/form-fields/input'
 import { PlusCircle } from 'lucide-react'
 import { toast } from '@/components/ui/use-toast'
@@ -36,7 +34,7 @@ const formSchema = z.object({
 
 type FormSchema = z.infer<typeof formSchema>
 
-export default function ProfileForm() {
+export default function Onboarding1() {
   const form = useForm<FormSchema>({
     resolver: zodResolver(formSchema),
     defaultValues: {}
@@ -54,18 +52,7 @@ export default function ProfileForm() {
   }
 
   return (
-    <section className="p-4">
-      <div>
-        <div className="flex justify-between text-sm">
-          <p>Account Setup</p>
-          <p>Step 1 of 3</p>
-        </div>
-
-        <h2 className="my-4 text-xl">Personal Information</h2>
-        <div className="flex justify-center">
-          <Progress value={30} max={100} />
-        </div>
-      </div>
+    <section>
       <Form {...form}>
         <form
           onSubmit={form.handleSubmit(onSubmit)}
