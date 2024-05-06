@@ -17,6 +17,16 @@ import {
   PopoverTrigger
 } from '@/components/ui/popover'
 import { Button } from '../button'
+import { z } from 'zod'
+
+export const zDateStringResolver = z.date().transform((date, ctx) => {
+  if (!z.date().safeParse(date).success) {
+    ctx.addIssue({
+      code: z.ZodIssueCode.invalid_date
+    })
+  }
+  return date.toDateString()
+})
 
 export function DatePickerField({
   name,
@@ -64,9 +74,7 @@ export function DatePickerField({
                 mode="single"
                 defaultMonth={value || new Date()}
                 selected={value}
-                onSelect={(props) => {
-                  onChange(props?.toDateString())
-                }}
+                onSelect={onChange}
                 initialFocus
               />
             </PopoverContent>

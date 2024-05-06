@@ -10,7 +10,10 @@ import { api } from '@packages/backend/convex/_generated/api'
 import parsePhoneNumber from 'libphonenumber-js'
 import { Button } from '@/components/ui/button'
 import { InputField } from '@/components/ui/form-fields/input'
-import { DatePickerField } from '@/components/ui/form-fields/date-picker'
+import {
+  DatePickerField,
+  zDateStringResolver
+} from '@/components/ui/form-fields/date-picker'
 import { SelectField } from '@/components/ui/form-fields/select'
 import { LocationField } from '@/components/ui/form-fields/location'
 import { AccordionPlus } from './accordion'
@@ -23,15 +26,7 @@ const formSchema = z.object({
     message: 'Please enter your last name.'
   }),
   displayName: z.string().optional(),
-  dateOfBirth: z.string().transform((dateString, ctx) => {
-    const date = new Date(dateString)
-    if (!z.date().safeParse(date).success) {
-      ctx.addIssue({
-        code: z.ZodIssueCode.invalid_date
-      })
-    }
-    return date
-  }),
+  dateOfBirth: zDateStringResolver,
   gender: z.string().min(2, {
     message: 'Please select a gender.'
   }),
@@ -65,10 +60,8 @@ const formSchema = z.object({
 type FormSchema = z.infer<typeof formSchema>
 
 export function PersonalDetailsFormProvider({
-  // children,
   defaultValues
 }: {
-  // children: React.ReactNode
   defaultValues: Partial<FormSchema>
 }) {
   const updateMyUser = useMutation(api.users.updateMyUser)
