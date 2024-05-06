@@ -1,3 +1,4 @@
+'use client'
 import './location.css'
 import {
   FormControl,

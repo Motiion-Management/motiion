@@ -1,3 +1,4 @@
+'use client'
 import { ControllerProps } from 'react-hook-form'
 import {
   FormControl,
