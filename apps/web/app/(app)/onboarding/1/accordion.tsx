@@ -5,7 +5,6 @@ import {
   AccordionContent,
   AccordionTrigger
 } from '@/components/ui/accordion'
-import { InputField } from '@/components/ui/form-fields/input'
 import { PlusCircle } from 'lucide-react'
 
 export function AccordionPlus({
@@ -24,13 +23,7 @@ export function AccordionPlus({
         >
           {label}
         </AccordionTrigger>
-        <AccordionContent>
-          {children}
-          <InputField
-            name="displayName"
-            placeholder="What should we call you?"
-          />
-        </AccordionContent>
+        <AccordionContent>{children}</AccordionContent>
       </AccordionItem>
     </Accordion>
   )

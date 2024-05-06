@@ -7,7 +7,7 @@ import {
   FormLabel,
   FormMessage
 } from '../form'
-import { PlaceKit } from '@placekit/autocomplete-react'
+import { PlaceKit, PlaceKitProps } from '@placekit/autocomplete-react'
 
 export type LocationFieldProps = {
   name: string
@@ -34,7 +34,13 @@ export function LocationField({
               apiKey={`${process.env.NEXT_PUBLIC_PLACEKIT_KEY}`}
               geolocation={false}
               className="search-root"
-              onPick={field.onChange}
+              onPick={(_, item) => {
+                field.onChange({
+                  country: item.country,
+                  state: item.administrative,
+                  city: item.city
+                })
+              }}
               options={{
                 types: ['city', 'administrative'],
                 panel: {

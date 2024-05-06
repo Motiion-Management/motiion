@@ -13,7 +13,7 @@ import { crud } from 'convex-helpers/server'
 import { Users } from './schema'
 import { Doc } from './_generated/dataModel'
 import { internal } from './_generated/api'
-import { literals } from 'convex-helpers/validators'
+import { literals, partial } from 'convex-helpers/validators'
 
 export const { read, paginate } = crud(Users, query, mutation)
 

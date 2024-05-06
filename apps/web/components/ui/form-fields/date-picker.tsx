@@ -16,7 +16,6 @@ import {
   PopoverContent,
   PopoverTrigger
 } from '@/components/ui/popover'
-// import { Input } from '../input'
 import { Button } from '../button'
 
 export function DatePickerField({
@@ -38,36 +37,6 @@ export function DatePickerField({
           <FormLabel className="basis-full">{label}</FormLabel>
           <Popover>
             <div className={'relative flex w-full basis-full'}>
-              {/* Render native picker on touch devices (ios, android) (devices that don't support "hover" specifically) */}
-              {/* <FormControl> */}
-              {/*   <Input */}
-              {/*     className="no-touch:hidden z-10 w-full basis-full opacity-0" */}
-              {/*     type="date" */}
-              {/*     max={new Date().getDate()} */}
-              {/*     // value={value} */}
-              {/*     onChange={(e) => {}} */}
-              {/*     {...field} */}
-              {/*   /> */}
-              {/* </FormControl> */}
-              {/* <div className="no-touch:hidden z-1 absolute right-0 top-0 flex h-full w-full items-center justify-end px-4"> */}
-              {/*   <CalendarIcon className="stroke-muted-foreground my-auto " /> */}
-              {/* </div> */}
-              {/**/}
-              {/* <Input */}
-              {/*   className={cn( */}
-              {/*     'no-touch:hidden pointer-events-none absolute left-0 top-0 z-0 flex h-full w-full items-center justify-center text-sm', */}
-              {/*     value ? 'text-input-foreground' : 'text-muted-foreground' */}
-              {/*   )} */}
-              {/*   placeholder="Enter Date of Birth" */}
-              {/*   value={value ? format(value, 'PPP') : ''} */}
-              {/*   onChange={(e) => { */}
-              {/*     console.log(e) */}
-              {/*     onChange(e) */}
-              {/*   }} */}
-              {/*   {...field} */}
-              {/* /> */}
-
-              {/* Render the Calendar component in a popover on all others (devices that do support "hover" specifically) */}
               <PopoverTrigger asChild>
                 <FormControl>
                   <Button
@@ -96,7 +65,7 @@ export function DatePickerField({
                 defaultMonth={value || new Date()}
                 selected={value}
                 onSelect={(props) => {
-                  onChange(props)
+                  onChange(props?.toDateString())
                 }}
                 initialFocus
               />
