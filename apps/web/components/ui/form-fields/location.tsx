@@ -7,7 +7,7 @@ import {
   FormLabel,
   FormMessage
 } from '../form'
-import { PlaceKit, PlaceKitProps } from '@placekit/autocomplete-react'
+import { PlaceKit } from '@placekit/autocomplete-react'
 
 export type LocationFieldProps = {
   name: string

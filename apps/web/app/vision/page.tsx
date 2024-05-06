@@ -1,6 +1,6 @@
 'use client'
 import { useState, useEffect } from 'react'
-import { Button, buttonVariants } from '@/components/ui/button'
+import { Button } from '@/components/ui/button'
 
 import {
   Carousel,
@@ -12,6 +12,7 @@ import {
 export default function Vision() {
   const [api, setApi] = useState<CarouselApi>()
   const [current, setCurrent] = useState(1)
+  current
   useEffect(() => {
     if (!api) {
       return

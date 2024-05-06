@@ -63,7 +63,7 @@ const AccordionTrigger = React.forwardRef<
           <EndIcon
             className={cn(
               'h-4 w-4 shrink-0 transition-transform duration-200',
-              startIconClassName
+              endIconClassName
             )}
           />
         )}
