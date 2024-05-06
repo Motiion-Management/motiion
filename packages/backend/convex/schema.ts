@@ -28,7 +28,7 @@ const sizing = v.object(
   })
 )
 
-const gender = v.nullish(v.literals('Male', 'Female', 'Non-Binary'))
+const gender = v.optional(v.literals('Male', 'Female', 'Non-Binary'))
 const proficiency = v.literals('Novice', 'Proficient', 'Expert')
 
 const location = v.object({

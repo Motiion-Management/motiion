@@ -23,6 +23,8 @@ export const { create, update, destroy } = crud(
   internalMutation
 )
 
+export const { update: updateMyUser } = crud(Users, authQuery, authMutation)
+
 type UserDoc = Doc<'users'>
 
 export const NEW_USER_DEFAULTS = {
@@ -38,12 +40,12 @@ export const getMyUser = authQuery({
   }
 })
 
-export const updateMyUser = authMutation({
-  args: Users.withoutSystemFields,
-  async handler(ctx, args) {
-    await ctx.db.patch(ctx.user._id, args)
-  }
-})
+// export const updateMyUser = authMutation({
+//   args: partial(Users.withoutSystemFields),
+//   async handler(ctx, args) {
+//     await ctx.db.patch(ctx.user._id, args)
+//   }
+// })
 
 // clerk webhook functions
 export const getUserByTokenId = internalQuery({

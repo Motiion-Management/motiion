@@ -17,6 +17,7 @@ import {
 import { SelectField } from '@/components/ui/form-fields/select'
 import { LocationField } from '@/components/ui/form-fields/location'
 import { AccordionPlus } from './accordion'
+import { Id } from '@packages/backend/convex/_generated/dataModel'
 
 const formSchema = z.object({
   firstName: z.string().min(2, {
@@ -27,9 +28,11 @@ const formSchema = z.object({
   }),
   displayName: z.string().optional(),
   dateOfBirth: zDateStringResolver,
-  gender: z.string().min(2, {
-    message: 'Please select a gender.'
-  }),
+  gender: z.union([
+    z.literal('Male'),
+    z.literal('Female'),
+    z.literal('Non-Binary')
+  ]),
   phone: z
     .string()
     .min(7, {
@@ -60,8 +63,10 @@ const formSchema = z.object({
 type FormSchema = z.infer<typeof formSchema>
 
 export function PersonalDetailsFormProvider({
+  id,
   defaultValues
 }: {
+  id: Id<'users'>
   defaultValues: Partial<FormSchema>
 }) {
   const updateMyUser = useMutation(api.users.updateMyUser)
@@ -73,7 +78,7 @@ export function PersonalDetailsFormProvider({
   })
   const router = useRouter()
   function onSubmit(data: FormSchema) {
-    // updateMyUser(data)
+    updateMyUser({ id, patch: data })
     toast({
       title: 'You submitted the following values:',
       description: (
