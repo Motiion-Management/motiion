@@ -9,6 +9,7 @@
     "native": "turbo run dev --filter native-app",
     "backend": "turbo run dev --filter @packages/backend",
     "build": "turbo run build",
+    "build:prod": "turbo run build-prod",
     "clean": "turbo run clean && rm -rf node_modules",
     "format": "prettier --write \"**/*.{ts,tsx,js,jsx,json,md}\" --ignore-path .gitignore"
   },

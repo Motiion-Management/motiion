@@ -3,11 +3,10 @@
   "version": "1.0.0",
   "main": "index.tsx",
   "scripts": {
-    "dev": "expo start --ios",
+    "dev-": "expo start --ios",
     "start": "expo start",
     "android": "expo start --android",
-    "ios": "expo start --ios",
-    "web": "expo start --web"
+    "ios": "expo start --ios"
   },
   "dependencies": {
     "@clerk/clerk-expo": "^1.0.2",
