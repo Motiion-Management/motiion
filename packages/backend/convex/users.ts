@@ -29,16 +29,17 @@ type UserDoc = Doc<'users'>
 
 export const ONBOARDING_STEPS = {
   COMPLETE: 0,
-  PERSONAL_INFO: 1,
-  HEADSHOTS: 2,
-  RESUME: 3
+  VISION: 1,
+  PERSONAL_INFO: 2,
+  HEADSHOTS: 3,
+  RESUME: 4
 } as const
 
 export const NEW_USER_DEFAULTS = {
   type: 'member',
   isAdmin: false,
   pointsEarned: 0,
-  onboardingStep: ONBOARDING_STEPS.PERSONAL_INFO,
+  onboardingStep: ONBOARDING_STEPS.VISION,
   profileTip: false,
   representationTip: false
 } as const
