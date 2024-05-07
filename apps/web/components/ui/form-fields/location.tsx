@@ -34,6 +34,10 @@ export function LocationField({
               apiKey={`${process.env.NEXT_PUBLIC_PLACEKIT_KEY}`}
               geolocation={false}
               className="search-root"
+              placeholder="Search for a city..."
+              defaultValue={
+                field.value && `${field.value.city}, ${field.value.state}`
+              }
               onPick={(_, item) => {
                 field.onChange({
                   country: item.country,

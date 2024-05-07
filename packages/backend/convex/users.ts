@@ -13,7 +13,7 @@ import { crud } from 'convex-helpers/server'
 import { Users } from './schema'
 import { Doc } from './_generated/dataModel'
 import { internal } from './_generated/api'
-import { literals, partial } from 'convex-helpers/validators'
+import { literals } from 'convex-helpers/validators'
 
 export const { read, paginate } = crud(Users, query, mutation)
 
@@ -27,25 +27,28 @@ export const { update: updateMyUser } = crud(Users, authQuery, authMutation)
 
 type UserDoc = Doc<'users'>
 
+export const ONBOARDING_STEPS = {
+  COMPLETE: 0,
+  PERSONAL_INFO: 1,
+  HEADSHOTS: 2,
+  RESUME: 3
+} as const
+
 export const NEW_USER_DEFAULTS = {
   type: 'member',
   isAdmin: false,
-  pointsEarned: 0
+  pointsEarned: 0,
+  onboardingStep: ONBOARDING_STEPS.PERSONAL_INFO,
+  profileTip: false,
+  representationTip: false
 } as const
 
 export const getMyUser = authQuery({
   args: {},
-  async handler(ctx, args) {
+  async handler(ctx) {
     return ctx.user
   }
 })
-
-// export const updateMyUser = authMutation({
-//   args: partial(Users.withoutSystemFields),
-//   async handler(ctx, args) {
-//     await ctx.db.patch(ctx.user._id, args)
-//   }
-// })
 
 // clerk webhook functions
 export const getUserByTokenId = internalQuery({

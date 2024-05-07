@@ -3,7 +3,6 @@ import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
 import { Form } from '@/components/ui/form'
-import { toast } from '@/components/ui/use-toast'
 import { useRouter } from 'next/navigation'
 import { useMutation } from 'convex/react'
 import { api } from '@packages/backend/convex/_generated/api'
@@ -77,19 +76,12 @@ export function PersonalDetailsFormProvider({
     defaultValues
   })
   const router = useRouter()
-  function onSubmit(data: FormSchema) {
-    updateMyUser({ id, patch: data })
-    toast({
-      title: 'You submitted the following values:',
-      description: (
-        <pre className="mt-2 w-[340px] rounded-md bg-slate-950 p-4">
-          <code className="text-white">{JSON.stringify(data, null, 2)}</code>
-        </pre>
-      )
+  async function onSubmit(data: FormSchema) {
+    await updateMyUser({
+      id,
+      patch: { ...data, personalDetailOnboarding: true }
     })
-    setTimeout(() => {
-      router.push('/onboarding/2')
-    }, 500)
+    router.push('/onboarding/2')
   }
 
   return (

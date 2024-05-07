@@ -23,7 +23,6 @@ import type * as experiences from "../experiences.js";
 import type * as featuredChoreographers from "../featuredChoreographers.js";
 import type * as featuredContent from "../featuredContent.js";
 import type * as http from "../http.js";
-import type * as locations from "../locations.js";
 import type * as pointValues from "../pointValues.js";
 import type * as resume from "../resume.js";
 import type * as skills from "../skills.js";
@@ -49,7 +48,6 @@ declare const fullApi: ApiFromModules<{
   featuredChoreographers: typeof featuredChoreographers;
   featuredContent: typeof featuredContent;
   http: typeof http;
-  locations: typeof locations;
   pointValues: typeof pointValues;
   resume: typeof resume;
   skills: typeof skills;

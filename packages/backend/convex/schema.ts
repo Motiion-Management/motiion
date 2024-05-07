@@ -4,6 +4,7 @@ import { Validator } from 'convex/values'
 import * as validators from 'convex-helpers/validators'
 import { Table } from 'convex-helpers/server'
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export const nullish = <T extends Validator<any, false, any>>(validator: T) =>
   v.optional(v.nullable(validator))
 
@@ -55,7 +56,10 @@ export const Users = Table('users', {
   location: v.optional(location),
   // user activity
   eventsAttended: v.nullish(v.array(v.id('events'))),
-  pointsEarned: v.number
+  pointsEarned: v.number,
+  onboardingStep: v.number,
+  profileTip: v.boolean,
+  representationTip: v.boolean
 })
 
 export const Resumes = Table('resume', {
