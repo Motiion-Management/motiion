@@ -16,6 +16,7 @@ import { useRouter } from 'next/navigation'
 export default function Vision() {
   const [carousel, setCarousel] = useState<CarouselApi>()
   const [current, setCurrent] = useState(1)
+  current
   useEffect(() => {
     if (!carousel) {
       return
