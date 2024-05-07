@@ -1,4 +1,4 @@
 {
-  installCommand: "pnpm install",
-  buildCommand: "sh verccel.sh"
+  "installCommand": "pnpm install",
+  "buildCommand": "sh verccel.sh"
 }
