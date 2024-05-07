@@ -1,3 +1,4 @@
+'use client'
 import { ControllerProps } from 'react-hook-form'
 import {
   FormControl,
@@ -32,12 +33,7 @@ export function InputField({
             {required && <span className="text-xs">Required</span>}
           </FormLabel>
           <FormControl>
-            <Input
-              {...field}
-              placeholder={placeholder}
-              required={required}
-              {...rest}
-            />
+            <Input {...field} placeholder={placeholder} {...rest} />
           </FormControl>
 
           <FormMessage />

@@ -4,7 +4,8 @@ import { Validator } from 'convex/values'
 import * as validators from 'convex-helpers/validators'
 import { Table } from 'convex-helpers/server'
 
-export const nullish = <T>(validator: Validator<T>) =>
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export const nullish = <T extends Validator<any, false, any>>(validator: T) =>
   v.optional(v.nullable(validator))
 
 const v = {
@@ -28,8 +29,17 @@ const sizing = v.object(
   })
 )
 
-const gender = v.nullish(v.literals('Male', 'Female', 'Non-Binary'))
+const gender = v.optional(v.literals('Male', 'Female', 'Non-Binary'))
 const proficiency = v.literals('Novice', 'Proficient', 'Expert')
+
+const location = v.object({
+  name: v.nullish(v.string),
+  country: v.string,
+  state: v.string,
+  city: v.string,
+  zipCode: v.nullish(v.string),
+  address: v.nullish(v.string)
+})
 
 // App Users, used for all logged in users
 export const Users = Table('users', {
@@ -43,10 +53,13 @@ export const Users = Table('users', {
   phone: v.nullish(v.string),
   dateOfBirth: v.nullish(v.string),
   gender,
-  location: v.nullish(v.id('locations')),
+  location: v.optional(location),
   // user activity
   eventsAttended: v.nullish(v.array(v.id('events'))),
-  pointsEarned: v.number
+  pointsEarned: v.number,
+  onboardingStep: v.number,
+  profileTip: v.boolean,
+  representationTip: v.boolean
 })
 
 export const Resumes = Table('resume', {
@@ -115,7 +128,7 @@ export const Agencies = Table('agencies', {
   ownerId: v.id('users'),
   managerList: v.array(v.id('users')),
   name: v.string,
-  location: v.id('locations'),
+  location,
   contact: v.number,
   email: v.string,
   websiteUrl: v.nullish(v.string),
@@ -139,16 +152,6 @@ export const FeaturedChoreographers = Table('featuredChoreographers', {
   )
 })
 
-export const Locations = Table('locations', {
-  userId: v.nullish(v.id('users')),
-  name: v.nullish(v.string),
-  country: v.string,
-  state: v.string,
-  city: v.string,
-  zipCode: v.nullish(v.string),
-  address: v.nullish(v.string)
-})
-
 export const PointValues = Table('pointValues', {
   title: v.string,
   points: v.number
@@ -167,14 +170,14 @@ export const Events = Table('events', {
   type: v.id('eventTypes'),
   description: v.nullish(v.string),
   websiteUrl: v.nullish(v.string),
-  location: v.id('locations'),
+  location: location,
   startDate: v.string,
   endDate: v.string,
   active: v.boolean,
   timeline: v.array(
     v.object({
       title: v.string,
-      location: v.nullish(v.id('locations')),
+      location: location,
       description: v.nullish(v.string),
       startDate: v.string,
       endDate: v.string,
@@ -187,7 +190,6 @@ export default defineSchema({
   // global
   featuredContent: FeaturedContent.table,
   featuredChoreographers: FeaturedChoreographers.table,
-  locations: Locations.table.index('userId', ['userId']),
   pointValues: PointValues.table,
   eventTypes: EventTypes.table,
   events: Events.table.index('attendanceCode', ['attendanceCode']),

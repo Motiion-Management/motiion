@@ -1,9 +1,11 @@
 'use client'
 
+import { cn } from '@/lib/utils'
+import { format } from 'date-fns'
+import { CalendarIcon } from 'lucide-react'
 import { Calendar } from '@/components/ui/calendar'
 import {
   FormControl,
-  FormDescription,
   FormField,
   FormItem,
   FormLabel,
@@ -14,52 +16,65 @@ import {
   PopoverContent,
   PopoverTrigger
 } from '@/components/ui/popover'
-import { Input } from '../input'
+import { Button } from '../button'
+import { z } from 'zod'
+
+export const zDateStringResolver = z.date().transform((date, ctx) => {
+  if (!z.date().safeParse(date).success) {
+    ctx.addIssue({
+      code: z.ZodIssueCode.invalid_date
+    })
+  }
+  return date.toDateString()
+})
 
 export function DatePickerField({
   name,
-  placeholder = 'MM/DD/YYYY',
-  label
+  label,
+  placeholder = 'Pick a Date',
+  className
 }: {
   name: string
   label: string
   placeholder?: string
+  className?: string
 }) {
   return (
     <FormField
       name={name}
-      render={({ field }) => (
-        <FormItem className="flex w-full flex-col ">
-          <FormLabel>{label}</FormLabel>
+      render={({ field: { value, onChange } }) => (
+        <FormItem className={cn('flex w-full flex-wrap', className)}>
+          <FormLabel className="basis-full">{label}</FormLabel>
           <Popover>
-            <PopoverTrigger asChild>
-              <FormControl>
-                <Input type="date" placeholder={placeholder} {...field} />
+            <div className={'relative flex w-full basis-full'}>
+              <PopoverTrigger asChild>
+                <FormControl>
+                  <Button
+                    variant={'input'}
+                    className={cn(
+                      'w-full basis-full',
+                      !value && 'text-muted-foreground'
+                    )}
+                  >
+                    {value ? format(value, 'PPP') : <span>{placeholder}</span>}
+                    <CalendarIcon className="stroke-muted-foreground ml-auto" />
+                  </Button>
+                </FormControl>
+              </PopoverTrigger>
+            </div>
 
-                {/* <Button */}
-                {/*   variant={'input'} */}
-                {/*   className={cn( */}
-                {/*     'w-[240px] pl-3 text-left font-normal', */}
-                {/*     !field.value && 'text-muted-foreground' */}
-                {/*   )} */}
-                {/* > */}
-                {/*   {field.value ? ( */}
-                {/*     format(field.value, 'PPP') */}
-                {/*   ) : ( */}
-                {/*     <span>Pick a date</span> */}
-                {/*   )} */}
-                {/*   <CalendarIcon className="ml-auto h-4 w-4 opacity-50" /> */}
-                {/* </Button> */}
-              </FormControl>
-            </PopoverTrigger>
-            <PopoverContent className="w-auto p-0" align="start">
+            <PopoverContent
+              className="my-auto h-fit w-full sm:w-auto"
+              sideOffset={-50}
+              align="start"
+              side="bottom"
+              collisionPadding={10}
+            >
               <Calendar
                 mode="single"
-                selected={field.value}
-                onSelect={field.onChange}
-                disabled={(date) =>
-                  date > new Date() || date < new Date('1900-01-01')
-                }
+                defaultMonth={value || new Date()}
+                selected={value}
+                onSelect={onChange}
                 initialFocus
               />
             </PopoverContent>
