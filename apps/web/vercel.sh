@@ -1,7 +1,7 @@
 #!/bin/bash
  
 if [[ $VERCEL_ENV == "production"  ]] ; then 
-  pnpm run build:prod
+  turbo run build:prod
 else 
-  pnpm run build
+  turbo run build
 fi
