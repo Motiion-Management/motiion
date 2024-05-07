@@ -3,7 +3,6 @@ import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
 import { Form } from '@/components/ui/form'
-import { useRouter } from 'next/navigation'
 import { useMutation } from 'convex/react'
 import { api } from '@packages/backend/convex/_generated/api'
 import parsePhoneNumber from 'libphonenumber-js'
@@ -17,6 +16,7 @@ import { SelectField } from '@/components/ui/form-fields/select'
 import { LocationField } from '@/components/ui/form-fields/location'
 import { AccordionPlus } from './accordion'
 import { Id } from '@packages/backend/convex/_generated/dataModel'
+import { ONBOARDING_STEPS } from '@packages/backend/convex/users'
 
 const formSchema = z.object({
   firstName: z.string().min(2, {
@@ -75,13 +75,11 @@ export function PersonalDetailsFormProvider({
     shouldUseNativeValidation: false,
     defaultValues
   })
-  const router = useRouter()
   async function onSubmit(data: FormSchema) {
     await updateMyUser({
       id,
-      patch: { ...data, personalDetailOnboarding: true }
+      patch: { ...data, onboardingStep: ONBOARDING_STEPS.HEADSHOTS }
     })
-    router.push('/onboarding/2')
   }
 
   return (
