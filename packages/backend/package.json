@@ -4,6 +4,7 @@
   "description": "",
   "scripts": {
     "dev": "convex dev",
+    "build": "convex deploy",
     "setup": "convex dev --until-success"
   },
   "author": "",
