@@ -8,7 +8,7 @@ export function Motif4() {
       alt="Motif 2"
       height={200}
       width={200}
-      className="bottom-00 absolute -right-[95%]"
+      className="bottom-00 absolute -right-[100%]"
     />
   )
 }

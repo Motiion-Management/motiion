@@ -108,7 +108,7 @@ export default function Vision() {
           ))}
         </CarouselContent>
       </Carousel>
-      <div className="ml-4 grid place-items-center gap-2">
+      <div className="ml-4 grid place-items-center gap-4">
         <div className="flex gap-2">
           {carouselItems.map((_, i) => (
             <Circle
