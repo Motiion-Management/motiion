@@ -37,7 +37,7 @@ const Slide = ({
 export default function Vision() {
   const [carousel, setCarousel] = useState<CarouselApi>()
   const [current, setCurrent] = useState(1)
-  current
+  const [loading, setLoading] = useState(false)
   useEffect(() => {
     if (!carousel) {
       return
@@ -58,6 +58,7 @@ export default function Vision() {
   const user = useQuery(api.users.getMyUser)
   const updateMyUser = useMutation(api.users.updateMyUser)
   const nextStep = async () => {
+    setLoading(true)
     await updateMyUser({
       id: user!._id,
       patch: { onboardingStep: ONBOARDING_STEPS.PERSONAL_INFO }
@@ -73,7 +74,7 @@ export default function Vision() {
           'We aim to empower dancers with innovative tools and resources to enhance their mental health, financial stability, and creative expression, fostering a vibrant and sustainable ecosystem.'
       },
       button: { children: `Next`, onClick: handleNextClick },
-      images: [<Motif2 key="motif-2" />, <Motif3 key="motif-3" />]
+      images: [Motif2, Motif3]
     },
     {
       slide: {
@@ -83,20 +84,22 @@ export default function Vision() {
           'Tools to help you manage your resume and headshots all in one platform.'
       },
       button: { children: `Let's Get Started`, onClick: nextStep },
-      images: [<Motif4 key="motif-4" />]
+      images: [Motif4]
     }
   ]
   return (
     <div className="relative -left-4 -mr-4 grid h-full grid-cols-1 grid-rows-[1fr_min-content] ">
       <Carousel
         setApi={setCarousel}
-        className="grid h-full w-screen max-w-screen-sm cursor-grab auto-cols-auto active:cursor-grabbing"
+        className="grid h-full w-screen max-w-md cursor-grab auto-cols-auto active:cursor-grabbing"
       >
         <CarouselContent className="h-full overflow-y-visible">
           {carouselItems.map((item) => (
             <CarouselItem key={item.slide.title}>
               <div className="absolute left-0 top-0 -z-10 grid h-full w-full items-end justify-items-center">
-                {item.images.map((image) => image)}
+                {item.images.map((Motif, i) => (
+                  <Motif key={`motif-${i}`} />
+                ))}
               </div>
 
               <Slide {...item.slide} />
@@ -119,7 +122,11 @@ export default function Vision() {
             />
           ))}
         </div>
-        <Button {...carouselItems[current].button} className="w-full" />
+        <Button
+          loading={loading}
+          {...carouselItems[current].button}
+          className="w-full"
+        />
       </div>
     </div>
   )
