@@ -8,19 +8,23 @@ export function ProgressHeader() {
   const segment = useSelectedLayoutSegment()
 
   const [progress, setProgress] = useState(0)
-  const [ header, setHeader ] = useState('')
+
+  const headerOptions = {
+    1: 'Welcome',
+    2: 'Personal Information',
+    3: 'Upload Headshots',
+    4: 'Upload Resume'
+  } as const
+
+  const step = (parseInt(`${segment}`) || 1) as keyof typeof headerOptions
+
+  const header = headerOptions[step]
+
   useEffect(() => {
-    const step = parseInt(`${segment}`)
-    if (step === 2) {
-      setHeader('Personal Information')
-    } else if (step === 3) {
-      setHeader('Upload Headshots')
-    } else if (step === 4) {
-      setHeader('Upload Resume')
-    }
     const timer = setTimeout(() => setProgress(step * 33), 100)
     return () => clearTimeout(timer)
-  }, [segment])
+  }, [step])
+
   return (
     <div>
       <div className="flex justify-between text-sm">
