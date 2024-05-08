@@ -25,7 +25,7 @@ export const { create, update, destroy } = crud(
 
 export const { update: updateMyUser } = crud(Users, authQuery, authMutation)
 
-type UserDoc = Doc<'users'>
+export type UserDoc = Doc<'users'>
 
 export const ONBOARDING_STEPS = {
   COMPLETE: 0,
