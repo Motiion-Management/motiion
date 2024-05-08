@@ -86,7 +86,7 @@ export default function Vision() {
     }
   ]
   return (
-    <div className="grid h-full grid-cols-1 gap-4 md:gap-8">
+    <div className="grid h-full grid-cols-1 grid-rows-[1fr_min-content] gap-4 md:gap-8">
       <Carousel
         setApi={setCarousel}
         className="grid cursor-grab auto-cols-auto active:cursor-grabbing"
