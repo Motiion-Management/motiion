@@ -8,7 +8,7 @@ export function Motif3() {
       alt="Motif 2"
       height={200}
       width={200}
-      className="absolute bottom-0 left-5 h-min"
+      className="absolute bottom-0 left-0 h-min"
     />
   )
 }

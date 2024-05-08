@@ -26,8 +26,8 @@ const Slide = ({
   accent: string
   description: string
 }) => (
-  <div className="grid gap-8">
-    <h1 className="text-4xl font-semibold">
+  <div className="ml-4 grid gap-8">
+    <h1 className="w-[80%] text-4xl font-semibold">
       {title}
       <br />
       <span className="text-accent">{accent}</span>.
@@ -91,7 +91,7 @@ export default function Vision() {
     }
   ]
   return (
-    <div className="relative grid h-full grid-cols-1 grid-rows-[1fr_min-content] ">
+    <div className="relative -left-4 -mr-4 grid h-full grid-cols-1 grid-rows-[1fr_min-content] ">
       <Carousel
         setApi={setCarousel}
         className="grid h-full w-screen max-w-screen-sm cursor-grab auto-cols-auto active:cursor-grabbing"
@@ -108,7 +108,7 @@ export default function Vision() {
           ))}
         </CarouselContent>
       </Carousel>
-      <div className="grid place-items-center gap-2">
+      <div className="ml-4 grid place-items-center gap-2">
         <div className="flex gap-2">
           {carouselItems.map((_, i) => (
             <Circle
