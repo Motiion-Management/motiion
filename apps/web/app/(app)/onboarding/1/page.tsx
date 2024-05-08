@@ -11,7 +11,6 @@ import {
 import { useMutation, useQuery } from 'convex/react'
 import { api } from '@packages/backend/convex/_generated/api'
 import { ONBOARDING_STEPS } from '@packages/backend/convex/users'
-import { useRouter } from 'next/navigation'
 import { Circle } from 'lucide-react'
 import { Motif2 } from './motif-2'
 import { Motif3 } from './motif-3'
@@ -56,7 +55,6 @@ export default function Vision() {
     }
   }
 
-  const router = useRouter()
   const user = useQuery(api.users.getMyUser)
   const updateMyUser = useMutation(api.users.updateMyUser)
   const nextStep = async () => {
@@ -64,8 +62,6 @@ export default function Vision() {
       id: user!._id,
       patch: { onboardingStep: ONBOARDING_STEPS.PERSONAL_INFO }
     })
-
-    router.push(`/onboarding/${ONBOARDING_STEPS.PERSONAL_INFO}`)
   }
 
   const carouselItems = [
