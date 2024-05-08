@@ -1,33 +1,27 @@
-'use client'
-
 import { Button } from '@/components/ui/button'
 import Image from 'next/image'
+import placeholder from '@/public/images/upload-image-placeholder.png'
 
 export default function Headshot() {
   return (
-    <section className="flex max-w-sm flex-col gap-8">
-      <p className="my-8">
+    <section className="grid h-full grid-cols-1 place-items-center gap-8">
+      <p className="">
         Upload at least one headshot to continue setting up your account. Your
         headshot will be viewable to the public.
       </p>
-      <div className="flex justify-center">
-        <Image
-          src="/images/upload-image-placeholder.png"
-          alt="Upload Image Placeholder"
-          width={200}
-          height={200}
+      <Image
+        src={placeholder}
+        className="h-auto w-[256px] object-contain"
+        alt="Upload Image Placeholder"
+      />
+      <div className="sticky bottom-0 w-full ">
+        <Button className=" col-span-2 w-full">Upload</Button>
+        <input
+          className="absolute inset-0 z-10 cursor-pointer opacity-0"
+          type="file"
+          name="headshot"
+          id="headshot"
         />
-      </div>
-      <div className="flex justify-center">
-        <Button className="relative col-span-2 w-full">
-          Submit
-          <input
-            className="absolute inset-0 cursor-pointer opacity-0"
-            type="file"
-            name=""
-            id=""
-          />
-        </Button>
       </div>
     </section>
   )

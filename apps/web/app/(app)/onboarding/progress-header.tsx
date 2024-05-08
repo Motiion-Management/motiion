@@ -21,7 +21,7 @@ export function ProgressHeader() {
   const header = headerOptions[step]
 
   useEffect(() => {
-    const timer = setTimeout(() => setProgress(step * 33), 100)
+    const timer = setTimeout(() => setProgress(step * 25), 100)
     return () => clearTimeout(timer)
   }, [step])
 
@@ -29,7 +29,7 @@ export function ProgressHeader() {
     <div>
       <div className="flex justify-between text-sm">
         <p>Account Setup</p>
-        <p>Step {segment} of 3</p>
+        <p>Step {segment} of 4</p>
       </div>
 
       <h2 className="my-4 text-xl">{header}</h2>
