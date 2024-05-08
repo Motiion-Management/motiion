@@ -1,5 +1,5 @@
 import Image from 'next/image'
-import motif4 from '@/public/svgs/motif-4.svg'
+import motif4 from '@/public/images/motif-4.png'
 
 export function Motif4() {
   return (
@@ -8,7 +8,7 @@ export function Motif4() {
       alt="Motif 2"
       height={200}
       width={200}
-      className="absolute bottom-10 right-1/4 -m-[40px] h-min"
+      className="bottom-00 absolute -right-[95%]"
     />
   )
 }

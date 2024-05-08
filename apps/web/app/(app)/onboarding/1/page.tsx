@@ -13,6 +13,9 @@ import { api } from '@packages/backend/convex/_generated/api'
 import { ONBOARDING_STEPS } from '@packages/backend/convex/users'
 import { useRouter } from 'next/navigation'
 import { Circle } from 'lucide-react'
+import { Motif2 } from './motif-2'
+import { Motif3 } from './motif-3'
+import { Motif4 } from './motif-4'
 
 const Slide = ({
   title,
@@ -41,10 +44,10 @@ export default function Vision() {
       return
     }
 
-    setCurrent(carousel.selectedScrollSnap() + 1)
+    setCurrent(carousel.selectedScrollSnap())
 
     carousel.on('select', () => {
-      setCurrent(carousel.selectedScrollSnap() + 1)
+      setCurrent(carousel.selectedScrollSnap())
     })
   }, [carousel])
   const handleNextClick = () => {
@@ -73,7 +76,8 @@ export default function Vision() {
         description:
           'We aim to empower dancers with innovative tools and resources to enhance their mental health, financial stability, and creative expression, fostering a vibrant and sustainable ecosystem.'
       },
-      button: { children: `Next`, onClick: handleNextClick }
+      button: { children: `Next`, onClick: handleNextClick },
+      images: [<Motif2 key="motif-2" />, <Motif3 key="motif-3" />]
     },
     {
       slide: {
@@ -82,18 +86,23 @@ export default function Vision() {
         description:
           'Tools to help you manage your resume and headshots all in one platform.'
       },
-      button: { children: `Let's Get Started`, onClick: nextStep }
+      button: { children: `Let's Get Started`, onClick: nextStep },
+      images: [<Motif4 key="motif-4" />]
     }
   ]
   return (
-    <div className="grid h-full grid-cols-1 grid-rows-[1fr_min-content] gap-4 md:gap-8">
+    <div className="relative grid h-full grid-cols-1 grid-rows-[1fr_min-content] ">
       <Carousel
         setApi={setCarousel}
-        className="grid cursor-grab auto-cols-auto active:cursor-grabbing"
+        className="grid h-full w-screen max-w-screen-sm cursor-grab auto-cols-auto active:cursor-grabbing"
       >
-        <CarouselContent className="">
+        <CarouselContent className="h-full overflow-y-visible">
           {carouselItems.map((item) => (
             <CarouselItem key={item.slide.title}>
+              <div className="absolute left-0 top-0 -z-10 grid h-full w-full items-end justify-items-center">
+                {item.images.map((image) => image)}
+              </div>
+
               <Slide {...item.slide} />
             </CarouselItem>
           ))}
@@ -107,14 +116,14 @@ export default function Vision() {
               key={i}
               size={10}
               className={`${
-                i === current - 1
+                i === current
                   ? 'fill-accent stroke-accent'
                   : 'fill-white stroke-white'
               }`}
             />
           ))}
         </div>
-        <Button {...carouselItems[current - 1].button} className="w-full" />
+        <Button {...carouselItems[current].button} className="w-full" />
       </div>
     </div>
   )

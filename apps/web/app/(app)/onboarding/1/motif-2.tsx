@@ -6,9 +6,9 @@ export function Motif2() {
     <Image
       src={motif2}
       alt="Motif 2"
-      height={300}
-      width={300}
-      className="absolute -right-[100px] -top-10 -m-[50px] h-min"
+      height={200}
+      width={200}
+      className="absolute -right-[80px] top-0"
     />
   )
 }
