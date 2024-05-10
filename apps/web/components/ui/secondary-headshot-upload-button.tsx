@@ -1,7 +1,7 @@
 'use client'
 
 import { useUploadFiles, UploadFileResponse } from '@xixixao/uploadstuff/react'
-import { useMutation, useQuery } from 'convex/react'
+import { useMutation } from 'convex/react'
 import { Plus } from 'lucide-react'
 import { api } from '@packages/backend/convex/_generated/api'
 import { Id } from '@packages/backend/convex/_generated/dataModel'
