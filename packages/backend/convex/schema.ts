@@ -12,6 +12,15 @@ const v = {
   ...validators,
   nullish
 }
+
+export const fileUploadObject = v.object({
+  storageId: v.id('_storage'),
+  title: v.optional(v.string),
+  uploadDate: v.string
+})
+
+export const fileUploadObjectArray = v.array(fileUploadObject)
+
 const visibility = v.literals('Public', 'Private')
 const hairColor = v.nullish(
   v.literals('black', 'brown', 'blonde', 'Dyed - See current headshot')
@@ -64,31 +73,27 @@ export const Users = Table('users', {
 
 export const Resumes = Table('resume', {
   userId: v.id('users'),
-  televisionAndFilm: v.array(v.id('experiences')),
-  musicVideos: v.array(v.id('experiences')),
-  livePerformances: v.array(v.id('experiences')),
-  commercials: v.array(v.id('experiences')),
-  training: v.array(v.id('training')),
-  skills: v.array(v.id('skills')),
+  televisionAndFilm: v.optional(v.array(v.id('experiences'))),
+  musicVideos: v.optional(v.array(v.id('experiences'))),
+  livePerformances: v.optional(v.array(v.id('experiences'))),
+  commercials: v.optional(v.array(v.id('experiences'))),
+  training: v.optional(v.array(v.id('training'))),
+  skills: v.optional(v.array(v.id('skills'))),
   height: v.nullish(v.number),
   hairColor,
   eyeColor,
-  sizing,
+  sizing: v.nullish(sizing),
   representation: v.nullish(v.id('agencies')),
   yearsOfExperience: v.nullish(v.number),
-  headshots: v.array(v.object({ imageId: v.id('_storage'), title: v.string })),
-  resumeUploads: v.array(
+  headshots: v.optional(fileUploadObjectArray),
+  resumeUploads: v.optional(fileUploadObjectArray),
+  links: v.optional(
     v.object({
-      resumeId: v.id('_storage'),
-      title: v.string,
-      uploadDate: v.string
+      reel: v.nullish(v.string),
+      socials: v.array(v.object({ platform: v.string, link: v.string })),
+      portfolio: v.array(v.object({ title: v.string, link: v.string }))
     })
-  ),
-  links: v.object({
-    reel: v.nullish(v.string),
-    socials: v.array(v.object({ platform: v.string, link: v.string })),
-    portfolio: v.array(v.object({ title: v.string, link: v.string }))
-  })
+  )
 })
 
 export const Experiences = Table('experiences', {
@@ -198,7 +203,7 @@ export default defineSchema({
   users: Users.table.index('tokenId', ['tokenId']),
 
   // resume data
-  resume: Resumes.table.index('userId', ['userId']),
+  resumes: Resumes.table.index('userId', ['userId']),
   experiences: Experiences.table.index('userId', ['userId']),
   training: Training.table.index('userId', ['userId']),
   skills: Skills.table.index('userId', ['userId']),
