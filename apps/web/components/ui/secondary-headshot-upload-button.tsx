@@ -1,18 +1,27 @@
 'use client'
 
-import { useUploadFiles } from '@xixixao/uploadstuff/react'
+import { useUploadFiles, UploadFileResponse } from '@xixixao/uploadstuff/react'
 import { useMutation, useQuery } from 'convex/react'
 import { Plus } from 'lucide-react'
 import { api } from '@packages/backend/convex/_generated/api'
+import { Id } from '@packages/backend/convex/_generated/dataModel'
 
 export function SecondaryHeadshotUploadButton() {
   const generateUploadUrl = useMutation(api.files.generateUploadUrl)
   const { startUpload } = useUploadFiles(
     generateUploadUrl as unknown as () => Promise<string>
   )
-
+  const saveHeadshots = useMutation(api.resumes.saveHeadshotIds)
+  const saveAfterUpload = async (uploaded: UploadFileResponse[]) => {
+    await saveHeadshots({
+      headshots: uploaded.map(({ response }) => ({
+        storageId: (response as { storageId: Id<'_storage'> }).storageId,
+        uploadDate: new Date().toISOString()
+      }))
+    })
+  }
   return (
-    <button className="bg-input-background border-accent grid h-[148px] w-[100px] place-items-center rounded-lg border">
+    <button className="relative bg-input-background border-accent grid h-[148px] w-[100px] place-items-center rounded-lg border">
       <input
         type="file"
         className="absolute h-full w-full cursor-pointer opacity-0"
@@ -23,7 +32,7 @@ export function SecondaryHeadshotUploadButton() {
               return
             }
             const uploaded = await startUpload(files)
-            console.log(uploaded)
+            await saveAfterUpload(uploaded)
           }
         }}
       />
