@@ -1,5 +1,9 @@
 import { clerkMiddleware, createRouteMatcher } from '@clerk/nextjs/server'
 import { NextResponse } from 'next/server'
+import { getMiddlewareAuthToken } from './lib/server/utils'
+import { fetchQuery } from 'convex/nextjs'
+import { api } from '@packages/backend/convex/_generated/api'
+import { ONBOARDING_STEPS } from '@packages/backend/convex/users'
 const isProtectedRoute = createRouteMatcher([
   '/admin(.*)',
   '/home(.*)',
@@ -13,6 +17,16 @@ const isProtectedRoute = createRouteMatcher([
 export default clerkMiddleware(async (auth, req) => {
   if (isProtectedRoute(req)) {
     auth().protect()
+    const token = await getMiddlewareAuthToken(auth)
+    const data = await fetchQuery(api.users.getMyUser, {}, { token })
+    const { onboardingStep } = data!
+    const onboardingTarget = `/onboarding/${onboardingStep}`
+    if (
+      onboardingStep !== ONBOARDING_STEPS.COMPLETE &&
+      req.nextUrl.pathname !== onboardingTarget
+    ) {
+      return NextResponse.redirect(new URL(onboardingTarget, req.url))
+    }
   }
   const requestHeaders = new Headers(req.headers)
   requestHeaders.set('x-pathname', req.nextUrl.pathname)
