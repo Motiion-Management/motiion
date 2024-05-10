@@ -5,6 +5,7 @@ import './globals.css'
 import ConvexClientProvider from './ConvexClientProvider'
 import { Analytics } from '@vercel/analytics/react'
 import { SpeedInsights } from '@vercel/speed-insights/next'
+import { splashTags } from './splash-page-tags'
 
 const manrope = Manrope({ subsets: ['latin'] })
 
@@ -22,12 +23,12 @@ export const metadata: Metadata = {
   description: APP_DESCRIPTION,
   appleWebApp: {
     capable: true,
-    statusBarStyle: 'default',
-    title: APP_DEFAULT_TITLE
-    // startUpImage: [],
+    statusBarStyle: 'black-translucent',
+    title: APP_DEFAULT_TITLE,
+    startupImage: splashTags
   },
   formatDetection: {
-    telephone: false
+    telephone: true
   },
   openGraph: {
     type: 'website',
