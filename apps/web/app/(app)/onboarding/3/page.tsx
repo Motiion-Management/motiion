@@ -6,10 +6,12 @@ import { useMutation, useQuery } from 'convex/react'
 import { api } from '@packages/backend/convex/_generated/api'
 import { Plus } from 'lucide-react'
 import { Button } from '@/components/ui/button'
-
+import { useUploadFiles } from '@xixixao/uploadstuff/react'
 export default function Headshot() {
   const headshots = useQuery(api.resumes.getMyHeadshots)
   const removeHeadshot = useMutation(api.resumes.removeHeadshot)
+  const generateUploadUrl = useMutation(api.files.generateUploadUrl);
+  const { startUpload } = useUploadFiles(generateUploadUrl as unknown as () => Promise<string>);
 
   const headshotsExist = headshots && headshots.length > 0
   return (
@@ -17,6 +19,20 @@ export default function Headshot() {
       {headshotsExist ? (
         <div className="grid w-max grid-flow-col grid-rows-1 gap-4 justify-self-start overflow-x-auto">
           <button className="bg-input-background border-accent grid h-[148px] w-[100px] place-items-center rounded-lg border">
+             <input 
+             type="file" 
+             className="opacity-0 absolute h-full w-full cursor-pointer"
+             onChange={async(event) => {
+              if (event.target.files) {
+                const files = Array.from(event.target.files);
+                if(files.length === 0){
+                  return;
+                }
+                const uploaded = await startUpload(files);
+                console.log(uploaded);
+              }
+            }}
+             />
             <Plus className="stroke-white" />
           </button>
           {headshots.map((headshot) => (
