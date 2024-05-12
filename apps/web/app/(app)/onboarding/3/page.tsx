@@ -12,10 +12,26 @@ import {
   CarouselItem,
   CarouselContent
 } from '@/components/ui/carousel'
+import { ONBOARDING_STEPS } from '@packages/backend/convex/users'
+import { useState } from 'react'
 export default function Headshot() {
   const headshots = useQuery(api.resumes.getMyHeadshots)
   const removeHeadshot = useMutation(api.resumes.removeHeadshot)
   const headshotsExist = headshots && headshots.length > 0
+  const updateMyUser = useMutation(api.users.updateMyUser)
+  const user = useQuery(api.users.getMyUser)
+  const [loading, setLoading] = useState(false)
+
+  async function nextStep() {
+    setLoading(true)
+    await updateMyUser({
+      id: user!._id,
+      patch: {
+        onboardingStep: ONBOARDING_STEPS.RESUME
+      }
+    })
+  }
+
   return (
     <section className="mt-4 grid h-full w-full grid-cols-1 grid-rows-[1fr_min-content] gap-8">
       <div className="flex flex-col items-start gap-3 ">
@@ -71,7 +87,7 @@ export default function Headshot() {
       </div>
       <div className="sticky bottom-0 w-full ">
         {headshotsExist ? (
-          <Button onClick={() => {}} className="w-full">
+          <Button onClick={nextStep} className="w-full" loading={loading}>
             Continue
           </Button>
         ) : (
