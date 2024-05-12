@@ -1,8 +1,8 @@
 'use client'
 import Image from 'next/image'
 import placeholder from '@/public/images/upload-image-placeholder.png'
-import { HeadshotsUploadButton } from '@/components/ui/headshot-upload-button'
-import { SecondaryHeadshotUploadButton } from '@/components/ui/secondary-headshot-upload-button'
+import { HeadshotUploadButton } from '@/components/ui/headshot-upload-button'
+import { HeadshotUploadSquare } from '@/components/ui/headshot-upload-square'
 import { useMutation, useQuery } from 'convex/react'
 import { api } from '@packages/backend/convex/_generated/api'
 import { Button } from '@/components/ui/button'
@@ -26,10 +26,10 @@ export default function Headshot() {
               <p className="text-sm">{headshots?.length || 0}/5 imported</p>
             </div>
 
-            <Carousel>
+            <Carousel opts={{ dragFree: true }} className="w-full">
               <CarouselContent visible>
                 <CarouselItem className="basis-auto">
-                  <SecondaryHeadshotUploadButton />
+                  <HeadshotUploadSquare />
                 </CarouselItem>
                 {headshots.map((headshot, index) => (
                   <CarouselItem key={index} className="basis-auto">
@@ -64,7 +64,7 @@ export default function Headshot() {
         {!headshotsExist && (
           <Image
             src={placeholder}
-            className="h-auto w-[256px] object-contain"
+            className="h-auto w-[256px] self-center  object-contain"
             alt="Upload Image Placeholder"
           />
         )}
@@ -75,7 +75,7 @@ export default function Headshot() {
             Continue
           </Button>
         ) : (
-          <HeadshotsUploadButton className="w-full" />
+          <HeadshotUploadButton className="w-full" />
         )}
       </div>
     </section>

@@ -1,20 +1,22 @@
 'use client'
 import { useMutation } from 'convex/react'
-import { UploadButton, UploadFileResponse } from '@xixixao/uploadstuff/react'
+import { useUploadFiles, UploadFileResponse } from '@xixixao/uploadstuff/react'
 import { api } from '@packages/backend/convex/_generated/api'
 import { Id } from '@packages/backend/convex/_generated/dataModel'
 import { type VariantProps } from 'class-variance-authority'
 import { buttonVariants } from './button'
+import { useState } from 'react'
+import { Button } from './button'
 
-export type CustomUploadButtonProps = VariantProps<typeof buttonVariants> & {
+export type HeadshotUploadButtonProps = VariantProps<typeof buttonVariants> & {
   className?: string
 }
-export function HeadshotsUploadButton({
-  variant,
-  size,
-  className
-}: CustomUploadButtonProps) {
+export function HeadshotUploadButton({ className }: HeadshotUploadButtonProps) {
+  const [loading, setLoading] = useState(false)
   const generateUploadUrl = useMutation(api.files.generateUploadUrl)
+  const { startUpload } = useUploadFiles(
+    generateUploadUrl as unknown as () => Promise<string>
+  )
   const saveHeadshots = useMutation(api.resumes.saveHeadshotIds)
   const saveAfterUpload = async (uploaded: UploadFileResponse[]) => {
     await saveHeadshots({
@@ -26,22 +28,25 @@ export function HeadshotsUploadButton({
   }
 
   return (
-    <UploadButton
-      className={() =>
-        buttonVariants({
-          variant,
-          size,
-          className
-        })
-      }
-      content={() => 'Upload Headshots'}
-      uploadUrl={generateUploadUrl as unknown as () => Promise<string>}
-      fileTypes={['.pdf', 'image/*']}
-      multiple
-      onUploadComplete={saveAfterUpload}
-      onUploadError={(error: unknown) => {
-        alert(`ERROR! ${error}`)
-      }}
-    />
+    <Button loading={loading} className={className}>
+      Upload Headshots
+      <input
+        type="file"
+        className="absolute h-full w-full cursor-pointer opacity-0"
+        multiple
+        onChange={async (event) => {
+          if (event.target.files) {
+            const files = Array.from(event.target.files)
+            if (files.length === 0) {
+              return
+            }
+            setLoading(true)
+            const uploaded = await startUpload(files)
+            await saveAfterUpload(uploaded)
+            setLoading(false)
+          }
+        }}
+      />
+    </Button>
   )
 }
