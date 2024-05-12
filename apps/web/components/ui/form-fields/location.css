@@ -4,7 +4,7 @@
   --pka-color-accent: 0, 204, 183; 
 }
 .search-root {
-  @apply text-input-foreground !border !border-input bg-input-background ring-offset-background placeholder:text-muted-foreground focus-within:ring-ring flex h-12 text-base w-full rounded-md px-3 py-2 focus-within:!outline-none focus-within:!ring-2 focus-within:!ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50
+  @apply text-input-foreground !border !border-input bg-input-background ring-offset-background placeholder:text-muted-foreground focus-within:ring-ring flex h-12 text-base w-full rounded-lg px-3 py-2 focus-within:!outline-none focus-within:!ring-2 focus-within:!ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50
 }
 .pka-panel {
   border-color: transparent;

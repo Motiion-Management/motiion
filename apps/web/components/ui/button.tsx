@@ -3,9 +3,10 @@ import { Slot } from '@radix-ui/react-slot'
 import { cva, type VariantProps } from 'class-variance-authority'
 
 import { cn } from '@/lib/utils'
+import { LoaderCircle } from 'lucide-react'
 
 const buttonVariants = cva(
-  'rounded-full inline-flex items-center justify-center whitespace-nowrap text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50',
+  'rounded-full inline-flex items-center justify-center whitespace-nowrap text-sm font-bold ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50',
   {
     variants: {
       variant: {
@@ -20,12 +21,13 @@ const buttonVariants = cva(
         ghost: 'hover:bg-accent hover:text-accent-foreground',
         link: 'text-primary underline-offset-4 hover:underline',
         input:
-          'rounded-md border text-base !px-4 border-input bg-input-background text-input-foreground hover:bg-input/10'
+          'rounded-lg border text-base !px-4 border-input bg-input-background text-input-foreground hover:bg-input/10'
       },
       size: {
         default: 'h-11 px-8 py-2',
         sm: 'h-9  px-3',
-        icon: 'h-10 w-10'
+        icon: 'h-10 w-10',
+        container: 'h-full w-full'
       }
     },
     defaultVariants: {
@@ -39,17 +41,30 @@ export interface ButtonProps
   extends React.ButtonHTMLAttributes<HTMLButtonElement>,
     VariantProps<typeof buttonVariants> {
   asChild?: boolean
+  loading?: boolean
 }
 
 const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
-  ({ className, variant, size, asChild = false, ...props }, ref) => {
+  (
+    { className, loading, children, variant, size, asChild = false, ...props },
+    ref
+  ) => {
     const Comp = asChild ? Slot : 'button'
     return (
       <Comp
-        className={cn(buttonVariants({ variant, size, className }))}
+        className={cn(
+          buttonVariants({
+            variant,
+            size,
+            className
+          }),
+          loading && 'pointer-events-none animate-pulse'
+        )}
         ref={ref}
         {...props}
-      />
+      >
+        {loading ? <LoaderCircle className="animate-spin" /> : children}
+      </Comp>
     )
   }
 )

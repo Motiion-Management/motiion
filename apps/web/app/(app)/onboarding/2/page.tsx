@@ -10,7 +10,7 @@ export default async function Onboarding1() {
   const defaultValues = data ?? {}
 
   return (
-    <section>
+    <section className="w-full">
       <PersonalDetailsFormProvider
         id={data!._id!}
         defaultValues={defaultValues}

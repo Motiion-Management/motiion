@@ -86,35 +86,39 @@ export function PersonalDetailsFormProvider({
     <Form {...form}>
       <form
         onSubmit={form.handleSubmit(onSubmit)}
-        className="mt-8 grid grid-cols-2 gap-4"
+        className="mt-4 grid h-full w-full grid-cols-1 grid-rows-[1fr_min-content] gap-4"
       >
-        <InputField required name="firstName" placeholder="First Name" />
-        <InputField required name="lastName" placeholder="Last Name" />
-        <AccordionPlus label="Add Display Name">
-          <InputField
-            name="displayName"
-            placeholder="What should we call you?"
+        <div className="grid h-fit w-full grid-cols-2 gap-6 ">
+          <InputField required name="firstName" placeholder="First Name" />
+          <InputField required name="lastName" placeholder="Last Name" />
+          <AccordionPlus label="Add Display Name" className="col-span-2 pl-4">
+            <InputField
+              name="displayName"
+              label=""
+              placeholder="What should we call you?"
+            />
+          </AccordionPlus>
+          <DatePickerField
+            name="dateOfBirth"
+            label="DOB"
+            className="col-span-2"
           />
-        </AccordionPlus>
-        <DatePickerField
-          name="dateOfBirth"
-          label="DOB"
-          className="col-span-2"
-        />
-        <SelectField
-          name="gender"
-          label="I identify as"
-          options={['Male', 'Female', 'Non-Binary']}
-        />
+          <SelectField
+            name="gender"
+            label="I identify as"
+            options={['Male', 'Female', 'Non-Binary']}
+          />
 
-        <InputField
-          required
-          name="phone"
-          placeholder="Phone Number"
-          label="Contact"
-        />
-        <LocationField name="location" required className="col-span-2" />
-        <Button className="col-span-2 w-full" type="submit">
+          <InputField
+            required
+            name="phone"
+            placeholder="Phone Number"
+            label="Contact"
+            inputMode="tel"
+          />
+          <LocationField name="location" required className="col-span-2" />
+        </div>
+        <Button className="sticky bottom-0 z-10 mt-2 shadow-lg" type="submit">
           Continue
         </Button>
 

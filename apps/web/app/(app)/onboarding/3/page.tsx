@@ -1,100 +1,99 @@
 'use client'
-
-import { zodResolver } from '@hookform/resolvers/zod'
-import { useForm } from 'react-hook-form'
-import { z } from 'zod'
+import Image from 'next/image'
+import placeholder from '@/public/images/upload-image-placeholder.png'
+import { HeadshotUploadButton } from '@/components/ui/headshot-upload-button'
+import { HeadshotUploadSquare } from '@/components/ui/headshot-upload-square'
+import { useMutation, useQuery } from 'convex/react'
+import { api } from '@packages/backend/convex/_generated/api'
 import { Button } from '@/components/ui/button'
-import { Form } from '@/components/ui/form'
+import { X } from 'lucide-react'
 import {
-  Accordion,
-  AccordionItem,
-  AccordionContent,
-  AccordionTrigger
-} from '@/components/ui/accordion'
-import { InputField } from '@/components/ui/form-fields/input'
-import { PlusCircle } from 'lucide-react'
-import { toast } from '@/components/ui/use-toast'
-import { DatePickerField } from '@/components/ui/form-fields/date-picker'
-import { SelectField } from '@/components/ui/form-fields/select'
-import { LocationField } from '@/components/ui/form-fields/location'
+  Carousel,
+  CarouselItem,
+  CarouselContent
+} from '@/components/ui/carousel'
+import { ONBOARDING_STEPS } from '@packages/backend/convex/users'
+import { useState } from 'react'
+export default function Headshot() {
+  const headshots = useQuery(api.resumes.getMyHeadshots)
+  const removeHeadshot = useMutation(api.resumes.removeHeadshot)
+  const headshotsExist = headshots && headshots.length > 0
+  const updateMyUser = useMutation(api.users.updateMyUser)
+  const user = useQuery(api.users.getMyUser)
+  const [loading, setLoading] = useState(false)
 
-const formSchema = z.object({
-  firstName: z.string().min(2, {
-    message: 'Please enter your first name.'
-  }),
-  lastName: z.string().min(2, {
-    message: 'Please enter your last name.'
-  }),
-  displayName: z.string(),
-  dob: z.date(),
-  gender: z.string(),
-  phone: z.string(),
-  location: z.string()
-})
-
-type FormSchema = z.infer<typeof formSchema>
-
-export default function Onboarding1() {
-  const form = useForm<FormSchema>({
-    resolver: zodResolver(formSchema),
-    defaultValues: {}
-  })
-
-  function onSubmit(data: FormSchema) {
-    toast({
-      title: 'You submitted the following values:',
-      description: (
-        <pre className="mt-2 w-[340px] rounded-md bg-slate-950 p-4">
-          <code className="text-white">{JSON.stringify(data, null, 2)}</code>
-        </pre>
-      )
+  async function nextStep() {
+    setLoading(true)
+    await updateMyUser({
+      id: user!._id,
+      patch: {
+        onboardingStep: ONBOARDING_STEPS.RESUME
+      }
     })
   }
 
   return (
-    <section>
-      <Form {...form}>
-        <form
-          onSubmit={form.handleSubmit(onSubmit)}
-          className="mt-8 grid grid-cols-2 gap-4"
-        >
-          <InputField required name="firstName" placeholder="First Name" />
-          <InputField required name="lastName" placeholder="Last Name" />
-          <Accordion type="multiple" className="col-span-2 -mt-4 w-full">
-            <AccordionItem value="item-1" className="border-none">
-              <AccordionTrigger
-                StartIcon={PlusCircle}
-                startIconClassName="stroke-card fill-accent h-6 w-6"
-              >
-                Add Display Name
-              </AccordionTrigger>
-              <AccordionContent>
-                <InputField
-                  name="displayName"
-                  placeholder="What should we call you?"
-                />
-              </AccordionContent>
-            </AccordionItem>
-          </Accordion>
-          <DatePickerField name="dob" label="DOB" className="col-span-2" />
-          <SelectField
-            name="gender"
-            label="I identify as"
-            options={['Male', 'Female', 'Non-Binary']}
-          />
+    <section className="mt-4 grid h-full w-full grid-cols-1 grid-rows-[1fr_min-content] gap-8">
+      <div className="flex flex-col items-start gap-3 ">
+        {headshotsExist && (
+          <>
+            <div className="flex w-full justify-between">
+              <h4 className="text-xl font-bold">Headshots</h4>
+              <p className="text-sm">{headshots?.length || 0}/5 imported</p>
+            </div>
 
-          <InputField
-            required
-            name="phone"
-            placeholder="Phone Number"
-            label="Contact"
+            <Carousel opts={{ dragFree: true }} className="w-full">
+              <CarouselContent visible>
+                <CarouselItem className="basis-auto">
+                  <HeadshotUploadSquare />
+                </CarouselItem>
+                {headshots.map((headshot, index) => (
+                  <CarouselItem key={index} className="basis-auto">
+                    <div key={index} className="relative h-[148px] w-[100px] ">
+                      <X
+                        onClick={() =>
+                          removeHeadshot({ headshotId: headshot.storageId })
+                        }
+                        className="bg-input absolute -right-3 -top-3 z-10 grid place-items-center rounded-full border stroke-white p-[7px] hover:cursor-pointer"
+                        strokeWidth={4}
+                        size={32}
+                      />
+                      <Image
+                        key={headshot.title || headshot.url}
+                        src={headshot.url || ''}
+                        layout="fill"
+                        className="rounded-lg object-cover"
+                        alt={headshot.title || 'Headshot'}
+                      />
+                    </div>
+                  </CarouselItem>
+                ))}
+              </CarouselContent>
+            </Carousel>
+          </>
+        )}
+        <p className="">
+          Upload at least one headshot to continue setting up your account. Your
+          headshot(s) will be viewable to the public.
+        </p>
+
+        {!headshotsExist && (
+          <Image
+            src={placeholder}
+            className="h-auto w-[256px] self-center  object-contain"
+            alt="Upload Image Placeholder"
           />
-          <LocationField name="location" required className="col-span-2" />
-          <Button className="col-span-2 w-full" type="submit">
+        )}
+      </div>
+      <div className="sticky bottom-0 w-full ">
+        {headshotsExist ? (
+          <Button onClick={nextStep} className="w-full" loading={loading}>
             Continue
           </Button>
-        </form>
-      </Form>
+        ) : (
+          <HeadshotUploadButton className="w-full" />
+        )}
+      </div>
     </section>
   )
 }

@@ -9,19 +9,30 @@ export function ProgressHeader() {
 
   const [progress, setProgress] = useState(0)
 
+  const headerOptions = {
+    1: 'Welcome',
+    2: 'Personal Information',
+    3: 'Upload Headshots',
+    4: 'Upload Resume'
+  } as const
+
+  const step = (parseInt(`${segment}`) || 1) as keyof typeof headerOptions
+
+  const header = headerOptions[step]
+
   useEffect(() => {
-    const step = parseInt(`${segment}`)
-    const timer = setTimeout(() => setProgress(step * 33), 100)
+    const timer = setTimeout(() => setProgress(step * 25), 100)
     return () => clearTimeout(timer)
-  }, [segment])
+  }, [step])
+
   return (
     <div>
       <div className="flex justify-between text-sm">
         <p>Account Setup</p>
-        <p>Step {segment} of 3</p>
+        <p>Step {segment} of 4</p>
       </div>
 
-      <h2 className="my-4 text-xl">Personal Information</h2>
+      <h2 className="my-4 text-xl">{header}</h2>
       <div className="flex justify-center">
         <Progress value={progress} max={100} />
       </div>

@@ -9,21 +9,24 @@ import { PlusCircle } from 'lucide-react'
 
 export function AccordionPlus({
   label,
+  className,
   children
 }: {
   label: string
+  className?: string
   children: React.ReactNode
 }) {
   return (
-    <Accordion type="multiple" className="col-span-2 -mt-4 w-full">
+    <Accordion type="multiple" className={className}>
       <AccordionItem value="item-1" className="border-none">
         <AccordionTrigger
           StartIcon={PlusCircle}
           startIconClassName="stroke-card fill-accent h-6 w-6"
+          className="p-0"
         >
           {label}
         </AccordionTrigger>
-        <AccordionContent>{children}</AccordionContent>
+        <AccordionContent className="p-0">{children}</AccordionContent>
       </AccordionItem>
     </Accordion>
   )
