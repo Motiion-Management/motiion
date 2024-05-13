@@ -17,6 +17,7 @@ import { LocationField } from '@/components/ui/form-fields/location'
 import { AccordionPlus } from './accordion'
 import { Id } from '@packages/backend/convex/_generated/dataModel'
 import { ONBOARDING_STEPS } from '@packages/backend/convex/users'
+import { useState } from 'react'
 
 const formSchema = z.object({
   firstName: z.string().min(2, {
@@ -70,12 +71,14 @@ export function PersonalDetailsFormProvider({
 }) {
   const updateMyUser = useMutation(api.users.updateMyUser)
 
+  const [loading, setLoading] = useState(false)
   const form = useForm<FormSchema>({
     resolver: zodResolver(formSchema),
     shouldUseNativeValidation: false,
     defaultValues
   })
   async function onSubmit(data: FormSchema) {
+    setLoading(true)
     await updateMyUser({
       id,
       patch: { ...data, onboardingStep: ONBOARDING_STEPS.HEADSHOTS }
@@ -118,7 +121,11 @@ export function PersonalDetailsFormProvider({
           />
           <LocationField name="location" required className="col-span-2" />
         </div>
-        <Button className="sticky bottom-0 z-10 mt-2 shadow-lg" type="submit">
+        <Button
+          className="sticky bottom-0 z-10 mt-2 shadow-lg"
+          type="submit"
+          loading={loading}
+        >
           Continue
         </Button>
 
