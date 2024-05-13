@@ -80,12 +80,24 @@ const config: Config = {
       screens: {
         touch: { raw: '(hover: none)' },
         'no-touch': { raw: '(hover: hover)' }
+      },
+      gridTemplateColumns: {
+        'user-screen': 'minmax(0, 1fr)'
+      },
+      gridTemplateRows: {
+        'user-screen': 'max-content minmax(0, 1fr) max-content',
+        'user-screen-md': 'max-content max-content minmax(0, 1fr)'
+      },
+      gridTemplateAreas: {
+        'user-screen': ['title', 'content', 'nav'],
+        'user-screen-md': ['nav', 'title', 'content']
       }
     }
   },
   plugins: [
     // require('@tailwindcss/forms'),
-    require('tailwindcss-animate')
+    require('tailwindcss-animate'),
+    require('@savvywombat/tailwindcss-grid-areas')
   ]
 }
 

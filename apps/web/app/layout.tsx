@@ -1,10 +1,11 @@
-import type { Metadata, Viewport } from 'next'
-
-import { Manrope } from 'next/font/google'
 import './globals.css'
-import ConvexClientProvider from './ConvexClientProvider'
+import { Manrope } from 'next/font/google'
+import type { Metadata, Viewport } from 'next'
 import { Analytics } from '@vercel/analytics/react'
 import { SpeedInsights } from '@vercel/speed-insights/next'
+
+import ConvexClientProvider from './ConvexClientProvider'
+import { ThemeProvider } from './theme-provider'
 import { splashTags } from './splash-page-tags'
 
 const manrope = Manrope({ subsets: ['latin'] })
@@ -59,9 +60,11 @@ export default function RootLayout({
   children: React.ReactNode
 }) {
   return (
-    <html lang="en">
+    <html lang="en" suppressHydrationWarning>
       <body className={manrope.className}>
-        <ConvexClientProvider>{children}</ConvexClientProvider>
+        <ConvexClientProvider>
+          <ThemeProvider> {children}</ThemeProvider>
+        </ConvexClientProvider>
         <SpeedInsights />
         <Analytics />
       </body>

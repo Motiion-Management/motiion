@@ -18,7 +18,11 @@ export default function RootPage() {
         <CardContent>
           <div className="flex flex-col gap-4">
             <Link href="/sign-up">Sign up</Link>
-            <Link href="/onboarding/1">Account Setup</Link>
+            <Link href="/sign-in">Sign in</Link>
+            <Link href="/onboarding/1">Onboarding</Link>
+            <Link href="/home">Home</Link>
+            <Link href="/discover">Discover</Link>
+            <Link href="/profile">Profile</Link>
             <Link href="/settings">Settings</Link>
           </div>
         </CardContent>
