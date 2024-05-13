@@ -7,6 +7,7 @@ import { SpeedInsights } from '@vercel/speed-insights/next'
 import ConvexClientProvider from './ConvexClientProvider'
 import { ThemeProvider } from './theme-provider'
 import { splashTags } from './splash-page-tags'
+import { RefreshPWA } from './refresh-pwa'
 
 const manrope = Manrope({ subsets: ['latin'] })
 
@@ -65,6 +66,7 @@ export default function RootLayout({
         <ConvexClientProvider>
           <ThemeProvider> {children}</ThemeProvider>
         </ConvexClientProvider>
+        <RefreshPWA />
         <SpeedInsights />
         <Analytics />
       </body>
