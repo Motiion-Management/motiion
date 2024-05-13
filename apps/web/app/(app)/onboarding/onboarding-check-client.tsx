@@ -25,7 +25,7 @@ export function OnboardingCheckClient() {
     if (!onboardingStep) return
     const redirectTarget = checkOnboardingStep(onboardingStep, pathname)
     if (redirectTarget) {
-      router.replace(redirectTarget)
+      router.push(redirectTarget)
     }
   }, [onboardingStep, pathname, router])
 
