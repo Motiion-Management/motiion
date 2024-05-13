@@ -29,5 +29,5 @@ export function OnboardingCheckClient() {
     }
   }, [onboardingStep, pathname, router])
 
-  return <div />
+  return <></>
 }
