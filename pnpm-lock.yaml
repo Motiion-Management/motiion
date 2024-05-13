@@ -232,6 +232,9 @@ importers:
         specifier: ^3.23.5
         version: 3.23.5
     devDependencies:
+      '@savvywombat/tailwindcss-grid-areas':
+        specifier: ^4.0.0
+        version: 4.0.0(tailwindcss@3.4.3)
       '@tailwindcss/forms':
         specifier: ^0.5.7
         version: 0.5.7(tailwindcss@3.4.3)
@@ -2415,6 +2418,12 @@ packages:
 
   '@rushstack/eslint-patch@1.10.2':
     resolution: {integrity: sha512-hw437iINopmQuxWPSUEvqE56NCPsiU8N4AYtfHmJFckclktzK9YQJieD3XkDCDH4OjL+C7zgPUh73R/nrcHrqw==}
+
+  '@savvywombat/tailwindcss-grid-areas@4.0.0':
+    resolution: {integrity: sha512-gjEGTltsGfy+AJQqhkuQKQGp/SB0XzXT3ZNmrOfuwPGF5DLg5GsN5XHiaYhudMvmBwRp+9k6wrZhHBM0lhEgJA==}
+    engines: {node: '>=16.20.2'}
+    peerDependencies:
+      tailwindcss: ^3.0.1
 
   '@segment/loosely-validate-event@2.0.0':
     resolution: {integrity: sha512-ZMCSfztDBqwotkl848ODgVcAmN4OItEWDCkshcKz0/W6gGSQayuuCtWV/MlodFivAZD793d6UgANd6wCXUfrIw==}
@@ -9545,6 +9554,10 @@ snapshots:
     optional: true
 
   '@rushstack/eslint-patch@1.10.2': {}
+
+  '@savvywombat/tailwindcss-grid-areas@4.0.0(tailwindcss@3.4.3)':
+    dependencies:
+      tailwindcss: 3.4.3
 
   '@segment/loosely-validate-event@2.0.0':
     dependencies:
