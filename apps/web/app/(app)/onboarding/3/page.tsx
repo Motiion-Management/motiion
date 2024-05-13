@@ -44,9 +44,11 @@ export default function Headshot() {
 
             <Carousel opts={{ dragFree: true }} className="w-full">
               <CarouselContent visible>
-                <CarouselItem className="basis-auto">
-                  <HeadshotUploadSquare />
-                </CarouselItem>
+                {headshots.length < 5 && (
+                  <CarouselItem className="basis-auto">
+                    <HeadshotUploadSquare />
+                  </CarouselItem>
+                )}
                 {headshots.map((headshot, index) => (
                   <CarouselItem key={index} className="basis-auto">
                     <div key={index} className="relative h-[148px] w-[100px] ">

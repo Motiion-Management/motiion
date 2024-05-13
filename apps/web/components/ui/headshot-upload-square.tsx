@@ -23,7 +23,8 @@ export function HeadshotUploadSquare({ className }: HeadshotUploadSquareProps) {
   const saveHeadshots = useMutation(api.resumes.saveHeadshotIds)
   const saveAfterUpload = async (uploaded: UploadFileResponse[]) => {
     await saveHeadshots({
-      headshots: uploaded.map(({ response }) => ({
+      headshots: uploaded.map(({ name, response }) => ({
+        title: name,
         storageId: (response as { storageId: Id<'_storage'> }).storageId,
         uploadDate: new Date().toISOString()
       }))
