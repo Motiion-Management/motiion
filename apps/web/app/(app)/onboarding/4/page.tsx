@@ -9,6 +9,7 @@ import { ONBOARDING_STEPS } from '@packages/backend/convex/users'
 import { useState } from 'react'
 import { ResumeUploadButton } from '@/components/ui/resume-upload-button'
 import { Separator } from '@/components/ui/separator'
+import { useRouter } from 'next/navigation'
 
 export default function ResumeUploadStep() {
   const resumeUploads = useQuery(api.resumes.getMyResumeUploads)
@@ -17,6 +18,7 @@ export default function ResumeUploadStep() {
   const updateMyUser = useMutation(api.users.updateMyUser)
   const user = useQuery(api.users.getMyUser)
   const [loading, setLoading] = useState(false)
+  const router = useRouter()
 
   async function nextStep() {
     setLoading(true)
@@ -26,6 +28,8 @@ export default function ResumeUploadStep() {
         onboardingStep: ONBOARDING_STEPS.COMPLETE
       }
     })
+
+    router.push('/home')
   }
 
   return (
