@@ -1,100 +1,96 @@
 'use client'
-
-import { zodResolver } from '@hookform/resolvers/zod'
-import { useForm } from 'react-hook-form'
-import { z } from 'zod'
+import Image from 'next/image'
+import placeholder from '@/public/images/upload-document-placeholder.png'
+import { useMutation, useQuery } from 'convex/react'
+import { api } from '@packages/backend/convex/_generated/api'
 import { Button } from '@/components/ui/button'
-import { Form } from '@/components/ui/form'
-import {
-  Accordion,
-  AccordionItem,
-  AccordionContent,
-  AccordionTrigger
-} from '@/components/ui/accordion'
-import { InputField } from '@/components/ui/form-fields/input'
-import { PlusCircle } from 'lucide-react'
-import { toast } from '@/components/ui/use-toast'
-import { DatePickerField } from '@/components/ui/form-fields/date-picker'
-import { SelectField } from '@/components/ui/form-fields/select'
-import { LocationField } from '@/components/ui/form-fields/location'
+import { CircleX } from 'lucide-react'
+import { ONBOARDING_STEPS } from '@packages/backend/convex/users'
+import { useState } from 'react'
+import { ResumeUploadButton } from '@/components/ui/resume-upload-button'
+import { Separator } from '@/components/ui/separator'
+import { useRouter } from 'next/navigation'
 
-const formSchema = z.object({
-  firstName: z.string().min(2, {
-    message: 'Please enter your first name.'
-  }),
-  lastName: z.string().min(2, {
-    message: 'Please enter your last name.'
-  }),
-  displayName: z.string(),
-  dob: z.date(),
-  gender: z.string(),
-  phone: z.string(),
-  location: z.string()
-})
+export default function ResumeUploadStep() {
+  const resumeUploads = useQuery(api.resumes.getMyResumeUploads)
+  const removeResumeUpload = useMutation(api.resumes.removeResumeUpload)
+  const resumeUploadsExist = resumeUploads && resumeUploads.length > 0
+  const updateMyUser = useMutation(api.users.updateMyUser)
+  const user = useQuery(api.users.getMyUser)
+  const [loading, setLoading] = useState(false)
+  const router = useRouter()
 
-type FormSchema = z.infer<typeof formSchema>
-
-export default function Onboarding1() {
-  const form = useForm<FormSchema>({
-    resolver: zodResolver(formSchema),
-    defaultValues: {}
-  })
-
-  function onSubmit(data: FormSchema) {
-    toast({
-      title: 'You submitted the following values:',
-      description: (
-        <pre className="mt-2 w-[340px] rounded-lg bg-slate-950 p-4">
-          <code className="text-white">{JSON.stringify(data, null, 2)}</code>
-        </pre>
-      )
+  async function nextStep() {
+    setLoading(true)
+    await updateMyUser({
+      id: user!._id,
+      patch: {
+        onboardingStep: ONBOARDING_STEPS.COMPLETE
+      }
     })
+
+    router.push('/home')
   }
 
   return (
-    <section>
-      <Form {...form}>
-        <form
-          onSubmit={form.handleSubmit(onSubmit)}
-          className="mt-8 grid grid-cols-2 gap-4"
-        >
-          <InputField required name="firstName" placeholder="First Name" />
-          <InputField required name="lastName" placeholder="Last Name" />
-          <Accordion type="multiple" className="col-span-2 -mt-4 w-full">
-            <AccordionItem value="item-1" className="border-none">
-              <AccordionTrigger
-                StartIcon={PlusCircle}
-                startIconClassName="stroke-card fill-accent h-6 w-6"
-              >
-                Add Display Name
-              </AccordionTrigger>
-              <AccordionContent>
-                <InputField
-                  name="displayName"
-                  placeholder="What should we call you?"
-                />
-              </AccordionContent>
-            </AccordionItem>
-          </Accordion>
-          <DatePickerField name="dob" label="DOB" className="col-span-2" />
-          <SelectField
-            name="gender"
-            label="I identify as"
-            options={['Male', 'Female', 'Non-Binary']}
-          />
+    <section className="mt-4 grid h-full w-full grid-cols-1 grid-rows-[1fr_min-content] gap-8">
+      <div className="flex flex-col items-start gap-5 ">
+        <p className="">
+          We recommend using an existing resume to import your information. If
+          your resume isn’t nearby, you can enter it manually later.
+        </p>
 
-          <InputField
-            required
-            name="phone"
-            placeholder="Phone Number"
-            label="Contact"
+        {resumeUploadsExist ? (
+          <div className="flex w-full flex-col gap-5">
+            <div className="flex w-full justify-between">
+              <h4 className="text-xl font-bold">Resumes</h4>
+              <p className="text-sm">{resumeUploads?.length || 0} imported</p>
+            </div>
+            <Separator className="bg-ring/50 mb-2" />
+            {resumeUploads.map((resumeUpload, index) => (
+              <div
+                className="bg-input flex w-full justify-between rounded-lg p-3"
+                key={index}
+              >
+                {resumeUpload.title}
+                <CircleX
+                  className="stroke-input fill-white"
+                  onClick={() => {
+                    removeResumeUpload({
+                      resumeUploadId: resumeUpload.storageId
+                    })
+                  }}
+                />
+              </div>
+            ))}
+          </div>
+        ) : (
+          <Image
+            src={placeholder}
+            className="mt-6 h-auto w-[200px] self-center  object-contain"
+            alt="Upload Image Placeholder"
           />
-          <LocationField name="location" required className="col-span-2" />
-          <Button className="col-span-2 w-full" type="submit">
+        )}
+      </div>
+      <div className="sticky bottom-0 w-full ">
+        {resumeUploadsExist ? (
+          <Button onClick={nextStep} className="w-full" loading={loading}>
             Continue
           </Button>
-        </form>
-      </Form>
+        ) : (
+          <>
+            <Button
+              variant="accent-link"
+              onClick={nextStep}
+              className="w-full"
+              loading={loading}
+            >
+              Enter Manually Later
+            </Button>
+            <ResumeUploadButton className="w-full" />
+          </>
+        )}
+      </div>
     </section>
   )
 }

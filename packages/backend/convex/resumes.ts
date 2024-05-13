@@ -1,10 +1,11 @@
-import { query, mutation } from './_generated/server'
+import { query, mutation, MutationCtx } from './_generated/server'
 import { authMutation, authQuery } from './util'
 import { getOneFrom } from 'convex-helpers/server/relationships'
-import { fileUploadObject, fileUploadObjectArray } from './schema'
+import { fileUploadObjectArray } from './schema'
 import { crud } from 'convex-helpers/server'
 import { Resumes } from './schema'
 import { ConvexError, v } from 'convex/values'
+import { Id } from './_generated/dataModel'
 
 export const { read } = crud(Resumes, query, mutation)
 
@@ -31,6 +32,48 @@ export const getMyHeadshots = authQuery({
   }
 })
 
+async function ensureOnlyFive(
+  ctx: MutationCtx,
+  files: { storageId: Id<'_storage'>; title?: string; uploadDate: string }[]
+) {
+  let current
+  while (files.length > 5) {
+    current = files.pop()
+    console.log('deleting', current)
+    await ctx.storage.delete(current!.storageId)
+  }
+  return files
+}
+export const saveHeadshotIds = authMutation({
+  args: {
+    headshots: fileUploadObjectArray // other args...
+  },
+  handler: async (ctx, args) => {
+    const resume = await getOneFrom(ctx.db, 'resumes', 'userId', ctx.user._id)
+
+    const headshots = [...args.headshots]
+
+    if (resume?.headshots?.length === 5) {
+      throw new ConvexError(
+        'You already have 5 headshots. Please remove one before adding another.'
+      )
+    }
+
+    if (!resume) {
+      ctx.db.insert('resumes', {
+        userId: ctx.user._id,
+        headshots: await ensureOnlyFive(ctx, headshots)
+      })
+    } else {
+      headshots.unshift(...(resume.headshots || []))
+
+      ctx.db.patch(resume._id, {
+        headshots: await ensureOnlyFive(ctx, headshots)
+      })
+    }
+  }
+})
+
 export const removeHeadshot = authMutation({
   args: {
     headshotId: v.id('_storage')
@@ -41,6 +84,8 @@ export const removeHeadshot = authMutation({
     if (!resume) {
       return
     }
+
+    await ctx.storage.delete(args.headshotId)
 
     const headshots = (resume.headshots || []).filter(
       (h) => h.storageId !== args.headshotId
@@ -58,46 +103,23 @@ export const getMyResumeUploads = authQuery({
     }
     const resume = await getOneFrom(ctx.db, 'resumes', 'userId', ctx.user._id)
 
-    return (resume?.resumeUploads || []).map(({ storageId, ...meta }) => ({
-      url: ctx.storage.getUrl(storageId),
-      ...meta
-    }))
+    return Promise.all(
+      (resume?.resumeUploads || []).map(async (resumeUpload) => ({
+        url: await ctx.storage.getUrl(resumeUpload.storageId),
+        ...resumeUpload
+      }))
+    )
   }
 })
 
-export const saveHeadshotIds = authMutation({
+export const saveResumeUploadIds = authMutation({
   args: {
-    headshots: fileUploadObjectArray // other args...
+    resumeUploads: fileUploadObjectArray
   },
   handler: async (ctx, args) => {
     const resume = await getOneFrom(ctx.db, 'resumes', 'userId', ctx.user._id)
 
-    const headshots = [...args.headshots]
-
-    if (!resume) {
-      ctx.db.insert('resumes', {
-        userId: ctx.user._id,
-        headshots
-      })
-    } else {
-      headshots.push(...(resume.headshots || []))
-
-      ctx.db.patch(resume._id, {
-        headshots
-      })
-    }
-  }
-})
-
-export const saveResumeUploadId = authMutation({
-  args: {
-    resumeUpload: fileUploadObject
-  },
-  handler: async (ctx, args) => {
-    const resume = await getOneFrom(ctx.db, 'resumes', 'userId', ctx.user._id)
-
-    const resumeUploads = [args.resumeUpload]
-
+    const resumeUploads = [...args.resumeUploads]
     if (!resume) {
       ctx.db.insert('resumes', {
         userId: ctx.user._id,
@@ -110,5 +132,26 @@ export const saveResumeUploadId = authMutation({
         resumeUploads
       })
     }
+  }
+})
+
+export const removeResumeUpload = authMutation({
+  args: {
+    resumeUploadId: v.id('_storage')
+  },
+  handler: async (ctx, args) => {
+    const resume = await getOneFrom(ctx.db, 'resumes', 'userId', ctx.user._id)
+
+    if (!resume) {
+      return
+    }
+
+    await ctx.storage.delete(args.resumeUploadId)
+
+    const resumeUploads = (resume.resumeUploads || []).filter(
+      (h) => h.storageId !== args.resumeUploadId
+    )
+
+    await ctx.db.patch(resume._id, { resumeUploads })
   }
 })

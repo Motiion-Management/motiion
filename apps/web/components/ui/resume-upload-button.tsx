@@ -8,19 +8,19 @@ import { buttonVariants } from './button'
 import { useState } from 'react'
 import { Button } from './button'
 
-export type HeadshotUploadButtonProps = VariantProps<typeof buttonVariants> & {
+export type ResumeUploadButtonProps = VariantProps<typeof buttonVariants> & {
   className?: string
 }
-export function HeadshotUploadButton({ className }: HeadshotUploadButtonProps) {
+export function ResumeUploadButton({ className }: ResumeUploadButtonProps) {
   const [loading, setLoading] = useState(false)
   const generateUploadUrl = useMutation(api.files.generateUploadUrl)
   const { startUpload } = useUploadFiles(
     generateUploadUrl as unknown as () => Promise<string>
   )
-  const saveHeadshots = useMutation(api.resumes.saveHeadshotIds)
+  const saveResume = useMutation(api.resumes.saveResumeUploadIds)
   const saveAfterUpload = async (uploaded: UploadFileResponse[]) => {
-    await saveHeadshots({
-      headshots: uploaded.map(({ name, response }) => ({
+    await saveResume({
+      resumeUploads: uploaded.map(({ name, response }) => ({
         title: name,
         storageId: (response as { storageId: Id<'_storage'> }).storageId,
         uploadDate: new Date().toISOString()
