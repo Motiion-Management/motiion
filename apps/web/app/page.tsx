@@ -20,10 +20,10 @@ export default function RootPage() {
             <Link href="/sign-up">Sign up</Link>
             <Link href="/sign-in">Sign in</Link>
             <Link href="/onboarding/1">Onboarding</Link>
-            <Link href="/home">Home</Link>
-            <Link href="/discover">Discover</Link>
-            <Link href="/profile">Profile</Link>
-            <Link href="/settings">Settings</Link>
+            <Link href="/talent/home">Home</Link>
+            <Link href="/talent/discover">Discover</Link>
+            <Link href="/talent/profile">Profile</Link>
+            <Link href="/talent/settings">Settings</Link>
           </div>
         </CardContent>
       </Card>

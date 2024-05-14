@@ -32,22 +32,22 @@ export function Nav({ className }: { className?: string }) {
       className={cn('border-t bg-white md:border-b md:border-t-0', className)}
     >
       <div className="mx-auto grid max-w-md grid-cols-4 grid-rows-1 gap-2 px-4">
-        <NavLink href="/home">
+        <NavLink href="/talent/home">
           <Home size={24} />
           <span className="block text-xs">Home</span>
         </NavLink>
 
-        <NavLink href="/discover">
+        <NavLink href="/talent/discover">
           <Search size={24} />
           <span className="block text-xs">Discover</span>
         </NavLink>
 
-        <NavLink href="/profile">
+        <NavLink href="/talent/profile">
           <User size={24} />
           <span className="block text-xs">Profile</span>
         </NavLink>
 
-        <NavLink href="/settings">
+        <NavLink href="/talent/settings">
           <Cog size={24} />
           <span className="block text-xs">Settings</span>
         </NavLink>
