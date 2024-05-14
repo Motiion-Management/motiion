@@ -30,7 +30,7 @@ export function RefreshPWA() {
     })
 
     PullToRefresh.init({
-      distThreshold: 120,
+      // distThreshold: 80,
       shouldPullToRefresh: () => !window.scrollY && shouldRefresh
     })
   }
