@@ -1,10 +1,16 @@
+import { Badge } from '@/components/ui/badge'
 import { Header } from '@/components/ui/header'
-import { Circle } from 'lucide-react'
+import { Eye } from 'lucide-react'
 
 export default function TitleSlot() {
   return (
-    <Header title="Title" actionSlot={<Circle />}>
-      -------test-------
-    </Header>
+    <Header
+      title="Profile"
+      actionSlot={
+        <Badge className="flex gap-2">
+          Preview <Eye />
+        </Badge>
+      }
+    />
   )
 }
