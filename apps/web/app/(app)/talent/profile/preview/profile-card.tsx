@@ -17,6 +17,7 @@ import { UserDoc } from '@packages/backend/convex/users'
 import { AspectRatio } from '@/components/ui/aspect-ratio'
 import './profile-card.css'
 import backArrow from '@/public/profile-back-arrow.svg'
+import motionSvg from '@/public/logos/motiion-white.svg'
 export function ProfileCard({ user }: { user: UserDoc }) {
   const [carousel, setCarousel] = useState<CarouselApi>()
   const [current, setCurrent] = useState(0)
@@ -101,14 +102,19 @@ export function ProfileCard({ user }: { user: UserDoc }) {
         </Carousel>
       </div>
       <div className="relative grid stats-card">
+      <AspectRatio
+                    ratio={24 / 41}
+                    className="w-full"
+                    id="ar"
+                  >
         <div className="text-primary-foreground absolute left-4 top-4 z-10 flex flex-col">
           <div className="pt-4 text-xl">
             {user.firstName} {user.lastName}
           </div>
           <div className="text-lg">{user.location?.city}</div>
         </div>
-      
-        <div className="grid grid-cols-5 grid-rows-2 gap-4 mt-28 text-primary-foreground  p-5">
+
+        <div className="grid grid-cols-5 grid-rows-2 gap-5 mt-28 text-primary-foreground  p-5">
           <div className="flex flex-col">
             <p>27</p>
             <p>Age</p>
@@ -127,7 +133,7 @@ export function ProfileCard({ user }: { user: UserDoc }) {
           </div>
           <div>
             <p>Bl</p>
-            <p>Hair Color</p>
+            <p>Hair</p>
           </div>
           <div>
             <p>Brw</p>
@@ -150,20 +156,21 @@ export function ProfileCard({ user }: { user: UserDoc }) {
             <p>Jacket</p>
           </div>
         </div>
-      <div>
+      <div className="flex gap-5 justify-around pt-6 text-primary-foreground">
         <p>Representation</p>
         <p>Agency</p>
       </div>
-      <div className="flex flex-col gap-5 items-center">
+      <div className="flex flex-col gap-5 items-center pt-20">
         <button className="bg-input rounded-full w-3/4 p-2">Contact</button>
         <button className="bg-input rounded-full w-3/4 p-2">Share Profile</button>
       </div>
         <button
           onClick={() => setIsFlipped(!isFlipped)}
-          className="bg-input text-primary-foreground absolute bottom-1 right-4 z-[1000] rounded-full p-5"
+          className="bg-input text-primary-foreground absolute bottom-5 right-4 z-[1000] rounded-full p-5"
         >
           <Image alt="" src={backArrow} />
         </button>
+      </AspectRatio>
       </div>
     </ReactCardFlip>
   )
