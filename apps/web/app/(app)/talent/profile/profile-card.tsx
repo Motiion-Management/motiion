@@ -1,8 +1,11 @@
 'use client'
+import { useState, useEffect } from 'react'
 import { useQuery } from 'convex/react'
 import { api } from '@packages/backend/convex/_generated/api'
 import Image from 'next/image'
+import { Progress } from '@/components/ui/progress'
 import {
+  CarouselApi,
   Carousel,
   CarouselItem,
   CarouselContent
@@ -10,23 +13,52 @@ import {
 import { UserDoc } from '@packages/backend/convex/users'
 import { AspectRatio } from '@/components/ui/aspect-ratio'
 
-export async function ProfileCard({ user }: { user: UserDoc }) {
-  const headshots = useQuery(api.resumes.getMyHeadshots)
+export function ProfileCard({ user }: { user: UserDoc }) {
+  const [carousel, setCarousel] = useState<CarouselApi>()
+  const [current, setCurrent] = useState(0)
+  useEffect(() => {
+    if (!carousel) {
+      return
+    }
 
+    setCurrent(carousel.selectedScrollSnap())
+
+    carousel.on('select', () => {
+      setCurrent(carousel.selectedScrollSnap())
+    })
+  }, [carousel])
+  const headshots = useQuery(api.resumes.getMyHeadshots)
   return (
     <div className="relative grid">
       <div className="text-primary-foreground absolute left-4 top-4 z-10 flex flex-col">
+        <div className="flex gap-5">
+          {headshots && headshots.length > 0
+            ? headshots.map((headshot, index) => (
+                <Progress
+                  className={
+                    current === index ? 'bg-accent z-10' : 'bg-background z-10'
+                  
+                  }
+                  key={index}
+                />
+              ))
+            : null}
+        </div>
         <div className="text-xl">
           {user.firstName} {user.lastName}
         </div>
         <div className="text-lg">{user.location?.city}</div>
       </div>
 
-      <Carousel className="absolute left-0 top-0 w-full">
+      <Carousel setApi={setCarousel} className="absolute left-0 top-0 w-full">
         <CarouselContent>
           {headshots && headshots.length > 0 ? (
             headshots.map((headshot, index) => (
-              <CarouselItem key={index} className="w-full basis-auto">
+              <CarouselItem
+                //onSelect={() => setCurrent(index)}
+                key={index}
+                className="w-full basis-auto"
+              >
                 <AspectRatio
                   key={index}
                   ratio={24 / 41}
