@@ -1,4 +1,3 @@
-import { ProfileCard } from './profile-card'
 import { me } from '@/lib/server/users'
 // import { Header } from '@/components/ui/header'
 // import { Circle } from 'lucide-react'
@@ -10,7 +9,6 @@ export default async function ProfilePage() {
       {/* <Header title="Profile" actionSlot={<Circle />}> */}
       {/*   ------test------- */}
       {/* </Header> */}
-      <ProfileCard user={user} />
     </div>
   )
 }
