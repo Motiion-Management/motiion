@@ -30,13 +30,12 @@ export function ProfileCard({ user }: { user: UserDoc }) {
   const headshots = useQuery(api.resumes.getMyHeadshots)
   return (
     <div className="relative grid">
-      <div className="text-primary-foreground absolute left-4 top-4 z-10 flex flex-col">
-        <div className="flex gap-5">
+        <div className="flex gap-5 pt-3 justify-center">
           {headshots && headshots.length > 0
             ? headshots.map((headshot, index) => (
                 <Progress
                   className={
-                    current === index ? 'bg-accent z-10' : 'bg-background z-10'
+                    current === index ? 'bg-accent z-10 w-16 h-2' : 'bg-background z-10 w-16 h-2'
                   
                   }
                   key={index}
@@ -44,7 +43,8 @@ export function ProfileCard({ user }: { user: UserDoc }) {
               ))
             : null}
         </div>
-        <div className="text-xl">
+      <div className="text-primary-foreground absolute left-4 top-4 z-10 flex flex-col">
+        <div className="text-xl pt-4">
           {user.firstName} {user.lastName}
         </div>
         <div className="text-lg">{user.location?.city}</div>
