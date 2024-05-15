@@ -2,7 +2,7 @@
 import { Header } from '@/components/ui/header'
 import { usePathname } from 'next/navigation'
 
-export default function TitleSlot() {
+export default function FallbackTitleSlot() {
   const pathname = usePathname().replace(/\/talent\//, '')
   return (
     <Header title="Motiion">
