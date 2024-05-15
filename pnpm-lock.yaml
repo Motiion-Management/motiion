@@ -204,15 +204,15 @@ importers:
       next-themes:
         specifier: ^0.3.0
         version: 0.3.0(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
-      pull-to-refresh-react:
-        specifier: ^1.2.4
-        version: 1.2.4(prop-types@15.8.1)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       pulltorefreshjs:
         specifier: ^0.1.22
         version: 0.1.22
       react:
         specifier: ^18.3.1
         version: 18.3.1
+      react-card-flip:
+        specifier: ^1.2.2
+        version: 1.2.2(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       react-day-picker:
         specifier: ^8.10.1
         version: 8.10.1(date-fns@3.6.0)(react@18.3.1)
@@ -222,9 +222,6 @@ importers:
       react-hook-form:
         specifier: ^7.51.3
         version: 7.51.3(react@18.3.1)
-      react-pull-to-refresh:
-        specifier: ^2.0.1
-        version: 2.0.1(react@18.3.1)
       server-only:
         specifier: ^0.0.1
         version: 0.0.1
@@ -4180,10 +4177,6 @@ packages:
     resolution: {integrity: sha512-5gghUc24tP9HRznNpV2+FIoq3xKkj5dTQqf4v0CpdPbFVwFkWoxOM+o+2OC9ZSvjEMTjfmG9QT+gcvggTwW1zw==}
     engines: {node: '>= 10.x'}
 
-  hammerjs@2.0.8:
-    resolution: {integrity: sha512-tSQXBXS/MWQOn/RKckawJ61vvsDpCom87JgxiYdGwHdOa0ht0vzUWDlfioofFCRU0L+6NGDt6XzbgoJvZkMeRQ==}
-    engines: {node: '>=0.8.0'}
-
   has-bigints@1.0.2:
     resolution: {integrity: sha512-tSvCKtBr9lkF0Ex0aQiP9N+OpV4zi2r/Nee5VkRDbaqv35RLYMzbwQfFSZZH0kR+Rd6302UJZ2p/bJCEoR3VoQ==}
 
@@ -5503,14 +5496,6 @@ packages:
   prop-types@15.8.1:
     resolution: {integrity: sha512-oj87CgZICdulUohogVAR7AjlC0327U4el4L6eAvOqCeudMDVU0NThNaV+b9Df4dXgSP1gXMTnPdhfe/2qDH5cg==}
 
-  pull-to-refresh-react@1.2.4:
-    resolution: {integrity: sha512-I4/7HiWJ0I3t88fPGaldPNR6x7Gk/BaSrHiqmt6szkpjE+yqsowr79FwshAfadN98b248yyK8YBe3IoL+rnd1Q==}
-    engines: {node: '>=8', npm: '>=5'}
-    peerDependencies:
-      prop-types: ^15.5.4
-      react: ^15.0.0 || ^16.0.0
-      react-dom: ^15.0.0 || ^16.0.0
-
   pulltorefreshjs@0.1.22:
     resolution: {integrity: sha512-haxNVEHnS4NCQA7NeG7TSV69z4uqy/N7nfPRuc4dPWe8H6ygUrMjdNeohE+6v0lVVX/ukSjbLYwPUGUYtFKfvQ==}
 
@@ -5565,6 +5550,12 @@ packages:
   rc@1.2.8:
     resolution: {integrity: sha512-y3bGgqKj3QBdxLbLkomlohkvsA8gdAiUQlSBJnBhfn+BPxg4bc62d8TcBW15wavDfgexCgccckhcZvywyQYPOw==}
     hasBin: true
+
+  react-card-flip@1.2.2:
+    resolution: {integrity: sha512-EGAdHsH0OIU3Rbfevr8bZB0yN/zBj2Jq9bvtNfyFKYWUjx7zTF+4aEJF7BzA4mRr2pb1nHRWmZFRtA9rOArcoA==}
+    peerDependencies:
+      react: ^18.2.0
+      react-dom: ^18.2.0
 
   react-day-picker@8.10.1:
     resolution: {integrity: sha512-TMx7fNbhLk15eqcMt+7Z7S2KF7mfTId/XJDjKE8f+IUcFn0l08/kI4FiYTL/0yuOLmEcbR4Fwe3GJf/NiiMnPA==}
@@ -5645,11 +5636,6 @@ packages:
     hasBin: true
     peerDependencies:
       react: 18.2.0
-
-  react-pull-to-refresh@2.0.1:
-    resolution: {integrity: sha512-mbNI9r3sBF4X+2fBO8c9CuXDLIywNuoZ24AIGU3Odi+L8C4MpS0tuhMQUSg5cSOuUtDFkE8Z/YnBYixo10QI6Q==}
-    peerDependencies:
-      react: '>=16.8.0'
 
   react-refresh@0.14.0:
     resolution: {integrity: sha512-wViHqhAd8OHeLS/IRMJjTSDHF3U9eWi62F/MledQGPdJGDhodXJ9PBLNGr6WWL7qlH12Mt3TyTpbS+hGXMjCzQ==}
@@ -10980,7 +10966,7 @@ snapshots:
       eslint: 9.1.1
       eslint-import-resolver-node: 0.3.9
       eslint-import-resolver-typescript: 2.7.1(eslint-plugin-import@2.29.1)(eslint@9.1.1)
-      eslint-plugin-import: 2.29.1(@typescript-eslint/parser@7.8.0(eslint@8.57.0)(typescript@5.4.5))(eslint@9.1.1)
+      eslint-plugin-import: 2.29.1(@typescript-eslint/parser@5.62.0(eslint@9.1.1)(typescript@5.4.5))(eslint-import-resolver-typescript@2.7.1)(eslint@9.1.1)
       eslint-plugin-jsx-a11y: 6.8.0(eslint@9.1.1)
       eslint-plugin-react: 7.34.1(eslint@9.1.1)
       eslint-plugin-react-hooks: 4.6.2(eslint@9.1.1)
@@ -11016,7 +11002,7 @@ snapshots:
       eslint: 9.1.1
       eslint-import-resolver-node: 0.3.9
       eslint-import-resolver-typescript: 3.6.1(@typescript-eslint/parser@7.2.0(eslint@9.1.1)(typescript@5.4.5))(eslint-import-resolver-node@0.3.9)(eslint-plugin-import@2.29.1)(eslint@9.1.1)
-      eslint-plugin-import: 2.29.1(@typescript-eslint/parser@7.2.0(eslint@9.1.1)(typescript@5.4.5))(eslint-import-resolver-typescript@3.6.1)(eslint@9.1.1)
+      eslint-plugin-import: 2.29.1(@typescript-eslint/parser@7.8.0(eslint@8.57.0)(typescript@5.4.5))(eslint@9.1.1)
       eslint-plugin-jsx-a11y: 6.8.0(eslint@9.1.1)
       eslint-plugin-react: 7.34.1(eslint@9.1.1)
       eslint-plugin-react-hooks: 4.6.2(eslint@9.1.1)
@@ -11046,7 +11032,7 @@ snapshots:
     dependencies:
       debug: 4.3.4
       eslint: 9.1.1
-      eslint-plugin-import: 2.29.1(@typescript-eslint/parser@7.8.0(eslint@8.57.0)(typescript@5.4.5))(eslint@9.1.1)
+      eslint-plugin-import: 2.29.1(@typescript-eslint/parser@5.62.0(eslint@9.1.1)(typescript@5.4.5))(eslint-import-resolver-typescript@2.7.1)(eslint@9.1.1)
       glob: 7.2.3
       is-glob: 4.0.3
       resolve: 1.22.8
@@ -11077,7 +11063,7 @@ snapshots:
       enhanced-resolve: 5.16.0
       eslint: 9.1.1
       eslint-module-utils: 2.8.1(@typescript-eslint/parser@7.2.0(eslint@9.1.1)(typescript@5.4.5))(eslint-import-resolver-node@0.3.9)(eslint-import-resolver-typescript@3.6.1(@typescript-eslint/parser@7.2.0(eslint@9.1.1)(typescript@5.4.5))(eslint-import-resolver-node@0.3.9)(eslint-plugin-import@2.29.1)(eslint@9.1.1))(eslint@9.1.1)
-      eslint-plugin-import: 2.29.1(@typescript-eslint/parser@7.2.0(eslint@9.1.1)(typescript@5.4.5))(eslint-import-resolver-typescript@3.6.1)(eslint@9.1.1)
+      eslint-plugin-import: 2.29.1(@typescript-eslint/parser@7.8.0(eslint@8.57.0)(typescript@5.4.5))(eslint@9.1.1)
       fast-glob: 3.3.2
       get-tsconfig: 4.7.3
       is-core-module: 2.13.1
@@ -11086,6 +11072,17 @@ snapshots:
       - '@typescript-eslint/parser'
       - eslint-import-resolver-node
       - eslint-import-resolver-webpack
+      - supports-color
+
+  eslint-module-utils@2.8.1(@typescript-eslint/parser@5.62.0(eslint@9.1.1)(typescript@5.4.5))(eslint-import-resolver-node@0.3.9)(eslint-import-resolver-typescript@2.7.1(eslint-plugin-import@2.29.1)(eslint@9.1.1))(eslint@9.1.1):
+    dependencies:
+      debug: 3.2.7
+    optionalDependencies:
+      '@typescript-eslint/parser': 5.62.0(eslint@9.1.1)(typescript@5.4.5)
+      eslint: 9.1.1
+      eslint-import-resolver-node: 0.3.9
+      eslint-import-resolver-typescript: 2.7.1(eslint-plugin-import@2.29.1)(eslint@9.1.1)
+    transitivePeerDependencies:
       - supports-color
 
   eslint-module-utils@2.8.1(@typescript-eslint/parser@7.2.0(eslint@8.57.0)(typescript@5.4.5))(eslint-import-resolver-node@0.3.9)(eslint-import-resolver-typescript@3.6.1(@typescript-eslint/parser@7.2.0(eslint@8.57.0)(typescript@5.4.5))(eslint-import-resolver-node@0.3.9)(eslint-plugin-import@2.29.1)(eslint@8.57.0))(eslint@8.57.0):
@@ -11130,7 +11127,7 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  eslint-plugin-import@2.29.1(@typescript-eslint/parser@7.2.0(eslint@9.1.1)(typescript@5.4.5))(eslint-import-resolver-typescript@3.6.1)(eslint@9.1.1):
+  eslint-plugin-import@2.29.1(@typescript-eslint/parser@5.62.0(eslint@9.1.1)(typescript@5.4.5))(eslint-import-resolver-typescript@2.7.1)(eslint@9.1.1):
     dependencies:
       array-includes: 3.1.8
       array.prototype.findlastindex: 1.2.5
@@ -11140,7 +11137,7 @@ snapshots:
       doctrine: 2.1.0
       eslint: 9.1.1
       eslint-import-resolver-node: 0.3.9
-      eslint-module-utils: 2.8.1(@typescript-eslint/parser@7.2.0(eslint@9.1.1)(typescript@5.4.5))(eslint-import-resolver-node@0.3.9)(eslint-import-resolver-typescript@3.6.1(@typescript-eslint/parser@7.2.0(eslint@9.1.1)(typescript@5.4.5))(eslint-import-resolver-node@0.3.9)(eslint-plugin-import@2.29.1)(eslint@9.1.1))(eslint@9.1.1)
+      eslint-module-utils: 2.8.1(@typescript-eslint/parser@5.62.0(eslint@9.1.1)(typescript@5.4.5))(eslint-import-resolver-node@0.3.9)(eslint-import-resolver-typescript@2.7.1(eslint-plugin-import@2.29.1)(eslint@9.1.1))(eslint@9.1.1)
       hasown: 2.0.2
       is-core-module: 2.13.1
       is-glob: 4.0.3
@@ -11151,7 +11148,7 @@ snapshots:
       semver: 6.3.1
       tsconfig-paths: 3.15.0
     optionalDependencies:
-      '@typescript-eslint/parser': 7.2.0(eslint@9.1.1)(typescript@5.4.5)
+      '@typescript-eslint/parser': 5.62.0(eslint@9.1.1)(typescript@5.4.5)
     transitivePeerDependencies:
       - eslint-import-resolver-typescript
       - eslint-import-resolver-webpack
@@ -11924,8 +11921,6 @@ snapshots:
       tslib: 2.6.2
 
   graphql@15.8.0: {}
-
-  hammerjs@2.0.8: {}
 
   has-bigints@1.0.2: {}
 
@@ -13242,12 +13237,6 @@ snapshots:
       object-assign: 4.1.1
       react-is: 16.13.1
 
-  pull-to-refresh-react@1.2.4(prop-types@15.8.1)(react-dom@18.3.1(react@18.3.1))(react@18.3.1):
-    dependencies:
-      prop-types: 15.8.1
-      react: 18.3.1
-      react-dom: 18.3.1(react@18.3.1)
-
   pulltorefreshjs@0.1.22: {}
 
   pump@3.0.0:
@@ -13302,6 +13291,11 @@ snapshots:
       ini: 1.3.8
       minimist: 1.2.8
       strip-json-comments: 2.0.1
+
+  react-card-flip@1.2.2(react-dom@18.3.1(react@18.3.1))(react@18.3.1):
+    dependencies:
+      react: 18.3.1
+      react-dom: 18.3.1(react@18.3.1)
 
   react-day-picker@8.10.1(date-fns@3.6.0)(react@18.3.1):
     dependencies:
@@ -13423,11 +13417,6 @@ snapshots:
       - encoding
       - supports-color
       - utf-8-validate
-
-  react-pull-to-refresh@2.0.1(react@18.3.1):
-    dependencies:
-      hammerjs: 2.0.8
-      react: 18.3.1
 
   react-refresh@0.14.0: {}
 
