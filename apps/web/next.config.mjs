@@ -18,6 +18,7 @@ export default withSerwist({
     NEXT_PUBLIC_CLERK_SIGN_IN_URL: '/sign-in',
     NEXT_PUBLIC_CLERK_SIGN_UP_URL: '/sign-up',
     NEXT_PUBLIC_CLERK_SIGN_IN_FALLBACK_REDIRECT_URL: '/talent/home',
-    NEXT_PUBLIC_CLERK_SIGN_UP_FORCE_REDIRECT_URL: '/onboarding/1'
+    NEXT_PUBLIC_CLERK_SIGN_UP_FORCE_REDIRECT_URL: '/onboarding/1',
+    NEXT_PUBLIC_ENV: process.env.NODE_ENV
   }
 })
