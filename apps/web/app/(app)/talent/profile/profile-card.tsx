@@ -15,7 +15,7 @@ import {
 import { UserDoc } from '@packages/backend/convex/users'
 import { AspectRatio } from '@/components/ui/aspect-ratio'
 import './profile-card.css'
-
+import backArrow from '@/public/profile-back-arrow.svg'
 export function ProfileCard({ user }: { user: UserDoc }) {
   const [carousel, setCarousel] = useState<CarouselApi>()
   const [current, setCurrent] = useState(0)
@@ -84,6 +84,8 @@ export function ProfileCard({ user }: { user: UserDoc }) {
             <div>No headshots available</div> // Fallback UI when there are no headshots
           )}
         </CarouselContent>
+        <button className="bg-primary text-primary-foreground rounded-full p-5 absolute bottom-5 right-4"><Image src={backArrow}/></button>
+
         <CarouselPrevious className="carousel-button-override absolute h-full left-1  w-1/3 opacity-0" />
 
         <CarouselNext className="carousel-button-override absolute h-full right-1 w-1/3 opacity-0" />
