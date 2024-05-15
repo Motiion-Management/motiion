@@ -8,10 +8,13 @@ import {
   CarouselApi,
   Carousel,
   CarouselItem,
-  CarouselContent
+  CarouselContent,
+  CarouselNext,
+  CarouselPrevious
 } from '@/components/ui/carousel'
 import { UserDoc } from '@packages/backend/convex/users'
 import { AspectRatio } from '@/components/ui/aspect-ratio'
+import './profile-card.css'
 
 export function ProfileCard({ user }: { user: UserDoc }) {
   const [carousel, setCarousel] = useState<CarouselApi>()
@@ -30,21 +33,22 @@ export function ProfileCard({ user }: { user: UserDoc }) {
   const headshots = useQuery(api.resumes.getMyHeadshots)
   return (
     <div className="relative grid">
-        <div className="flex gap-5 pt-3 justify-center">
-          {headshots && headshots.length > 0
-            ? headshots.map((headshot, index) => (
-                <Progress
-                  className={
-                    current === index ? 'bg-accent z-10 w-16 h-2' : 'bg-background z-10 w-16 h-2'
-                  
-                  }
-                  key={index}
-                />
-              ))
-            : null}
-        </div>
+      <div className="flex justify-center gap-5 pt-3">
+        {headshots && headshots.length > 0
+          ? headshots.map((headshot, index) => (
+              <Progress
+                className={
+                  current === index
+                    ? 'bg-accent z-10 h-2 w-16'
+                    : 'bg-background z-10 h-2 w-16'
+                }
+                key={index}
+              />
+            ))
+          : null}
+      </div>
       <div className="text-primary-foreground absolute left-4 top-4 z-10 flex flex-col">
-        <div className="text-xl pt-4">
+        <div className="pt-4 text-xl">
           {user.firstName} {user.lastName}
         </div>
         <div className="text-lg">{user.location?.city}</div>
@@ -80,6 +84,9 @@ export function ProfileCard({ user }: { user: UserDoc }) {
             <div>No headshots available</div> // Fallback UI when there are no headshots
           )}
         </CarouselContent>
+        <CarouselPrevious className="carousel-button-override absolute h-full left-1  w-1/3 opacity-0" />
+
+        <CarouselNext className="carousel-button-override absolute h-full right-1 w-1/3 opacity-0" />
       </Carousel>
     </div>
   )
