@@ -6,7 +6,7 @@ import { cn } from '@/lib/utils'
 import { LoaderCircle } from 'lucide-react'
 
 const buttonVariants = cva(
-  'rounded-full inline-flex items-center justify-center whitespace-nowrap text-sm font-bold ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50',
+  'rounded-full inline-flex items-center justify-center whitespace-nowrap ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50',
   {
     variants: {
       variant: {
@@ -21,16 +21,17 @@ const buttonVariants = cva(
         secondary:
           'bg-secondary text-secondary-foreground hover:bg-secondary/80',
         ghost: 'hover:bg-accent hover:text-accent-foreground',
-        link: 'text-primary underline-offset-4 hover:underline',
+        link: 'text-primary underline-offset-4 underline decoration-primary hover:decoration-primary/30 ',
         'accent-link': 'text-accent underline-offset-4 hover:underline',
         input:
           'rounded-lg border text-base !px-4 border-input bg-input-background text-input-foreground hover:bg-input/10'
       },
       size: {
-        default: 'h-11 px-8 py-2',
-        sm: 'h-9  px-3',
+        default: 'h-11 px-8 py-2 text-link',
+        sm: 'h-9  px-3 text-link-sm',
+        min: 'h-min px-0 py-0 text-link-sm',
         icon: 'h-10 w-10',
-        container: 'h-full w-full'
+        container: 'h-full w-full text-link'
       }
     },
     defaultVariants: {
