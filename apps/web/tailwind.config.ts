@@ -112,7 +112,7 @@ export const customFontSizes = {
       lineHeight: '1.2'
     }
   ],
-  data1: [
+  'label-lg': [
     pxToRem(48),
     {
       fontWeight: '500',
@@ -120,7 +120,7 @@ export const customFontSizes = {
       lineHeight: '1.2'
     }
   ],
-  data2: [
+  label: [
     pxToRem(24),
     {
       fontWeight: '500',
@@ -128,7 +128,7 @@ export const customFontSizes = {
       lineHeight: '1.2'
     }
   ],
-  data3: [
+  'label-sm': [
     pxToRem(18),
     {
       fontWeight: '500',
@@ -136,7 +136,7 @@ export const customFontSizes = {
       lineHeight: '1.2'
     }
   ],
-  data4: [
+  'label-xs': [
     pxToRem(10),
     {
       fontWeight: '500',
