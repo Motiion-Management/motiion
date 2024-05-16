@@ -16,8 +16,10 @@ import {
 import { UserDoc } from '@packages/backend/convex/users'
 import { AspectRatio } from '@/components/ui/aspect-ratio'
 import './profile-card.css'
-import flipArrowWhite from '@/public/profile-flip-arrow-white.svg'
-import flipArrowBlack from '@/public/profile-flip-arrow-black.svg'
+import FlipArrowWhite from '@/public/profile-flip-arrow-white.svg'
+import FlipArrowBlack from '@/public/profile-flip-arrow-black.svg'
+import ForwardingIcon from '@/public/profile-forwarding-icon.svg'
+import EmailIcon from '@/public/profile-email-icon.svg'
 export function ProfileCard({ user }: { user: UserDoc }) {
   const [carousel, setCarousel] = useState<CarouselApi>()
   const [current, setCurrent] = useState(0)
@@ -36,7 +38,11 @@ export function ProfileCard({ user }: { user: UserDoc }) {
   }, [carousel])
   const headshots = useQuery(api.resumes.getMyHeadshots)
   return (
-    <ReactCardFlip isFlipped={isFlipped} flipDirection="horizontal" className="h-full">
+    <ReactCardFlip
+      isFlipped={isFlipped}
+      flipDirection="horizontal"
+      className="h-full"
+    >
       <div className="relative grid">
         <div className="flex justify-center gap-5 pt-3">
           {headshots && headshots.length > 0
@@ -93,7 +99,7 @@ export function ProfileCard({ user }: { user: UserDoc }) {
             onClick={() => setIsFlipped(!isFlipped)}
             className="bg-primary text-primary-foreground absolute bottom-5 right-4 z-[1000] rounded-full p-5"
           >
-            <Image src={flipArrowWhite} alt="" />
+            <Image src={FlipArrowWhite} alt="" />
           </button>
 
           <CarouselPrevious className="carousel-button-override absolute left-1 h-full  w-1/3 opacity-0" />
@@ -101,76 +107,78 @@ export function ProfileCard({ user }: { user: UserDoc }) {
           <CarouselNext className="carousel-button-override absolute right-1 h-full w-1/3 opacity-0" />
         </Carousel>
       </div>
-      <div className="relative grid stats-card">
-      <AspectRatio
-                    ratio={24 / 41}
-                    className="w-full"
-                    id="ar"
-                  >
-        <div className="text-primary-foreground absolute left-4 top-4 z-10 flex flex-col">
-          <div className="pt-4 text-xl">
-            {user.firstName} {user.lastName}
+      <div className="stats-card relative grid">
+        <AspectRatio ratio={24 / 41} className="w-full" id="ar">
+          <div className="text-primary-foreground absolute left-4 top-4 z-10 flex flex-col">
+            <div className="pt-4 text-xl">
+              {user.firstName} {user.lastName}
+            </div>
+            <div className="text-lg">{user.location?.city}</div>
           </div>
-          <div className="text-lg">{user.location?.city}</div>
-        </div>
 
-        <div className="grid grid-cols-5 grid-rows-2 gap-5 mt-28 text-primary-foreground  p-5">
-          <div className="flex flex-col">
-            <p>27</p>
-            <p>Age</p>
+          <div className="text-primary-foreground mt-28 grid grid-cols-5 grid-rows-2 gap-5  p-5">
+            <div className="flex flex-col">
+              <p>27</p>
+              <p>Age</p>
+            </div>
+            <div>
+              <p>5+</p>
+              <p>Yrs Exp</p>
+            </div>
+            <div>
+              <p>F</p>
+              <p>Gender</p>
+            </div>
+            <div>
+              <p>5'6"</p>
+              <p>Height</p>
+            </div>
+            <div>
+              <p>Bl</p>
+              <p>Hair</p>
+            </div>
+            <div>
+              <p>Brw</p>
+              <p>Eyes</p>
+            </div>
+            <div>
+              <p>25"</p>
+              <p>Chest</p>
+            </div>
+            <div>
+              <p>30"</p>
+              <p>Waist</p>
+            </div>
+            <div>
+              <p>6.5</p>
+              <p>Shoes</p>
+            </div>
+            <div>
+              <p>38R</p>
+              <p>Jacket</p>
+            </div>
           </div>
-          <div>
-            <p>5+</p>
-            <p>Yrs Exp</p>
+          <div className="text-primary-foreground flex justify-around gap-5 pt-6">
+            <p>Representation</p>
+            <p>Agency</p>
           </div>
-          <div>
-            <p>F</p>
-            <p>Gender</p>
+          <div className="flex flex-col items-center gap-5 pt-20">
+            <button className="bg-input flex w-3/4 justify-center rounded-full p-2 gap-1">
+              <Image alt="Email Icon" src={EmailIcon} />
+              Contact
+            </button>
+            <button className="bg-input flex w-3/4 justify-center rounded-full p-2 gap-1">
+              <Image alt="Email Icon" src={ForwardingIcon} />
+              Share Profile
+            </button>
           </div>
-          <div>
-            <p>5'6"</p>
-            <p>Height</p>
-          </div>
-          <div>
-            <p>Bl</p>
-            <p>Hair</p>
-          </div>
-          <div>
-            <p>Brw</p>
-            <p>Eyes</p>
-          </div>
-          <div>
-            <p>25"</p>
-            <p>Chest</p>
-          </div>
-          <div>
-            <p>30"</p>
-            <p>Waist</p>
-          </div>
-          <div>
-            <p>6.5</p>
-            <p>Shoes</p>
-          </div>
-          <div>
-            <p>38R</p>
-            <p>Jacket</p>
-          </div>
-        </div>
-      <div className="flex gap-5 justify-around pt-6 text-primary-foreground">
-        <p>Representation</p>
-        <p>Agency</p>
-      </div>
-      <div className="flex flex-col gap-5 items-center pt-20">
-        <button className="bg-input rounded-full w-3/4 p-2">Contact</button>
-        <button className="bg-input rounded-full w-3/4 p-2">Share Profile</button>
-      </div>
-        <button
-          onClick={() => setIsFlipped(!isFlipped)}
-          className="bg-input text-primary-foreground absolute bottom-5 right-4 z-[1000] rounded-full p-5"
-        >
-          <Image alt="" src={flipArrowBlack} />
-        </button>
-      </AspectRatio>
+          <button
+            onClick={() => setIsFlipped(!isFlipped)}
+            className="bg-input text-primary-foreground absolute bottom-5 right-4 z-[1000] rounded-full p-5"
+          >
+            <Image alt="" src={FlipArrowBlack} />
+          </button>
+        </AspectRatio>
       </div>
     </ReactCardFlip>
   )
