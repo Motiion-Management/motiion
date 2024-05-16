@@ -44,7 +44,8 @@ export function ProfileCard({ user }: { user: UserDoc }) {
     jacket,
     shoes,
     waist,
-    yearsOfExperience
+    yearsOfExperience,
+    representation
   if (userStats && typeof userStats === 'object' && !Array.isArray(userStats)) {
     ;({
       chest,
@@ -54,7 +55,8 @@ export function ProfileCard({ user }: { user: UserDoc }) {
       jacket,
       shoes,
       waist,
-      yearsOfExperience
+      yearsOfExperience,
+      representation
     } = userStats)
   }
   let age
@@ -68,6 +70,7 @@ export function ProfileCard({ user }: { user: UserDoc }) {
     }
   }
   const gender = user?.gender?.charAt(0).toUpperCase()
+  
   return (
     <ReactCardFlip
       isFlipped={isFlipped}
@@ -147,7 +150,7 @@ export function ProfileCard({ user }: { user: UserDoc }) {
             <div className="text-lg">{user.location?.city}</div>
           </div>
 
-          <div className="text-primary-foreground mt-28 grid grid-cols-5 grid-rows-2 gap-5 p-5 border-t border-b">
+          <div className="text-primary-foreground mt-28 grid grid-cols-5 grid-rows-2 gap-5 border-b border-t p-5">
             <div className="flex flex-col">
               <p>{age}</p>
               <p className="text-xs uppercase tracking-[0.6px]">Age</p>
@@ -165,11 +168,11 @@ export function ProfileCard({ user }: { user: UserDoc }) {
               <p className="text-xs uppercase tracking-[0.6px]">Height</p>
             </div>
             <div>
-              <p className='capitalize'>{hairColor?.slice(0, 2)}</p>
+              <p className="capitalize">{hairColor?.slice(0, 2)}</p>
               <p className="text-xs uppercase tracking-[0.6px]">Hair</p>
             </div>
             <div>
-              <p className='capitalize'>{eyeColor?.slice(0, 3)}</p>
+              <p className="capitalize">{eyeColor?.slice(0, 3)}</p>
               <p className="text-xs uppercase tracking-[0.6px]">Eyes</p>
             </div>
             <div>
@@ -190,7 +193,7 @@ export function ProfileCard({ user }: { user: UserDoc }) {
             </div>
           </div>
           <div className="text-primary-foreground flex justify-around gap-5 pt-6">
-            <p>Representation</p>
+            <p>{representation}</p>
             <p>Agency</p>
           </div>
           <div className="flex flex-col items-center gap-5 pt-20">
