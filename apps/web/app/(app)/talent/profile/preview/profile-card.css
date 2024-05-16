@@ -5,9 +5,29 @@
 .stats-card{
   background: linear-gradient(180deg, #007064 0%, #1C1D20 72.95%);
   border-radius: 10px;
+  overflow: hidden;
+  position: relative;
+
 }
 
 .react-card-flip{
   height: 100%;
 }
 
+
+.stats-card::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 50%;
+  width: 100%;
+  height: 100%;
+  background: url(/logos/motiion-white.svg) no-repeat center center;
+  opacity: 0.1; 
+  z-index: 1;
+  background-size: 100%;
+}
+
+.flip-arrow svg{
+  fill: #000;
+}

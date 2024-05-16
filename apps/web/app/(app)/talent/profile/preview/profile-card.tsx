@@ -16,8 +16,8 @@ import {
 import { UserDoc } from '@packages/backend/convex/users'
 import { AspectRatio } from '@/components/ui/aspect-ratio'
 import './profile-card.css'
-import backArrow from '@/public/profile-back-arrow.svg'
-import motionSvg from '@/public/logos/motiion-white.svg'
+import flipArrowWhite from '@/public/profile-flip-arrow-white.svg'
+import flipArrowBlack from '@/public/profile-flip-arrow-black.svg'
 export function ProfileCard({ user }: { user: UserDoc }) {
   const [carousel, setCarousel] = useState<CarouselApi>()
   const [current, setCurrent] = useState(0)
@@ -93,7 +93,7 @@ export function ProfileCard({ user }: { user: UserDoc }) {
             onClick={() => setIsFlipped(!isFlipped)}
             className="bg-primary text-primary-foreground absolute bottom-5 right-4 z-[1000] rounded-full p-5"
           >
-            <Image src={backArrow} />
+            <Image src={flipArrowWhite} alt="" />
           </button>
 
           <CarouselPrevious className="carousel-button-override absolute left-1 h-full  w-1/3 opacity-0" />
@@ -168,7 +168,7 @@ export function ProfileCard({ user }: { user: UserDoc }) {
           onClick={() => setIsFlipped(!isFlipped)}
           className="bg-input text-primary-foreground absolute bottom-5 right-4 z-[1000] rounded-full p-5"
         >
-          <Image alt="" src={backArrow} />
+          <Image alt="" src={flipArrowBlack} />
         </button>
       </AspectRatio>
       </div>
