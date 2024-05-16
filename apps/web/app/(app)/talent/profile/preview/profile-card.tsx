@@ -37,7 +37,37 @@ export function ProfileCard({ user }: { user: UserDoc }) {
   }, [carousel])
   const headshots = useQuery(api.resumes.getMyHeadshots)
   const userStats = useQuery(api.resumes.getMyStats)
-
+  let chest,
+    eyeColor,
+    hairColor,
+    height,
+    jacket,
+    shoes,
+    waist,
+    yearsOfExperience
+  if (userStats && typeof userStats === 'object' && !Array.isArray(userStats)) {
+    ;({
+      chest,
+      eyeColor,
+      hairColor,
+      height,
+      jacket,
+      shoes,
+      waist,
+      yearsOfExperience
+    } = userStats)
+  }
+  let age
+  if (user.dateOfBirth) {
+    const birthDate = new Date(user.dateOfBirth)
+    const today = new Date()
+    age = today.getFullYear() - birthDate.getFullYear()
+    const month = today.getMonth() - birthDate.getMonth()
+    if (month < 0 || (month === 0 && today.getDate() < birthDate.getDate())) {
+      age--
+    }
+  }
+  const gender = user?.gender?.charAt(0).toUpperCase()
   return (
     <ReactCardFlip
       isFlipped={isFlipped}
@@ -117,46 +147,46 @@ export function ProfileCard({ user }: { user: UserDoc }) {
             <div className="text-lg">{user.location?.city}</div>
           </div>
 
-          <div className="text-primary-foreground mt-28 grid grid-cols-5 grid-rows-2 gap-5  p-5">
+          <div className="text-primary-foreground mt-28 grid grid-cols-5 grid-rows-2 gap-5 p-5 border-t border-b">
             <div className="flex flex-col">
-              <p>27</p>
-              <p>Age</p>
+              <p>{age}</p>
+              <p className="text-xs uppercase tracking-[0.6px]">Age</p>
             </div>
             <div>
-              <p>5+</p>
-              <p>Yrs Exp</p>
+              <p>{yearsOfExperience}</p>
+              <p className="text-xs uppercase tracking-[0.6px]">Yrs Exp</p>
             </div>
             <div>
-              <p>F</p>
-              <p>Gender</p>
+              <p>{gender}</p>
+              <p className="text-xs uppercase tracking-[0.6px]">Gender</p>
             </div>
             <div>
-              <p>5'6"</p>
-              <p>Height</p>
+              <p>{height}</p>
+              <p className="text-xs uppercase tracking-[0.6px]">Height</p>
             </div>
             <div>
-              <p>Bl</p>
-              <p>Hair</p>
+              <p className='capitalize'>{hairColor?.slice(0, 2)}</p>
+              <p className="text-xs uppercase tracking-[0.6px]">Hair</p>
             </div>
             <div>
-              <p>Brw</p>
-              <p>Eyes</p>
+              <p className='capitalize'>{eyeColor?.slice(0, 3)}</p>
+              <p className="text-xs uppercase tracking-[0.6px]">Eyes</p>
             </div>
             <div>
-              <p>25"</p>
-              <p>Chest</p>
+              <p>{chest}</p>
+              <p className="text-xs uppercase tracking-[0.6px]">Chest</p>
             </div>
             <div>
-              <p>30"</p>
-              <p>Waist</p>
+              <p>{waist}</p>
+              <p className="text-xs uppercase tracking-[0.6px]">Waist</p>
             </div>
             <div>
-              <p>6.5</p>
-              <p>Shoes</p>
+              <p>{shoes}</p>
+              <p className="text-xs uppercase tracking-[0.6px]">Shoes</p>
             </div>
             <div>
-              <p>38R</p>
-              <p>Jacket</p>
+              <p>{jacket}</p>
+              <p className="text-xs uppercase tracking-[0.6px]">Jacket</p>
             </div>
           </div>
           <div className="text-primary-foreground flex justify-around gap-5 pt-6">
