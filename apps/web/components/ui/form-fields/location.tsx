@@ -48,7 +48,7 @@ export function LocationField({
               options={{
                 types: ['city', 'administrative'],
                 panel: {
-                  className: '!bg-black'
+                  // className: '!bg-black'
                 },
                 format: {
                   sub: (item) => `${item.city}, ${item.administrative}`,

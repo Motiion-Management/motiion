@@ -1,14 +1,8 @@
-@import '@placekit/autocomplete-js/dist/placekit-autocomplete.css';
+@import './placekit.css';
 
-.dark :root, :root {
-  --pka-color-accent: 0, 204, 183; 
-}
-.dark .search-root, .search-root {
-  @apply text-input-foreground !border !border-input bg-input-background ring-offset-background placeholder:text-muted-foreground focus-within:ring-ring flex h-12 text-base w-full rounded-lg px-3 py-2 focus-within:!outline-none focus-within:!ring-2 focus-within:!ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50
-}
-.dark .pka-panel, .pka-panel {
-  border-color: transparent;
-}
+/* .dark .pka-panel, .pka-panel { */
+/*   border-color: transparent; */
+/* } */
 .dark .pka-panel-footer, .pka-panel-footer {
   border-top-color: hsl(var(--muted));
 }

@@ -41,7 +41,7 @@ export const SelectField = ({
           <Select onValueChange={field.onChange} defaultValue={field.value}>
             <FormControl>
               <SelectTrigger className="h-12">
-                <SelectValue placeholder={placeholder} className="text-base" />
+                <SelectValue placeholder={placeholder} />
               </SelectTrigger>
             </FormControl>
             <SelectContent>

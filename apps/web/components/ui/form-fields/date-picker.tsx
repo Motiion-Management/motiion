@@ -49,14 +49,14 @@ export function DatePickerField({
             <div className={'relative flex w-full basis-full'}>
               <PopoverTrigger asChild>
                 <FormControl>
-                  <Button
-                    variant={'input'}
-                    className={cn(
-                      'w-full basis-full',
-                      !value && 'text-muted-foreground'
+                  <Button variant="input" className="w-full basis-full">
+                    {value ? (
+                      format(value, 'PPP')
+                    ) : (
+                      <span className="text-muted-foreground">
+                        {placeholder}
+                      </span>
                     )}
-                  >
-                    {value ? format(value, 'PPP') : <span>{placeholder}</span>}
                     <CalendarIcon className="stroke-muted-foreground ml-auto" />
                   </Button>
                 </FormControl>

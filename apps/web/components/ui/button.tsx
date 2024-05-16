@@ -24,11 +24,12 @@ const buttonVariants = cva(
         link: 'text-primary underline-offset-4 underline decoration-primary hover:decoration-primary/30 ',
         'accent-link': 'text-accent underline-offset-4 hover:underline',
         input:
-          'rounded-lg border text-base !px-4 border-input bg-input-background text-input-foreground hover:bg-input/10'
+          'rounded-lg border border-input bg-input-background text-input-foreground hover:bg-input/10'
       },
       size: {
         default: 'h-11 px-8 py-2 text-link',
-        sm: 'h-9  px-3 text-link-sm',
+        input: 'h-11 px-3 py-2 text-body',
+        sm: 'h-9 px-3 text-link-sm',
         min: 'h-min px-0 py-0 text-link-sm',
         icon: 'h-10 w-10',
         container: 'h-full w-full text-link'
@@ -59,7 +60,7 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
         className={cn(
           buttonVariants({
             variant,
-            size,
+            size: size || (variant === 'input' ? 'input' : 'default'),
             className
           }),
           loading && 'pointer-events-none animate-pulse'
