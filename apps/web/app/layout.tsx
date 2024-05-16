@@ -11,8 +11,7 @@ import { RefreshPWA } from './refresh-pwa'
 
 const montserrat = Montserrat({
   subsets: ['latin'],
-  display: 'swap',
-  variable: '--font-montserrat'
+  display: 'swap'
 })
 
 const APP_NAME = 'Motiion'
