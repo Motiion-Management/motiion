@@ -155,7 +155,7 @@ export const customFontSizes = {
   '2xl': pxToRem(32),
   '3xl': pxToRem(40),
   '4xl': pxToRem(48)
-} as const
+}
 
 const config: Config = {
   darkMode: ['class'],
@@ -188,7 +188,7 @@ const config: Config = {
         loose: '-0.01em',
         'very-loose': '0.06em'
       },
-      fontSize: customFontSizes,
+      fontSize: JSON.parse(JSON.stringify(customFontSizes)),
       fontWeight: {
         light: '300',
         normal: '400',
