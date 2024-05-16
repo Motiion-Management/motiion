@@ -24,7 +24,6 @@ export function ProfileCard({ user }: { user: UserDoc }) {
   const [carousel, setCarousel] = useState<CarouselApi>()
   const [current, setCurrent] = useState(0)
   const [isFlipped, setIsFlipped] = useState(false)
-
   useEffect(() => {
     if (!carousel) {
       return
@@ -37,6 +36,8 @@ export function ProfileCard({ user }: { user: UserDoc }) {
     })
   }, [carousel])
   const headshots = useQuery(api.resumes.getMyHeadshots)
+  const userStats = useQuery(api.resumes.getMyStats)
+
   return (
     <ReactCardFlip
       isFlipped={isFlipped}
@@ -163,11 +164,11 @@ export function ProfileCard({ user }: { user: UserDoc }) {
             <p>Agency</p>
           </div>
           <div className="flex flex-col items-center gap-5 pt-20">
-            <button className="bg-input flex w-3/4 justify-center rounded-full p-2 gap-1">
+            <button className="bg-input flex w-3/4 justify-center gap-1 rounded-full p-2">
               <Image alt="Email Icon" src={EmailIcon} />
               Contact
             </button>
-            <button className="bg-input flex w-3/4 justify-center rounded-full p-2 gap-1">
+            <button className="bg-input flex w-3/4 justify-center gap-1 rounded-full p-2">
               <Image alt="Email Icon" src={ForwardingIcon} />
               Share Profile
             </button>
