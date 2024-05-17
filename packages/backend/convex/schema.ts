@@ -192,24 +192,29 @@ export const Events = Table('events', {
   )
 })
 
-export default defineSchema({
-  // global
-  featuredContent: FeaturedContent.table,
-  featuredChoreographers: FeaturedChoreographers.table,
-  pointValues: PointValues.table,
-  eventTypes: EventTypes.table,
-  events: Events.table.index('attendanceCode', ['attendanceCode']),
+export default defineSchema(
+  {
+    // global
+    featuredContent: FeaturedContent.table,
+    featuredChoreographers: FeaturedChoreographers.table,
+    pointValues: PointValues.table,
+    eventTypes: EventTypes.table,
+    events: Events.table.index('attendanceCode', ['attendanceCode']),
 
-  // user
-  users: Users.table.index('tokenId', ['tokenId']),
+    // user
+    users: Users.table.index('tokenId', ['tokenId']),
 
-  // resume data
-  resumes: Resumes.table.index('userId', ['userId']),
-  experiences: Experiences.table.index('userId', ['userId']),
-  training: Training.table.index('userId', ['userId']),
-  skills: Skills.table.index('userId', ['userId']),
+    // resume data
+    resumes: Resumes.table.index('userId', ['userId']),
+    experiences: Experiences.table.index('userId', ['userId']),
+    training: Training.table.index('userId', ['userId']),
+    skills: Skills.table.index('userId', ['userId']),
 
-  // agency
-  agents: Agents.table.index('userId', ['userId']),
-  agencies: Agencies.table
-})
+    // agency
+    agents: Agents.table.index('userId', ['userId']),
+    agencies: Agencies.table
+  },
+  {
+    schemaValidation: false
+  }
+)

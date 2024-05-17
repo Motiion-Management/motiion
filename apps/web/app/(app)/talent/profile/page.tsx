@@ -1,14 +1,10 @@
 import { HeadshotCarousel } from '@/components/features/headshot-carousel'
 import { AlertDescription } from '@/components/ui/alert'
 import { DismissableAlert } from '@/components/ui/dismissable-alert'
-import { myHeadshots } from '@/lib/server/resumes'
-import { me } from '@/lib/server/users'
 import { InfoIcon as Info } from 'lucide-react'
-import Link from 'next/link'
 import { LinkSection } from './link-section'
 
 export default async function ProfilePage() {
-  const user = await me()
   return (
     <div className="grid w-full grid-cols-1 grid-rows-[repeat(5,min-content)] gap-6 overflow-x-visible">
       <DismissableAlert iconSlot={<Info />} variant="info">
