@@ -27,7 +27,7 @@ export function HeadshotCarousel({
 
   //wrap this in a grid to prevent overflow
   return (
-    <div className="flex flex-col items-start gap-3 ">
+    <div className="flex flex-col items-start gap-3">
       {headshotsExist && (
         <>
           <div className="flex w-full justify-between">
@@ -71,7 +71,7 @@ export function HeadshotCarousel({
           </Carousel>
         </>
       )}
-      <p className="text-body">{placeholderText}</p>
+      {placeholderText && <p className="text-body">{placeholderText}</p>}
       {!headshotsExist && placeholderImage && (
         <Image
           src={placeholderImage}
