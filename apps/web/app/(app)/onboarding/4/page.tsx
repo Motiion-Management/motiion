@@ -29,7 +29,7 @@ export default function ResumeUploadStep() {
       }
     })
 
-    router.push('/home')
+    router.push('/talent/home')
   }
 
   return (

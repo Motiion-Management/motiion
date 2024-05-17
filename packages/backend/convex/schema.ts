@@ -130,14 +130,15 @@ export const Agents = Table('agents', {
 })
 // Agency organizations, must be created by an agent user
 export const Agencies = Table('agencies', {
-  ownerId: v.id('users'),
-  managerList: v.array(v.id('users')),
   name: v.string,
-  location,
-  contact: v.number,
-  email: v.string,
-  websiteUrl: v.nullish(v.string),
-  logo: v.id('_storage')
+  shortName: v.optional(v.string),
+  email: v.optional(v.string),
+  logo: v.optional(v.id('_storage')),
+  location: v.optional(location),
+  ownerId: v.optional(v.id('users')),
+  managerList: v.optional(v.array(v.id('users'))),
+  phone: v.optional(v.string),
+  websiteUrl: v.optional(v.string)
 })
 
 // Home Screen Configuration Tables
@@ -210,5 +211,5 @@ export default defineSchema({
 
   // agency
   agents: Agents.table.index('userId', ['userId']),
-  agencies: Agencies.table.index('ownerId', ['ownerId'])
+  agencies: Agencies.table
 })

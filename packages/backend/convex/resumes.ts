@@ -32,6 +32,36 @@ export const getMyHeadshots = authQuery({
   }
 })
 
+export const getMyStats = authQuery({
+  args: {},
+  handler: async (ctx) => {
+    if (!ctx.user) {
+      return
+    }
+    const resume = await getOneFrom(ctx.db, 'resumes', 'userId', ctx.user._id)
+
+    let representation = null
+    let repLogo = null
+    if (resume?.representation) {
+      representation = await ctx.db.get(resume.representation)
+      if (representation?.logo) {
+        repLogo = await ctx.storage.getUrl(representation?.logo)
+      }
+    }
+
+    return {
+      ...resume,
+      ...resume?.sizing,
+      gender: ctx.user.gender,
+      dateOfBirth: ctx.user.dateOfBirth,
+      representation: {
+        ...representation,
+        logo: repLogo
+      }
+    }
+  }
+})
+
 async function ensureOnlyFive(
   ctx: MutationCtx,
   files: { storageId: Id<'_storage'>; title?: string; uploadDate: string }[]
