@@ -8,7 +8,7 @@ import { InfoIcon as Info } from 'lucide-react'
 export default async function ProfilePage() {
   const user = await me()
   return (
-    <div className="flex w-full flex-col gap-6">
+    <div className="grid w-full grid-cols-1 grid-rows-[min-content] gap-6">
       <DismissableAlert iconSlot={<Info />} variant="info">
         <AlertDescription>
           Use the toggle above to switch between "edit" and "preview" modes.

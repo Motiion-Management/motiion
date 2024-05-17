@@ -25,6 +25,7 @@ export function HeadshotCarousel({
   const removeHeadshot = useMutation(api.resumes.removeHeadshot)
   const headshotsExist = headshots && headshots.length > 0
 
+  //wrap this in a grid to prevent overflow
   return (
     <div className="flex flex-col items-start gap-3 ">
       {headshotsExist && (
