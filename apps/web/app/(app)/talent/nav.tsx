@@ -29,7 +29,10 @@ function NavLink({ href, children }: NavLinkProps) {
 export function Nav({ className }: { className?: string }) {
   return (
     <nav
-      className={cn('border-t bg-white md:border-b md:border-t-0', className)}
+      className={cn(
+        '-mb-8 border-t bg-white pb-6 md:border-b md:border-t-0',
+        className
+      )}
     >
       <div className="mx-auto grid max-w-md grid-cols-4 grid-rows-1 gap-2 px-4">
         <NavLink href="/talent/home">

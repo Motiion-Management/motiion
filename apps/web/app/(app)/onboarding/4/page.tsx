@@ -72,7 +72,7 @@ export default function ResumeUploadStep() {
           />
         )}
       </div>
-      <div className="sticky bottom-0 w-full ">
+      <div className="sticky bottom-0 flex w-full flex-col gap-2">
         {resumeUploadsExist ? (
           <Button onClick={nextStep} className="w-full" loading={loading}>
             Continue

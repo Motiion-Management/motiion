@@ -18,6 +18,7 @@ import { AccordionPlus } from './accordion'
 import { Id } from '@packages/backend/convex/_generated/dataModel'
 import { ONBOARDING_STEPS } from '@packages/backend/convex/users'
 import { useState } from 'react'
+import { useRouter } from 'next/navigation'
 
 const formSchema = z.object({
   firstName: z.string().min(2, {
@@ -71,6 +72,7 @@ export function PersonalDetailsFormProvider({
 }) {
   const updateMyUser = useMutation(api.users.updateMyUser)
 
+  const router = useRouter()
   const [loading, setLoading] = useState(false)
   const form = useForm<FormSchema>({
     resolver: zodResolver(formSchema),
@@ -78,11 +80,13 @@ export function PersonalDetailsFormProvider({
     defaultValues
   })
   async function onSubmit(data: FormSchema) {
+    router.prefetch('/onboarding/2')
     setLoading(true)
     await updateMyUser({
       id,
       patch: { ...data, onboardingStep: ONBOARDING_STEPS.HEADSHOTS }
     })
+    router.push('/onboarding/2')
   }
 
   return (
