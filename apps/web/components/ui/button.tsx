@@ -24,7 +24,9 @@ const buttonVariants = cva(
         link: 'text-primary underline-offset-4 underline decoration-primary hover:decoration-primary/30 ',
         'accent-link': 'text-accent underline-offset-4 hover:underline',
         input:
-          'rounded-lg border border-input bg-input-background text-input-foreground hover:bg-input/10'
+          'rounded-lg border border-input bg-input-background text-input-foreground hover:bg-input/10',
+        'image-upload':
+          'rounded-lg border dark:border-input border-primary  bg-primary text-primary-foreground dark:bg-input-background dark:text-input-foreground hover:bg-input/10'
       },
       size: {
         default: 'h-11 px-8 py-2 text-link',

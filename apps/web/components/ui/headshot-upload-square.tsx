@@ -32,7 +32,7 @@ export function HeadshotUploadSquare({ className }: HeadshotUploadSquareProps) {
   }
   return (
     <div className={cn('h-[148px] w-[100px]', className)}>
-      <Button variant="input" size="container" loading={loading}>
+      <Button variant="image-upload" size="container" loading={loading}>
         <Plus
           size={25}
           className="color-inherit stroke-current"

@@ -1,3 +1,4 @@
+'use client'
 import Image, { StaticImageData } from 'next/image'
 import { HeadshotUploadSquare } from '@/components/ui/headshot-upload-square'
 import { useMutation, useQuery } from 'convex/react'
@@ -10,11 +11,15 @@ import {
 } from '@/components/ui/carousel'
 
 export function HeadshotCarousel({
+  title,
   placeholderText,
-  placeholderImage
+  placeholderImage,
+  onboarding
 }: {
+  title: string
   placeholderText?: string
   placeholderImage?: StaticImageData
+  onboarding?: boolean
 }) {
   const headshots = useQuery(api.resumes.getMyHeadshots)
   const removeHeadshot = useMutation(api.resumes.removeHeadshot)
@@ -25,7 +30,9 @@ export function HeadshotCarousel({
       {headshotsExist && (
         <>
           <div className="flex w-full justify-between">
-            <h4 className="text-h4">Headshots</h4>
+            <h4 className="text-h4 text-secondary dark:text-foreground">
+              {title}
+            </h4>
             <p className="text-body-xs">{headshots?.length || 0}/5 imported</p>
           </div>
 
@@ -39,14 +46,16 @@ export function HeadshotCarousel({
               {headshots.map((headshot, index) => (
                 <CarouselItem key={index} className="basis-auto">
                   <div key={index} className="relative h-[148px] w-[100px] ">
-                    <X
-                      onClick={() =>
-                        removeHeadshot({ headshotId: headshot.storageId })
-                      }
-                      className="bg-input absolute -right-3 -top-3 z-10 grid place-items-center rounded-full border stroke-white p-[7px] hover:cursor-pointer"
-                      strokeWidth={4}
-                      size={32}
-                    />
+                    {onboarding && (
+                      <X
+                        onClick={() =>
+                          removeHeadshot({ headshotId: headshot.storageId })
+                        }
+                        className="bg-input absolute -right-3 -top-3 z-10 grid place-items-center rounded-full border stroke-white p-[7px] hover:cursor-pointer"
+                        strokeWidth={4}
+                        size={32}
+                      />
+                    )}
                     <Image
                       key={headshot.title || headshot.url}
                       src={headshot.url || ''}
