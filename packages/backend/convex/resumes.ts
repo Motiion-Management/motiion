@@ -39,21 +39,6 @@ export const getMyStats = authQuery({
       return
     }
     const resume = await getOneFrom(ctx.db, 'resumes', 'userId', ctx.user._id)
-    // let agency
-    // if (resume?.representation) {
-    //   //       @param db — DatabaseReader, passed in from the function ctx
-
-    //   // @param table — The table to fetch the target document from.
-
-    //   // @param index — The index on that table to look up the specified value by.
-
-    //   // @param value — The value to look up the document by, often an ID.
-
-    //   // @param field
-    //   // The field on that table that should match the specified value. Optional if the index is named after the field.
-    //   agency = await getOneFrom(ctx.db, 'agencies', 'agencyId', resume.representation)
-    // }
-    //
 
     let representation = null
     let repLogo = null

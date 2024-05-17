@@ -17,8 +17,8 @@ function Stat({ label, value }: { label: string; value: React.ReactNode }) {
   )
 }
 
-export function UserStats({
-  userStats: {
+export function UserStats({ userStats }: { userStats: any }) {
+  const {
     dateOfBirth,
     yearsOfExperience,
     gender,
@@ -30,10 +30,8 @@ export function UserStats({
     shoes,
     jacket,
     representation
-  }
-}: {
-  userStats: any
-}) {
+  } = userStats || {}
+
   console.log({
     height,
     hairColor,
@@ -59,12 +57,14 @@ export function UserStats({
       </div>
       <div className="text-primary-foreground flex justify-between gap-5 px-5 pt-6">
         Representation
-        <Image
-          width={50}
-          height={30}
-          src={representation.logo}
-          alt={representation.shortName || representation.name}
-        />
+        {representation?.logo && (
+          <Image
+            width={50}
+            height={30}
+            src={representation.logo}
+            alt={representation.shortName || representation.name}
+          />
+        )}
       </div>
     </>
   )

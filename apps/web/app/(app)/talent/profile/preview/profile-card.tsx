@@ -21,6 +21,26 @@ import FlipArrowBlack from '@/public/profile-flip-arrow-black.svg'
 import ForwardingIcon from '@/public/profile-forwarding-icon.svg'
 import EmailIcon from '@/public/profile-email-icon.svg'
 import { UserStats } from './user-stats'
+import { Button } from '@/components/ui/button'
+import { toast } from 'sonner'
+
+async function shareLink(shareTitle: string, shareText: string, link: string) {
+  const shareData = {
+    title: shareTitle,
+    text: shareText,
+    url: link
+  }
+  try {
+    if (navigator?.share && navigator.canShare(shareData)) {
+      await navigator.share(shareData)
+    } else {
+      throw new Error('Web Share API not supported')
+    }
+  } catch (e: any) {
+    toast.error(e.message || 'Failed to share link')
+    console.error(e)
+  }
+}
 
 export function ProfileCard({ user }: { user: UserDoc }) {
   const [carousel, setCarousel] = useState<CarouselApi>()
@@ -39,50 +59,16 @@ export function ProfileCard({ user }: { user: UserDoc }) {
   }, [carousel])
   const headshots = useQuery(api.resumes.getMyHeadshots)
   const userStats = useQuery(api.resumes.getMyStats)
-
-  // let chest,
-  //   eyeColor,
-  //   hairColor,
-  //   height,
-  //   jacket,
-  //   shoes,
-  //   waist,
-  //   yearsOfExperience,
-  //   representation
-  //
-  // if (userStats && typeof userStats === 'object' && !Array.isArray(userStats)) {
-  //   ;({
-  //     chest,
-  //     eyeColor,
-  //     hairColor,
-  //     height,
-  //     jacket,
-  //     shoes,
-  //     waist,
-  //     yearsOfExperience,
-  //     representation
-  //   } = userStats)
-  // }
-  //
-  // let age
-  // if (user.dateOfBirth) {
-  //   const birthDate = new Date(user.dateOfBirth)
-  //   const today = new Date()
-  //   age = today.getFullYear() - birthDate.getFullYear()
-  //   const month = today.getMonth() - birthDate.getMonth()
-  //   if (month < 0 || (month === 0 && today.getDate() < birthDate.getDate())) {
-  //     age--
-  //   }
-  // }
-  // const gender = user?.gender?.charAt(0).toUpperCase()
-
   return (
     <ReactCardFlip
+      cardStyles={{
+        front: { zIndex: 'unset', transformStyle: 'initial' },
+        back: { zIndex: 'unset', transformStyle: 'initial' }
+      }}
       isFlipped={isFlipped}
       flipDirection="horizontal"
-      // className="h-full"
     >
-      <div className="relative grid">
+      <div className={'relative grid'}>
         <div className="flex justify-center gap-5 pt-3">
           {headshots && headshots.length > 0
             ? headshots.map((headshot, index) => (
@@ -155,16 +141,28 @@ export function ProfileCard({ user }: { user: UserDoc }) {
             <div className="text-lg">{user.location?.city}</div>
           </div>
 
-          {userStats && <UserStats userStats={userStats} />}
-          <div className="flex flex-col items-center gap-5 pt-20">
-            <button className="bg-input flex w-3/4 justify-center gap-1 rounded-full p-2">
-              <Image alt="Email Icon" src={EmailIcon} />
-              Contact
-            </button>
-            <button className="bg-input flex w-3/4 justify-center gap-1 rounded-full p-2">
+          <UserStats userStats={userStats} />
+          <div className="flex flex-col items-center gap-5 px-6 pt-20">
+            <a href={`mailto:${user.email}`} className="w-full">
+              <Button variant="inverted" className="w-full">
+                <Image alt="Email Icon" src={EmailIcon} />
+                Contact
+              </Button>
+            </a>
+            <Button
+              variant="inverted"
+              className="w-full"
+              onClick={async () =>
+                await shareLink(
+                  `Motiion - ${user.firstName} ${user.lastName}`,
+                  'Check out my profile on Motiion, the network for dancers.',
+                  window.location.href
+                )
+              }
+            >
               <Image alt="Email Icon" src={ForwardingIcon} />
               Share Profile
-            </button>
+            </Button>
           </div>
           <button
             onClick={() => setIsFlipped(!isFlipped)}
