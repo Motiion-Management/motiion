@@ -20,6 +20,8 @@ import FlipArrowWhite from '@/public/profile-flip-arrow-white.svg'
 import FlipArrowBlack from '@/public/profile-flip-arrow-black.svg'
 import ForwardingIcon from '@/public/profile-forwarding-icon.svg'
 import EmailIcon from '@/public/profile-email-icon.svg'
+import { UserStats } from './user-stats'
+
 export function ProfileCard({ user }: { user: UserDoc }) {
   const [carousel, setCarousel] = useState<CarouselApi>()
   const [current, setCurrent] = useState(0)
@@ -37,45 +39,48 @@ export function ProfileCard({ user }: { user: UserDoc }) {
   }, [carousel])
   const headshots = useQuery(api.resumes.getMyHeadshots)
   const userStats = useQuery(api.resumes.getMyStats)
-  let chest,
-    eyeColor,
-    hairColor,
-    height,
-    jacket,
-    shoes,
-    waist,
-    yearsOfExperience,
-    representation
-  if (userStats && typeof userStats === 'object' && !Array.isArray(userStats)) {
-    ;({
-      chest,
-      eyeColor,
-      hairColor,
-      height,
-      jacket,
-      shoes,
-      waist,
-      yearsOfExperience,
-      representation
-    } = userStats)
-  }
-  let age
-  if (user.dateOfBirth) {
-    const birthDate = new Date(user.dateOfBirth)
-    const today = new Date()
-    age = today.getFullYear() - birthDate.getFullYear()
-    const month = today.getMonth() - birthDate.getMonth()
-    if (month < 0 || (month === 0 && today.getDate() < birthDate.getDate())) {
-      age--
-    }
-  }
-  const gender = user?.gender?.charAt(0).toUpperCase()
-  
+
+  // let chest,
+  //   eyeColor,
+  //   hairColor,
+  //   height,
+  //   jacket,
+  //   shoes,
+  //   waist,
+  //   yearsOfExperience,
+  //   representation
+  //
+  // if (userStats && typeof userStats === 'object' && !Array.isArray(userStats)) {
+  //   ;({
+  //     chest,
+  //     eyeColor,
+  //     hairColor,
+  //     height,
+  //     jacket,
+  //     shoes,
+  //     waist,
+  //     yearsOfExperience,
+  //     representation
+  //   } = userStats)
+  // }
+  //
+  // let age
+  // if (user.dateOfBirth) {
+  //   const birthDate = new Date(user.dateOfBirth)
+  //   const today = new Date()
+  //   age = today.getFullYear() - birthDate.getFullYear()
+  //   const month = today.getMonth() - birthDate.getMonth()
+  //   if (month < 0 || (month === 0 && today.getDate() < birthDate.getDate())) {
+  //     age--
+  //   }
+  // }
+  // const gender = user?.gender?.charAt(0).toUpperCase()
+
   return (
     <ReactCardFlip
       isFlipped={isFlipped}
       flipDirection="horizontal"
-      className="h-full"
+      // className="h-full"
     >
       <div className="relative grid">
         <div className="flex justify-center gap-5 pt-3">
@@ -150,52 +155,7 @@ export function ProfileCard({ user }: { user: UserDoc }) {
             <div className="text-lg">{user.location?.city}</div>
           </div>
 
-          <div className="text-primary-foreground mt-28 grid grid-cols-5 grid-rows-2 gap-5 border-b border-t p-5">
-            <div className="flex flex-col">
-              <p>{age}</p>
-              <p className="text-xs uppercase tracking-[0.6px]">Age</p>
-            </div>
-            <div>
-              <p>{yearsOfExperience}</p>
-              <p className="text-xs uppercase tracking-[0.6px]">Yrs Exp</p>
-            </div>
-            <div>
-              <p>{gender}</p>
-              <p className="text-xs uppercase tracking-[0.6px]">Gender</p>
-            </div>
-            <div>
-              <p>{height}</p>
-              <p className="text-xs uppercase tracking-[0.6px]">Height</p>
-            </div>
-            <div>
-              <p className="capitalize">{hairColor?.slice(0, 2)}</p>
-              <p className="text-xs uppercase tracking-[0.6px]">Hair</p>
-            </div>
-            <div>
-              <p className="capitalize">{eyeColor?.slice(0, 3)}</p>
-              <p className="text-xs uppercase tracking-[0.6px]">Eyes</p>
-            </div>
-            <div>
-              <p>{chest}</p>
-              <p className="text-xs uppercase tracking-[0.6px]">Chest</p>
-            </div>
-            <div>
-              <p>{waist}</p>
-              <p className="text-xs uppercase tracking-[0.6px]">Waist</p>
-            </div>
-            <div>
-              <p>{shoes}</p>
-              <p className="text-xs uppercase tracking-[0.6px]">Shoes</p>
-            </div>
-            <div>
-              <p>{jacket}</p>
-              <p className="text-xs uppercase tracking-[0.6px]">Jacket</p>
-            </div>
-          </div>
-          <div className="text-primary-foreground flex justify-around gap-5 pt-6">
-            <p>{representation}</p>
-            <p>Agency</p>
-          </div>
+          {userStats && <UserStats userStats={userStats} />}
           <div className="flex flex-col items-center gap-5 pt-20">
             <button className="bg-input flex w-3/4 justify-center gap-1 rounded-full p-2">
               <Image alt="Email Icon" src={EmailIcon} />

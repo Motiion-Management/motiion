@@ -3,7 +3,7 @@ import { authMutation, authQuery } from './util'
 import { getOneFrom } from 'convex-helpers/server/relationships'
 import { fileUploadObjectArray } from './schema'
 import { crud } from 'convex-helpers/server'
-import { Resumes, Agencies } from './schema'
+import { Resumes } from './schema'
 import { ConvexError, v } from 'convex/values'
 import { Id } from './_generated/dataModel'
 
@@ -36,7 +36,7 @@ export const getMyStats = authQuery({
   args: {},
   handler: async (ctx) => {
     if (!ctx.user) {
-      return []
+      return
     }
     const resume = await getOneFrom(ctx.db, 'resumes', 'userId', ctx.user._id)
     // let agency
@@ -53,19 +53,27 @@ export const getMyStats = authQuery({
     //   // The field on that table that should match the specified value. Optional if the index is named after the field.
     //   agency = await getOneFrom(ctx.db, 'agencies', 'agencyId', resume.representation)
     // }
-    return (
-      {
-        eyeColor: resume?.eyeColor,
-        hairColor: resume?.hairColor,
-        height: resume?.height,
-        yearsOfExperience: resume?.yearsOfExperience,
-        jacket: resume?.sizing?.jacket,
-        shoes: resume?.sizing?.shoes,
-        waist: resume?.sizing?.waist,
-        chest: resume?.sizing?.chest,
-        representation: resume?.representation
-      } || {}
-    )
+    //
+
+    let representation = null
+    let repLogo = null
+    if (resume?.representation) {
+      representation = await ctx.db.get(resume.representation)
+      if (representation?.logo) {
+        repLogo = await ctx.storage.getUrl(representation?.logo)
+      }
+    }
+
+    return {
+      ...resume,
+      ...resume?.sizing,
+      gender: ctx.user.gender,
+      dateOfBirth: ctx.user.dateOfBirth,
+      representation: {
+        ...representation,
+        logo: repLogo
+      }
+    }
   }
 })
 
