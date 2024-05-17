@@ -26,7 +26,7 @@ const buttonVariants = cva(
         input:
           'rounded-lg border border-input bg-input-background text-input-foreground hover:bg-input/10',
         'image-upload':
-          'rounded-lg border dark:border-input border-primary  bg-primary text-primary-foreground dark:bg-input-background dark:text-input-foreground hover:bg-input/10'
+          'rounded-lg border dark:border-input border-primary bg-primary text-primary-foreground hover:bg-primary/90 dark:bg-input-background dark:text-input-foreground dark:hover:bg-input/10'
       },
       size: {
         default: 'h-11 px-8 py-2 text-link',
