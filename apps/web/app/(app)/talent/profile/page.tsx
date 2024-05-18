@@ -3,8 +3,13 @@ import { AlertDescription } from '@/components/ui/alert'
 import { DismissableAlert } from '@/components/ui/dismissable-alert'
 import { InfoIcon as Info } from 'lucide-react'
 import { LinkSection } from './link-section'
+import { preloadQuery } from 'convex/nextjs'
+import { api } from '@packages/backend/convex/_generated/api'
+import { Suspense } from 'react'
+import { Skeleton } from '@/components/ui/skeleton'
 
 export default async function ProfilePage() {
+  const preloadedHeadshots = await preloadQuery(api.resumes.getMyHeadshots)
   return (
     <div className="grid w-full grid-cols-1 grid-rows-[repeat(5,min-content)] gap-8 overflow-x-visible">
       <DismissableAlert iconSlot={<Info />} variant="info">
@@ -13,7 +18,12 @@ export default async function ProfilePage() {
         </AlertDescription>
       </DismissableAlert>
 
-      <HeadshotCarousel title="Your Headshots" />
+      <Suspense fallback={<Skeleton />}>
+        <HeadshotCarousel
+          title="Your Headshots"
+          preloadedHeadshots={preloadedHeadshots}
+        />
+      </Suspense>
 
       <LinkSection
         title="About"

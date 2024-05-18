@@ -1,7 +1,7 @@
 'use client'
 import Image, { StaticImageData } from 'next/image'
 import { HeadshotUploadSquare } from '@/components/ui/headshot-upload-square'
-import { useMutation, useQuery } from 'convex/react'
+import { Preloaded, useMutation, usePreloadedQuery } from 'convex/react'
 import { api } from '@packages/backend/convex/_generated/api'
 import { X } from 'lucide-react'
 import {
@@ -12,23 +12,25 @@ import {
 
 export function HeadshotCarousel({
   title,
+  onboarding,
   placeholderText,
   placeholderImage,
-  onboarding
+  preloadedHeadshots
 }: {
   title: string
+  onboarding?: boolean
   placeholderText?: string
   placeholderImage?: StaticImageData
-  onboarding?: boolean
+  preloadedHeadshots: Preloaded<typeof api.resumes.getMyHeadshots>
 }) {
-  const headshots = useQuery(api.resumes.getMyHeadshots)
+  const headshots = usePreloadedQuery(preloadedHeadshots)
   const removeHeadshot = useMutation(api.resumes.removeHeadshot)
   const headshotsExist = headshots && headshots.length > 0
 
   //wrap this in a grid to prevent overflow
   return (
     <div className="flex flex-col items-start gap-3">
-      {headshotsExist && (
+      {headshotsExist ? (
         <>
           <div className="flex w-full justify-between">
             <h4 className="text-h4 text-secondary dark:text-foreground">
@@ -70,6 +72,8 @@ export function HeadshotCarousel({
             </CarouselContent>
           </Carousel>
         </>
+      ) : (
+        <Skeleton className="h-full w-full" />
       )}
       {placeholderText && <p className="text-body">{placeholderText}</p>}
       {!headshotsExist && placeholderImage && (

@@ -3,6 +3,7 @@ import { Montserrat } from 'next/font/google'
 import type { Metadata, Viewport } from 'next'
 import { Analytics } from '@vercel/analytics/react'
 import { SpeedInsights } from '@vercel/speed-insights/next'
+import { Toaster } from 'sonner'
 
 import ConvexClientProvider from './ConvexClientProvider'
 import { ThemeProvider } from './theme-provider'
@@ -72,6 +73,7 @@ export default function RootLayout({
         <RefreshPWA />
         <SpeedInsights />
         <Analytics />
+        <Toaster richColors />
       </body>
     </html>
   )
