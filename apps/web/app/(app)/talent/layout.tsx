@@ -9,9 +9,9 @@ export default function UserScreensLayout({
   children
 }: UserScreensLayoutProps) {
   return (
-    <div className="grid-areas-user-screen grid-rows-user-screen grid-cols-user-screen md:grid-rows-user-screen-md md:grid-areas-user-screen-md grid h-full pb-4">
+    <div className="grid-areas-user-screen grid-rows-user-screen grid-cols-user-screen  grid h-full pb-4">
       <header className="grid-in-title">{title}</header>
-      <main className="grid-in-content grid overflow-scroll p-4">
+      <main className="grid-in-content grid overflow-y-auto overflow-x-clip p-4">
         {children}
       </main>
       <Nav className="grid-in-nav z-10" />

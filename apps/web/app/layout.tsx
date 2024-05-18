@@ -1,5 +1,5 @@
 import './globals.css'
-import { Manrope } from 'next/font/google'
+import { Montserrat } from 'next/font/google'
 import type { Metadata, Viewport } from 'next'
 import { Analytics } from '@vercel/analytics/react'
 import { SpeedInsights } from '@vercel/speed-insights/next'
@@ -9,7 +9,10 @@ import { ThemeProvider } from './theme-provider'
 import { splashTags } from './splash-page-tags'
 import { RefreshPWA } from './refresh-pwa'
 
-const manrope = Manrope({ subsets: ['latin'] })
+const montserrat = Montserrat({
+  subsets: ['latin'],
+  display: 'swap'
+})
 
 const APP_NAME = 'Motiion'
 const APP_DEFAULT_TITLE = 'Motiion'
@@ -25,7 +28,7 @@ export const metadata: Metadata = {
   description: APP_DESCRIPTION,
   appleWebApp: {
     capable: true,
-    statusBarStyle: 'black-translucent',
+    statusBarStyle: 'black',
     title: APP_DEFAULT_TITLE,
     startupImage: splashTags
   },
@@ -62,7 +65,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <body className={manrope.className}>
+      <body className={montserrat.className}>
         <ConvexClientProvider>
           <ThemeProvider> {children}</ThemeProvider>
         </ConvexClientProvider>

@@ -1,5 +1,162 @@
 import type { Config } from 'tailwindcss'
 
+const pxToRem = (px: number | string, base: number = 16) => {
+  const rem = (1 / base) * parseInt(`${px}`.replace('px', ''))
+
+  return `${rem}rem`
+}
+
+export const customFontSizes = {
+  // semantic
+  h1: [
+    pxToRem(40),
+    {
+      fontWeight: '600',
+      letterSpacing: '-0.02em',
+      lineHeight: '1.2'
+    }
+  ],
+  h2: [
+    pxToRem(32),
+    {
+      fontWeight: '600',
+      letterSpacing: '-0.02em',
+      lineHeight: '1.2'
+    }
+  ],
+  h3: [
+    pxToRem(24),
+    {
+      fontWeight: '500',
+      letterSpacing: '-0.02em',
+      lineHeight: '1.2'
+    }
+  ],
+  h4: [
+    pxToRem(18),
+    {
+      fontWeight: '500',
+      letterSpacing: '-0.02em',
+      lineHeight: '1.2'
+    }
+  ],
+  h5: [
+    pxToRem(16),
+    {
+      fontWeight: '500',
+      letterSpacing: '-0.02em',
+      lineHeight: '1.4'
+    }
+  ],
+  h6: [
+    pxToRem(12),
+    {
+      fontWeight: '500',
+      letterSpacing: '-0.02em',
+      lineHeight: '1.4'
+    }
+  ],
+  'body-lg': [
+    pxToRem(18),
+    {
+      fontWeight: '400',
+      letterSpacing: '-0.025em',
+      lineHeight: '1.5'
+    }
+  ],
+  body: [
+    pxToRem(16),
+    {
+      fontWeight: '400',
+      letterSpacing: '-0.025em',
+      lineHeight: '1.5'
+    }
+  ],
+  'body-sm': [
+    pxToRem(14),
+    {
+      fontWeight: '400',
+      letterSpacing: '-0.025em',
+      lineHeight: '1.4'
+    }
+  ],
+  'body-xs': [
+    pxToRem(12),
+    {
+      fontWeight: '400',
+      letterSpacing: '-0.025em',
+      lineHeight: '1.4'
+    }
+  ],
+  'link-lg': [
+    pxToRem(18),
+    {
+      fontWeight: '700',
+      letterSpacing: '-0.01em',
+      lineHeight: '1.5'
+    }
+  ],
+  link: [
+    pxToRem(16),
+    {
+      fontWeight: '700',
+      letterSpacing: '-0.01em',
+      lineHeight: '1.5'
+    }
+  ],
+  'link-sm': [
+    pxToRem(14),
+    {
+      fontWeight: '700',
+      letterSpacing: '-0.01em',
+      lineHeight: '1.2'
+    }
+  ],
+  'label-lg': [
+    pxToRem(48),
+    {
+      fontWeight: '500',
+      letterSpacing: '-0.04em',
+      lineHeight: '1.2'
+    }
+  ],
+  label: [
+    pxToRem(24),
+    {
+      fontWeight: '500',
+      letterSpacing: '-0.02em',
+      lineHeight: '1.2'
+    }
+  ],
+  'label-sm': [
+    pxToRem(18),
+    {
+      fontWeight: '500',
+      letterSpacing: '-0.02em',
+      lineHeight: '1.2'
+    }
+  ],
+  'label-xs': [
+    pxToRem(10),
+    {
+      fontWeight: '500',
+      letterSpacing: '0.06em',
+      lineHeight: '1.2'
+    }
+  ],
+
+  // scale
+  '2xs': pxToRem(10),
+  xs: pxToRem(12),
+  sm: pxToRem(14),
+  base: pxToRem(16),
+  lg: pxToRem(18),
+  xl: pxToRem(24),
+  '2xl': pxToRem(32),
+  '3xl': pxToRem(40),
+  '4xl': pxToRem(48)
+}
+
 const config: Config = {
   darkMode: ['class'],
   content: [
@@ -11,14 +168,37 @@ const config: Config = {
   ],
   prefix: '',
   theme: {
-    container: {
-      center: true,
-      padding: '2rem',
-      screens: {
-        '2xl': '1400px'
-      }
-    },
     extend: {
+      container: {
+        center: true,
+        padding: '2rem',
+        screens: {
+          '2xl': '1400px'
+        }
+      },
+      lineHeight: {
+        normal: '1.5',
+        snug: '1.4',
+        tight: '1.2'
+      },
+      letterSpacing: {
+        'very-tight': '-0.04em',
+        tight: '-0.025em',
+        normal: '-0.02em',
+        loose: '-0.01em',
+        'very-loose': '0.06em'
+      },
+      fontSize: JSON.parse(JSON.stringify(customFontSizes)),
+      fontWeight: {
+        light: '300',
+        normal: '400',
+        medium: '500',
+        semibold: '600',
+        bold: '700'
+      },
+      fontFamily: {
+        sans: ['Montserrat', 'sans-serif']
+      },
       colors: {
         border: 'hsl(var(--border))',
         input: {
@@ -99,44 +279,6 @@ const config: Config = {
     require('tailwindcss-animate'),
     require('@savvywombat/tailwindcss-grid-areas')
   ]
-}
+} as const
 
 export default config
-
-// Old config
-//
-// const config: Config = {
-//   content: [
-//     './src/pages/**/*.{js,ts,jsx,tsx,mdx}',
-//     './src/components/**/*.{js,ts,jsx,tsx,mdx}',
-//     './src/app/**/*.{js,ts,jsx,tsx,mdx}',
-//   ],
-//   theme: {
-//     container: {
-//       center: true,
-//     },
-//     screens: {
-//       sm: '640px',
-//       md: '768px',
-//       lg: '1024px',
-//       xl: '1440px',
-//     },
-//     extend: {
-//       colors: {
-//         primary: '#0D87E1',
-//       },
-//       fontFamily: {
-//         manrope: ['Manrope', 'sans-serif'],
-//         montserrat : ['Montserrat', 'sans-serif'],
-//       },
-//       backgroundImage: {
-//         'gradient-radial': 'radial-gradient(var(--tw-gradient-stops))',
-//         'gradient-conic':
-//           'conic-gradient(from 180deg at 50% 50%, var(--tw-gradient-stops))',
-//       },
-//     },
-//   },
-//   plugins: [
-//     require('@tailwindcss/forms'),
-//   ],
-// }

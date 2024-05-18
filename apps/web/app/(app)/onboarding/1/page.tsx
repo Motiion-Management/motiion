@@ -15,6 +15,7 @@ import { Circle } from 'lucide-react'
 import { Motif2 } from './motif-2'
 import { Motif3 } from './motif-3'
 import { Motif4 } from './motif-4'
+import { useRouter } from 'next/navigation'
 
 const Slide = ({
   title,
@@ -25,13 +26,13 @@ const Slide = ({
   accent: string
   description: string
 }) => (
-  <div className="ml-4 grid gap-8">
-    <h1 className="w-[80%] text-4xl font-semibold">
+  <div className="ml-4 grid gap-8 pr-4">
+    <h1 className="text-h1 w-[80%]">
       {title}
       <br />
       <span className="text-accent">{accent}</span>.
     </h1>
-    <p className="text-xl">{description}</p>
+    <p className="text-body-lg">{description}</p>
   </div>
 )
 export default function Vision() {
@@ -49,6 +50,9 @@ export default function Vision() {
       setCurrent(carousel.selectedScrollSnap())
     })
   }, [carousel])
+
+  const router = useRouter()
+
   const handleNextClick = () => {
     if (carousel) {
       carousel.scrollNext()
@@ -57,12 +61,17 @@ export default function Vision() {
 
   const user = useQuery(api.users.getMyUser)
   const updateMyUser = useMutation(api.users.updateMyUser)
+
   const nextStep = async () => {
+    router.prefetch('/onboarding/2')
     setLoading(true)
-    await updateMyUser({
-      id: user!._id,
-      patch: { onboardingStep: ONBOARDING_STEPS.PERSONAL_INFO }
-    })
+    if (user?.onboardingStep === ONBOARDING_STEPS.VISION) {
+      await updateMyUser({
+        id: user!._id,
+        patch: { onboardingStep: ONBOARDING_STEPS.PERSONAL_INFO }
+      })
+    }
+    router.push('/onboarding/2')
   }
 
   const carouselItems = [

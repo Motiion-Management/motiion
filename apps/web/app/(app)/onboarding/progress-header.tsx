@@ -26,16 +26,12 @@ export function ProgressHeader() {
   }, [step])
 
   return (
-    <div>
-      <div className="flex justify-between text-sm">
-        <p>Account Setup</p>
-        <p>Step {segment} of 4</p>
-      </div>
+    <div className="grid grid-cols-2 justify-between gap-2">
+      <h1 className="text-h3 col-span-2">{header}</h1>
+      <p className="text-label-xs">Account Setup</p>
+      <p className="text-label-xs text-right">Step {segment} of 4</p>
 
-      <h2 className="my-4 text-xl">{header}</h2>
-      <div className="flex justify-center">
-        <Progress value={progress} max={100} />
-      </div>
+      <Progress className="col-span-2 mt-2 h-2" value={progress} max={100} />
     </div>
   )
 }

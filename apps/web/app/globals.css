@@ -7,8 +7,8 @@
     --background: 0 0% 100%;
     --foreground: 225 70% 4%;
 
-    --muted: 195 33% 85%;
-    --muted-foreground: 210.86 14.89% 53.92%;
+    --muted: 216 14% 93%;
+    --muted-foreground: 225 7% 12%;
 
     --popover: 225 40% 98%;
     --popover-foreground: 225 70% 3%;
@@ -32,7 +32,6 @@
     --input: 216 14.29% 93.14%;
     --input-background: 216 14.29% 93.14%;
     --input-foreground: 216 14.29% 93.14%;
-
     --border: 216 14.29% 93.14%;
     --ring: 173.02 100% 16.86%;
     --radius: 0.5rem;
@@ -196,18 +195,3 @@
 body:not(.ptr-loading) .ptr-element {
   transform: translate3d(0, -50px, 0);
 }
-/* .splash_carousel_vision{ */
-/*   background: url("/images/Splash_Vision_BG.png"); */
-/*   background-size: cover; */
-/*   background-position: center; */
-/*   background-repeat: no-repeat; */
-/*   height: 100vh; */
-/* } */
-/* .splash_carousel_features{ */
-/*   background: url("/images/Splash_Features_BG.png"); */
-/*   background-size: cover; */
-/*   background-position: center; */
-/*   background-repeat: no-repeat; */
-/*   height: 100vh; */
-/**/
-/* } */
