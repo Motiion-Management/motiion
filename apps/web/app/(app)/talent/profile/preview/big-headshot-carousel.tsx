@@ -7,9 +7,7 @@ import {
   CarouselApi,
   Carousel,
   CarouselItem,
-  CarouselContent,
-  CarouselNext,
-  CarouselPrevious
+  CarouselContent
 } from '@/components/ui/carousel'
 import { UserDoc } from '@packages/backend/convex/users'
 import { AspectRatio } from '@/components/ui/aspect-ratio'
@@ -38,6 +36,16 @@ export function BigHeadshotCarousel({
     })
   }, [carousel])
 
+  function scrollNext() {
+    if (carousel && carousel.canScrollNext()) {
+      carousel.scrollNext(true)
+    }
+  }
+  function scrollPrevious() {
+    if (carousel && carousel.canScrollPrev()) {
+      carousel.scrollPrev(true)
+    }
+  }
   return (
     <div className={'relative grid'}>
       <div className="flex justify-center gap-5 pt-3">
@@ -65,11 +73,7 @@ export function BigHeadshotCarousel({
         <CarouselContent>
           {headshots && headshots.length > 0 ? (
             headshots.map((headshot, index) => (
-              <CarouselItem
-                //onSelect={() => setCurrent(index)}
-                key={index}
-                className="w-full basis-auto"
-              >
+              <CarouselItem key={index} className="w-full basis-auto">
                 <AspectRatio
                   key={index}
                   ratio={24 / 41}
@@ -100,9 +104,15 @@ export function BigHeadshotCarousel({
           <Image src={FlipArrowWhite} alt="" />
         </Button>
 
-        <CarouselPrevious className="carousel-button-override absolute left-1 h-full  w-1/3 opacity-0" />
+        <button
+          className="absolute left-0 top-0 z-50 h-full w-1/4 "
+          onClick={scrollPrevious}
+        />
 
-        <CarouselNext className="carousel-button-override absolute right-1 h-full w-1/3 opacity-0" />
+        <button
+          className="absolute right-0 top-0 z-50 h-full w-1/4 "
+          onClick={scrollNext}
+        />
       </Carousel>
     </div>
   )

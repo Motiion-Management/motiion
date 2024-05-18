@@ -7,13 +7,13 @@ export interface LinkSectionProps {
 }
 export function LinkSection({ title, links }: LinkSectionProps) {
   return (
-    <div className="border-b-border flex h-min w-full flex-col gap-2 divide-y divide-solid border-b">
+    <div className="border-b-border flex h-min w-full flex-col gap-2 divide-y divide-solid border-b pb-2">
       <h4 className="text-h4 text-secondary">{title}</h4>
       {links.map((link) => (
         <Link
           key={link.href}
           href={link.href}
-          className="text-body flex items-center justify-between py-4"
+          className="text-body flex items-center justify-between pb-2 pt-4"
         >
           {link.text}
           <div className="text-body-xs flex items-center gap-2">

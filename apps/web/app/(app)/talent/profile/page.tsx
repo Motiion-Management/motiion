@@ -6,7 +6,7 @@ import { LinkSection } from './link-section'
 
 export default async function ProfilePage() {
   return (
-    <div className="grid w-full grid-cols-1 grid-rows-[repeat(5,min-content)] gap-6 overflow-x-visible">
+    <div className="grid w-full grid-cols-1 grid-rows-[repeat(5,min-content)] gap-8 overflow-x-visible">
       <DismissableAlert iconSlot={<Info />} variant="info">
         <AlertDescription>
           {`Use the toggle above to switch between "edit" and "preview" modes.`}
