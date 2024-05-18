@@ -27,7 +27,7 @@ export const customFontSizes = {
   h3: [
     pxToRem(24),
     {
-      fontWeight: '600',
+      fontWeight: '500',
       letterSpacing: '-0.02em',
       lineHeight: '1.2'
     }
@@ -35,7 +35,7 @@ export const customFontSizes = {
   h4: [
     pxToRem(18),
     {
-      fontWeight: '600',
+      fontWeight: '500',
       letterSpacing: '-0.02em',
       lineHeight: '1.2'
     }
@@ -43,7 +43,7 @@ export const customFontSizes = {
   h5: [
     pxToRem(16),
     {
-      fontWeight: '600',
+      fontWeight: '500',
       letterSpacing: '-0.02em',
       lineHeight: '1.4'
     }
@@ -51,7 +51,7 @@ export const customFontSizes = {
   h6: [
     pxToRem(12),
     {
-      fontWeight: '600',
+      fontWeight: '500',
       letterSpacing: '-0.02em',
       lineHeight: '1.4'
     }

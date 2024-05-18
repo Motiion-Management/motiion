@@ -15,6 +15,7 @@ import { UserDoc } from '@packages/backend/convex/users'
 import { AspectRatio } from '@/components/ui/aspect-ratio'
 import './profile-card.css'
 import FlipArrowWhite from '@/public/profile-flip-arrow-white.svg'
+import { Button } from '@/components/ui/button'
 export function BigHeadshotCarousel({
   user,
   flip
@@ -54,10 +55,10 @@ export function BigHeadshotCarousel({
           : null}
       </div>
       <div className="text-primary-foreground absolute left-4 top-4 z-10 flex flex-col">
-        <div className="pt-4 text-xl">
+        <div className="text-h3 pt-4">
           {user.firstName} {user.lastName}
         </div>
-        <div className="text-lg">{user.location?.city}</div>
+        <div className="text-h5">{user.location?.city}</div>
       </div>
 
       <Carousel setApi={setCarousel} className="absolute left-0 top-0 w-full">
@@ -80,7 +81,7 @@ export function BigHeadshotCarousel({
                     src={headshot.url || ''}
                     width={400}
                     height={600}
-                    className="h-full w-full rounded-lg object-cover"
+                    className="h-full w-full rounded-xl object-cover"
                     alt={headshot.title || 'Headshot'}
                   />
                 </AspectRatio>
@@ -90,12 +91,14 @@ export function BigHeadshotCarousel({
             <div>No headshots available</div> // Fallback UI when there are no headshots
           )}
         </CarouselContent>
-        <button
+
+        <Button
+          size="icon"
           onClick={flip}
-          className="bg-primary text-primary-foreground absolute bottom-5 right-4 z-[1000] rounded-full p-5"
+          className="absolute bottom-9 right-5 z-[1000]"
         >
           <Image src={FlipArrowWhite} alt="" />
-        </button>
+        </Button>
 
         <CarouselPrevious className="carousel-button-override absolute left-1 h-full  w-1/3 opacity-0" />
 

@@ -12,7 +12,7 @@ export default async function AppLayout({
           {children}
         </div>
       </div>
-      <Toaster />
+      <Toaster richColors />
     </>
   )
 }

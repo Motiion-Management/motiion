@@ -16,7 +16,7 @@ function NavLink({ href, children }: NavLinkProps) {
       className={cn(
         'mx-2 flex flex-col items-center gap-1 py-3',
         isActive
-          ? 'text-primary border-primary border-t-2 md:border-b-2 md:border-t-0'
+          ? 'text-primary border-primary border-t-2 '
           : 'text-muted-foreground'
       )}
       href={href}
@@ -28,12 +28,7 @@ function NavLink({ href, children }: NavLinkProps) {
 
 export function Nav({ className }: { className?: string }) {
   return (
-    <nav
-      className={cn(
-        '-mb-8 border-t bg-white pb-6 md:border-b md:border-t-0',
-        className
-      )}
-    >
+    <nav className={cn('-mb-8 border-t bg-white pb-6 ', className)}>
       <div className="mx-auto grid max-w-md grid-cols-4 grid-rows-1 gap-2 px-4">
         <NavLink href="/talent/home">
           <Home size={24} />
