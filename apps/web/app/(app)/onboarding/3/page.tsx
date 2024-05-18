@@ -10,7 +10,6 @@ import { HeadshotCarousel } from '@/components/features/headshot-carousel'
 
 export default function Headshot() {
   const headshots = useQuery(api.resumes.getMyHeadshots)
-  const removeHeadshot = useMutation(api.resumes.removeHeadshot)
   const headshotsExist = headshots && headshots.length > 0
   const updateMyUser = useMutation(api.users.updateMyUser)
   const user = useQuery(api.users.getMyUser)
