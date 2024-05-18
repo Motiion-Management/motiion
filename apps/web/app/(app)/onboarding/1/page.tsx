@@ -62,8 +62,8 @@ export default function Vision() {
   const user = useQuery(api.users.getMyUser)
   const updateMyUser = useMutation(api.users.updateMyUser)
 
-  router.prefetch('/onboarding/2')
   const nextStep = async () => {
+    router.prefetch('/onboarding/2')
     setLoading(true)
     if (user?.onboardingStep === ONBOARDING_STEPS.VISION) {
       await updateMyUser({
