@@ -78,7 +78,7 @@ export function ProfileCard({ user }: { user: UserDoc }) {
                 await shareLink(
                   `Motiion - ${user.firstName} ${user.lastName}`,
                   'Check out my profile on Motiion, the network for dancers.',
-                  window.location.href
+                  '/talent/profile/preview' //TODO: replace with user profile link when page is done
                 )
               }
             >
