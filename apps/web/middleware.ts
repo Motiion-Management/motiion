@@ -16,13 +16,15 @@ export default clerkMiddleware(async (auth, req) => {
     auth().protect()
     const token = await getMiddlewareAuthToken(auth)
     const data = await fetchQuery(api.users.getMyUser, {}, { token })
-    const { onboardingStep } = data!
-    const onboardingTarget = `/onboarding/${onboardingStep}`
-    if (
-      onboardingStep !== ONBOARDING_STEPS.COMPLETE &&
-      req.nextUrl.pathname !== onboardingTarget
-    ) {
-      return NextResponse.redirect(new URL(onboardingTarget, req.url))
+    if (data) {
+      const { onboardingStep } = data
+      const onboardingTarget = `/onboarding/${onboardingStep}`
+      if (
+        onboardingStep !== ONBOARDING_STEPS.COMPLETE &&
+        req.nextUrl.pathname !== onboardingTarget
+      ) {
+        return NextResponse.redirect(new URL(onboardingTarget, req.url))
+      }
     }
   }
   const requestHeaders = new Headers(req.headers)
