@@ -9,12 +9,10 @@ import { X } from 'lucide-react'
 import { Skeleton } from '../ui/skeleton'
 
 export function Headshots({
-  // placeholderImage,
   preloadedHeadshots,
   onboarding,
   ItemComponent = CarouselItem
 }: {
-  // placeholderImage?: StaticImageData
   preloadedHeadshots: Preloaded<typeof api.resumes.getMyHeadshots>
   onboarding?: boolean
   ItemComponent?: typeof CarouselItem | React.FC
@@ -98,7 +96,7 @@ export function HeadshotPlaceholder({
 }
 
 export function HeadshotSkeleton({ count = 1 }: { count?: number }) {
-  return [...Array(count)].map(() => (
-    <Skeleton className=" h-[148px] w-[100px]" />
+  return [...Array(count)].map((_, i) => (
+    <Skeleton key={`headshot-skeleton-${i}`} className=" h-[148px] w-[100px]" />
   ))
 }
