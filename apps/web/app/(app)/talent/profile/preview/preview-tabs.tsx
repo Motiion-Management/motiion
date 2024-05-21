@@ -1,5 +1,13 @@
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
-import { Accordion, AccordionItem, AccordionTrigger, AccordionContent } from '@/components/ui/accordion';
+import { toDate, differenceInYears, endOfToday } from 'date-fns'
+import {
+  Accordion,
+  AccordionItem,
+  AccordionTrigger,
+  AccordionContent
+} from '@/components/ui/accordion'
+import { useQuery } from 'convex/react'
+import { api } from '@packages/backend/convex/_generated/api'
 import {
   Card,
   CardContent,
@@ -7,7 +15,28 @@ import {
   CardHeader,
   CardTitle
 } from '@/components/ui/card'
+import './preview-tabs.css'
+
+const calculateAge = (dateOfBirth?: string | null) => {
+  if (!dateOfBirth) {
+    return
+  }
+  const dob = toDate(dateOfBirth)
+  return differenceInYears(endOfToday(), dob)
+}
+
+function Stat({ label, value }: { label: string; value: React.ReactNode }) {
+  return (
+    <div className="mb-5 flex flex-col border-b-2 pb-4 text-left">
+      <div className="text-h4 text-secondary uppercase leading-10">{label}</div>
+      <p className="text-label-s uppercase tracking-[0.6px]">{value}</p>
+    </div>
+  )
+}
+
 export function PreviewTabs() {
+  const userStats = useQuery(api.resumes.getMyStats)
+  console.log(userStats)
   return (
     <Tabs defaultValue="account" className="mt-[175%]">
       <TabsList className="grid w-full grid-cols-3 rounded-full">
@@ -23,71 +52,59 @@ export function PreviewTabs() {
       </TabsList>
       <TabsContent value="account" className="border-none">
         <Accordion type="single" collapsible>
-          <Card>
-            <AccordionItem value="attributes" title="attributes">
-              <AccordionTrigger>Attributes</AccordionTrigger>
+          <AccordionItem value="attributes" title="attributes">
+            <Card className="p-6">
+              <AccordionTrigger className="accordion-trigger text-lg">
+                Attributes
+              </AccordionTrigger>
               <AccordionContent>
-                <CardHeader></CardHeader>
-                <CardContent>
+                <CardContent className="pl-0">
                   <CardDescription>
-                    <div>
-                      Ethnicity
-                      <p>White</p>
-                    </div>
-                    <div>
-                      Height
-                      <p>5'9</p>
-                    </div>
-                    <div>
-                      Ethnicity
-                      <p>White</p>
-                    </div>
-                    <div>
-                      Ethnicity
-                      <p>White</p>
-                    </div>
-                    <div>
-                      Ethnicity
-                      <p>White</p>
-                    </div>
+                    <Stat label="Ethnicity" value="White/Caucasian" />
+                    <Stat label="Height" value={userStats?.height} />
+                    <Stat label="Eyes" value={userStats?.eyeColor} />
+                    <Stat label="Hair Color" value={userStats?.hairColor} />
+                    <Stat
+                      label="Age"
+                      value={calculateAge(userStats?.dateOfBirth)}
+                    />
                   </CardDescription>
                 </CardContent>
               </AccordionContent>
-            </AccordionItem>
-          </Card>
+            </Card>
+          </AccordionItem>
           <AccordionItem value="Representation" title="Representation">
-            <AccordionTrigger>Representation</AccordionTrigger>
-            <AccordionContent>
-              <Card>
-                <CardHeader>
-                  <CardTitle>Representation</CardTitle>
-                </CardHeader>
-                <CardContent>
+            <Card className="p-6">
+              <AccordionTrigger className="text-lg no-underline">
+                Representation
+              </AccordionTrigger>
+              <AccordionContent>
+                <CardContent className="pl-0">
                   <CardDescription>
-                    <div>
-                      <p>Bloc Talent Agency</p>
-                    </div>
+                    <Stat
+                      label="Representation"
+                      value={userStats?.representation?.name}
+                    />
                   </CardDescription>
                 </CardContent>
-              </Card>
-            </AccordionContent>
+              </AccordionContent>
+            </Card>
           </AccordionItem>
           <AccordionItem value="Sizing" title="Sizing">
-            <AccordionTrigger>Sizing</AccordionTrigger>
-            <AccordionContent>
-              <Card>
-                <CardHeader>
-                  <CardTitle>Sizing</CardTitle>
-                </CardHeader>
-                <CardContent>
+            <Card className="p-6">
+              <AccordionTrigger className="text-lg ">Sizing</AccordionTrigger>
+              <AccordionContent>
+                <CardContent className="pl-0">
                   <CardDescription>
-                    <div>
-                      <p>Bloc Talent Agency</p>
-                    </div>
+                    <Stat label="Height" value={userStats?.height} />
+                    <Stat label="Waist" value={userStats?.waist} />
+                    <Stat label="Shoes" value={userStats?.shoes} />
+                    <Stat label="Chest" value={userStats?.chest} />
+                    <Stat label="Jacket" value={userStats?.jacket} />
                   </CardDescription>
                 </CardContent>
-              </Card>
-            </AccordionContent>
+              </AccordionContent>
+            </Card>
           </AccordionItem>
         </Accordion>
       </TabsContent>
