@@ -9,11 +9,14 @@ import {
   CarouselItem,
   CarouselContent
 } from '@/components/ui/carousel'
+
 import { UserDoc } from '@packages/backend/convex/users'
 import { AspectRatio } from '@/components/ui/aspect-ratio'
 import './profile-card.css'
 import FlipArrowWhite from '@/public/profile-flip-arrow-white.svg'
 import { Button } from '@/components/ui/button'
+import { PreviewTabs } from './preview-tabs'
+
 export function BigHeadshotCarousel({
   user,
   flip
@@ -47,73 +50,76 @@ export function BigHeadshotCarousel({
     }
   }
   return (
-    <div className={'relative grid'}>
-      <div className="flex justify-center gap-5 pt-3">
-        {headshots && headshots.length > 0
-          ? headshots.map((headshot, index) => (
-              <Progress
-                className={
-                  current === index
-                    ? 'bg-accent z-10 h-2 w-16'
-                    : 'bg-background z-10 h-2 w-16'
-                }
-                key={index}
-              />
-            ))
-          : null}
-      </div>
-      <div className="text-primary-foreground absolute left-4 top-4 z-10 flex flex-col">
-        <div className="text-h3 pt-4">
-          {user.firstName} {user.lastName}
-        </div>
-        <div className="text-h5">{user.location?.city}</div>
-      </div>
-
-      <Carousel setApi={setCarousel} className="absolute left-0 top-0 w-full">
-        <CarouselContent>
-          {headshots && headshots.length > 0 ? (
-            headshots.map((headshot, index) => (
-              <CarouselItem key={index} className="w-full basis-auto">
-                <AspectRatio
+    <>
+      <div className={'relative grid'}>
+        <div className="flex justify-center gap-5 pt-3">
+          {headshots && headshots.length > 0
+            ? headshots.map((headshot, index) => (
+                <Progress
+                  className={
+                    current === index
+                      ? 'bg-accent z-10 h-2 w-16'
+                      : 'bg-background z-10 h-2 w-16'
+                  }
                   key={index}
-                  ratio={24 / 41}
-                  className="w-full"
-                  id="ar"
-                >
-                  <Image
-                    key={headshot.title || headshot.url}
-                    src={headshot.url || ''}
-                    width={400}
-                    height={600}
-                    className="h-full w-full rounded-xl object-cover"
-                    alt={headshot.title || 'Headshot'}
-                  />
-                </AspectRatio>
-              </CarouselItem>
-            ))
-          ) : (
-            <div>No headshots available</div> // Fallback UI when there are no headshots
-          )}
-        </CarouselContent>
+                />
+              ))
+            : null}
+        </div>
+        <div className="text-primary-foreground absolute left-4 top-4 z-10 flex flex-col">
+          <div className="text-h3 pt-4">
+            {user.firstName} {user.lastName}
+          </div>
+          <div className="text-h5">{user.location?.city}</div>
+        </div>
 
-        <Button
-          size="icon"
-          onClick={flip}
-          className="absolute bottom-9 right-5 z-[1000]"
-        >
-          <Image src={FlipArrowWhite} alt="" />
-        </Button>
+        <Carousel setApi={setCarousel} className="absolute left-0 top-0 w-full">
+          <CarouselContent>
+            {headshots && headshots.length > 0 ? (
+              headshots.map((headshot, index) => (
+                <CarouselItem key={index} className="w-full basis-auto">
+                  <AspectRatio
+                    key={index}
+                    ratio={24 / 41}
+                    className="w-full"
+                    id="ar"
+                  >
+                    <Image
+                      key={headshot.title || headshot.url}
+                      src={headshot.url || ''}
+                      width={400}
+                      height={600}
+                      className="h-full w-full rounded-xl object-cover"
+                      alt={headshot.title || 'Headshot'}
+                    />
+                  </AspectRatio>
+                </CarouselItem>
+              ))
+            ) : (
+              <div>No headshots available</div> // Fallback UI when there are no headshots
+            )}
+          </CarouselContent>
 
-        <button
-          className="absolute left-0 top-0 z-50 h-full w-1/4 "
-          onClick={scrollPrevious}
-        />
+          <Button
+            size="icon"
+            onClick={flip}
+            className="absolute bottom-9 right-5 z-[1000]"
+          >
+            <Image src={FlipArrowWhite} alt="" />
+          </Button>
 
-        <button
-          className="absolute right-0 top-0 z-50 h-full w-1/4 "
-          onClick={scrollNext}
-        />
-      </Carousel>
-    </div>
+          <button
+            className="absolute left-0 top-0 z-50 h-full w-1/4 "
+            onClick={scrollPrevious}
+          />
+
+          <button
+            className="absolute right-0 top-0 z-50 h-full w-1/4 "
+            onClick={scrollNext}
+          />
+        </Carousel>
+      </div>
+     <PreviewTabs />
+    </>
   )
 }
