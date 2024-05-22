@@ -1,5 +1,6 @@
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { toDate, differenceInYears, endOfToday } from 'date-fns'
+import { LinkSection } from '../link-section'
 import {
   Accordion,
   AccordionItem,
@@ -22,7 +23,9 @@ const calculateAge = (dateOfBirth?: string | null) => {
 function Stat({ label, value }: { label: string; value: React.ReactNode }) {
   return (
     <div className="mb-5 flex flex-col border-b-2 pb-4 text-left">
-      <div className="text-xs text-secondary uppercase leading-10 font-medium">{label}</div>
+      <div className="text-secondary text-xs font-medium uppercase leading-10">
+        {label}
+      </div>
       <p className="text-label-s uppercase tracking-[0.6px]">{value}</p>
     </div>
   )
@@ -46,19 +49,19 @@ export const PreviewTabs: React.FC<PreviewTabsProps> = ({
       className={`mt-[175%] ${snapTarget}`}
     >
       <TabsList className="grid w-full grid-cols-3 rounded-full">
-        <TabsTrigger className="rounded-full" value="account">
+        <TabsTrigger className="rounded-full" value="about">
           About
         </TabsTrigger>
-        <TabsTrigger className="rounded-full" value="password">
+        <TabsTrigger className="rounded-full" value="resume">
           Resume
         </TabsTrigger>
         <TabsTrigger className="rounded-full" value="links">
           Links
         </TabsTrigger>
       </TabsList>
-      <TabsContent value="account" className="border-none">
+      <TabsContent value="about" className="border-none">
         <Accordion type="single" collapsible>
-          <AccordionItem  className='pb-6' value="attributes" title="attributes">
+          <AccordionItem className="pb-6" value="attributes" title="attributes">
             <Card className="p-6">
               <AccordionTrigger className="accordion-trigger justify-between text-lg">
                 Attributes <ChevronRight size={20} />
@@ -79,7 +82,11 @@ export const PreviewTabs: React.FC<PreviewTabsProps> = ({
               </AccordionContent>
             </Card>
           </AccordionItem>
-          <AccordionItem value="Representation" title="Representation" className='pb-6'>
+          <AccordionItem
+            value="Representation"
+            title="Representation"
+            className="pb-6"
+          >
             <Card className="p-6">
               <AccordionTrigger className="justify-between text-lg no-underline">
                 Representation <ChevronRight size={20} />
@@ -96,7 +103,7 @@ export const PreviewTabs: React.FC<PreviewTabsProps> = ({
               </AccordionContent>
             </Card>
           </AccordionItem>
-          <AccordionItem value="Sizing" title="Sizing"  className='pb-6'>
+          <AccordionItem value="Sizing" title="Sizing" className="pb-6">
             <Card className="p-6">
               <AccordionTrigger className="justify-between text-lg">
                 Sizing <ChevronRight size={20} />
@@ -115,6 +122,43 @@ export const PreviewTabs: React.FC<PreviewTabsProps> = ({
             </Card>
           </AccordionItem>
         </Accordion>
+      </TabsContent>
+      <TabsContent value="resume">
+      <LinkSection
+        title=""
+        links={[
+          {
+            href: '/talent/profile/television-film',
+            text: 'Television/Film',
+            preview: ''
+          },
+          {
+            href: '/talent/profile/music-videos',
+            text: 'Music Videos',
+            preview: ''
+          },
+          {
+            href: '/talent/profile/live-performances',
+            text: 'Live/Stage Performances',
+            preview: ''
+          },
+          {
+            href: '/talent/profile/commercials',
+            text: 'Commercials',
+            preview: ''
+          },
+          {
+            href: '/talent/profile/training-education',
+            text: 'Training/Education',
+            preview: ''
+          },
+          {
+            href: '/talent/profile/skills',
+            text: 'Skills',
+            preview: ''
+          }
+        ]}
+      />
       </TabsContent>
     </Tabs>
   )
