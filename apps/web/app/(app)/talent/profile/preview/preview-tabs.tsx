@@ -12,8 +12,7 @@ import {
   Card,
   CardContent,
   CardDescription,
-  CardHeader,
-  CardTitle
+  
 } from '@/components/ui/card'
 import './preview-tabs.css'
 
@@ -34,11 +33,16 @@ function Stat({ label, value }: { label: string; value: React.ReactNode }) {
   )
 }
 
-export function PreviewTabs() {
+type PreviewTabsProps = {
+  snapTarget?: string;
+  style?: React.CSSProperties;
+}
+
+export const PreviewTabs: React.FC<PreviewTabsProps> = ({ snapTarget, style }) => {
   const userStats = useQuery(api.resumes.getMyStats)
   console.log(userStats)
   return (
-    <Tabs defaultValue="account" className="mt-[175%]">
+    <Tabs style={style} defaultValue="account" className={`mt-[175%] ${snapTarget}`}>
       <TabsList className="grid w-full grid-cols-3 rounded-full">
         <TabsTrigger className="rounded-full" value="account">
           About
