@@ -1,3 +1,7 @@
 .hover\:underline:hover{
   text-decoration: none !important;
 }
+
+.\[\&\[data-state\=open\]\>svg\]\:rotate-45[data-state=open]>svg{
+  transform: rotate(90deg);
+}

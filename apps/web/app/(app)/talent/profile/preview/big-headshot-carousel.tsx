@@ -9,7 +9,7 @@ import {
   CarouselItem,
   CarouselContent
 } from '@/components/ui/carousel'
-
+import { Accordion, AccordionItem, AccordionTrigger, AccordionContent } from '@/components/ui/accordion'
 import { UserDoc } from '@packages/backend/convex/users'
 import { AspectRatio } from '@/components/ui/aspect-ratio'
 import './profile-card.css'
@@ -28,7 +28,6 @@ export function BigHeadshotCarousel({
   const [carousel, setCarousel] = useState<CarouselApi>()
   const [current, setCurrent] = useState(0)
   const [isShrunk, setIsShrunk] = useState(false)
-
   const previewTabsRef = useRef(null);
   const carouselContainerRef = useRef(null);
 
@@ -79,6 +78,8 @@ export function BigHeadshotCarousel({
       <section
         className={`carousel-preview-container ${isShrunk ? 'shrunk' : ''}`}
       >
+    
+
         <div
           ref={carouselContainerRef}
           className={`carousel-container relative grid ${isShrunk ? 'shrunk' : ''}`}
@@ -154,7 +155,9 @@ export function BigHeadshotCarousel({
               onClick={scrollNext}
             />
           </Carousel>
+
         </div>
+   
         <PreviewTabs
           snapTarget="preview"
         />

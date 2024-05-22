@@ -8,14 +8,9 @@ import {
 } from '@/components/ui/accordion'
 import { useQuery } from 'convex/react'
 import { api } from '@packages/backend/convex/_generated/api'
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  
-} from '@/components/ui/card'
+import { Card, CardContent, CardDescription } from '@/components/ui/card'
 import './preview-tabs.css'
-
+import { ChevronRight } from 'lucide-react'
 const calculateAge = (dateOfBirth?: string | null) => {
   if (!dateOfBirth) {
     return
@@ -27,22 +22,29 @@ const calculateAge = (dateOfBirth?: string | null) => {
 function Stat({ label, value }: { label: string; value: React.ReactNode }) {
   return (
     <div className="mb-5 flex flex-col border-b-2 pb-4 text-left">
-      <div className="text-h4 text-secondary uppercase leading-10">{label}</div>
+      <div className="text-xs text-secondary uppercase leading-10 font-medium">{label}</div>
       <p className="text-label-s uppercase tracking-[0.6px]">{value}</p>
     </div>
   )
 }
 
 type PreviewTabsProps = {
-  snapTarget?: string;
-  style?: React.CSSProperties;
+  snapTarget?: string
+  style?: React.CSSProperties
 }
 
-export const PreviewTabs: React.FC<PreviewTabsProps> = ({ snapTarget, style }) => {
+export const PreviewTabs: React.FC<PreviewTabsProps> = ({
+  snapTarget,
+  style
+}) => {
   const userStats = useQuery(api.resumes.getMyStats)
   console.log(userStats)
   return (
-    <Tabs style={style} defaultValue="account" className={`mt-[175%] ${snapTarget}`}>
+    <Tabs
+      style={style}
+      defaultValue="account"
+      className={`mt-[175%] ${snapTarget}`}
+    >
       <TabsList className="grid w-full grid-cols-3 rounded-full">
         <TabsTrigger className="rounded-full" value="account">
           About
@@ -56,10 +58,10 @@ export const PreviewTabs: React.FC<PreviewTabsProps> = ({ snapTarget, style }) =
       </TabsList>
       <TabsContent value="account" className="border-none">
         <Accordion type="single" collapsible>
-          <AccordionItem value="attributes" title="attributes">
+          <AccordionItem  className='pb-6' value="attributes" title="attributes">
             <Card className="p-6">
-              <AccordionTrigger className="accordion-trigger text-lg">
-                Attributes
+              <AccordionTrigger className="accordion-trigger justify-between text-lg">
+                Attributes <ChevronRight size={20} />
               </AccordionTrigger>
               <AccordionContent>
                 <CardContent className="pl-0">
@@ -77,10 +79,10 @@ export const PreviewTabs: React.FC<PreviewTabsProps> = ({ snapTarget, style }) =
               </AccordionContent>
             </Card>
           </AccordionItem>
-          <AccordionItem value="Representation" title="Representation">
+          <AccordionItem value="Representation" title="Representation" className='pb-6'>
             <Card className="p-6">
-              <AccordionTrigger className="text-lg no-underline">
-                Representation
+              <AccordionTrigger className="justify-between text-lg no-underline">
+                Representation <ChevronRight size={20} />
               </AccordionTrigger>
               <AccordionContent>
                 <CardContent className="pl-0">
@@ -94,9 +96,11 @@ export const PreviewTabs: React.FC<PreviewTabsProps> = ({ snapTarget, style }) =
               </AccordionContent>
             </Card>
           </AccordionItem>
-          <AccordionItem value="Sizing" title="Sizing">
+          <AccordionItem value="Sizing" title="Sizing"  className='pb-6'>
             <Card className="p-6">
-              <AccordionTrigger className="text-lg ">Sizing</AccordionTrigger>
+              <AccordionTrigger className="justify-between text-lg">
+                Sizing <ChevronRight size={20} />
+              </AccordionTrigger>
               <AccordionContent>
                 <CardContent className="pl-0">
                   <CardDescription>
