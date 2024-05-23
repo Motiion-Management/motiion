@@ -28,3 +28,13 @@ export async function myUploads() {
   }
   return uploads
 }
+
+export async function myAttributes() {
+  const token = await getAuthToken()
+  const resume = await fetchQuery(api.resumes.getMyAttributes, {}, { token })
+
+  if (!resume) {
+    redirect('/sign-in')
+  }
+  return resume
+}

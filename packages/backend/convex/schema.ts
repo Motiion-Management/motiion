@@ -28,6 +28,15 @@ const hairColor = v.nullish(
 const eyeColor = v.nullish(
   v.literals('blue', 'brown', 'green', 'hazel', 'gray', 'amber', 'red', 'black')
 )
+const ethnicity = v.literals(
+  'American Indian / Alaska Native',
+  'Asian',
+  'Black / African American',
+  'Hispanic / Latino',
+  'Native Hawaiian / Pacific Islander',
+  'White / Caucasian'
+)
+
 const sizing = v.object(
   v.partial({
     chest: v.number,
@@ -79,17 +88,19 @@ export const Resumes = Table('resume', {
   commercials: v.optional(v.array(v.id('experiences'))),
   training: v.optional(v.array(v.id('training'))),
   skills: v.optional(v.array(v.id('skills'))),
-  height: v.nullish(v.number),
+  height: v.optional(v.number),
+  weight: v.optional(v.number),
   hairColor,
   eyeColor,
-  sizing: v.nullish(sizing),
-  representation: v.nullish(v.id('agencies')),
-  yearsOfExperience: v.nullish(v.number),
+  ethnicity: v.optional(ethnicity),
+  sizing: v.optional(sizing),
+  representation: v.optional(v.id('agencies')),
+  yearsOfExperience: v.optional(v.number),
   headshots: v.optional(fileUploadObjectArray),
   resumeUploads: v.optional(fileUploadObjectArray),
   links: v.optional(
     v.object({
-      reel: v.nullish(v.string),
+      reel: v.optional(v.string),
       socials: v.array(v.object({ platform: v.string, link: v.string })),
       portfolio: v.array(v.object({ title: v.string, link: v.string }))
     })

@@ -6,6 +6,7 @@ import { crud } from 'convex-helpers/server'
 import { Resumes } from './schema'
 import { ConvexError, v } from 'convex/values'
 import { Id } from './_generated/dataModel'
+import { partial } from 'convex-helpers/validators'
 
 export const { read } = crud(Resumes, query, mutation)
 
@@ -14,6 +15,46 @@ export const { create, update, destroy } = crud(
   authQuery,
   authMutation
 )
+
+export const getMyAttributes = authQuery({
+  args: {},
+  handler: async (ctx) => {
+    if (!ctx.user) {
+      return null
+    }
+    const resume = await getOneFrom(ctx.db, 'resumes', 'userId', ctx.user._id)
+
+    if (!resume) {
+      return null
+    }
+
+    const { ethnicity, height, weight, eyeColor, hairColor } = resume
+
+    return {
+      ethnicity,
+      height,
+      weight,
+      eyeColor,
+      hairColor
+    }
+  }
+})
+
+export const saveMyAttributes = authMutation({
+  args: partial(Resumes.withoutSystemFields),
+  handler: async (ctx, args) => {
+    const resume = await getOneFrom(ctx.db, 'resumes', 'userId', ctx.user._id)
+
+    if (!resume) {
+      ctx.db.insert('resumes', {
+        userId: ctx.user._id,
+        ...args
+      })
+    } else {
+      ctx.db.patch(resume._id, args)
+    }
+  }
+})
 
 export const getMyHeadshots = authQuery({
   args: {},
