@@ -72,17 +72,17 @@ export default async function ProfilePage() {
         title="Links"
         links={[
           {
-            href: '/talent/profile/edit/reels',
+            href: '/talent/profile/edit/links/reels',
             text: 'Reels',
             preview: '1'
           },
           {
-            href: '/talent/profile/edit/socials',
+            href: '/talent/profile/edit/links/socials',
             text: 'Socials',
             preview: '4'
           },
           {
-            href: '/talent/profile/edit/other',
+            href: '/talent/profile/edit/links/other',
             text: 'Other',
             preview: '1'
           }
