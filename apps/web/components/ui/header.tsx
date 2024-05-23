@@ -5,14 +5,14 @@ export function Header({
   actionSlot,
   children
 }: {
-  title: string
+  title?: string
   actionSlot?: React.ReactNode
   children?: React.ReactNode
 }) {
   return (
-    <header className="flex w-full flex-wrap items-center justify-between gap-4 ">
+    <header className="bg-background flex w-full flex-wrap items-center justify-between gap-4 ">
       <div className="flex w-full flex-wrap justify-between gap-4 px-4">
-        <h1 className="text-primary text-h3 flex-1">{title}</h1>
+        {title && <h1 className="text-primary text-h3 flex-1">{title}</h1>}
         <div className="flex">{actionSlot}</div>
         {children && (
           <div className="flex basis-full justify-center gap-4">{children}</div>

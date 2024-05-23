@@ -19,16 +19,16 @@ export default async function ProfilePage() {
         title="About"
         links={[
           {
-            href: '/talent/profile/representation',
+            href: '/talent/profile/edit/about/representation',
             text: 'Representation',
             preview: 'Block LA'
           },
           {
-            href: '/talent/profile/attributes',
+            href: '/talent/profile/edit/about/attributes',
             text: 'Attributes'
           },
           {
-            href: '/talent/profile/sizing',
+            href: '/talent/profile/edit/about/sizing',
             text: 'Sizing'
           }
         ]}
@@ -37,32 +37,32 @@ export default async function ProfilePage() {
         title="Resume"
         links={[
           {
-            href: '/talent/profile/television-film',
+            href: '/talent/profile/edit/resume/television-film',
             text: 'Television/Film',
             preview: '4'
           },
           {
-            href: '/talent/profile/music-videos',
+            href: '/talent/profile/edit/resume/music-videos',
             text: 'Music Videos',
             preview: '8'
           },
           {
-            href: '/talent/profile/live-performances',
+            href: '/talent/profile/edit/resume/live-performances',
             text: 'Live/Stage Performances',
             preview: '25'
           },
           {
-            href: '/talent/profile/commercials',
+            href: '/talent/profile/edit/resume/commercials',
             text: 'Commercials',
             preview: '3'
           },
           {
-            href: '/talent/profile/training-education',
+            href: '/talent/profile/edit/resume/training-education',
             text: 'Training/Education',
             preview: '2'
           },
           {
-            href: '/talent/profile/skills',
+            href: '/talent/profile/edit/skills',
             text: 'Skills',
             preview: '11'
           }
@@ -72,17 +72,17 @@ export default async function ProfilePage() {
         title="Links"
         links={[
           {
-            href: '/talent/profile/reels',
+            href: '/talent/profile/edit/reels',
             text: 'Reels',
             preview: '1'
           },
           {
-            href: '/talent/profile/socials',
+            href: '/talent/profile/edit/socials',
             text: 'Socials',
             preview: '4'
           },
           {
-            href: '/talent/profile/other',
+            href: '/talent/profile/edit/other',
             text: 'Other',
             preview: '1'
           }
