@@ -37,8 +37,8 @@
     "@xixixao/uploadstuff": "^0.0.5",
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.1.1",
-    "convex": "^1.11.2",
-    "convex-helpers": "^0.1.35",
+    "convex": "^1.12.0",
+    "convex-helpers": "^0.1.38",
     "date-fns": "^3.6.0",
     "embla-carousel-react": "^8.0.2",
     "input-otp": "^1.2.4",
@@ -57,14 +57,14 @@
     "tailwind-merge": "^2.3.0",
     "tailwindcss-animate": "^1.0.7",
     "vaul": "^0.9.0",
-    "zod": "^3.23.5"
+    "zod": "^3.23.8"
   },
   "devDependencies": {
     "@savvywombat/tailwindcss-grid-areas": "^4.0.0",
     "@tailwindcss/forms": "^0.5.7",
-    "@types/node": "^20",
+    "@types/node": "^20.12.12",
     "@types/pulltorefreshjs": "^0.1.7",
-    "@types/react": "^18.3.1",
+    "@types/react": "^18.3.3",
     "@types/react-dom": "^18",
     "autoprefixer": "^10.0.1",
     "eslint-config-next": "14.2.3",

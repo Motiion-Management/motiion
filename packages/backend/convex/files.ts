@@ -1,6 +1,7 @@
+import { zodToConvex } from 'convex-helpers/server/zod'
 import { internalAction } from './_generated/server'
-import { fileUploadObjectArray } from './schema'
 import { authMutation } from './util'
+import { zFileUploadObjectArray } from './validators/resume'
 
 export const generateUploadUrl = authMutation({
   handler: async (ctx) => {
@@ -10,7 +11,7 @@ export const generateUploadUrl = authMutation({
 
 export const ensureOnlyFive = internalAction({
   args: {
-    files: fileUploadObjectArray // other args...
+    files: zodToConvex(zFileUploadObjectArray) // other args...
   },
   handler: async (ctx, args) => {
     while (args.files.length > 5) {

@@ -1,6 +1,6 @@
 import 'server-only'
 
-import { fetchQuery } from 'convex/nextjs'
+import { fetchQuery, preloadQuery } from 'convex/nextjs'
 import { getAuthToken } from '@/lib/server/utils'
 import { api } from '@packages/backend/convex/_generated/api'
 import { redirect } from 'next/navigation'
@@ -32,6 +32,16 @@ export async function myUploads() {
 export async function myAttributes() {
   const token = await getAuthToken()
   const resume = await fetchQuery(api.resumes.getMyAttributes, {}, { token })
+
+  if (!resume) {
+    redirect('/sign-in')
+  }
+  return resume
+}
+
+export async function preloadMyAttributes() {
+  const token = await getAuthToken()
+  const resume = await preloadQuery(api.resumes.getMyAttributes, {}, { token })
 
   if (!resume) {
     redirect('/sign-in')

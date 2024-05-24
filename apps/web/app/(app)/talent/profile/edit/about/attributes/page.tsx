@@ -1,6 +1,6 @@
 import { Card, CardContent } from '@/components/ui/card'
 import { Drawer, DrawerContent, DrawerTrigger } from '@/components/ui/drawer'
-import { myAttributes } from '@/lib/server/resumes'
+import { myAttributes, preloadMyAttributes } from '@/lib/server/resumes'
 import { Pencil } from 'lucide-react'
 
 function inchesToFeetAndInches(inches: number) {
@@ -16,10 +16,11 @@ function inchesToFeetAndInches(inches: number) {
 
 export default async function ProfileEditAttributesPage() {
   const attributes = await myAttributes()
+  const preloadedAttributes = await preloadMyAttributes()
 
   return (
-    <Card>
-      <CardContent>
+    <Card className="h-fit">
+      <CardContent className="divide-border flex flex-col divide-y py-2">
         <EditDrawer
           label="Height"
           value={inchesToFeetAndInches(attributes.height || 0)}
@@ -45,12 +46,12 @@ function EditDrawer({
 }) {
   return (
     <Drawer>
-      <DrawerTrigger className="flex w-full items-center justify-between gap-2">
-        <div className="flex flex-col items-start">
+      <DrawerTrigger className="flex w-full items-center justify-between gap-2 py-3">
+        <div className="flex flex-col items-start gap-1">
           <div className="text-label-xs text-secondary uppercase">{label}</div>
           <div className="text-body-xs">{value}</div>
         </div>
-        <Pencil size={16.5} />
+        <Pencil size={16.5} className="fill-black stroke-white" />
       </DrawerTrigger>
       <DrawerContent>{children}</DrawerContent>
     </Drawer>
