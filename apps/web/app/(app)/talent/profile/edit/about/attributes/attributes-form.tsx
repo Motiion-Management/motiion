@@ -3,88 +3,79 @@ import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
 import { Form } from '@/components/ui/form'
-import { useMutation } from 'convex/react'
+import { Preloaded, useMutation, usePreloadedQuery } from 'convex/react'
 import { api } from '@packages/backend/convex/_generated/api'
-import { Button } from '@/components/ui/button'
-import { InputField } from '@/components/ui/form-fields/input'
-import { DatePickerField } from '@/components/ui/form-fields/date-picker'
-import { SelectField } from '@/components/ui/form-fields/select'
-import { LocationField } from '@/components/ui/form-fields/location'
-import { Id } from '@packages/backend/convex/_generated/dataModel'
-import { ONBOARDING_STEPS } from '@packages/backend/convex/users'
-import { useState } from 'react'
-import { useRouter } from 'next/navigation'
-import { ethnicity } from '@packages/backend/convex/zod-validators'
+import {
+  ETHNICITY,
+  attributesPlainObject
+} from '@packages/backend/convex/validators/resume'
+import { MultiCheckboxField } from '@/components/ui/form-fields/multi-checkbox'
+import { EditDrawer } from '@/components/features/edit-drawer'
 
-const formSchema = z.object({
-  ethnicity: ethnicity,
-  height,
-  eyeColor: z.string().optional(),
-  hairColor: z.string().optional()
-})
+const formSchema = z.object(attributesPlainObject)
 
 type FormSchema = z.infer<typeof formSchema>
 
-export function PersonalDetailsFormProvider({
-  defaultValues
+export function AttributesForm({
+  preloadedValues
+  // defaultValues
 }: {
-  defaultValues: Partial<FormSchema>
+  preloadedValues: Preloaded<typeof api.resumes.getMyAttributes>
+  // defaultValues: Partial<FormSchema>
 }) {
-  const updateMyUser = useMutation(api.resumes.updateMyAttributes)
+  const updateMyAttributes = useMutation(api.resumes.updateMyAttributes)
 
-  const router = useRouter()
-  const [loading, setLoading] = useState(false)
+  const attributes = usePreloadedQuery(preloadedValues) || ({} as FormSchema)
   const form = useForm<FormSchema>({
     resolver: zodResolver(formSchema),
+    // mode: 'onBlur',
     shouldUseNativeValidation: false,
-    defaultValues
+    defaultValues: attributes
   })
   async function onSubmit(data: FormSchema) {
-    router.prefetch('/onboarding/2')
-    setLoading(true)
-    await updateMyUser(data)
-    router.push('/onboarding/2')
+    await updateMyAttributes(data)
+    form.reset()
   }
 
   return (
     <Form {...form}>
       <form
+        className="divide-border flex flex-col divide-y"
         onSubmit={form.handleSubmit(onSubmit)}
-        className="mt-4 grid h-full w-full grid-cols-1 grid-rows-[1fr_min-content] gap-4"
       >
-        <div className="grid h-fit w-full grid-cols-2 gap-6 ">
-          <InputField required name="firstName" placeholder="First Name" />
-          <InputField required name="lastName" placeholder="Last Name" />
-          <DatePickerField
-            name="dateOfBirth"
-            label="DOB"
-            className="col-span-2"
-          />
-          <SelectField
-            name="gender"
-            label="I identify as"
-            options={['Male', 'Female', 'Non-Binary']}
-          />
-
-          <InputField
-            required
-            name="phone"
-            placeholder="Phone Number"
-            label="Contact"
-            inputMode="tel"
-          />
-          <LocationField name="location" required className="col-span-2" />
-        </div>
-        <Button
-          className="sticky bottom-0 z-10 mt-2 shadow-lg"
-          type="submit"
-          loading={loading}
+        <EditDrawer
+          onSubmit={form.handleSubmit(onSubmit)}
+          label="Ethnicity"
+          value={
+            <div className="flex flex-col items-start">
+              {attributes.ethnicity?.sort().map((e) => <div>{e}</div>)}
+            </div>
+          }
         >
-          Continue
-        </Button>
-
-        {/* {children} */}
+          <MultiCheckboxField
+            name="ethnicity"
+            options={ETHNICITY as unknown as string[]}
+          />
+        </EditDrawer>
+        <EditDrawer
+          onSubmit={form.handleSubmit(onSubmit)}
+          label="Height"
+          value={inchesToFeetAndInches(attributes.height || 0)}
+        >
+          ''
+        </EditDrawer>
       </form>
     </Form>
   )
+}
+
+function inchesToFeetAndInches(inches: number) {
+  // Convert inches to feet.
+  const feet = Math.floor(inches / 12)
+
+  // Get the remaining inches.
+  const remainingInches = inches % 12
+
+  // Return the result as a string.
+  return `${feet} ft. ${remainingInches} in.`
 }

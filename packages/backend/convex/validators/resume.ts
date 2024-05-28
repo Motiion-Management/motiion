@@ -30,7 +30,7 @@ export const ETHNICITY = [
   'Native Hawaiian / Pacific Islander',
   'White / Caucasian'
 ] as const
-export const zEthnicity = z.enum(ETHNICITY).optional()
+export const zEthnicity = z.enum(ETHNICITY).array().optional()
 
 export const attributesPlainObject = {
   ethnicity: zEthnicity,
