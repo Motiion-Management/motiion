@@ -1,0 +1,39 @@
+diff --git a/dist/components/Picker.d.ts b/dist/components/Picker.d.ts
+index 548e2b1f7565ce8f9ce7b611caa72e7a35d7a6e6..606bacfb296258fb5f924dcc3e9a181700263379 100644
+--- a/dist/components/Picker.d.ts
++++ b/dist/components/Picker.d.ts
+@@ -1,10 +1,10 @@
+ import { HTMLProps, MutableRefObject } from 'react';
+ interface Option {
+-    value: string;
++    value: string | number;
+     element: MutableRefObject<HTMLElement | null>;
+ }
+ export interface PickerValue {
+-    [key: string]: string;
++    [key: string]: string | number;
+ }
+ export interface PickerRootProps<TType extends PickerValue> extends Omit<HTMLProps<HTMLDivElement>, 'value' | 'onChange'> {
+     value: TType;
+@@ -24,7 +24,7 @@ export declare function usePickerData(componentName: string): {
+ };
+ export declare function usePickerActions(componentName: string): {
+     registerOption(key: string, option: Option): () => void;
+-    change(key: string, value: string): boolean;
++    change(key: string, value: string | number): boolean;
+ };
+ declare function PickerRoot<TType extends PickerValue>(props: PickerRootProps<TType>): import("react/jsx-runtime").JSX.Element;
+ export default PickerRoot;
+diff --git a/dist/components/PickerItem.d.ts b/dist/components/PickerItem.d.ts
+index bcd1551409695bd7d116e817a6b3e21d90f94b1e..b54a1588257f9a8df7a5c37374d9784b35730f0b 100644
+--- a/dist/components/PickerItem.d.ts
++++ b/dist/components/PickerItem.d.ts
+@@ -4,7 +4,7 @@ interface PickerItemRenderProps {
+ }
+ export interface PickerItemProps extends Omit<HTMLProps<HTMLDivElement>, 'value' | 'children'> {
+     children: ReactNode | ((renderProps: PickerItemRenderProps) => ReactNode);
+-    value: string;
++    value: string | number;
+ }
+ declare function PickerItem({ style, children, value, ...restProps }: PickerItemProps): import("react/jsx-runtime").JSX.Element;
+ export default PickerItem;

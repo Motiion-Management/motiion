@@ -1,3 +1,4 @@
+import { formatHeight } from '@/lib/utils'
 import { differenceInYears, toDate, endOfToday } from 'date-fns'
 import Image from 'next/image'
 const calculateAge = (dateOfBirth?: string | null) => {
@@ -32,22 +33,13 @@ export function UserStats({ userStats }: { userStats: any }) {
     representation
   } = userStats || {}
 
-  console.log({
-    height,
-    hairColor,
-    eyeColor,
-    waist,
-    shoes,
-    jacket,
-    representation
-  })
   return (
     <div className="text-primary-foreground/80 grid grid-cols-1 gap-4">
       <div className=" grid grid-cols-5 grid-rows-2 gap-5 border-y border-y-gray-500 p-5">
         <Stat label="Age" value={calculateAge(dateOfBirth)} />
         <Stat label="Yrs Exp" value={yearsOfExperience} />
         <Stat label="Gender" value={gender?.[0]} />
-        <Stat label="Height" value={height} />
+        <Stat label="Height" value={formatHeight(height)} />
         <Stat label="Hair" value={hairColor?.slice(0, 2)} />
         <Stat label="Eyes" value={eyeColor?.slice(0, 3)} />
         <Stat label="Chest" value={chest} />

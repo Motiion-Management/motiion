@@ -1,11 +1,12 @@
 import { query, mutation, MutationCtx } from './_generated/server'
 import { authMutation, authQuery } from './util'
 import { getOneFrom } from 'convex-helpers/server/relationships'
-import { fileUploadObjectArray } from './schema'
 import { crud } from 'convex-helpers/server'
-import { Resumes } from './schema'
 import { ConvexError, v } from 'convex/values'
 import { Id } from './_generated/dataModel'
+import { pick } from 'convex-helpers'
+import { Resumes, zFileUploadObjectArray } from './validators/resume'
+import { zodToConvex } from 'convex-helpers/server/zod'
 
 export const { read } = crud(Resumes, query, mutation)
 
@@ -14,6 +15,50 @@ export const { create, update, destroy } = crud(
   authQuery,
   authMutation
 )
+
+export const getMyAttributes = authQuery({
+  args: {},
+  handler: async (ctx) => {
+    if (!ctx.user) {
+      return null
+    }
+    const resume = await getOneFrom(ctx.db, 'resumes', 'userId', ctx.user._id)
+
+    if (!resume) {
+      return null
+    }
+
+    const { ethnicity, height, eyeColor, hairColor } = resume
+
+    return {
+      ethnicity,
+      height,
+      eyeColor,
+      hairColor
+    }
+  }
+})
+
+export const updateMyAttributes = authMutation({
+  args: pick(Resumes.withoutSystemFields, [
+    'ethnicity',
+    'height',
+    'eyeColor',
+    'hairColor'
+  ]),
+  handler: async (ctx, args) => {
+    const resume = await getOneFrom(ctx.db, 'resumes', 'userId', ctx.user._id)
+
+    if (!resume) {
+      ctx.db.insert('resumes', {
+        userId: ctx.user._id,
+        ...args
+      })
+    } else {
+      ctx.db.patch(resume._id, args)
+    }
+  }
+})
 
 export const getMyHeadshots = authQuery({
   args: {},
@@ -76,7 +121,7 @@ async function ensureOnlyFive(
 }
 export const saveHeadshotIds = authMutation({
   args: {
-    headshots: fileUploadObjectArray // other args...
+    headshots: zodToConvex(zFileUploadObjectArray) // other args...
   },
   handler: async (ctx, args) => {
     const resume = await getOneFrom(ctx.db, 'resumes', 'userId', ctx.user._id)
@@ -144,7 +189,7 @@ export const getMyResumeUploads = authQuery({
 
 export const saveResumeUploadIds = authMutation({
   args: {
-    resumeUploads: fileUploadObjectArray
+    resumeUploads: zodToConvex(zFileUploadObjectArray)
   },
   handler: async (ctx, args) => {
     const resume = await getOneFrom(ctx.db, 'resumes', 'userId', ctx.user._id)

@@ -4,6 +4,10 @@ import { Validator } from 'convex/values'
 import * as validators from 'convex-helpers/validators'
 import { Table } from 'convex-helpers/server'
 
+import { zodToConvex } from 'convex-helpers/server/zod'
+import { Resumes } from './validators/resume'
+import { location, zProficiency, zVisibility } from './validators/base'
+
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export const nullish = <T extends Validator<any, false, any>>(validator: T) =>
   v.optional(v.nullable(validator))
@@ -13,42 +17,7 @@ const v = {
   nullish
 }
 
-export const fileUploadObject = v.object({
-  storageId: v.id('_storage'),
-  title: v.optional(v.string),
-  uploadDate: v.string
-})
-
-export const fileUploadObjectArray = v.array(fileUploadObject)
-
-const visibility = v.literals('Public', 'Private')
-const hairColor = v.nullish(
-  v.literals('black', 'brown', 'blonde', 'Dyed - See current headshot')
-)
-const eyeColor = v.nullish(
-  v.literals('blue', 'brown', 'green', 'hazel', 'gray', 'amber', 'red', 'black')
-)
-const sizing = v.object(
-  v.partial({
-    chest: v.number,
-    waist: v.number,
-    neck: v.number,
-    shoes: v.number,
-    jacket: v.string
-  })
-)
-
 const gender = v.optional(v.literals('Male', 'Female', 'Non-Binary'))
-const proficiency = v.literals('Novice', 'Proficient', 'Expert')
-
-const location = v.object({
-  name: v.nullish(v.string),
-  country: v.string,
-  state: v.string,
-  city: v.string,
-  zipCode: v.nullish(v.string),
-  address: v.nullish(v.string)
-})
 
 // App Users, used for all logged in users
 export const Users = Table('users', {
@@ -71,34 +40,9 @@ export const Users = Table('users', {
   representationTip: v.boolean
 })
 
-export const Resumes = Table('resume', {
-  userId: v.id('users'),
-  televisionAndFilm: v.optional(v.array(v.id('experiences'))),
-  musicVideos: v.optional(v.array(v.id('experiences'))),
-  livePerformances: v.optional(v.array(v.id('experiences'))),
-  commercials: v.optional(v.array(v.id('experiences'))),
-  training: v.optional(v.array(v.id('training'))),
-  skills: v.optional(v.array(v.id('skills'))),
-  height: v.nullish(v.number),
-  hairColor,
-  eyeColor,
-  sizing: v.nullish(sizing),
-  representation: v.nullish(v.id('agencies')),
-  yearsOfExperience: v.nullish(v.number),
-  headshots: v.optional(fileUploadObjectArray),
-  resumeUploads: v.optional(fileUploadObjectArray),
-  links: v.optional(
-    v.object({
-      reel: v.nullish(v.string),
-      socials: v.array(v.object({ platform: v.string, link: v.string })),
-      portfolio: v.array(v.object({ title: v.string, link: v.string }))
-    })
-  )
-})
-
 export const Experiences = Table('experiences', {
   userId: v.id('users'),
-  visibility: visibility,
+  visibility: zodToConvex(zVisibility),
   title: v.string,
   role: v.array(v.string),
   credits: v.array(v.string),
@@ -109,7 +53,7 @@ export const Experiences = Table('experiences', {
 
 export const Training = Table('training', {
   userId: v.id('users'),
-  visibility: visibility,
+  visibility: zodToConvex(zVisibility),
   title: v.string,
   role: v.array(v.string),
   references: v.array(v.string),
@@ -121,7 +65,7 @@ export const Training = Table('training', {
 export const Skills = Table('skills', {
   userId: v.id('users'),
   name: v.string,
-  proficiency
+  proficiency: zodToConvex(zProficiency)
 })
 
 export const Agents = Table('agents', {

@@ -16,3 +16,8 @@ const twMerge = extendTailwindMerge<FontSizeOptions>({
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))
 }
+
+export function formatHeight(height?: { feet: number; inches: number }) {
+  if (!height) return ''
+  return `${height.feet}' ${height.inches}"`
+}
