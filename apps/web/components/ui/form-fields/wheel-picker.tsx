@@ -38,7 +38,7 @@ export const WheelPickerField = ({
               onChange={field.onChange}
               className="flex gap-8 px-10"
             >
-              {Object.keys(options).map((column, i) => (
+              {Object.keys(options).map((column) => (
                 <div className="flex gap-2" key={column}>
                   <Picker.Column name={column} key={column} className="">
                     {options?.[column].map((option) => (

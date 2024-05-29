@@ -43,6 +43,7 @@ export const RadioGroupField = ({
                     : optionMaybeString
                 return (
                   <FormItem
+                    key={option.id}
                     className={`has-[span[data-state="checked"]]:border-ring border-border group flex cursor-pointer items-center rounded-lg border-2`}
                   >
                     <FormControl>
