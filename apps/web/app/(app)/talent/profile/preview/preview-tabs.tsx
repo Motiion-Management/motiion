@@ -1,5 +1,6 @@
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { toDate, differenceInYears, endOfToday } from 'date-fns'
+import ReactPlayer from 'react-player'
 import Image from 'next/image'
 import Link from 'next/link'
 import {
@@ -186,6 +187,44 @@ export const PreviewTabs: React.FC<PreviewTabsProps> = ({
             </Card>
           </Link>
         ))}
+      </TabsContent>
+      <TabsContent value="links">
+        <Accordion type="single" collapsible>
+          <AccordionItem className="pb-6" value="reel" title="reel">
+            <Card className="p-6">
+              <AccordionTrigger className="accordion-trigger justify-between text-lg">
+                Reel <ChevronRight size={20} />
+              </AccordionTrigger>
+              <AccordionContent>
+                <CardContent className="pl-0">
+                  <ReactPlayer width="100%" height="400px" controls={true} url={userStats?.reel || ''} />
+                </CardContent>
+              </AccordionContent>
+            </Card>
+          </AccordionItem>
+          <AccordionItem value="socials" title="socials" className="pb-6">
+            <Card className="p-6">
+              <AccordionTrigger className="justify-between text-lg no-underline">
+                Socials <ChevronRight size={20} />
+              </AccordionTrigger>
+              <AccordionContent>
+                <CardContent className="pl-0">
+                  <CardDescription>My Socials</CardDescription>
+                </CardContent>
+              </AccordionContent>
+            </Card>
+          </AccordionItem>
+          <AccordionItem value="portfolio" title="portfolio" className="pb-6">
+            <Card className="p-6">
+              <AccordionTrigger className="justify-between text-lg">
+                Portfolio <ChevronRight size={20} />
+              </AccordionTrigger>
+              <AccordionContent>
+                <CardContent className="pl-0">My portfolio</CardContent>
+              </AccordionContent>
+            </Card>
+          </AccordionItem>
+        </Accordion>
       </TabsContent>
     </Tabs>
   )
