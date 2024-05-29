@@ -3,10 +3,10 @@ import { Table } from 'convex-helpers/server'
 import { z } from 'zod'
 
 export const HAIRCOLOR = [
-  'black',
-  'brown',
-  'blonde',
-  'Dyed - See current headshot'
+  'Black',
+  'Blonde',
+  'Brown',
+  'Dyed (see current headshot)'
 ] as const
 export const zHairColor = z.enum(HAIRCOLOR).optional()
 

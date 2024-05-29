@@ -8,6 +8,7 @@ import { api } from '@packages/backend/convex/_generated/api'
 import {
   ETHNICITY,
   EYECOLOR,
+  HAIRCOLOR,
   attributesPlainObject
 } from '@packages/backend/convex/validators/resume'
 import { MultiCheckboxField } from '@/components/ui/form-fields/multi-checkbox'
@@ -76,6 +77,16 @@ export function AttributesForm({
           <RadioGroupField
             name="eyeColor"
             options={EYECOLOR as unknown as string[]}
+          />
+        </EditDrawer>
+        <EditDrawer<FormSchema>
+          onSubmit={onSubmit}
+          label="Hair Color"
+          value={attributes.hairColor}
+        >
+          <RadioGroupField
+            name="hairColor"
+            options={HAIRCOLOR as unknown as string[]}
           />
         </EditDrawer>
       </form>
