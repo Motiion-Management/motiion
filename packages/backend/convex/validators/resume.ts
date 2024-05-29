@@ -11,14 +11,13 @@ export const HAIRCOLOR = [
 export const zHairColor = z.enum(HAIRCOLOR).optional()
 
 export const EYECOLOR = [
-  'blue',
-  'brown',
-  'green',
-  'hazel',
-  'gray',
-  'amber',
-  'red',
-  'black'
+  'Amber',
+  'Blue',
+  'Brown',
+  'Green',
+  'Gray',
+  'Hazel',
+  'Mixed'
 ] as const
 export const zEyeColor = z.enum(EYECOLOR).optional()
 

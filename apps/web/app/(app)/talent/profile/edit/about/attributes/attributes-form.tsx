@@ -7,11 +7,13 @@ import { Preloaded, useMutation, usePreloadedQuery } from 'convex/react'
 import { api } from '@packages/backend/convex/_generated/api'
 import {
   ETHNICITY,
+  EYECOLOR,
   attributesPlainObject
 } from '@packages/backend/convex/validators/resume'
 import { MultiCheckboxField } from '@/components/ui/form-fields/multi-checkbox'
 import { EditDrawer } from '@/components/features/edit-drawer'
 import { HeightPickerField } from '@/components/ui/form-fields/height-picker'
+import { RadioGroupField } from '@/components/ui/form-fields/radio-group'
 
 const formSchema = z.object(attributesPlainObject)
 
@@ -65,6 +67,16 @@ export function AttributesForm({
           value={attributes.height && formatHeight(attributes.height)}
         >
           <HeightPickerField name="height" label="Height" />
+        </EditDrawer>
+        <EditDrawer<FormSchema>
+          onSubmit={onSubmit}
+          label="Eyes"
+          value={attributes.eyeColor}
+        >
+          <RadioGroupField
+            name="eyeColor"
+            options={EYECOLOR as unknown as string[]}
+          />
         </EditDrawer>
       </form>
     </Form>

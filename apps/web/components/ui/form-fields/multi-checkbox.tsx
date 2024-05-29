@@ -8,9 +8,7 @@ import {
   FormMessage
 } from '../form'
 import { cn } from '@/lib/utils'
-import { Check } from 'lucide-react'
 import { Checkbox } from '../checkbox'
-import { Button } from '../button'
 
 export type MultiCheckboxFieldProps = {
   name: string
@@ -30,7 +28,7 @@ export const MultiCheckboxField = ({
     <FormField
       name={name}
       render={() => (
-        <FormItem className={cn('flex flex-col gap-3', className)}>
+        <FormItem className={cn('flex flex-col gap-3 px-6', className)}>
           <FormDescription className="text-body-xs">{label}</FormDescription>
           {options.map((optionMaybeString) => {
             const option =

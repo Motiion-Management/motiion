@@ -40,7 +40,7 @@ export function EditDrawer<T extends FieldValues>({
       <DrawerTrigger className="flex w-full items-center justify-between gap-2 py-3">
         <div className="flex flex-col items-start gap-2">
           <div className="text-label-xs text-ring uppercase">{label}</div>
-          <div className="text-body-xs">{value}</div>
+          <div className="text-body-xs capitalize">{value}</div>
         </div>
         <Pencil size={16.5} className="fill-black stroke-white" />
       </DrawerTrigger>
