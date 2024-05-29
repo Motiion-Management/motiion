@@ -15,6 +15,7 @@ import { MultiCheckboxField } from '@/components/ui/form-fields/multi-checkbox'
 import { EditDrawer } from '@/components/features/edit-drawer'
 import { HeightPickerField } from '@/components/ui/form-fields/height-picker'
 import { RadioGroupField } from '@/components/ui/form-fields/radio-group'
+import { formatHeight } from '@/lib/utils'
 
 const formSchema = z.object(attributesPlainObject)
 
@@ -65,7 +66,7 @@ export function AttributesForm({
         <EditDrawer<FormSchema>
           onSubmit={onSubmit}
           label="Height"
-          value={attributes.height && formatHeight(attributes.height)}
+          value={formatHeight(attributes?.height)}
         >
           <HeightPickerField name="height" label="Height" />
         </EditDrawer>
@@ -92,9 +93,4 @@ export function AttributesForm({
       </form>
     </Form>
   )
-}
-
-function formatHeight(height?: { feet: number; inches: number }) {
-  if (!height) return ''
-  return `${height.feet}' ${height.inches}"`
 }
