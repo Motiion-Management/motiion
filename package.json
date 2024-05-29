@@ -28,5 +28,10 @@
   "workspaces": [
     "apps/*",
     "packages/*"
-  ]
+  ],
+  "pnpm": {
+    "patchedDependencies": {
+      "react-mobile-picker@1.0.0": "patches/react-mobile-picker@1.0.0.patch"
+    }
+  }
 }

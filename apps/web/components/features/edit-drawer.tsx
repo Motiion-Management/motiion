@@ -9,8 +9,9 @@ import {
   DrawerTrigger
 } from '@/components/ui/drawer'
 import { Pencil, X } from 'lucide-react'
+import { FieldValues, useFormContext } from 'react-hook-form'
 
-export function EditDrawer({
+export function EditDrawer<T extends FieldValues>({
   children,
   label,
   value,
@@ -20,17 +21,20 @@ export function EditDrawer({
   label: string
   value?: React.ReactNode
   loading?: boolean
-  onSubmit: () => Promise<void>
+  onSubmit: (formData: T) => Promise<void>
 }) {
   const drawerCloseRef = useRef<HTMLButtonElement>(null)
   const [loading, setLoading] = useState(false)
 
-  async function handleSave() {
+  const form = useFormContext<T>()
+
+  async function handleSave(data: T) {
     setLoading(true)
-    await onSubmit()
+    await onSubmit(data)
     drawerCloseRef.current?.click()
     setLoading(false)
   }
+
   return (
     <Drawer>
       <DrawerTrigger className="flex w-full items-center justify-between gap-2 py-3">
@@ -48,9 +52,9 @@ export function EditDrawer({
               <X size={24} strokeWidth={1.5} className="" />
             </DrawerClose>
           </DrawerHeader>
-          <div className="p-6">{children}</div>
+          <div className="py-6">{children}</div>
           <DrawerFooter>
-            <Button loading={loading} onClick={handleSave}>
+            <Button loading={loading} onClick={form.handleSubmit(handleSave)}>
               Save
             </Button>
           </DrawerFooter>

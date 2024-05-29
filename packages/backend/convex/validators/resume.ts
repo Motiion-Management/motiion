@@ -32,11 +32,15 @@ export const ETHNICITY = [
 ] as const
 export const zEthnicity = z.enum(ETHNICITY).array().optional()
 
+export const zHeight = z.object({
+  feet: z.number(),
+  inches: z.number()
+})
 export const attributesPlainObject = {
   ethnicity: zEthnicity,
   hairColor: zHairColor,
   eyeColor: zEyeColor,
-  height: z.number()
+  height: zHeight.optional()
 }
 
 const zSizing = z.object({
@@ -74,7 +78,6 @@ export const resume = {
   commercials: zExperienceReferences.optional(),
   training: zTrainingReferences.optional(),
   skills: zSkillReferences.optional(),
-  height: z.number().optional(),
   sizing: zSizing.optional(),
   representation: zid('agencies').optional(),
   yearsOfExperience: z.number().optional(),

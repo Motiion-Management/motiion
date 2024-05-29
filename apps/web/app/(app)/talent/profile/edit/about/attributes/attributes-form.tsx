@@ -11,6 +11,7 @@ import {
 } from '@packages/backend/convex/validators/resume'
 import { MultiCheckboxField } from '@/components/ui/form-fields/multi-checkbox'
 import { EditDrawer } from '@/components/features/edit-drawer'
+import { HeightPickerField } from '@/components/ui/form-fields/height-picker'
 
 const formSchema = z.object(attributesPlainObject)
 
@@ -30,11 +31,12 @@ export function AttributesForm({
     resolver: zodResolver(formSchema),
     // mode: 'onBlur',
     shouldUseNativeValidation: false,
-    defaultValues: attributes
+    defaultValues: attributes,
+    values: attributes
   })
   async function onSubmit(data: FormSchema) {
     await updateMyAttributes(data)
-    form.reset()
+    form.reset(attributes)
   }
 
   return (
@@ -43,12 +45,12 @@ export function AttributesForm({
         className="divide-border flex flex-col divide-y"
         onSubmit={form.handleSubmit(onSubmit)}
       >
-        <EditDrawer
-          onSubmit={form.handleSubmit(onSubmit)}
+        <EditDrawer<FormSchema>
+          onSubmit={onSubmit}
           label="Ethnicity"
           value={
             <div className="flex flex-col items-start">
-              {attributes.ethnicity?.sort().map((e) => <div>{e}</div>)}
+              {attributes.ethnicity?.sort().map((e) => <div key={e}>{e}</div>)}
             </div>
           }
         >
@@ -57,25 +59,19 @@ export function AttributesForm({
             options={ETHNICITY as unknown as string[]}
           />
         </EditDrawer>
-        <EditDrawer
-          onSubmit={form.handleSubmit(onSubmit)}
+        <EditDrawer<FormSchema>
+          onSubmit={onSubmit}
           label="Height"
-          value={inchesToFeetAndInches(attributes.height || 0)}
+          value={attributes.height && formatHeight(attributes.height)}
         >
-          ''
+          <HeightPickerField name="height" label="Height" />
         </EditDrawer>
       </form>
     </Form>
   )
 }
 
-function inchesToFeetAndInches(inches: number) {
-  // Convert inches to feet.
-  const feet = Math.floor(inches / 12)
-
-  // Get the remaining inches.
-  const remainingInches = inches % 12
-
-  // Return the result as a string.
-  return `${feet} ft. ${remainingInches} in.`
+function formatHeight(height?: { feet: number; inches: number }) {
+  if (!height) return ''
+  return `${height.feet}' ${height.inches}"`
 }
