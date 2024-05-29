@@ -1,6 +1,7 @@
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { toDate, differenceInYears, endOfToday } from 'date-fns'
-import { LinkSection } from '../link-section'
+import Image from 'next/image'
+import Link from 'next/link'
 import {
   Accordion,
   AccordionItem,
@@ -12,6 +13,13 @@ import { api } from '@packages/backend/convex/_generated/api'
 import { Card, CardContent, CardDescription } from '@/components/ui/card'
 import './preview-tabs.css'
 import { ChevronRight } from 'lucide-react'
+import FilmIcon from '@/public/Film_Reel.svg'
+import VideoIcon from '@/public/VideoIcon.svg'
+import CommercialIcon from '@/public/Commercial.svg'
+import LiveIcon from '@/public/Theatre_Mask.svg'
+import TrainingIcon from '@/public/Classroom.svg'
+import SkillsIcon from '@/public/Layers.svg'
+
 const calculateAge = (dateOfBirth?: string | null) => {
   if (!dateOfBirth) {
     return
@@ -36,6 +44,44 @@ type PreviewTabsProps = {
   style?: React.CSSProperties
 }
 
+const resumeItems = [
+  {
+    icon: { FilmIcon },
+    href: '/talent/profile/television-film',
+    text: 'Television/Film',
+    preview: ''
+  },
+  {
+    icon: 'VideoIcon',
+    href: '/talent/profile/music-videos',
+    text: 'Music Videos',
+    preview: ''
+  },
+  {
+    icon: 'LiveIcon',
+    href: '/talent/profile/live-performances',
+    text: 'Live/Stage Performances',
+    preview: ''
+  },
+  {
+    icon: 'CommercialIcon',
+    href: '/talent/profile/commercials',
+    text: 'Commercials',
+    preview: ''
+  },
+  {
+    icon: 'TrainingIcon',
+    href: '/talent/profile/training-education',
+    text: 'Training/Education',
+    preview: ''
+  },
+  {
+    icon: 'SkillsIcon',
+    href: '/talent/profile/skills',
+    text: 'Skills',
+    preview: ''
+  }
+]
 export const PreviewTabs: React.FC<PreviewTabsProps> = ({
   snapTarget,
   style
@@ -45,7 +91,7 @@ export const PreviewTabs: React.FC<PreviewTabsProps> = ({
   return (
     <Tabs
       style={style}
-      defaultValue="account"
+      defaultValue="about"
       className={`mt-[175%] ${snapTarget}`}
     >
       <TabsList className="grid w-full grid-cols-3 rounded-full">
@@ -124,41 +170,22 @@ export const PreviewTabs: React.FC<PreviewTabsProps> = ({
         </Accordion>
       </TabsContent>
       <TabsContent value="resume">
-      <LinkSection
-        title=""
-        links={[
-          {
-            href: '/talent/profile/television-film',
-            text: 'Television/Film',
-            preview: ''
-          },
-          {
-            href: '/talent/profile/music-videos',
-            text: 'Music Videos',
-            preview: ''
-          },
-          {
-            href: '/talent/profile/live-performances',
-            text: 'Live/Stage Performances',
-            preview: ''
-          },
-          {
-            href: '/talent/profile/commercials',
-            text: 'Commercials',
-            preview: ''
-          },
-          {
-            href: '/talent/profile/training-education',
-            text: 'Training/Education',
-            preview: ''
-          },
-          {
-            href: '/talent/profile/skills',
-            text: 'Skills',
-            preview: ''
-          }
-        ]}
-      />
+        {resumeItems.map((item, key) => (
+          <Link href={item.href} key={key}>
+            <Card className="my-3">
+              <CardContent className="pt-5">
+                <p className="flex items-center justify-between">
+                  {' '}
+                  <span className="flex gap-2">
+                    <Image width={20} height={20} alt="Icon" src={FilmIcon} />{' '}
+                    {item.text}{' '}
+                  </span>
+                  <ChevronRight size={20} />
+                </p>
+              </CardContent>
+            </Card>
+          </Link>
+        ))}
       </TabsContent>
     </Tabs>
   )
