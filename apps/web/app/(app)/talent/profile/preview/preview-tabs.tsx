@@ -93,7 +93,7 @@ export const PreviewTabs: React.FC<PreviewTabsProps> = ({
     <Tabs
       style={style}
       defaultValue="about"
-      className={`mt-[175%] ${snapTarget}`}
+      className={`${snapTarget}`}
     >
       <TabsList className="grid w-full grid-cols-3 rounded-full">
         <TabsTrigger className="rounded-full" value="about">

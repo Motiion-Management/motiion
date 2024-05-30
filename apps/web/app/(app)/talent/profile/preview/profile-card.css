@@ -35,7 +35,7 @@
   scroll-snap-type: y mandatory;
   scroll-behavior: smooth;
   scroll-padding: 50px;
-  height:  100vh;
+  height:  90vh;
 
 }
 .carousel-container{
@@ -44,7 +44,6 @@
 }
 .preview{
   scroll-snap-align: start;
-  height: 100vh;
 }
 
 .carousel-preview-container.shrunk,
