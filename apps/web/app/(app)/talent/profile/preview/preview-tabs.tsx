@@ -15,7 +15,7 @@ import { Card, CardContent, CardDescription } from '@/components/ui/card'
 import './preview-tabs.css'
 import { ChevronRight } from 'lucide-react'
 import FilmIcon from '@/public/Film_Reel.svg'
-import VideoIcon from '@/public/VideoIcon.svg'
+import VideoIcon from '@/public/Video.svg'
 import CommercialIcon from '@/public/Commercial.svg'
 import LiveIcon from '@/public/Theatre_Mask.svg'
 import TrainingIcon from '@/public/Classroom.svg'
@@ -47,37 +47,37 @@ type PreviewTabsProps = {
 
 const resumeItems = [
   {
-    icon: { FilmIcon },
+    icon:  FilmIcon ,
     href: '/talent/profile/television-film',
     text: 'Television/Film',
     preview: ''
   },
   {
-    icon: 'VideoIcon',
+    icon:  VideoIcon ,
     href: '/talent/profile/music-videos',
     text: 'Music Videos',
     preview: ''
   },
   {
-    icon: 'LiveIcon',
+    icon:  LiveIcon ,
     href: '/talent/profile/live-performances',
     text: 'Live/Stage Performances',
     preview: ''
   },
   {
-    icon: 'CommercialIcon',
+    icon:  CommercialIcon ,
     href: '/talent/profile/commercials',
     text: 'Commercials',
     preview: ''
   },
   {
-    icon: 'TrainingIcon',
+    icon:  TrainingIcon ,
     href: '/talent/profile/training-education',
     text: 'Training/Education',
     preview: ''
   },
   {
-    icon: 'SkillsIcon',
+    icon:  SkillsIcon ,
     href: '/talent/profile/skills',
     text: 'Skills',
     preview: ''
@@ -178,7 +178,7 @@ export const PreviewTabs: React.FC<PreviewTabsProps> = ({
                 <p className="flex items-center justify-between">
                   {' '}
                   <span className="flex gap-2">
-                    <Image width={20} height={20} alt="Icon" src={FilmIcon} />{' '}
+                    <Image width={20} height={20} alt="Icon" src={item.icon} />{' '}
                     {item.text}{' '}
                   </span>
                   <ChevronRight size={20} />
