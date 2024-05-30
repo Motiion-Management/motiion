@@ -74,9 +74,9 @@ export function BigHeadshotCarousel({
     }
   }
   return (
-    <>
+    <main className="carousel-preview-container">
       <section
-        className={`carousel-preview-container ${isShrunk ? 'shrunk' : ''}`}
+        className={` ${isShrunk ? 'shrunk' : ''}`}
       >
     
 
@@ -109,7 +109,7 @@ export function BigHeadshotCarousel({
 
           <Carousel
             setApi={setCarousel}
-            className="absolute left-0 top-0 w-full"
+            className="left-0 top-0 w-full"
           >
             <CarouselContent>
               {headshots && headshots.length > 0 ? (
@@ -158,10 +158,10 @@ export function BigHeadshotCarousel({
 
         </div>
    
+      </section>
         <PreviewTabs
           snapTarget="preview"
         />
-      </section>
-    </>
+    </main>
   )
 }
