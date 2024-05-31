@@ -20,7 +20,7 @@ export function SizingCard({
 }) {
   return (
     <Card className={cn('h-fit', className)}>
-      <CardContent className="divide-border flex flex-col divide-y py-2">
+      <CardContent className="divide-border flex flex-col divide-y py-4">
         <Accordion type="multiple" defaultValue={['item-1']} className="w-full">
           <AccordionItem value="item-1" className="w-full border-none">
             <AccordionTrigger
