@@ -5,7 +5,6 @@ import {
   DrawerClose,
   DrawerContent,
   DrawerFooter,
-  DrawerHandle,
   DrawerHeader,
   DrawerTrigger
 } from '@/components/ui/drawer'
@@ -46,7 +45,6 @@ export function EditDrawer<T extends FieldValues>({
         <Pencil size={16.5} className="fill-black stroke-white" />
       </DrawerTrigger>
       <DrawerContent>
-        {/* <DrawerHandle id="handle" /> */}
         <div className="divide-border flex flex-col divide-y">
           <DrawerHeader className="flex justify-between gap-2 px-6 text-start">
             <h4 className="text-h4">{label}</h4>
