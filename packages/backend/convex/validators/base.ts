@@ -1,5 +1,3 @@
-import { zid, zodToConvexFields } from 'convex-helpers/server/zod'
-import { Table } from 'convex-helpers/server'
 import { zodToConvex } from 'convex-helpers/server/zod'
 import { z } from 'zod'
 

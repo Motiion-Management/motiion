@@ -10,20 +10,25 @@ import {
 import { cn } from '@/lib/utils'
 import { Checkbox } from '../checkbox'
 
-export type MultiCheckboxFieldProps = {
+export type MultiCheckboxOptions =
+  | (string | { id: string; label: string })[]
+  | readonly string[]
+
+export type MultiCheckboxFieldProps<T extends MultiCheckboxOptions> = {
   name: string
   label?: string
-  options: (string | { id: string; label: string })[]
+  options: T
   className?: string
   // required?: boolean
 }
-export const MultiCheckboxField = ({
+
+export const MultiCheckboxField = <T extends MultiCheckboxOptions>({
   name,
   label = 'Select all that apply',
   className,
   options
   // required
-}: MultiCheckboxFieldProps) => {
+}: MultiCheckboxFieldProps<T>) => {
   return (
     <FormField
       name={name}

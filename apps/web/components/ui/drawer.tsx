@@ -11,6 +11,7 @@ const Drawer = ({
 }: React.ComponentProps<typeof DrawerPrimitive.Root>) => (
   <DrawerPrimitive.Root
     shouldScaleBackground={shouldScaleBackground}
+    handleOnly
     {...props}
   />
 )
@@ -21,6 +22,8 @@ const DrawerTrigger = DrawerPrimitive.Trigger
 const DrawerPortal = DrawerPrimitive.Portal
 
 const DrawerClose = DrawerPrimitive.Close
+
+const DrawerHandle = DrawerPrimitive.Handle
 
 const DrawerOverlay = React.forwardRef<
   React.ElementRef<typeof DrawerPrimitive.Overlay>,
@@ -48,7 +51,7 @@ const DrawerContent = React.forwardRef<
       )}
       {...props}
     >
-      <div className="bg-muted mx-auto mt-4 h-2 w-[100px] rounded-full" />
+      <DrawerHandle className="[&>span]:bg-muted [&>span]:mb-4 [&>span]:mt-3 [&>span]:h-2 [&>span]:w-[100px] [&>span]:rounded-full" />
       {children}
     </DrawerPrimitive.Content>
   </DrawerPortal>
@@ -110,6 +113,7 @@ export {
   DrawerOverlay,
   DrawerTrigger,
   DrawerClose,
+  DrawerHandle,
   DrawerContent,
   DrawerHeader,
   DrawerFooter,

@@ -18,8 +18,8 @@ export const HeightPickerField = ({
   required
 }: HeightPickerFieldProps) => {
   const options = {
-    feet: Array.from({ length: 12 }, (_, i) => i),
-    inches: Array.from({ length: 12 }, (_, i) => i)
+    feet: { values: Array.from({ length: 12 }, (_, i) => i) },
+    inches: { values: Array.from({ length: 12 }, (_, i) => i) }
   }
 
   return (

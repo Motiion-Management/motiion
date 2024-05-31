@@ -20,6 +20,7 @@ export function AccordionPlus({
     <Accordion type="multiple" className={className}>
       <AccordionItem value="item-1" className="border-none">
         <AccordionTrigger
+          rotate45
           StartIcon={PlusCircle}
           startIconClassName="stroke-card fill-accent h-6 w-6"
           className="p-0"

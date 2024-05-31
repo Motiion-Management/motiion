@@ -5,24 +5,25 @@ import {
   DrawerClose,
   DrawerContent,
   DrawerFooter,
+  DrawerHandle,
   DrawerHeader,
   DrawerTrigger
 } from '@/components/ui/drawer'
 import { Pencil, X } from 'lucide-react'
 import { FieldValues, useFormContext } from 'react-hook-form'
 
+export interface EditDrawerProps<T extends FieldValues> {
+  children: React.ReactNode
+  label: string
+  value?: React.ReactNode
+  onSubmit: (formData: T) => Promise<void>
+}
 export function EditDrawer<T extends FieldValues>({
   children,
   label,
   value,
   onSubmit
-}: {
-  children: React.ReactNode
-  label: string
-  value?: React.ReactNode
-  loading?: boolean
-  onSubmit: (formData: T) => Promise<void>
-}) {
+}: EditDrawerProps<T>) {
   const drawerCloseRef = useRef<HTMLButtonElement>(null)
   const [loading, setLoading] = useState(false)
 
@@ -36,15 +37,16 @@ export function EditDrawer<T extends FieldValues>({
   }
 
   return (
-    <Drawer>
+    <Drawer shouldScaleBackground handleOnly>
       <DrawerTrigger className="flex w-full items-center justify-between gap-2 py-3">
         <div className="flex flex-col items-start gap-2">
           <div className="text-label-xs text-ring uppercase">{label}</div>
-          <div className="text-body-xs capitalize">{value}</div>
+          <div className="text-body-xs capitalize">{value || 'None'}</div>
         </div>
         <Pencil size={16.5} className="fill-black stroke-white" />
       </DrawerTrigger>
       <DrawerContent>
+        {/* <DrawerHandle id="handle" /> */}
         <div className="divide-border flex flex-col divide-y">
           <DrawerHeader className="flex justify-between gap-2 px-6 text-start">
             <h4 className="text-h4">{label}</h4>
