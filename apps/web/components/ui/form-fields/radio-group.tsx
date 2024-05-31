@@ -10,20 +10,24 @@ import {
 import { cn } from '@/lib/utils'
 import { RadioGroup, RadioGroupItem } from '../radio-group'
 
-export type RadioGroupFieldProps = {
+export type RadioGroupOptions =
+  | (string | { id: string; label: string })[]
+  | readonly string[]
+
+export type RadioGroupFieldProps<T extends RadioGroupOptions> = {
   name: string
   label?: string
-  options: (string | { id: string; label: string })[]
+  options: T
   className?: string
   // required?: boolean
 }
-export const RadioGroupField = ({
+export const RadioGroupField = <T extends RadioGroupOptions>({
   name,
   label = 'Select one',
   className,
   options
   // required
-}: RadioGroupFieldProps) => {
+}: RadioGroupFieldProps<T>) => {
   return (
     <FormField
       name={name}

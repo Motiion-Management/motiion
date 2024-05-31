@@ -48,3 +48,13 @@ export async function preloadMyAttributes() {
   }
   return resume
 }
+
+export async function preloadMySizes() {
+  const token = await getAuthToken()
+  const resume = await preloadQuery(api.resumes.getMySizes, {}, { token })
+
+  if (!resume) {
+    redirect('/sign-in')
+  }
+  return resume
+}

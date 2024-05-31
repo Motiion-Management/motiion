@@ -1,54 +1,8 @@
 import { zid, zodToConvexFields } from 'convex-helpers/server/zod'
 import { Table } from 'convex-helpers/server'
 import { z } from 'zod'
-
-export const HAIRCOLOR = [
-  'Black',
-  'Blonde',
-  'Brown',
-  'Dyed (see current headshot)'
-] as const
-export const zHairColor = z.enum(HAIRCOLOR).optional()
-
-export const EYECOLOR = [
-  'Amber',
-  'Blue',
-  'Brown',
-  'Green',
-  'Gray',
-  'Hazel',
-  'Mixed'
-] as const
-export const zEyeColor = z.enum(EYECOLOR).optional()
-
-export const ETHNICITY = [
-  'American Indian / Alaska Native',
-  'Asian',
-  'Black / African American',
-  'Hispanic / Latino',
-  'Native Hawaiian / Pacific Islander',
-  'White / Caucasian'
-] as const
-export const zEthnicity = z.enum(ETHNICITY).array().optional()
-
-export const zHeight = z.object({
-  feet: z.number(),
-  inches: z.number()
-})
-export const attributesPlainObject = {
-  ethnicity: zEthnicity,
-  hairColor: zHairColor,
-  eyeColor: zEyeColor,
-  height: zHeight.optional()
-}
-
-const zSizing = z.object({
-  chest: z.number().optional(),
-  waist: z.number().optional(),
-  neck: z.number().optional(),
-  shoes: z.number().optional(),
-  jacket: z.string().optional()
-})
+import { attributesPlainObject } from './attributes'
+import { sizingPlainObject } from './sizing'
 
 export const zLinks = z.object({
   reel: z.string().optional(),
@@ -77,7 +31,7 @@ export const resume = {
   commercials: zExperienceReferences.optional(),
   training: zTrainingReferences.optional(),
   skills: zSkillReferences.optional(),
-  sizing: zSizing.optional(),
+  sizing: z.object(sizingPlainObject).optional(),
   representation: zid('agencies').optional(),
   yearsOfExperience: z.number().optional(),
   headshots: zFileUploadObjectArray.optional(),

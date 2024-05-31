@@ -60,6 +60,43 @@ export const updateMyAttributes = authMutation({
   }
 })
 
+export const getMySizes = authQuery({
+  args: {},
+  handler: async (ctx) => {
+    if (!ctx.user) {
+      return null
+    }
+    const resume = await getOneFrom(ctx.db, 'resumes', 'userId', ctx.user._id)
+
+    if (!resume) {
+      return null
+    }
+
+    const { sizing } = resume
+
+    return {
+      sizing,
+      gender: ctx.user.gender
+    }
+  }
+})
+
+export const updateMySizes = authMutation({
+  args: pick(Resumes.withoutSystemFields, ['sizing']),
+  handler: async (ctx, args) => {
+    const resume = await getOneFrom(ctx.db, 'resumes', 'userId', ctx.user._id)
+
+    if (!resume) {
+      ctx.db.insert('resumes', {
+        userId: ctx.user._id,
+        ...args
+      })
+    } else {
+      ctx.db.patch(resume._id, args)
+    }
+  }
+})
+
 export const getMyHeadshots = authQuery({
   args: {},
   handler: async (ctx) => {

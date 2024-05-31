@@ -30,8 +30,10 @@ import type * as skills from "../skills.js";
 import type * as training from "../training.js";
 import type * as users from "../users.js";
 import type * as util from "../util.js";
+import type * as validators_attributes from "../validators/attributes.js";
 import type * as validators_base from "../validators/base.js";
 import type * as validators_resume from "../validators/resume.js";
+import type * as validators_sizing from "../validators/sizing.js";
 
 /**
  * A utility for referencing Convex functions in your app's API.
@@ -58,8 +60,10 @@ declare const fullApi: ApiFromModules<{
   training: typeof training;
   users: typeof users;
   util: typeof util;
+  "validators/attributes": typeof validators_attributes;
   "validators/base": typeof validators_base;
   "validators/resume": typeof validators_resume;
+  "validators/sizing": typeof validators_sizing;
 }>;
 export declare const api: FilterApi<
   typeof fullApi,

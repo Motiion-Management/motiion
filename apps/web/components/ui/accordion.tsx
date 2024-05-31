@@ -27,6 +27,7 @@ const AccordionTrigger = React.forwardRef<
     startIconClassName?: string
     EndIcon?: LucideIcon
     endIconClassName?: string
+    rotate45?: boolean
   }
 >(
   (
@@ -37,6 +38,7 @@ const AccordionTrigger = React.forwardRef<
       startIconClassName,
       EndIcon,
       endIconClassName,
+      rotate45 = false,
       ...props
     },
     ref
@@ -45,7 +47,10 @@ const AccordionTrigger = React.forwardRef<
       <AccordionPrimitive.Trigger
         ref={ref}
         className={cn(
-          'group flex flex-1 items-center gap-2 py-4 font-medium transition-all hover:underline [&[data-state=open]>svg]:rotate-45',
+          'group flex flex-1 items-center gap-2 py-4 font-medium transition-all hover:underline ',
+          rotate45
+            ? '[&[data-state=open]>svg]:rotate-45'
+            : '[&[data-state=open]>svg]:rotate-180',
           className
         )}
         {...props}

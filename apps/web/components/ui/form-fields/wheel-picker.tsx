@@ -9,20 +9,28 @@ import {
 
 import Picker from 'react-mobile-picker'
 
-export type WheelPickerFieldProps = {
+export type WheelPickerColumnValues =
+  | (string | number)[]
+  | readonly string[]
+  | readonly number[]
+
+export type WheelPickerFieldProps<T extends WheelPickerColumnValues> = {
   name: string
-  label: string
+  label?: string
   className?: string
   required?: boolean
-  options: { [column: string]: (string | number)[] }
+  options: {
+    [column: string]: { values: T; unit?: string }
+  }
 }
-export const WheelPickerField = ({
+
+export const WheelPickerField = <T extends WheelPickerColumnValues>({
   name,
   label,
   className,
   options,
   required
-}: WheelPickerFieldProps) => {
+}: WheelPickerFieldProps<T>) => {
   return (
     <FormField
       name={name}
@@ -36,12 +44,16 @@ export const WheelPickerField = ({
               wheelMode="normal"
               value={field.value || {}}
               onChange={field.onChange}
-              className="flex gap-8 px-10"
+              className="flex gap-4 px-10"
             >
               {Object.keys(options).map((column) => (
-                <div className="flex gap-2" key={column}>
-                  <Picker.Column name={column} key={column} className="">
-                    {options?.[column].map((option) => (
+                <div className="flex gap-0" key={column}>
+                  <Picker.Column
+                    name={column}
+                    key={column}
+                    className="pl-5 pr-4"
+                  >
+                    {options?.[column].values.map((option) => (
                       <Picker.Item value={option} key={option}>
                         {({ selected }) => (
                           <div
@@ -57,7 +69,9 @@ export const WheelPickerField = ({
                       </Picker.Item>
                     ))}
                   </Picker.Column>
-                  <div className="text-h5 mt-[6.05rem]">{column}</div>
+                  <div className="text-h5 mt-[6.05rem]">
+                    {options?.[column].unit || column}
+                  </div>
                 </div>
               ))}
             </Picker>

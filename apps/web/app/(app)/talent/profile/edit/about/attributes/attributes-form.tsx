@@ -10,7 +10,7 @@ import {
   EYECOLOR,
   HAIRCOLOR,
   attributesPlainObject
-} from '@packages/backend/convex/validators/resume'
+} from '@packages/backend/convex/validators/attributes'
 import { MultiCheckboxField } from '@/components/ui/form-fields/multi-checkbox'
 import { EditDrawer } from '@/components/features/edit-drawer'
 import { HeightPickerField } from '@/components/ui/form-fields/height-picker'
@@ -23,10 +23,8 @@ type FormSchema = z.infer<typeof formSchema>
 
 export function AttributesForm({
   preloadedValues
-  // defaultValues
 }: {
   preloadedValues: Preloaded<typeof api.resumes.getMyAttributes>
-  // defaultValues: Partial<FormSchema>
 }) {
   const updateMyAttributes = useMutation(api.resumes.updateMyAttributes)
 
@@ -58,10 +56,7 @@ export function AttributesForm({
             </div>
           }
         >
-          <MultiCheckboxField
-            name="ethnicity"
-            options={ETHNICITY as unknown as string[]}
-          />
+          <MultiCheckboxField name="ethnicity" options={ETHNICITY} />
         </EditDrawer>
         <EditDrawer<FormSchema>
           onSubmit={onSubmit}
@@ -75,20 +70,14 @@ export function AttributesForm({
           label="Eyes"
           value={attributes.eyeColor}
         >
-          <RadioGroupField
-            name="eyeColor"
-            options={EYECOLOR as unknown as string[]}
-          />
+          <RadioGroupField name="eyeColor" options={EYECOLOR} />
         </EditDrawer>
         <EditDrawer<FormSchema>
           onSubmit={onSubmit}
           label="Hair Color"
           value={attributes.hairColor}
         >
-          <RadioGroupField
-            name="hairColor"
-            options={HAIRCOLOR as unknown as string[]}
-          />
+          <RadioGroupField name="hairColor" options={HAIRCOLOR} />
         </EditDrawer>
       </form>
     </Form>
