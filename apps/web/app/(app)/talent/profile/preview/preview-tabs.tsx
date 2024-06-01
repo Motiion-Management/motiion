@@ -1,3 +1,4 @@
+'use client'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { toDate, differenceInYears, endOfToday } from 'date-fns'
 import ReactPlayer from 'react-player'
@@ -47,37 +48,37 @@ type PreviewTabsProps = {
 
 const resumeItems = [
   {
-    icon:  FilmIcon ,
+    icon: FilmIcon,
     href: '/talent/profile/television-film',
     text: 'Television/Film',
     preview: ''
   },
   {
-    icon:  VideoIcon ,
+    icon: VideoIcon,
     href: '/talent/profile/music-videos',
     text: 'Music Videos',
     preview: ''
   },
   {
-    icon:  LiveIcon ,
+    icon: LiveIcon,
     href: '/talent/profile/live-performances',
     text: 'Live/Stage Performances',
     preview: ''
   },
   {
-    icon:  CommercialIcon ,
+    icon: CommercialIcon,
     href: '/talent/profile/commercials',
     text: 'Commercials',
     preview: ''
   },
   {
-    icon:  TrainingIcon ,
+    icon: TrainingIcon,
     href: '/talent/profile/training-education',
     text: 'Training/Education',
     preview: ''
   },
   {
-    icon:  SkillsIcon ,
+    icon: SkillsIcon,
     href: '/talent/profile/skills',
     text: 'Skills',
     preview: ''
@@ -90,11 +91,7 @@ export const PreviewTabs: React.FC<PreviewTabsProps> = ({
   const userStats = useQuery(api.resumes.getMyStats)
   console.log(userStats)
   return (
-    <Tabs
-      style={style}
-      defaultValue="about"
-      className={`${snapTarget}`}
-    >
+    <Tabs style={style} defaultValue="about" className={`${snapTarget}`}>
       <TabsList className="grid w-full grid-cols-3 rounded-full">
         <TabsTrigger className="rounded-full" value="about">
           About
@@ -117,7 +114,7 @@ export const PreviewTabs: React.FC<PreviewTabsProps> = ({
                 <CardContent className="pl-0">
                   <CardDescription>
                     <Stat label="Ethnicity" value="White/Caucasian" />
-                    <Stat label="Height" value={userStats?.height} />
+                    {/* <Stat label="Height" value={userStats?.height} /> */}
                     <Stat label="Eyes" value={userStats?.eyeColor} />
                     <Stat label="Hair Color" value={userStats?.hairColor} />
                     <Stat
@@ -158,11 +155,11 @@ export const PreviewTabs: React.FC<PreviewTabsProps> = ({
               <AccordionContent>
                 <CardContent className="pl-0">
                   <CardDescription>
-                    <Stat label="Height" value={userStats?.height} />
-                    <Stat label="Waist" value={userStats?.waist} />
-                    <Stat label="Shoes" value={userStats?.shoes} />
-                    <Stat label="Chest" value={userStats?.chest} />
-                    <Stat label="Jacket" value={userStats?.jacket} />
+                    {/* <Stat label="Height" value={userStats?.height} /> */}
+                    {/* <Stat label="Waist" value={userStats?.waist} /> */}
+                    {/* <Stat label="Shoes" value={userStats?.shoes} /> */}
+                    {/* <Stat label="Chest" value={userStats?.chest} /> */}
+                    {/* <Stat label="Jacket" value={userStats?.jacket} /> */}
                   </CardDescription>
                 </CardContent>
               </AccordionContent>
@@ -197,7 +194,12 @@ export const PreviewTabs: React.FC<PreviewTabsProps> = ({
               </AccordionTrigger>
               <AccordionContent>
                 <CardContent className="pl-0">
-                  <ReactPlayer width="100%" height="400px" controls={true} url={userStats?.reel || ''} />
+                  <ReactPlayer
+                    width="100%"
+                    height="400px"
+                    controls={true}
+                    url={userStats?.reel || ''}
+                  />
                 </CardContent>
               </AccordionContent>
             </Card>

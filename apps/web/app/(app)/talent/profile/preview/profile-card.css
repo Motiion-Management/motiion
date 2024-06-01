@@ -30,25 +30,5 @@
   fill: #000;
 }
 
-.carousel-preview-container{
-  overflow: auto;
-  scroll-snap-type: y mandatory;
-  scroll-behavior: smooth;
-  scroll-padding: 50px;
-  height:  90vh;
 
-}
-.carousel-container{
-  scroll-snap-align: start;
 
-}
-.preview{
-  scroll-snap-align: start;
-}
-
-.carousel-preview-container.shrunk,
-.carousel-container.shrunk {
-  height: 100px;
-  position: fixed;
-  top: 0;
-}

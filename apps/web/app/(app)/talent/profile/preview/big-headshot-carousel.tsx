@@ -9,13 +9,11 @@ import {
   CarouselItem,
   CarouselContent
 } from '@/components/ui/carousel'
-import { Accordion, AccordionItem, AccordionTrigger, AccordionContent } from '@/components/ui/accordion'
 import { UserDoc } from '@packages/backend/convex/users'
 import { AspectRatio } from '@/components/ui/aspect-ratio'
 import './profile-card.css'
 import FlipArrowWhite from '@/public/profile-flip-arrow-white.svg'
 import { Button } from '@/components/ui/button'
-import { PreviewTabs } from './preview-tabs'
 
 export function BigHeadshotCarousel({
   user,
@@ -27,29 +25,6 @@ export function BigHeadshotCarousel({
   const headshots = useQuery(api.resumes.getMyHeadshots)
   const [carousel, setCarousel] = useState<CarouselApi>()
   const [current, setCurrent] = useState(0)
-  const [isShrunk, setIsShrunk] = useState(false)
-  const previewTabsRef = useRef(null);
-  const carouselContainerRef = useRef(null);
-
-  useEffect(() => {
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        if(entry.isIntersecting) {
-          carouselContainerRef.current.scrollIntoView({ behavior: 'smooth' })
-        }
-      },
-      { threshold: 0.1 }
-    )
-    if (previewTabsRef.current) {
-      observer.observe(previewTabsRef.current);
-    }
-    return () => {
-      if (previewTabsRef.current) {
-        observer.unobserve(previewTabsRef.current);
-      }
-    }
-  }, [])
-
 
   useEffect(() => {
     if (!carousel) {
@@ -74,42 +49,35 @@ export function BigHeadshotCarousel({
     }
   }
   return (
-    <main className="carousel-preview-container">
-      <section
-        className={` ${isShrunk ? 'shrunk' : ''}`}
-      >
-    
-
-        <div
-          ref={carouselContainerRef}
-          className={`carousel-container relative grid ${isShrunk ? 'shrunk' : ''}`}
-          onClick={() => carouselContainerRef.current.scrollIntoView({ behavior: 'smooth' })}
-
-        >
-          <div className="flex justify-center gap-5 pt-3">
-            {headshots && headshots.length > 0
-              ? headshots.map((headshot, index) => (
-                  <Progress
-                    className={
-                      current === index
-                        ? 'bg-accent z-10 h-2 w-16'
-                        : 'bg-background z-10 h-2 w-16'
-                    }
-                    key={index}
-                  />
-                ))
-              : null}
-          </div>
-          <div className="text-primary-foreground absolute left-4 top-4 z-10 flex flex-col">
-            <div className="text-h3 pt-4">
-              {user.firstName} {user.lastName}
+    <div className="h-[90lvh] snap-y snap-mandatory scroll-p-12 overflow-auto scroll-smooth">
+      <section>
+        <div className={`relative grid snap-start`}>
+          <div className="absolute top-0 z-10 flex w-full flex-col px-4 group-data-[open=true]:hidden">
+            <div className="flex w-full justify-center gap-5 pt-3">
+              {headshots && headshots.length > 0
+                ? headshots.map((headshot, index) => (
+                    <Progress
+                      className={
+                        current === index
+                          ? 'bg-accent z-10 h-2 w-16'
+                          : 'bg-background z-10 h-2 w-16'
+                      }
+                      key={index}
+                    />
+                  ))
+                : null}
             </div>
-            <div className="text-h5">{user.location?.city}</div>
+            <div className="text-primary-foreground z-10 flex flex-col self-start">
+              <div className="text-h3 pt-4">
+                {user.firstName} {user.lastName}
+              </div>
+              <div className="text-h5">{user.location?.city}</div>
+            </div>
           </div>
 
           <Carousel
             setApi={setCarousel}
-            className="left-0 top-0 w-full"
+            className="absolute left-0 top-0 w-full"
           >
             <CarouselContent>
               {headshots && headshots.length > 0 ? (
@@ -155,13 +123,8 @@ export function BigHeadshotCarousel({
               onClick={scrollNext}
             />
           </Carousel>
-
         </div>
-   
       </section>
-        <PreviewTabs
-          snapTarget="preview"
-        />
-    </main>
+    </div>
   )
 }
