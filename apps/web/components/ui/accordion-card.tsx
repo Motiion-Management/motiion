@@ -8,7 +8,7 @@ import {
 } from '@/components/ui/accordion'
 import { ChevronDown } from 'lucide-react'
 import { cn } from '@/lib/utils'
-import React from 'react'
+import React, { ComponentProps } from 'react'
 
 export function AccordionCard({
   children,
@@ -16,7 +16,8 @@ export function AccordionCard({
   className,
   defaultOpen,
   withParent,
-  value = title
+  value = title,
+  startIconSlot
 }: {
   children: React.ReactNode
   title: string
@@ -24,6 +25,7 @@ export function AccordionCard({
   defaultOpen?: boolean
   withParent?: boolean
   value?: string
+  startIconSlot?: React.ReactNode
 }) {
   function StandaloneAccordion({ children }: { children: React.ReactNode }) {
     return (
@@ -48,7 +50,10 @@ export function AccordionCard({
               EndIcon={ChevronDown}
               className="w-full justify-between p-0"
             >
-              {title}
+              <div className="flex items-center gap-2">
+                {startIconSlot}
+                {title}
+              </div>
             </AccordionTrigger>
             <AccordionContent className="p-0">{children}</AccordionContent>
           </AccordionItem>

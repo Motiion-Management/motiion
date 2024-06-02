@@ -5,15 +5,10 @@ import { toDate, differenceInYears, endOfToday } from 'date-fns'
 import ReactPlayer from 'react-player/lazy'
 import Image from 'next/image'
 import Link from 'next/link'
-import {
-  Accordion,
-  AccordionItem,
-  AccordionTrigger,
-  AccordionContent
-} from '@/components/ui/accordion'
+import { Accordion, AccordionContent } from '@/components/ui/accordion'
 import { useQuery } from 'convex/react'
 import { api } from '@packages/backend/convex/_generated/api'
-import { Card, CardContent, CardDescription } from '@/components/ui/card'
+import { Card } from '@/components/ui/card'
 import './preview-tabs.css'
 import { ChevronRight } from 'lucide-react'
 import FilmIcon from '@/public/Film_Reel.svg'
@@ -22,6 +17,7 @@ import CommercialIcon from '@/public/Commercial.svg'
 import LiveIcon from '@/public/Theatre_Mask.svg'
 import TrainingIcon from '@/public/Classroom.svg'
 import SkillsIcon from '@/public/Layers.svg'
+import WorldIcon from '@/public/Geography.svg'
 import { AccordionCard } from '@/components/ui/accordion-card'
 import { cn, formatHeight } from '@/lib/utils'
 import { Email } from '@/components/ui/email'
@@ -158,12 +154,12 @@ export const PreviewTabs: React.FC<PreviewTabsProps> = () => {
       <TabsContent value="resume" className="grid gap-3">
         {resumeItems.map((item, key) => (
           <Link href={item.href} key={key}>
-            <Card className="flex items-center justify-between p-4">
+            <Card className="flex items-center justify-between px-5 py-4">
               <div className="flex items-center gap-2">
                 <Image width={20} height={20} alt="Icon" src={item.icon} />
                 <h5 className="text-h5">{item.text}</h5>
               </div>
-              <ChevronRight size={20} />
+              <ChevronRight size={16} />
             </Card>
           </Link>
         ))}
@@ -172,7 +168,18 @@ export const PreviewTabs: React.FC<PreviewTabsProps> = () => {
       {/* LINKS */}
       <AccordionTab value="links">
         {userStats?.links?.reel && (
-          <AccordionCard title="Reel" withParent>
+          <AccordionCard
+            title="Reel"
+            withParent
+            startIconSlot={
+              <Image
+                width={20}
+                height={20}
+                alt="film reel icon"
+                src={FilmIcon}
+              />
+            }
+          >
             <AccordionContent>
               <AspectRatio ratio={16 / 9}>
                 <div className="mt-4 overflow-clip rounded-lg">
@@ -195,7 +202,13 @@ export const PreviewTabs: React.FC<PreviewTabsProps> = () => {
             </AccordionContent>
           </AccordionCard>
         )}
-        <AccordionCard title="Socials" withParent>
+        <AccordionCard
+          title="Socials"
+          withParent
+          startIconSlot={
+            <Image width={20} height={20} alt="world icon" src={WorldIcon} />
+          }
+        >
           <AccordionContent>
             <div className="mt-4 flex gap-4">
               {userStats?.links?.socials?.map(({ link, platform }) => (
@@ -208,7 +221,13 @@ export const PreviewTabs: React.FC<PreviewTabsProps> = () => {
             </div>
           </AccordionContent>
         </AccordionCard>
-        <AccordionCard title="Portfolio" withParent>
+        <AccordionCard
+          title="Portfolio"
+          withParent
+          startIconSlot={
+            <Image width={20} height={20} alt="video icon" src={VideoIcon} />
+          }
+        >
           <AccordionContent>
             <div className="mt-4 grid grid-cols-2 gap-4">
               {userStats?.links?.portfolio?.map(({ title, link }) => (
