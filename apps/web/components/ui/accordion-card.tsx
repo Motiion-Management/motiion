@@ -8,7 +8,7 @@ import {
 } from '@/components/ui/accordion'
 import { ChevronDown } from 'lucide-react'
 import { cn } from '@/lib/utils'
-import React, { ComponentProps } from 'react'
+import React from 'react'
 
 export function AccordionCard({
   children,

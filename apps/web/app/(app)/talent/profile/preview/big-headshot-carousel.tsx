@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react'
+import { useState, useEffect } from 'react'
 import { useQuery } from 'convex/react'
 import { api } from '@packages/backend/convex/_generated/api'
 import Image from 'next/image'
@@ -54,15 +54,15 @@ export function BigHeadshotCarousel({
         <div className="flex w-full justify-center gap-5 pt-3">
           {headshots && headshots.length > 0
             ? headshots.map((headshot, index) => (
-                <Progress
-                  className={
-                    current === index
-                      ? 'bg-accent z-10 h-2 w-16'
-                      : 'bg-background z-10 h-2 w-16'
-                  }
-                  key={index}
-                />
-              ))
+              <Progress
+                className={
+                  current === index
+                    ? 'bg-accent z-10 h-2 w-16'
+                    : 'bg-background z-10 h-2 w-16'
+                }
+                key={index}
+              />
+            ))
             : null}
         </div>
         <div className="text-primary-foreground z-10 flex flex-col self-start">
