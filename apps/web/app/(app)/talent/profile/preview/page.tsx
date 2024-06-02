@@ -6,7 +6,7 @@ import { ScrollCollapse } from './scroll-collapse'
 export default async function ProfilePage() {
   const user = await me()
   return (
-    <div className="flex w-full flex-col gap-2 ">
+    <div className="flex flex-col gap-2 ">
       <ScrollCollapse collapsedTitle={`${user.firstName} ${user.lastName}`}>
         <ProfileCard user={user} />
       </ScrollCollapse>

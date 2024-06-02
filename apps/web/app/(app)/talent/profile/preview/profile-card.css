@@ -1,12 +1,6 @@
-.disabled\:opacity-50:disabled{
-  opacity: 0;
-}
-
 .stats-card{
   background: linear-gradient(180deg, #007064 0%, #1C1D20 72.95%);
-  overflow: hidden;
   position: relative;
-
 }
 
 .react-card-flip{

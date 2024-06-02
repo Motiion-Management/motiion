@@ -43,7 +43,7 @@ export function ProfileCard({ user }: { user: UserDoc }) {
   return (
     <AspectRatio
       ratio={24 / 41}
-      className="w-full group-data-[open=true]:pointer-events-none"
+      className="h-full w-auto group-data-[open=true]:pointer-events-none"
       id="ar"
     >
       <ReactCardFlip
