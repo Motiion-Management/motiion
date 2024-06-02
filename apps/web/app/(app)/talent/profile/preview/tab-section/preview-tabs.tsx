@@ -42,7 +42,7 @@ function Stat({ label, value }: { label: string; value: React.ReactNode }) {
 }
 
 type PreviewTabsProps = {
-  snapTarget?: string
+  // snapTarget?: string
   style?: React.CSSProperties
 }
 
@@ -85,13 +85,13 @@ const resumeItems = [
   }
 ]
 export const PreviewTabs: React.FC<PreviewTabsProps> = ({
-  snapTarget,
+  // snapTarget,
   style
 }) => {
   const userStats = useQuery(api.resumes.getMyStats)
   console.log(userStats)
   return (
-    <Tabs style={style} defaultValue="about" className={`${snapTarget}`}>
+    <Tabs style={style} defaultValue="about">
       <TabsList className="grid w-full grid-cols-3 rounded-full">
         <TabsTrigger className="rounded-full" value="about">
           About
@@ -105,7 +105,7 @@ export const PreviewTabs: React.FC<PreviewTabsProps> = ({
       </TabsList>
       <TabsContent value="about" className="border-none">
         <Accordion type="single" collapsible>
-          <AccordionItem className="pb-6" value="attributes" title="attributes">
+          <AccordionItem className="my-6" value="attributes" title="attributes">
             <Card className="p-6">
               <AccordionTrigger className="accordion-trigger justify-between text-lg">
                 Attributes <ChevronRight size={20} />
@@ -171,15 +171,12 @@ export const PreviewTabs: React.FC<PreviewTabsProps> = ({
         {resumeItems.map((item, key) => (
           <Link href={item.href} key={key}>
             <Card className="my-3">
-              <CardContent className="pt-5">
-                <p className="flex items-center justify-between">
-                  {' '}
-                  <span className="flex gap-2">
-                    <Image width={20} height={20} alt="Icon" src={item.icon} />{' '}
-                    {item.text}{' '}
-                  </span>
-                  <ChevronRight size={20} />
-                </p>
+              <CardContent className="flex items-center justify-between pt-5">
+                <div className="flex gap-2">
+                  <Image width={20} height={20} alt="Icon" src={item.icon} />
+                  {item.text}
+                </div>
+                <ChevronRight size={20} />
               </CardContent>
             </Card>
           </Link>
