@@ -46,7 +46,7 @@ export const ScrollCollapse: FC<ScrollCollapseProps> = ({
           opacity: isCollapsed ? 1 : 0,
           display: isCollapsed ? 'flex' : 'none'
         }}
-        className="text-primary-foreground text-h5 bg-primary/30 absolute top-0 flex h-full w-full items-center justify-between px-4"
+        className="text-primary-foreground text-h5 from-primary/50 to-primary absolute top-0 flex h-full w-full items-center justify-between bg-gradient-to-t px-4"
       >
         {collapsedTitle}
         <motion.div animate={{ rotate: isCollapsed ? 0 : 180 }}>
