@@ -154,7 +154,7 @@ export const PreviewTabs: React.FC<PreviewTabsProps> = () => {
       <TabsContent value="resume" className="grid gap-3">
         {resumeItems.map((item, key) => (
           <Link href={item.href} key={key}>
-            <Card className="flex items-center justify-between px-5 py-4">
+            <Card className="flex items-center justify-between px-6 py-4">
               <div className="flex items-center gap-2">
                 <Image width={20} height={20} alt="Icon" src={item.icon} />
                 <h5 className="text-h5">{item.text}</h5>

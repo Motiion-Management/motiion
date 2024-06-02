@@ -50,7 +50,7 @@ export function AccordionCard({
               EndIcon={ChevronDown}
               className="w-full justify-between p-0"
             >
-              <div className="flex items-center gap-2">
+              <div className="text-h5 flex items-center gap-2">
                 {startIconSlot}
                 {title}
               </div>
