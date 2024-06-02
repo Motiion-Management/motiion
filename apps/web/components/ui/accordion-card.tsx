@@ -9,7 +9,7 @@ import {
 import { ChevronDown } from 'lucide-react'
 import { cn } from '@/lib/utils'
 
-export function SizingCard({
+export function AccordionCard({
   children,
   title,
   className
