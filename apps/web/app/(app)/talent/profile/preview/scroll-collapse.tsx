@@ -38,10 +38,10 @@ export const ScrollCollapse: FC<ScrollCollapseProps> = ({
       }}
       transition={{ duration: 0.35 }}
       data-collapsed={isCollapsed ? 'true' : 'false'}
-      className={'group relative overflow-clip rounded-xl'}
+      className={'group sticky top-0 z-20 overflow-clip rounded-xl'}
     >
       {children}
-      <motion.div
+      <motion.button
         animate={{
           opacity: isCollapsed ? 1 : 0,
           display: isCollapsed ? 'flex' : 'none'
@@ -52,7 +52,7 @@ export const ScrollCollapse: FC<ScrollCollapseProps> = ({
         <motion.div animate={{ rotate: isCollapsed ? 0 : 180 }}>
           <ChevronDown className="h-6 w-6" />
         </motion.div>
-      </motion.div>
+      </motion.button>
     </motion.div>
   )
 }

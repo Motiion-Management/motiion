@@ -11,16 +11,16 @@ export default async function ProfileEditAttributesPage() {
 
   return (
     <div className="flex flex-col gap-4">
-      <AccordionCard title="General Sizing">
+      <AccordionCard title="General Sizing" defaultOpen>
         <GeneralSizingForm preloadedValues={preloadedSizes} />
       </AccordionCard>
       {user.gender !== 'Female' && (
-        <AccordionCard title="Male Sizing">
+        <AccordionCard title="Male Sizing" defaultOpen>
           <MaleSizingForm preloadedValues={preloadedSizes} />
         </AccordionCard>
       )}
       {user.gender !== 'Male' && (
-        <AccordionCard title="Female Sizing">
+        <AccordionCard title="Female Sizing" defaultOpen>
           <FemaleSizingForm preloadedValues={preloadedSizes} />
         </AccordionCard>
       )}

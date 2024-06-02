@@ -8,21 +8,42 @@ import {
 } from '@/components/ui/accordion'
 import { ChevronDown } from 'lucide-react'
 import { cn } from '@/lib/utils'
+import React from 'react'
 
 export function AccordionCard({
   children,
   title,
-  className
+  className,
+  defaultOpen,
+  withParent,
+  value = title
 }: {
   children: React.ReactNode
   title: string
   className?: string
+  defaultOpen?: boolean
+  withParent?: boolean
+  value?: string
 }) {
+  function StandaloneAccordion({ children }: { children: React.ReactNode }) {
+    return (
+      <Accordion
+        type="multiple"
+        defaultValue={[defaultOpen ? value : '']}
+        className="w-full"
+      >
+        {children}
+      </Accordion>
+    )
+  }
+
+  const Parent = withParent ? React.Fragment : StandaloneAccordion
+
   return (
     <Card className={cn('h-fit', className)}>
       <CardContent className="divide-border flex flex-col divide-y py-4">
-        <Accordion type="multiple" defaultValue={['item-1']} className="w-full">
-          <AccordionItem value="item-1" className="w-full border-none">
+        <Parent>
+          <AccordionItem value={value} className="w-full border-none">
             <AccordionTrigger
               EndIcon={ChevronDown}
               className="w-full justify-between p-0"
@@ -31,7 +52,7 @@ export function AccordionCard({
             </AccordionTrigger>
             <AccordionContent className="p-0">{children}</AccordionContent>
           </AccordionItem>
-        </Accordion>
+        </Parent>
       </CardContent>
     </Card>
   )

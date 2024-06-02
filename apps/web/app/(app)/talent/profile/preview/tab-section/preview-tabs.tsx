@@ -1,4 +1,5 @@
 'use client'
+import { FC } from 'react'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { toDate, differenceInYears, endOfToday } from 'date-fns'
 import ReactPlayer from 'react-player'
@@ -21,6 +22,11 @@ import CommercialIcon from '@/public/Commercial.svg'
 import LiveIcon from '@/public/Theatre_Mask.svg'
 import TrainingIcon from '@/public/Classroom.svg'
 import SkillsIcon from '@/public/Layers.svg'
+import { AccordionCard } from '@/components/ui/accordion-card'
+import { cn, formatHeight } from '@/lib/utils'
+import { Email } from '@/components/ui/email'
+import { Sizing } from './sizing'
+import { Stat, StatGroup } from '@/components/features/stats'
 
 const calculateAge = (dateOfBirth?: string | null) => {
   if (!dateOfBirth) {
@@ -29,20 +35,24 @@ const calculateAge = (dateOfBirth?: string | null) => {
   const dob = toDate(dateOfBirth)
   return differenceInYears(endOfToday(), dob)
 }
-
-function Stat({ label, value }: { label: string; value: React.ReactNode }) {
+const TabLayout: FC<{
+  children?: React.ReactNode
+  value: string
+}> = ({ children, value }) => {
   return (
-    <div className="mb-5 flex flex-col border-b-2 pb-4 text-left">
-      <div className="text-secondary text-xs font-medium uppercase leading-10">
-        {label}
-      </div>
-      <p className="text-label-s uppercase tracking-[0.6px]">{value}</p>
-    </div>
+    <TabsContent value={value} asChild>
+      <Accordion
+        type="single"
+        collapsible
+        className="grid gap-4 border-none pt-2"
+      >
+        {children}
+      </Accordion>
+    </TabsContent>
   )
 }
 
 type PreviewTabsProps = {
-  // snapTarget?: string
   style?: React.CSSProperties
 }
 
@@ -84,15 +94,24 @@ const resumeItems = [
     preview: ''
   }
 ]
-export const PreviewTabs: React.FC<PreviewTabsProps> = ({
-  // snapTarget,
-  style
-}) => {
+function locationToString(location?: {
+  city: string
+  state: string
+  country: string
+  address?: string
+  zipCode?: string
+}) {
+  if (!location) {
+    return ''
+  }
+  return `${location.address} ${location.city}, ${location.state} ${location.zipCode}`.trim()
+}
+export const PreviewTabs: React.FC<PreviewTabsProps> = () => {
   const userStats = useQuery(api.resumes.getMyStats)
-  console.log(userStats)
+  const sizing = useQuery(api.resumes.getMySizes)
   return (
-    <Tabs style={style} defaultValue="about">
-      <TabsList className="grid w-full grid-cols-3 rounded-full">
+    <Tabs defaultValue="about" className="mt-1">
+      <TabsList className="sticky top-16 z-10 grid w-full grid-cols-3 rounded-full">
         <TabsTrigger className="rounded-full" value="about">
           About
         </TabsTrigger>
@@ -103,70 +122,36 @@ export const PreviewTabs: React.FC<PreviewTabsProps> = ({
           Links
         </TabsTrigger>
       </TabsList>
-      <TabsContent value="about" className="border-none">
-        <Accordion type="single" collapsible>
-          <AccordionItem className="my-6" value="attributes" title="attributes">
-            <Card className="p-6">
-              <AccordionTrigger className="accordion-trigger justify-between text-lg">
-                Attributes <ChevronRight size={20} />
-              </AccordionTrigger>
-              <AccordionContent>
-                <CardContent className="pl-0">
-                  <CardDescription>
-                    <Stat label="Ethnicity" value="White/Caucasian" />
-                    {/* <Stat label="Height" value={userStats?.height} /> */}
-                    <Stat label="Eyes" value={userStats?.eyeColor} />
-                    <Stat label="Hair Color" value={userStats?.hairColor} />
-                    <Stat
-                      label="Age"
-                      value={calculateAge(userStats?.dateOfBirth)}
-                    />
-                  </CardDescription>
-                </CardContent>
-              </AccordionContent>
-            </Card>
-          </AccordionItem>
-          <AccordionItem
-            value="Representation"
-            title="Representation"
-            className="pb-6"
-          >
-            <Card className="p-6">
-              <AccordionTrigger className="justify-between text-lg no-underline">
-                Representation <ChevronRight size={20} />
-              </AccordionTrigger>
-              <AccordionContent>
-                <CardContent className="pl-0">
-                  <CardDescription>
-                    <Stat
-                      label="Representation"
-                      value={userStats?.representation?.name}
-                    />
-                  </CardDescription>
-                </CardContent>
-              </AccordionContent>
-            </Card>
-          </AccordionItem>
-          <AccordionItem value="Sizing" title="Sizing" className="pb-6">
-            <Card className="p-6">
-              <AccordionTrigger className="justify-between text-lg">
-                Sizing <ChevronRight size={20} />
-              </AccordionTrigger>
-              <AccordionContent>
-                <CardContent className="pl-0">
-                  <CardDescription>
-                    {/* <Stat label="Height" value={userStats?.height} /> */}
-                    {/* <Stat label="Waist" value={userStats?.waist} /> */}
-                    {/* <Stat label="Shoes" value={userStats?.shoes} /> */}
-                    {/* <Stat label="Chest" value={userStats?.chest} /> */}
-                    {/* <Stat label="Jacket" value={userStats?.jacket} /> */}
-                  </CardDescription>
-                </CardContent>
-              </AccordionContent>
-            </Card>
-          </AccordionItem>
-        </Accordion>
-      </TabsContent>
+      <TabLayout value="about">
+        <AccordionCard title="Attributes" withParent>
+          <StatGroup cols={2}>
+            <Stat label="Age" value={calculateAge(userStats?.dateOfBirth)} />
+            <Stat label="Height" value={formatHeight(userStats?.height)} />
+            <Stat label="Eyes" value={userStats?.eyeColor} />
+            <Stat label="Hair Color" value={userStats?.hairColor} />
+            <Stat label="Ethnicity" value="White/Caucasian" />
+            <div />
+          </StatGroup>
+        </AccordionCard>
+        <Sizing sizing={sizing?.sizing} />
+        <AccordionCard title="Representation" withParent>
+          <StatGroup>
+            <Stat
+              label="Representation"
+              value={userStats?.representation?.name}
+            />
+            <Stat
+              label="Address"
+              value={locationToString(userStats?.representation?.location)}
+            />
+            <Stat label="Phone" value={userStats?.representation?.phone} />
+            <Stat
+              label="Email"
+              value={<Email address={userStats?.representation?.email || ''} />}
+            />
+          </StatGroup>
+        </AccordionCard>
+      </TabLayout>
       <TabsContent value="resume">
         {resumeItems.map((item, key) => (
           <Link href={item.href} key={key}>

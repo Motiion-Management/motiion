@@ -3,12 +3,14 @@ import { authMutation, authQuery } from './util'
 import { getOneFrom } from 'convex-helpers/server/relationships'
 import { crud } from 'convex-helpers/server'
 import { ConvexError, v } from 'convex/values'
-import { Id } from './_generated/dataModel'
+import { Doc, Id } from './_generated/dataModel'
 import { pick } from 'convex-helpers'
 import { Resumes, zFileUploadObjectArray } from './validators/resume'
 import { zodToConvex } from 'convex-helpers/server/zod'
 
 export const { read } = crud(Resumes, query, mutation)
+
+export type ResumeDoc = Doc<'resumes'>
 
 export const { create, update, destroy } = crud(
   Resumes,

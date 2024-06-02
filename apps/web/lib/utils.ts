@@ -21,3 +21,13 @@ export function formatHeight(height?: { feet: number; inches: number }) {
   if (!height) return ''
   return `${height.feet}' ${height.inches}"`
 }
+
+export const UNITS = {
+  inches: `"`,
+  feet: `'`
+} as const
+
+export function formatSizeValue(value: number, unit?: keyof typeof UNITS) {
+  if (!value) return value
+  return `${value}${unit ? UNITS[unit] : ''}`
+}
