@@ -2,7 +2,7 @@
 import { FC } from 'react'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { toDate, differenceInYears, endOfToday } from 'date-fns'
-import ReactPlayer from 'react-player'
+import ReactPlayer from 'react-player/lazy'
 import Image from 'next/image'
 import Link from 'next/link'
 import {
@@ -27,6 +27,9 @@ import { cn, formatHeight } from '@/lib/utils'
 import { Email } from '@/components/ui/email'
 import { Sizing } from './sizing'
 import { Stat, StatGroup } from '@/components/features/stats'
+import { SocialLink, SocialLinkProps } from '@/components/ui/social-link'
+import { ExternalLink } from '@/components/ui/external-link'
+import { AspectRatio } from '@/components/ui/aspect-ratio'
 
 const calculateAge = (dateOfBirth?: string | null) => {
   if (!dateOfBirth) {
@@ -35,17 +38,13 @@ const calculateAge = (dateOfBirth?: string | null) => {
   const dob = toDate(dateOfBirth)
   return differenceInYears(endOfToday(), dob)
 }
-const TabLayout: FC<{
+const AccordionTab: FC<{
   children?: React.ReactNode
   value: string
 }> = ({ children, value }) => {
   return (
     <TabsContent value={value} asChild>
-      <Accordion
-        type="single"
-        collapsible
-        className="grid gap-4 border-none pt-2"
-      >
+      <Accordion type="single" collapsible className="grid gap-3">
         {children}
       </Accordion>
     </TabsContent>
@@ -111,7 +110,7 @@ export const PreviewTabs: React.FC<PreviewTabsProps> = () => {
   const sizing = useQuery(api.resumes.getMySizes)
   return (
     <Tabs defaultValue="about" className="mt-1">
-      <TabsList className="sticky top-16 z-10 grid w-full grid-cols-3 rounded-full">
+      <TabsList className="sticky top-16 z-10 mb-4 grid w-full grid-cols-3 rounded-full">
         <TabsTrigger className="rounded-full" value="about">
           About
         </TabsTrigger>
@@ -122,7 +121,9 @@ export const PreviewTabs: React.FC<PreviewTabsProps> = () => {
           Links
         </TabsTrigger>
       </TabsList>
-      <TabLayout value="about">
+
+      {/* ABOUT */}
+      <AccordionTab value="about">
         <AccordionCard title="Attributes" withParent>
           <StatGroup cols={2}>
             <Stat label="Age" value={calculateAge(userStats?.dateOfBirth)} />
@@ -151,65 +152,74 @@ export const PreviewTabs: React.FC<PreviewTabsProps> = () => {
             />
           </StatGroup>
         </AccordionCard>
-      </TabLayout>
-      <TabsContent value="resume">
+      </AccordionTab>
+
+      {/* RESUME */}
+      <TabsContent value="resume" className="grid gap-3">
         {resumeItems.map((item, key) => (
           <Link href={item.href} key={key}>
-            <Card className="my-3">
-              <CardContent className="flex items-center justify-between pt-5">
-                <div className="flex gap-2">
-                  <Image width={20} height={20} alt="Icon" src={item.icon} />
-                  {item.text}
-                </div>
-                <ChevronRight size={20} />
-              </CardContent>
+            <Card className="flex items-center justify-between p-4">
+              <div className="flex items-center gap-2">
+                <Image width={20} height={20} alt="Icon" src={item.icon} />
+                <h5 className="text-h5">{item.text}</h5>
+              </div>
+              <ChevronRight size={20} />
             </Card>
           </Link>
         ))}
       </TabsContent>
-      <TabsContent value="links">
-        <Accordion type="single" collapsible>
-          <AccordionItem className="pb-6" value="reel" title="reel">
-            <Card className="p-6">
-              <AccordionTrigger className="accordion-trigger justify-between text-lg">
-                Reel <ChevronRight size={20} />
-              </AccordionTrigger>
-              <AccordionContent>
-                <CardContent className="pl-0">
+
+      {/* LINKS */}
+      <AccordionTab value="links">
+        {userStats?.links?.reel && (
+          <AccordionCard title="Reel" withParent>
+            <AccordionContent>
+              <AspectRatio ratio={16 / 9}>
+                <div className="mt-4 overflow-clip rounded-lg">
                   <ReactPlayer
+                    playsinline
                     width="100%"
-                    height="400px"
-                    controls={true}
-                    url={userStats?.reel || ''}
+                    height="auto"
+                    controls
+                    config={{
+                      youtube: {
+                        playerVars: {
+                          start: 113
+                        }
+                      }
+                    }}
+                    url={userStats?.links?.reel || ''}
                   />
-                </CardContent>
-              </AccordionContent>
-            </Card>
-          </AccordionItem>
-          <AccordionItem value="socials" title="socials" className="pb-6">
-            <Card className="p-6">
-              <AccordionTrigger className="justify-between text-lg no-underline">
-                Socials <ChevronRight size={20} />
-              </AccordionTrigger>
-              <AccordionContent>
-                <CardContent className="pl-0">
-                  <CardDescription>My Socials</CardDescription>
-                </CardContent>
-              </AccordionContent>
-            </Card>
-          </AccordionItem>
-          <AccordionItem value="portfolio" title="portfolio" className="pb-6">
-            <Card className="p-6">
-              <AccordionTrigger className="justify-between text-lg">
-                Portfolio <ChevronRight size={20} />
-              </AccordionTrigger>
-              <AccordionContent>
-                <CardContent className="pl-0">My portfolio</CardContent>
-              </AccordionContent>
-            </Card>
-          </AccordionItem>
-        </Accordion>
-      </TabsContent>
+                </div>
+              </AspectRatio>
+            </AccordionContent>
+          </AccordionCard>
+        )}
+        <AccordionCard title="Socials" withParent>
+          <AccordionContent>
+            <div className="mt-4 flex gap-4">
+              {userStats?.links?.socials?.map(({ link, platform }) => (
+                <SocialLink
+                  key={platform}
+                  link={link}
+                  platform={platform as SocialLinkProps['platform']}
+                />
+              ))}
+            </div>
+          </AccordionContent>
+        </AccordionCard>
+        <AccordionCard title="Portfolio" withParent>
+          <AccordionContent>
+            <div className="mt-4 grid grid-cols-2 gap-4">
+              {userStats?.links?.portfolio?.map(({ title, link }) => (
+                <ExternalLink key={title} href={link}>
+                  {title}
+                </ExternalLink>
+              ))}
+            </div>
+          </AccordionContent>
+        </AccordionCard>
+      </AccordionTab>
     </Tabs>
   )
 }

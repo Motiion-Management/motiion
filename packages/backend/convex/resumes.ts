@@ -136,7 +136,6 @@ export const getMyStats = authQuery({
     return {
       ...resume,
       ...resume?.sizing,
-      reel: resume?.links?.reel,
       gender: ctx.user.gender,
       dateOfBirth: ctx.user.dateOfBirth,
       representation: {
