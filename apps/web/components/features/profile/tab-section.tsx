@@ -1,17 +1,6 @@
 import { FC } from 'react'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
-import Image from 'next/image'
-import Link from 'next/link'
 import { Accordion } from '@/components/ui/accordion'
-import { Card } from '@/components/ui/card'
-import { ChevronRight } from 'lucide-react'
-import FilmIcon from '@/public/Film_Reel.svg'
-import VideoIcon from '@/public/Video.svg'
-import CommercialIcon from '@/public/Commercial.svg'
-import LiveIcon from '@/public/Theatre_Mask.svg'
-import TrainingIcon from '@/public/Classroom.svg'
-import SkillsIcon from '@/public/Layers.svg'
-
 import { SizingCard } from './sizing'
 import { ResumeDoc } from '@packages/backend/convex/resumes'
 import { UserDoc } from '@packages/backend/convex/users'
@@ -35,44 +24,6 @@ const AccordionTab: FC<{
   )
 }
 
-const resumeItems = [
-  {
-    icon: FilmIcon,
-    href: '/talent/profile/television-film',
-    text: 'Television/Film',
-    preview: ''
-  },
-  {
-    icon: VideoIcon,
-    href: '/talent/profile/music-videos',
-    text: 'Music Videos',
-    preview: ''
-  },
-  {
-    icon: LiveIcon,
-    href: '/talent/profile/live-performances',
-    text: 'Live/Stage Performances',
-    preview: ''
-  },
-  {
-    icon: CommercialIcon,
-    href: '/talent/profile/commercials',
-    text: 'Commercials',
-    preview: ''
-  },
-  {
-    icon: TrainingIcon,
-    href: '/talent/profile/training-education',
-    text: 'Training/Education',
-    preview: ''
-  },
-  {
-    icon: SkillsIcon,
-    href: '/talent/profile/skills',
-    text: 'Skills',
-    preview: ''
-  }
-]
 type TabSectionProps = {
   user: UserDoc
   resume: ResumeDoc
