@@ -9,13 +9,13 @@
     "ios": "expo start --ios"
   },
   "dependencies": {
-    "@clerk/clerk-expo": "^1.0.2",
+    "@clerk/clerk-expo": "^1.1.8",
     "@packages/backend": "workspace:*",
     "@react-navigation/native": "^6.1.9",
     "@react-navigation/native-stack": "^6.9.17",
-    "convex": "^1.12.0",
-    "convex-helpers": "^0.1.38",
-    "expo": "^50.0.6",
+    "convex": "^1.12.1",
+    "convex-helpers": "^0.1.41",
+    "expo": "^50.0.19",
     "expo-auth-session": "~5.4.0",
     "expo-font": "~11.10.2",
     "expo-random": "~13.6.0",

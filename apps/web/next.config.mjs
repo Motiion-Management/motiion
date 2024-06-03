@@ -9,6 +9,9 @@ const withSerwist = withSerwistInit({
 })
 
 export default withSerwist({
+  experimental: {
+    ppr: true
+  },
   images: {
     remotePatterns: [
       { protocol: 'https', hostname: '*.convex.cloud', port: '' }
