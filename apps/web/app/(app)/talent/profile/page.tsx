@@ -1,9 +1,9 @@
+import { InfoIcon as Info } from 'lucide-react'
 import { HeadshotCarousel } from '@/components/features/headshot-carousel'
 import { AlertDescription } from '@/components/ui/alert'
 import { DismissableAlert } from '@/components/ui/dismissable-alert'
-import { InfoIcon as Info } from 'lucide-react'
-import { LinkSection } from './link-section'
 import { getMyResume } from '@/lib/server/resumes'
+import { LinkSection } from './link-section'
 import { AboutLinks } from './about-links'
 
 export default async function ProfilePage() {
