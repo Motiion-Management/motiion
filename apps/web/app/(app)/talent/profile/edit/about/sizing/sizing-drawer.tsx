@@ -4,11 +4,8 @@ import {
   WheelPickerField,
   WheelPickerColumnValues
 } from '@/components/ui/form-fields/wheel-picker'
+import { UNITS, formatSizeValue } from '@/lib/utils'
 
-const UNITS = {
-  inches: `"`,
-  feet: `'`
-} as const
 export interface SizingDrawerProps<T extends FieldValues>
   extends Omit<EditDrawerProps<T>, 'children'> {
   section: string
@@ -17,10 +14,6 @@ export interface SizingDrawerProps<T extends FieldValues>
   unit?: keyof typeof UNITS
 }
 
-function formatValue(value: number, unit?: keyof typeof UNITS) {
-  if (!value) return value
-  return `${value}${unit ? UNITS[unit] : ''}`
-}
 export function SizingDrawer<T extends FieldValues>({
   section,
   column,
@@ -30,7 +23,7 @@ export function SizingDrawer<T extends FieldValues>({
 }: SizingDrawerProps<T>) {
   const form = useFormContext<T>()
 
-  const value = formatValue(form.getValues()?.[section]?.[column], unit)
+  const value = formatSizeValue(form.getValues()?.[section]?.[column], unit)
   const options = { [column]: { values, unit } }
 
   return (

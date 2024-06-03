@@ -6,8 +6,12 @@ import { sizingPlainObject } from './sizing'
 
 export const zLinks = z.object({
   reel: z.string().optional(),
-  socials: z.array(z.object({ platform: z.string(), link: z.string() })),
-  portfolio: z.array(z.object({ title: z.string(), link: z.string() }))
+  socials: z
+    .array(z.object({ platform: z.string(), link: z.string() }))
+    .optional(),
+  portfolio: z
+    .array(z.object({ title: z.string(), link: z.string() }))
+    .optional()
 })
 
 export const zFileUploadObject = z.object({

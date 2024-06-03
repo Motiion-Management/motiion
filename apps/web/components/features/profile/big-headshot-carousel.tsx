@@ -14,6 +14,7 @@ import { AspectRatio } from '@/components/ui/aspect-ratio'
 import './profile-card.css'
 import FlipArrowWhite from '@/public/profile-flip-arrow-white.svg'
 import { Button } from '@/components/ui/button'
+
 export function BigHeadshotCarousel({
   user,
   flip
@@ -24,6 +25,7 @@ export function BigHeadshotCarousel({
   const headshots = useQuery(api.resumes.getMyHeadshots)
   const [carousel, setCarousel] = useState<CarouselApi>()
   const [current, setCurrent] = useState(0)
+
   useEffect(() => {
     if (!carousel) {
       return
@@ -47,10 +49,11 @@ export function BigHeadshotCarousel({
     }
   }
   return (
-    <div className={'relative grid'}>
-      <div className="flex justify-center gap-5 pt-3">
-        {headshots && headshots.length > 0
-          ? headshots.map((headshot, index) => (
+    <div className={`relative grid`}>
+      <div className="absolute top-0 z-10 flex w-full flex-col px-4 group-data-[collapsed=true]:hidden">
+        <div className="flex w-full justify-center gap-5 pt-3">
+          {headshots && headshots.length > 0
+            ? headshots.map((headshot, index) => (
               <Progress
                 className={
                   current === index
@@ -60,13 +63,14 @@ export function BigHeadshotCarousel({
                 key={index}
               />
             ))
-          : null}
-      </div>
-      <div className="text-primary-foreground absolute left-4 top-4 z-10 flex flex-col">
-        <div className="text-h3 pt-4">
-          {user.firstName} {user.lastName}
+            : null}
         </div>
-        <div className="text-h5">{user.location?.city}</div>
+        <div className="text-primary-foreground z-10 flex flex-col self-start">
+          <div className="text-h3 pt-4">
+            {user.firstName} {user.lastName}
+          </div>
+          <div className="text-h5">{user.location?.city}</div>
+        </div>
       </div>
 
       <Carousel setApi={setCarousel} className="absolute left-0 top-0 w-full">

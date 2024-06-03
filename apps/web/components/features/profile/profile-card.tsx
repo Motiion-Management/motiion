@@ -41,7 +41,11 @@ export function ProfileCard({ user }: { user: UserDoc }) {
     setIsFlipped(!isFlipped)
   }
   return (
-    <AspectRatio ratio={24 / 41} className="w-full" id="ar">
+    <AspectRatio
+      ratio={24 / 41}
+      className="h-full w-auto group-data-[open=true]:pointer-events-none"
+      id="ar"
+    >
       <ReactCardFlip
         cardStyles={{
           front: { zIndex: 'unset', transformStyle: 'initial' },

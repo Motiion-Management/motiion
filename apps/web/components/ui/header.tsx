@@ -3,11 +3,13 @@ import { Separator } from './separator'
 export function Header({
   title,
   actionSlot,
-  children
+  children,
+  noSeparator
 }: {
   title?: string
   actionSlot?: React.ReactNode
   children?: React.ReactNode
+  noSeparator?: boolean
 }) {
   return (
     <header className="bg-background flex w-full flex-wrap items-center justify-between gap-4 ">
@@ -18,7 +20,7 @@ export function Header({
           <div className="flex basis-full justify-center gap-4">{children}</div>
         )}
       </div>
-      <Separator className="basis-full" />
+      {!noSeparator && <Separator className="basis-full" />}
     </header>
   )
 }

@@ -3,18 +3,39 @@ import { authMutation, authQuery } from './util'
 import { getOneFrom } from 'convex-helpers/server/relationships'
 import { crud } from 'convex-helpers/server'
 import { ConvexError, v } from 'convex/values'
-import { Id } from './_generated/dataModel'
+import { Doc, Id } from './_generated/dataModel'
 import { pick } from 'convex-helpers'
 import { Resumes, zFileUploadObjectArray } from './validators/resume'
 import { zodToConvex } from 'convex-helpers/server/zod'
 
 export const { read } = crud(Resumes, query, mutation)
 
+export type ResumeDoc = Doc<'resumes'>
+
 export const { create, update, destroy } = crud(
   Resumes,
   authQuery,
   authMutation
 )
+
+export const getMyResume = authQuery({
+  args: {},
+  handler: async (ctx) => {
+    if (!ctx.user) {
+      return null
+    }
+    return getOneFrom(ctx.db, 'resumes', 'userId', ctx.user._id)
+  }
+})
+
+export const getPublicResume = query({
+  args: {
+    userId: v.id('users')
+  },
+  handler: async (ctx, args) => {
+    return getOneFrom(ctx.db, 'resumes', 'userId', args.userId)
+  }
+})
 
 export const getMyAttributes = authQuery({
   args: {},

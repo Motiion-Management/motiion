@@ -482,7 +482,7 @@ export const sizingPlainObject = {
     .object({
       hips: zHips,
       bust: zBust,
-      underBust: zUnderBust,
+      underbust: zUnderBust,
       cup: zCup,
       coatLength: zCoatLength,
       shirt: zShirt,
