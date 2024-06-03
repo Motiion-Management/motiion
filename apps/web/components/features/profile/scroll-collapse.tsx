@@ -2,7 +2,7 @@
 import { FC, useState } from 'react'
 import { motion, useScroll, useMotionValueEvent } from 'framer-motion'
 import { ChevronDown } from 'lucide-react'
-import { useMainRef } from '../../main-with-ref'
+import { useMainRef } from '@/components/main-with-ref'
 
 export interface ScrollCollapseProps {
   children: React.ReactNode

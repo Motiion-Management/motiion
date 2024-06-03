@@ -4,6 +4,7 @@ import { fetchQuery, preloadQuery } from 'convex/nextjs'
 import { getAuthToken } from '@/lib/server/utils'
 import { api } from '@packages/backend/convex/_generated/api'
 import { redirect } from 'next/navigation'
+import { Id } from '@packages/backend/convex/_generated/dataModel'
 
 export async function myHeadshots() {
   const token = await getAuthToken()
@@ -55,6 +56,25 @@ export async function preloadMySizes() {
 
   if (!resume) {
     redirect('/sign-in')
+  }
+  return resume
+}
+
+export async function getMyResume() {
+  const token = await getAuthToken()
+  const resume = await fetchQuery(api.resumes.getMyResume, {}, { token })
+
+  if (!resume) {
+    redirect('/sign-in')
+  }
+  return resume
+}
+
+export async function getPublicResume(userId: Id<'users'>) {
+  const resume = await fetchQuery(api.resumes.getPublicResume, { userId })
+
+  if (!resume) {
+    redirect('/404')
   }
   return resume
 }

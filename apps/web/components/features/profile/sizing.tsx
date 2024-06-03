@@ -4,7 +4,7 @@ import { Stat, StatGroup } from '@/components/features/stats'
 import { ResumeDoc } from '@packages/backend/convex/resumes'
 import { UserDoc } from '@packages/backend/convex/users'
 
-export const Sizing: FC<{
+export const SizingCard: FC<{
   sizing?: ResumeDoc['sizing']
   gender?: UserDoc['gender']
 }> = ({ sizing, gender }) => {

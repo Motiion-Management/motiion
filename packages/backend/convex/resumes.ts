@@ -18,6 +18,25 @@ export const { create, update, destroy } = crud(
   authMutation
 )
 
+export const getMyResume = authQuery({
+  args: {},
+  handler: async (ctx) => {
+    if (!ctx.user) {
+      return null
+    }
+    return getOneFrom(ctx.db, 'resumes', 'userId', ctx.user._id)
+  }
+})
+
+export const getPublicResume = query({
+  args: {
+    userId: v.id('users')
+  },
+  handler: async (ctx, args) => {
+    return getOneFrom(ctx.db, 'resumes', 'userId', args.userId)
+  }
+})
+
 export const getMyAttributes = authQuery({
   args: {},
   handler: async (ctx) => {

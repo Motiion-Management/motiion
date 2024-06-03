@@ -15,7 +15,7 @@ import { Doc } from './_generated/dataModel'
 import { internal } from './_generated/api'
 import { literals } from 'convex-helpers/validators'
 
-export const { read, paginate } = crud(Users, query, mutation)
+export const { paginate, read } = crud(Users, query, mutation)
 
 export const { create, update, destroy } = crud(
   Users,

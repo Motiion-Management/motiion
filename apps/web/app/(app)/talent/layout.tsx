@@ -1,5 +1,5 @@
 import { Nav } from './nav'
-import { MainWithRefContext } from './main-with-ref'
+import { MainWithRefContext } from '@/components/main-with-ref'
 
 interface UserScreensLayoutProps {
   title: React.ReactNode
