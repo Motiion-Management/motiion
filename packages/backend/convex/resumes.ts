@@ -135,6 +135,22 @@ export const getMyHeadshots = authQuery({
   }
 })
 
+export const getUserHeadshots = query({
+  args: {
+    userId: v.id('users')
+  },
+  handler: async (ctx, args) => {
+    const resume = await getOneFrom(ctx.db, 'resumes', 'userId', args.userId)
+
+    return Promise.all(
+      (resume?.headshots || []).map(async (headshot) => ({
+        url: await ctx.storage.getUrl(headshot.storageId),
+        ...headshot
+      }))
+    )
+  }
+})
+
 export const getMyStats = authQuery({
   args: {},
   handler: async (ctx) => {

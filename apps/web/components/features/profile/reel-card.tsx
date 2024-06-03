@@ -21,7 +21,7 @@ export const ReelCard: React.FC<{ resume: ResumeDoc }> = ({ resume }) => {
         >
           <AccordionContent>
             <AspectRatio ratio={16 / 9}>
-              <div className="mt-4 overflow-clip rounded-lg">
+              <div className=" overflow-clip rounded-lg">
                 <ReactPlayer
                   playsinline
                   width="100%"

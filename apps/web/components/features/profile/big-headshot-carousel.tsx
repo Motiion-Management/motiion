@@ -22,7 +22,7 @@ export function BigHeadshotCarousel({
   user: UserDoc
   flip: () => void
 }) {
-  const headshots = useQuery(api.resumes.getMyHeadshots)
+  const headshots = useQuery(api.resumes.getUserHeadshots, { userId: user._id })
   const [carousel, setCarousel] = useState<CarouselApi>()
   const [current, setCurrent] = useState(0)
 
@@ -53,16 +53,16 @@ export function BigHeadshotCarousel({
       <div className="absolute top-0 z-10 flex w-full flex-col px-4 group-data-[collapsed=true]:hidden">
         <div className="flex w-full justify-center gap-5 pt-3">
           {headshots && headshots.length > 0
-            ? headshots.map((headshot, index) => (
-              <Progress
-                className={
-                  current === index
-                    ? 'bg-accent z-10 h-2 w-16'
-                    : 'bg-background z-10 h-2 w-16'
-                }
-                key={index}
-              />
-            ))
+            ? headshots.map((_, index) => (
+                <Progress
+                  className={
+                    current === index
+                      ? 'bg-accent z-10 h-2 w-16'
+                      : 'bg-background z-10 h-2 w-16'
+                  }
+                  key={index}
+                />
+              ))
             : null}
         </div>
         <div className="text-primary-foreground z-10 flex flex-col self-start">
@@ -80,7 +80,7 @@ export function BigHeadshotCarousel({
               <CarouselItem key={index} className="w-full basis-auto">
                 <AspectRatio
                   key={index}
-                  ratio={24 / 41}
+                  ratio={24 / 40}
                   className="w-full"
                   id="ar"
                 >

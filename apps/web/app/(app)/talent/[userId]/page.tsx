@@ -15,7 +15,7 @@ export default async function UserProfilePage({
   return (
     <div className="flex flex-col gap-2 ">
       <ScrollCollapse collapsedTitle={`${user?.firstName} ${user?.lastName}`}>
-        <ProfileCard user={user} />
+        <ProfileCard user={user} resume={resume} />
       </ScrollCollapse>
       <TabSection user={user} resume={resume} />
     </div>
