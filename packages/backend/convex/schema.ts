@@ -142,7 +142,7 @@ export default defineSchema(
     // user
     users: Users.table
       .index('tokenId', ['tokenId'])
-      .searchIndex('search_body', {
+      .searchIndex('search_users', {
         searchField: 'firstName',
         filterFields: ['firstName', 'lastName', 'representationTip']
       }),
