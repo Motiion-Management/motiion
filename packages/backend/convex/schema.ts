@@ -39,7 +39,6 @@ export const Users = Table('users', {
   profileTip: v.boolean,
   representationTip: v.boolean
 })
-
 export const Experiences = Table('experiences', {
   userId: v.id('users'),
   visibility: zodToConvex(zVisibility),
@@ -141,7 +140,12 @@ export default defineSchema(
     events: Events.table.index('attendanceCode', ['attendanceCode']),
 
     // user
-    users: Users.table.index('tokenId', ['tokenId']),
+    users: Users.table
+      .index('tokenId', ['tokenId'])
+      .searchIndex('search_body', {
+        searchField: 'firstName',
+        filterFields: ['firstName', 'lastName', 'representationTip']
+      }),
 
     // resume data
     resumes: Resumes.table.index('userId', ['userId']),
