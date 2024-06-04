@@ -70,6 +70,16 @@ export async function getMyResume() {
   return resume
 }
 
+export async function preloadMyResume() {
+  const token = await getAuthToken()
+  const resume = await preloadQuery(api.resumes.getMyResume, {}, { token })
+
+  if (!resume) {
+    redirect('/sign-in')
+  }
+  return resume
+}
+
 export async function getPublicResume(userId: Id<'users'>) {
   const resume = await fetchQuery(api.resumes.getPublicResume, { userId })
 

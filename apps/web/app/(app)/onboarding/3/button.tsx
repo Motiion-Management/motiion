@@ -9,7 +9,7 @@ import { api } from '@packages/backend/convex/_generated/api'
 export function BottomButton() {
   const headshots = useQuery(api.resumes.getMyHeadshots)
   const headshotsExist = headshots && headshots.length > 0
-  const updateMyUser = useMutation(api.users.updateMyUser)
+  const updateMyUser = useMutation(api.users.update)
   const user = useQuery(api.users.getMyUser)
   const [loading, setLoading] = useState(false)
 

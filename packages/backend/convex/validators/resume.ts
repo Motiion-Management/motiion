@@ -36,6 +36,7 @@ export const resume = {
   training: zTrainingReferences.optional(),
   skills: zSkillReferences.optional(),
   sizing: z.object(sizingPlainObject).optional(),
+  displayRepresentation: z.boolean().optional(),
   representation: zid('agencies').optional(),
   yearsOfExperience: z.number().optional(),
   headshots: zFileUploadObjectArray.optional(),
