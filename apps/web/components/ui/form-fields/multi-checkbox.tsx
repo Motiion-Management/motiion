@@ -61,7 +61,7 @@ export const MultiCheckboxField = <T extends MultiCheckboxOptions>({
                       className={`cursor-pointer rounded-lg border-2 p-4 ${isChecked ? 'border-ring' : 'border-border'}`}
                     >
                       <FormControl>
-                        <button
+                        <div
                           onClick={() => handleCheckboxChange(!isChecked)}
                           className="flex cursor-pointer items-center gap-2"
                         >
@@ -72,7 +72,7 @@ export const MultiCheckboxField = <T extends MultiCheckboxOptions>({
                           <FormLabel className="cursor-pointer">
                             {option.label}
                           </FormLabel>
-                        </button>
+                        </div>
                       </FormControl>
                     </FormItem>
                   )

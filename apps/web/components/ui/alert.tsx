@@ -4,7 +4,7 @@ import { cva, type VariantProps } from 'class-variance-authority'
 import { cn } from '@/lib/utils'
 
 const alertVariants = cva(
-  'w-full flex flex-wrap rounded-lg border p-4 [&>svg]:w-4 [&>svg]:h-4 [&>svg]:mt-0.5 gap-2',
+  'w-full text-body-sm flex flex-wrap rounded-lg border p-4 [&>svg]:w-4 [&>svg]:h-4 [&>svg]:mt-0.5 gap-2',
   {
     variants: {
       variant: {
@@ -24,7 +24,7 @@ const alertVariants = cva(
 const Alert = React.forwardRef<
   HTMLDivElement,
   React.HTMLAttributes<HTMLDivElement> &
-    VariantProps<typeof alertVariants> & { iconSlot?: React.ReactNode }
+  VariantProps<typeof alertVariants> & { iconSlot?: React.ReactNode }
 >(({ className, variant, iconSlot, children, ...props }, ref) => (
   <div
     ref={ref}

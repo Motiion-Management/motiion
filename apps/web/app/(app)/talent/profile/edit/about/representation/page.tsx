@@ -1,15 +1,11 @@
-import { Card, CardContent } from '@/components/ui/card'
-import { preloadMyAttributes } from '@/lib/server/resumes'
-import { RepresentationForm } from './form'
+import { DisplayRepForm } from './display-rep-form'
+import { RepAlert } from './rep-alert'
 
 export default async function ProfileEditRepresentationPage() {
-  const preloadedAttributes = await preloadMyAttributes()
-
   return (
-    <Card className="h-fit">
-      <CardContent className="divide-border flex flex-col divide-y py-2">
-        <RepresentationForm preloadedValues={preloadedAttributes} />
-      </CardContent>
-    </Card>
+    <div className="flex flex-col gap-4">
+      <DisplayRepForm />
+      <RepAlert />
+    </div>
   )
 }
