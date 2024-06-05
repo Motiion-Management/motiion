@@ -156,7 +156,7 @@ export default defineSchema(
 
     // agency
     agents: Agents.table.index('userId', ['userId']),
-    agencies: Agencies.table
+    agencies: Agencies.table.searchIndex('search_name', { searchField: 'name' })
   },
   {
     schemaValidation: false

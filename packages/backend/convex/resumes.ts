@@ -28,6 +28,19 @@ export const getMyResume = authQuery({
   }
 })
 
+export const removeMyRepresentation = authMutation({
+  args: {},
+  handler: async (ctx) => {
+    const resume = await getOneFrom(ctx.db, 'resumes', 'userId', ctx.user._id)
+
+    if (!resume) {
+      return
+    }
+
+    await ctx.db.patch(resume._id, { representation: undefined })
+  }
+})
+
 export const updateMyResume = authMutation({
   args: omit(Resumes.withoutSystemFields, ['userId']),
   handler: async (ctx, args) => {

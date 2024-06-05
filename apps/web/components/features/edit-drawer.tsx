@@ -13,14 +13,16 @@ import { FieldValues, useFormContext } from 'react-hook-form'
 
 export interface EditDrawerProps<T extends FieldValues> {
   children: React.ReactNode
-  label: string
+  label?: string
   value?: React.ReactNode
+  iconSlot?: React.ReactNode
   onSubmit: (formData: T) => Promise<void>
 }
 export function EditDrawer<T extends FieldValues>({
   children,
   label,
   value,
+  iconSlot,
   onSubmit
 }: EditDrawerProps<T>) {
   const drawerCloseRef = useRef<HTMLButtonElement>(null)
@@ -39,11 +41,14 @@ export function EditDrawer<T extends FieldValues>({
     <Drawer shouldScaleBackground handleOnly>
       <DrawerTrigger className="flex w-full items-center justify-between gap-2 py-3">
         <div className="flex flex-col items-start gap-2">
-          <div className="text-label-xs text-ring uppercase">{label}</div>
+          {label && (
+            <div className="text-label-xs text-ring uppercase">{label}</div>
+          )}
           <div className="text-body-xs capitalize">{value || 'None'}</div>
         </div>
-        <Pencil size={16.5} className="fill-black stroke-white" />
+        {iconSlot ?? <Pencil size={16.5} className="fill-black stroke-white" />}
       </DrawerTrigger>
+      {iconSlot}
       <DrawerContent>
         <div className="divide-border flex flex-col divide-y">
           <DrawerHeader className="flex justify-between gap-2 px-6 text-start">

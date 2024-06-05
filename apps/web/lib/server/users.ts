@@ -1,6 +1,6 @@
 import 'server-only'
 
-import { fetchQuery } from 'convex/nextjs'
+import { fetchQuery, preloadQuery } from 'convex/nextjs'
 import { getAuthToken } from '@/lib/server/utils'
 import { api } from '@packages/backend/convex/_generated/api'
 import { redirect } from 'next/navigation'
@@ -13,6 +13,13 @@ export async function me() {
   if (!user) {
     redirect('/sign-in')
   }
+  return user
+}
+
+export async function preloadMe() {
+  const token = await getAuthToken()
+  const user = await preloadQuery(api.users.getMyUser, {}, { token })
+
   return user
 }
 
