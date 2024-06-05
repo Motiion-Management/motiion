@@ -1,4 +1,5 @@
 'use client'
+import { Card, CardContent } from '@/components/ui/card'
 import {
   FormControl,
   FormItem,
@@ -6,17 +7,14 @@ import {
   FormMessage
 } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger
-} from '@/components/ui/popover'
+import { ScrollArea, ScrollBar } from '@/components/ui/scroll-area'
 import { api } from '@packages/backend/convex/_generated/api'
 import { AgencyDoc } from '@packages/backend/convex/agencies'
 import { useQuery } from 'convex/react'
 import { Search, XCircle } from 'lucide-react'
 import { ChangeEvent, useState } from 'react'
 import { useController } from 'react-hook-form'
+import { motion } from 'framer-motion'
 
 export type AgencySearchFieldProps = {
   name: string
@@ -49,73 +47,102 @@ export const AgencySearchField: React.FC<AgencySearchFieldProps> = ({
   }
   return (
     <FormItem className={className}>
-      <Popover open={!!searchTerm}>
-        <FormLabel className="text-h6 flex items-center justify-between px-3">
-          {label} {required && <span className="text-xs">Required</span>}
-        </FormLabel>
-        <PopoverTrigger asChild>
-          <FormControl>
-            <Input
-              type="text"
-              placeholder="Search for an agency..."
-              defaultValue={defaultAgency?.name}
-              value={selectedAgency?.name || searchTerm}
-              leadingSlot={<Search size={20} />}
-              trailingSlot={
-                (searchTerm || selectedAgency) && (
-                  <XCircle
-                    className="fill-primary stroke-card"
-                    onClick={() => {
-                      field.onChange(undefined)
-                      setSelectedAgency(null)
-                      setSearchTerm('')
-                    }}
-                  />
-                )
-              }
-              onChange={handleSearchTermChange}
-              onFocus={() => {
-                field.onChange(undefined)
-                setSelectedAgency(null)
-                setSearchTerm((prev) => selectedAgency?.name || prev)
-              }}
-              onBlur={() => {
-                setSearchTerm((prev) => selectedAgency?.name || prev.trim())
-              }}
-            />
-          </FormControl>
-        </PopoverTrigger>
-        <FormMessage />
-        <span className="text-body-xs text-foreground/50 px-3">
-          If your agency is not listed in our database, enter the name of it
-          manually in the next tab.
-        </span>
-        <PopoverContent
-          className="mt-1 grid w-[calc(100dvw-2rem)] gap-2 "
-          onOpenAutoFocus={(e) => e.preventDefault()}
-          onCloseAutoFocus={(e) => e.preventDefault()}
+      <FormLabel className="text-h6 flex items-center justify-between px-3">
+        {label} {required && <span className="text-xs">Required</span>}
+      </FormLabel>
+      <div className="relative">
+        <FormControl>
+          <Input
+            type="text"
+            placeholder="Search for an agency..."
+            defaultValue={defaultAgency?.name}
+            value={selectedAgency?.name || searchTerm}
+            leadingSlot={<Search size={20} />}
+            trailingSlot={
+              (searchTerm || selectedAgency) && (
+                <XCircle
+                  className="fill-primary stroke-card"
+                  onClick={() => {
+                    field.onChange(undefined)
+                    setSelectedAgency(null)
+                    setSearchTerm('')
+                  }}
+                />
+              )
+            }
+            onChange={handleSearchTermChange}
+            onFocus={() => {
+              field.onChange(undefined)
+              setSelectedAgency(null)
+              setSearchTerm((prev) => selectedAgency?.name || prev)
+            }}
+            onBlur={() => {
+              setSearchTerm((prev) => selectedAgency?.name || prev.trim())
+            }}
+          />
+        </FormControl>
+        <motion.div
+          animate={{ opacity: searchTerm ? 1 : 0 }}
+          className="absolute left-0 right-0 top-full z-10 mt-1 w-full"
         >
-          {searchResults.length === 0 && (
-            <span className="text-body-xs text-foreground/50 px-3">
-              No results found.
-            </span>
-          )}
-          {searchResults.map((agency) => (
-            <button
-              key={agency._id}
-              onClick={() => {
-                field.onChange(agency._id)
-                setSelectedAgency(agency)
-                setSearchTerm('')
-              }}
-              className="bg-background/50 rounded-lg text-start"
-            >
-              <span>{agency.name}</span>
-              {agency.location?.city && <span> - {agency.location?.city}</span>}
-            </button>
-          ))}
-        </PopoverContent>
-      </Popover>
+          <Card>
+            <CardContent className="py-4">
+              <ScrollArea
+                className={
+                  '[&>[data-radix-scroll-area-viewport]]:max-h-[120px]'
+                }
+              >
+                <div className="grid gap-2">
+                  <ScrollBar forceMount />
+                  {searchResults.length === 0 && (
+                    <span className="text-body-xs text-foreground/50 px-3">
+                      No results found.
+                    </span>
+                  )}
+                  {searchResults.map((agency) => (
+                    <button
+                      key={agency._id}
+                      onClick={() => {
+                        field.onChange(agency._id)
+                        setSelectedAgency(agency)
+                        setSearchTerm('')
+                      }}
+                      className="px-1 text-start"
+                    >
+                      <span>{agency.name}</span>
+                      {agency.location?.city && (
+                        <span> - {agency.location?.city}</span>
+                      )}
+                    </button>
+                  ))}
+                  {searchResults.map((agency) => (
+                    <button
+                      key={agency._id + 1}
+                      onClick={() => {
+                        field.onChange(agency._id)
+                        setSelectedAgency(agency)
+                        setSearchTerm('')
+                      }}
+                      className="rounded-lg text-start"
+                    >
+                      <span>{agency.name}</span>
+                      {agency.location?.city && (
+                        <span> - {agency.location?.city}</span>
+                      )}
+                    </button>
+                  ))}
+                </div>
+              </ScrollArea>
+            </CardContent>
+          </Card>
+        </motion.div>
+      </div>
+
+      <FormMessage />
+      <span className="text-body-xs text-foreground/50 px-3">
+        If your agency is not listed in our database, enter the name of it
+        manually in the next tab.
+      </span>
     </FormItem>
   )
 }
