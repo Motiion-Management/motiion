@@ -75,6 +75,7 @@ export const Agents = Table('agents', {
 // Agency organizations, must be created by an agent user
 export const Agencies = Table('agencies', {
   name: v.string,
+  listed: v.boolean,
   shortName: v.optional(v.string),
   email: v.optional(v.string),
   logo: v.optional(v.id('_storage')),

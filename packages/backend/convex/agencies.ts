@@ -19,10 +19,10 @@ export const { create, update, destroy } = crud(
 export const search = query({
   args: { query: v.string() },
   handler: async (ctx, { query }) => {
-    console.log('searching for', query)
     const results = await ctx.db
       .query('agencies')
       .withSearchIndex('search_name', (q) => q.search('name', query))
+      .filter((q) => q.eq(q.field('listed'), true))
       .take(10)
 
     return results

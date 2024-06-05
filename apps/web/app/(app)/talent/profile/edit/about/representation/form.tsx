@@ -13,10 +13,16 @@ import { XCircle } from 'lucide-react'
 import { AgencySearchField } from './agency-search-field'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Separator } from '@/components/ui/separator'
+import { ManualAgencyInput } from './manual-agency-input'
 
-const formSchema = z.object({
-  representation: resume.representation.unwrap()
-})
+const formSchema = z
+  .object({
+    representation: resume.representation,
+    customRep: z.string().optional()
+  })
+  .refine((data) => {
+    return !!data.representation || !!data.customRep
+  }, 'Either select an agency or enter a custom representation')
 
 type FormSchema = z.infer<typeof formSchema>
 
@@ -24,20 +30,27 @@ export function RepresentationForm() {
   const resume = useQuery(api.resumes.getMyResume) || undefined
   const removeMyRepresentation = useMutation(api.resumes.removeMyRepresentation)
   const addMyRepresentation = useMutation(api.resumes.addMyRepresentation)
-
-  const realTimeValues = resume?.representation
-    ? { representation: resume.representation }
-    : undefined
+  const createAgency = useMutation(api.agencies.create)
 
   const form = useForm<FormSchema>({
     resolver: zodResolver(formSchema),
-    shouldUseNativeValidation: false,
-    defaultValues: realTimeValues,
-    values: realTimeValues
+    shouldUseNativeValidation: false
   })
-  async function onSubmit({ representation }: FormSchema) {
-    await addMyRepresentation({ representation })
-    form.reset({ representation })
+
+  const resetForm = () => {
+    form.reset()
+  }
+
+  async function onSubmit({ representation, customRep }: FormSchema) {
+    if (customRep) {
+      const newAgency = await createAgency({ name: customRep, listed: false })
+      await addMyRepresentation({ representation: newAgency._id })
+    }
+
+    if (representation) {
+      await addMyRepresentation({ representation })
+    }
+    resetForm()
   }
 
   async function removeRepresentation() {
@@ -75,10 +88,18 @@ export function RepresentationForm() {
               <Tabs defaultValue="search">
                 <div className="mx-4">
                   <TabsList className="sticky top-16 z-10 mb-4 grid w-full grid-cols-2 rounded-full">
-                    <TabsTrigger className="rounded-full" value="search">
+                    <TabsTrigger
+                      className="rounded-full"
+                      value="search"
+                      onClick={resetForm}
+                    >
                       Search
                     </TabsTrigger>
-                    <TabsTrigger className="rounded-full" value="manual">
+                    <TabsTrigger
+                      className="rounded-full"
+                      value="manual"
+                      onClick={resetForm}
+                    >
                       Manual
                     </TabsTrigger>
                   </TabsList>
@@ -89,7 +110,7 @@ export function RepresentationForm() {
                     <AgencySearchField name="representation" className="" />
                   </TabsContent>
                   <TabsContent value="manual" className="grid gap-3">
-                    manual input
+                    <ManualAgencyInput name="customRep" />
                   </TabsContent>
                 </div>
               </Tabs>

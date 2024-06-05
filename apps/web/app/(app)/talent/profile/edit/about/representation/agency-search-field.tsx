@@ -108,7 +108,7 @@ export const AgencySearchField: React.FC<AgencySearchFieldProps> = ({
               >
                 <div className="grid gap-2">
                   <ScrollBar forceMount />
-                  {!searchResults && (
+                  {(!searchResults || searchResults?.length === 0) && (
                     <span className="text-body-xs text-foreground/50 px-3">
                       No results found.
                     </span>
@@ -122,22 +122,6 @@ export const AgencySearchField: React.FC<AgencySearchFieldProps> = ({
                         setSearchTerm('')
                       }}
                       className="px-1 text-start"
-                    >
-                      <span>{agency.name}</span>
-                      {agency.location?.city && (
-                        <span> - {agency.location?.city}</span>
-                      )}
-                    </button>
-                  ))}
-                  {searchResults?.map((agency) => (
-                    <button
-                      key={agency._id + 1}
-                      onClick={() => {
-                        field.onChange(agency._id)
-                        setSelectedAgency(agency)
-                        setSearchTerm('')
-                      }}
-                      className="rounded-lg text-start"
                     >
                       <span>{agency.name}</span>
                       {agency.location?.city && (
