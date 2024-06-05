@@ -9,7 +9,8 @@ export interface InputProps
 }
 
 const classes = [
-  'text-body-sm flex h-12 w-full rounded-lg border px-3 py-2 ',
+  // text-body and no smaller, otherwise inputs will zoom in when tapped on mobile.
+  'text-body flex h-12 w-full rounded-lg border px-3 py-2 ',
   'text-foreground border-input bg-card dark:bg-input-background ring-offset-background placeholder:text-foreground/50',
   'focus-visible:ring-ring focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 ',
   'disabled:cursor-not-allowed disabled:opacity-50',
