@@ -12,9 +12,10 @@ import { api } from '@packages/backend/convex/_generated/api'
 import { AgencyDoc } from '@packages/backend/convex/agencies'
 import { useQuery } from 'convex/react'
 import { Search, XCircle } from 'lucide-react'
-import { ChangeEvent, useState } from 'react'
+import { ChangeEvent, useEffect, useMemo, useState } from 'react'
 import { useController } from 'react-hook-form'
 import { motion } from 'framer-motion'
+import debounce from 'lodash.debounce'
 
 export type AgencySearchFieldProps = {
   name: string
@@ -30,21 +31,34 @@ export const AgencySearchField: React.FC<AgencySearchFieldProps> = ({
   className
 }) => {
   const { field } = useController({ name })
+
   const defaultAgency = useQuery(api.agencies.getAgency, {
     id: field.value
   })
 
   const [searchTerm, setSearchTerm] = useState<string>('')
-  const [selectedAgency, setSelectedAgency] = useState<AgencyDoc | null>()
+  const [selectedAgency, setSelectedAgency] = useState<AgencyDoc | null>(
+    (defaultAgency as AgencyDoc) || null
+  )
 
-  const searchResults =
-    useQuery(api.agencies.search, {
-      query: searchTerm
-    }) || []
+  const searchResults = useQuery(api.agencies.search, {
+    query: searchTerm
+  })
 
   const handleSearchTermChange = (e: ChangeEvent<HTMLInputElement>) => {
     setSearchTerm(e.target.value)
   }
+
+  const debouncedSearchTermChange = useMemo(() => {
+    return debounce(handleSearchTermChange, 300)
+  }, [])
+
+  useEffect(() => {
+    return () => {
+      debouncedSearchTermChange.cancel()
+    }
+  })
+
   return (
     <FormItem className={className}>
       <FormLabel className="text-h6 flex items-center justify-between px-3">
@@ -56,7 +70,7 @@ export const AgencySearchField: React.FC<AgencySearchFieldProps> = ({
             type="text"
             placeholder="Search for an agency..."
             defaultValue={defaultAgency?.name}
-            value={selectedAgency?.name || searchTerm}
+            value={selectedAgency?.name || undefined}
             leadingSlot={<Search size={20} />}
             trailingSlot={
               (searchTerm || selectedAgency) && (
@@ -70,7 +84,7 @@ export const AgencySearchField: React.FC<AgencySearchFieldProps> = ({
                 />
               )
             }
-            onChange={handleSearchTermChange}
+            onChange={debouncedSearchTermChange}
             onFocus={() => {
               field.onChange(undefined)
               setSelectedAgency(null)
@@ -94,12 +108,12 @@ export const AgencySearchField: React.FC<AgencySearchFieldProps> = ({
               >
                 <div className="grid gap-2">
                   <ScrollBar forceMount />
-                  {searchResults.length === 0 && (
+                  {!searchResults && (
                     <span className="text-body-xs text-foreground/50 px-3">
                       No results found.
                     </span>
                   )}
-                  {searchResults.map((agency) => (
+                  {searchResults?.map((agency) => (
                     <button
                       key={agency._id}
                       onClick={() => {
@@ -115,7 +129,7 @@ export const AgencySearchField: React.FC<AgencySearchFieldProps> = ({
                       )}
                     </button>
                   ))}
-                  {searchResults.map((agency) => (
+                  {searchResults?.map((agency) => (
                     <button
                       key={agency._id + 1}
                       onClick={() => {

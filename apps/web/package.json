@@ -48,6 +48,8 @@
     "framer-motion": "^11.2.10",
     "input-otp": "^1.2.4",
     "libphonenumber-js": "^1.11.2",
+    "lodash.debounce": "^4.0.8",
+    "lodash.throttle": "^4.1.1",
     "lucide-react": "^0.376.0",
     "next": "^14.2.3",
     "next-themes": "^0.3.0",
@@ -69,6 +71,8 @@
   "devDependencies": {
     "@savvywombat/tailwindcss-grid-areas": "^4.0.0",
     "@tailwindcss/forms": "^0.5.7",
+    "@types/lodash.debounce": "^4.0.9",
+    "@types/lodash.throttle": "^4.1.9",
     "@types/node": "^20.14.0",
     "@types/pulltorefreshjs": "^0.1.7",
     "@types/react": "^18.3",
