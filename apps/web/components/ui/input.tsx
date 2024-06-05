@@ -4,7 +4,8 @@ import { cn } from '@/lib/utils'
 
 export interface InputProps
   extends React.InputHTMLAttributes<HTMLInputElement> {
-  iconSlot?: React.ReactNode
+  leadingSlot?: React.ReactNode
+  trailingSlot?: React.ReactNode
 }
 
 const classes = [
@@ -16,21 +17,31 @@ const classes = [
 ]
 
 const Input = React.forwardRef<HTMLInputElement, InputProps>(
-  ({ className, type, iconSlot, ...props }, ref) => {
+  ({ className, type, leadingSlot, trailingSlot, ...props }, ref) => {
     return (
       <div className="relative">
-        {iconSlot && (
+        {leadingSlot && (
           <div className="*:text-primary absolute left-2 top-0 flex h-full items-center">
-            {iconSlot}
+            {leadingSlot}
           </div>
         )}
 
         <input
           type={type}
-          className={cn(...classes, iconSlot && 'pl-10', className)}
+          className={cn(
+            ...classes,
+            leadingSlot && 'pl-10',
+            trailingSlot && 'pr-10',
+            className
+          )}
           ref={ref}
           {...props}
         />
+        {trailingSlot && (
+          <div className="*:text-primary absolute right-2 top-0 flex h-full items-center">
+            {trailingSlot}
+          </div>
+        )}
       </div>
     )
   }

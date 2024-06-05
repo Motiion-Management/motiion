@@ -28,6 +28,21 @@ export const getMyResume = authQuery({
   }
 })
 
+export const addMyRepresentation = authMutation({
+  args: {
+    representation: v.id('agencies')
+  },
+  handler: async (ctx, { representation }) => {
+    const resume = await getOneFrom(ctx.db, 'resumes', 'userId', ctx.user._id)
+
+    if (!resume) {
+      return
+    }
+
+    await ctx.db.patch(resume._id, { representation })
+  }
+})
+
 export const removeMyRepresentation = authMutation({
   args: {},
   handler: async (ctx) => {

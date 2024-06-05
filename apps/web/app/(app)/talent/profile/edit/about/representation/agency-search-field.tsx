@@ -12,8 +12,9 @@ import {
   PopoverTrigger
 } from '@/components/ui/popover'
 import { api } from '@packages/backend/convex/_generated/api'
+import { AgencyDoc } from '@packages/backend/convex/agencies'
 import { useQuery } from 'convex/react'
-import { Search } from 'lucide-react'
+import { Search, XCircle } from 'lucide-react'
 import { ChangeEvent, useState } from 'react'
 import { useController } from 'react-hook-form'
 
@@ -36,6 +37,7 @@ export const AgencySearchField: React.FC<AgencySearchFieldProps> = ({
   })
 
   const [searchTerm, setSearchTerm] = useState<string>('')
+  const [selectedAgency, setSelectedAgency] = useState<AgencyDoc | null>()
 
   const searchResults =
     useQuery(api.agencies.search, {
@@ -43,23 +45,43 @@ export const AgencySearchField: React.FC<AgencySearchFieldProps> = ({
     }) || []
 
   const handleSearchTermChange = (e: ChangeEvent<HTMLInputElement>) => {
-    console.log(e.target.value)
     setSearchTerm(e.target.value)
   }
   return (
     <FormItem className={className}>
-      <Popover open={searchResults.length > 0}>
+      <Popover open={!!searchTerm}>
         <FormLabel className="text-h6 flex items-center justify-between px-3">
           {label} {required && <span className="text-xs">Required</span>}
         </FormLabel>
         <PopoverTrigger asChild>
           <FormControl>
             <Input
-              type="search"
+              type="text"
               placeholder="Search for an agency..."
-              iconSlot={<Search size={20} />}
               defaultValue={defaultAgency?.name}
+              value={selectedAgency?.name || searchTerm}
+              leadingSlot={<Search size={20} />}
+              trailingSlot={
+                (searchTerm || selectedAgency) && (
+                  <XCircle
+                    className="fill-primary stroke-card"
+                    onClick={() => {
+                      field.onChange(undefined)
+                      setSelectedAgency(null)
+                      setSearchTerm('')
+                    }}
+                  />
+                )
+              }
               onChange={handleSearchTermChange}
+              onFocus={() => {
+                field.onChange(undefined)
+                setSelectedAgency(null)
+                setSearchTerm((prev) => selectedAgency?.name || prev)
+              }}
+              onBlur={() => {
+                setSearchTerm((prev) => selectedAgency?.name || prev.trim())
+              }}
             />
           </FormControl>
         </PopoverTrigger>
@@ -71,12 +93,22 @@ export const AgencySearchField: React.FC<AgencySearchFieldProps> = ({
         <PopoverContent
           className="mt-1 grid w-[calc(100dvw-2rem)] gap-2 "
           onOpenAutoFocus={(e) => e.preventDefault()}
+          onCloseAutoFocus={(e) => e.preventDefault()}
         >
+          {searchResults.length === 0 && (
+            <span className="text-body-xs text-foreground/50 px-3">
+              No results found.
+            </span>
+          )}
           {searchResults.map((agency) => (
             <button
               key={agency._id}
-              onClick={() => field.onChange(agency._id)}
-              className="bg-background/50 rounded-lg"
+              onClick={() => {
+                field.onChange(agency._id)
+                setSelectedAgency(agency)
+                setSearchTerm('')
+              }}
+              className="bg-background/50 rounded-lg text-start"
             >
               <span>{agency.name}</span>
               {agency.location?.city && <span> - {agency.location?.city}</span>}
