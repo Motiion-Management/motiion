@@ -3,18 +3,21 @@ import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
 import { Form } from '@/components/ui/form'
-import { useMutation, useQuery } from 'convex/react'
 import { api } from '@packages/backend/convex/_generated/api'
 import { CheckboxField } from '@/components/ui/form-fields/checkbox'
 import { resume } from '@packages/backend/convex/validators/resume'
+import { useMutation, Preloaded, usePreloadedQuery } from 'convex/react'
 
 const formSchema = z.object({
   displayRepresentation: resume.displayRepresentation
 })
 type FormSchema = z.infer<typeof formSchema>
 
-export const DisplayRepForm: React.FC = () => {
-  const resume = useQuery(api.resumes.getMyResume)
+export const DisplayRepForm: React.FC<{
+  preloadedResume: Preloaded<typeof api.resumes.getMyResume>
+}> = ({ preloadedResume }) => {
+  const resume = usePreloadedQuery(preloadedResume)
+
   const updateMyResume = useMutation(api.resumes.updateMyResume)
 
   const formValues = { displayRepresentation: resume?.displayRepresentation }

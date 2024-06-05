@@ -3,7 +3,6 @@ import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
 import { Form } from '@/components/ui/form'
-import { useMutation, useQuery } from 'convex/react'
 import { api } from '@packages/backend/convex/_generated/api'
 import { EditDrawer } from '@/components/features/edit-drawer'
 import { resume } from '@packages/backend/convex/validators/resume'
@@ -14,6 +13,7 @@ import { AgencySearchField } from './agency-search-field'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Separator } from '@/components/ui/separator'
 import { ManualAgencyInput } from './manual-agency-input'
+import { useMutation, Preloaded, usePreloadedQuery } from 'convex/react'
 
 const formSchema = z
   .object({
@@ -26,8 +26,11 @@ const formSchema = z
 
 type FormSchema = z.infer<typeof formSchema>
 
-export function RepresentationForm() {
-  const resume = useQuery(api.resumes.getMyResume) || undefined
+export const RepresentationForm: React.FC<{
+  preloadedResume: Preloaded<typeof api.resumes.getMyResume>
+}> = ({ preloadedResume }) => {
+  const resume = usePreloadedQuery(preloadedResume)
+
   const removeMyRepresentation = useMutation(api.resumes.removeMyRepresentation)
   const addMyRepresentation = useMutation(api.resumes.addMyRepresentation)
   const createAgency = useMutation(api.agencies.create)
@@ -56,8 +59,6 @@ export function RepresentationForm() {
   async function removeRepresentation() {
     await removeMyRepresentation()
   }
-
-  if (!resume?.displayRepresentation) return
 
   return (
     <Card className="h-fit">

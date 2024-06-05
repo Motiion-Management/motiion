@@ -3,11 +3,14 @@ import { DismissableAlert } from '@/components/ui/dismissable-alert'
 import { AlertDescription } from '@/components/ui/alert'
 import { InfoIcon as Info } from 'lucide-react'
 import { api } from '@packages/backend/convex/_generated/api'
-import { useMutation, useQuery } from 'convex/react'
+import { useMutation, Preloaded, usePreloadedQuery } from 'convex/react'
 
-export const RepAlert: React.FC = () => {
-  const user = useQuery(api.users.getMyUser)
-  const resume = useQuery(api.resumes.getMyResume)
+export const RepAlert: React.FC<{
+  preloadedUser: Preloaded<typeof api.users.getMyUser>
+  preloadedResume: Preloaded<typeof api.resumes.getMyResume>
+}> = ({ preloadedUser, preloadedResume }) => {
+  const user = usePreloadedQuery(preloadedUser)
+  const resume = usePreloadedQuery(preloadedResume)
   const updateMyUser = useMutation(api.users.updateMyUser)
   function dismissAlert() {
     updateMyUser({
