@@ -13,17 +13,17 @@ import { crud } from 'convex-helpers/server'
 import { Users } from './schema'
 import { Doc } from './_generated/dataModel'
 import { internal } from './_generated/api'
-import { literals } from 'convex-helpers/validators'
+import { literals, partial } from 'convex-helpers/validators'
 
 export const { paginate, read } = crud(Users, query, mutation)
 
-export const { create, update, destroy } = crud(
-  Users,
-  internalQuery,
-  internalMutation
-)
+export const {
+  create,
+  update: internalUpdate,
+  destroy
+} = crud(Users, internalQuery, internalMutation)
 
-export const { update: updateMyUser } = crud(Users, authQuery, authMutation)
+export const { update } = crud(Users, authQuery, authMutation)
 
 export type UserDoc = Doc<'users'>
 
@@ -48,6 +48,15 @@ export const getMyUser = authQuery({
   args: {},
   async handler(ctx) {
     return ctx.user
+  }
+})
+
+export const updateMyUser = authMutation({
+  args: partial(Users.withoutSystemFields),
+  async handler(ctx, args) {
+    await ctx.db.patch(ctx.user._id, {
+      ...args
+    })
   }
 })
 
@@ -83,7 +92,7 @@ export const updateOrCreateUserByTokenId = internalAction({
       if (eventType === 'user.created') {
         console.warn('overwriting user', data.tokenId, 'with', data)
       } else
-        await ctx.runMutation(internal.users.update, {
+        await ctx.runMutation(internal.users.internalUpdate, {
           id: user._id,
           patch: data
         })

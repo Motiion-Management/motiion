@@ -15,7 +15,7 @@ export default function ResumeUploadStep() {
   const resumeUploads = useQuery(api.resumes.getMyResumeUploads)
   const removeResumeUpload = useMutation(api.resumes.removeResumeUpload)
   const resumeUploadsExist = resumeUploads && resumeUploads.length > 0
-  const updateMyUser = useMutation(api.users.updateMyUser)
+  const updateMyUser = useMutation(api.users.update)
   const user = useQuery(api.users.getMyUser)
   const [loading, setLoading] = useState(false)
   const router = useRouter()

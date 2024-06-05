@@ -70,7 +70,7 @@ export function PersonalDetailsFormProvider({
   id: Id<'users'>
   defaultValues: Partial<FormSchema>
 }) {
-  const updateMyUser = useMutation(api.users.updateMyUser)
+  const updateMyUser = useMutation(api.users.update)
 
   const router = useRouter()
   const [loading, setLoading] = useState(false)

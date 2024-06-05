@@ -75,6 +75,7 @@ export const Agents = Table('agents', {
 // Agency organizations, must be created by an agent user
 export const Agencies = Table('agencies', {
   name: v.string,
+  listed: v.boolean,
   shortName: v.optional(v.string),
   email: v.optional(v.string),
   logo: v.optional(v.id('_storage')),
@@ -156,7 +157,7 @@ export default defineSchema(
 
     // agency
     agents: Agents.table.index('userId', ['userId']),
-    agencies: Agencies.table
+    agencies: Agencies.table.searchIndex('search_name', { searchField: 'name' })
   },
   {
     schemaValidation: false

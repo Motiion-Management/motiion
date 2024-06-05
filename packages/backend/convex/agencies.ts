@@ -16,11 +16,27 @@ export const { create, update, destroy } = crud(
   authMutation
 )
 
+export const search = query({
+  args: { query: v.string() },
+  handler: async (ctx, { query }) => {
+    const results = await ctx.db
+      .query('agencies')
+      .withSearchIndex('search_name', (q) => q.search('name', query))
+      .filter((q) => q.eq(q.field('listed'), true))
+      .take(10)
+
+    return results
+  }
+})
+
 export const getAgency = query({
   args: {
-    id: v.id('agencies')
+    id: v.optional(v.id('agencies'))
   },
   handler: async (ctx, args) => {
+    if (!args.id) {
+      return null
+    }
     const agency = await ctx.db.get(args.id)
 
     if (!agency) {

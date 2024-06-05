@@ -19,8 +19,8 @@ export function DismissableAlert({
   if (!shown) return null
   return (
     <Alert {...props}>
-      {children}
-      <div className="flex basis-full">
+      <div className="flex flex-col items-start gap-4">
+        {children}
         <Button
           variant="link"
           size="min"

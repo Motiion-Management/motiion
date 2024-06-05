@@ -1,10 +1,13 @@
+import { InfoIcon as Info } from 'lucide-react'
 import { HeadshotCarousel } from '@/components/features/headshot-carousel'
 import { AlertDescription } from '@/components/ui/alert'
 import { DismissableAlert } from '@/components/ui/dismissable-alert'
-import { InfoIcon as Info } from 'lucide-react'
+import { getMyResume } from '@/lib/server/resumes'
 import { LinkSection } from './link-section'
+import { AboutLinks } from './about-links'
 
 export default async function ProfilePage() {
+  const resume = await getMyResume()
   return (
     <div className="grid w-full grid-cols-1 grid-rows-[repeat(5,min-content)] gap-8 overflow-x-visible">
       <DismissableAlert iconSlot={<Info />} variant="info">
@@ -15,56 +18,40 @@ export default async function ProfilePage() {
 
       <HeadshotCarousel title="Your Headshots" />
 
-      <LinkSection
-        title="About"
-        links={[
-          {
-            href: '/talent/profile/edit/about/representation',
-            text: 'Representation',
-            preview: 'Block LA'
-          },
-          {
-            href: '/talent/profile/edit/about/attributes',
-            text: 'Attributes'
-          },
-          {
-            href: '/talent/profile/edit/about/sizing',
-            text: 'Sizing'
-          }
-        ]}
-      />
+      <AboutLinks resume={resume} />
+
       <LinkSection
         title="Resume"
         links={[
           {
             href: '/talent/profile/edit/resume/television-film',
             text: 'Television/Film',
-            preview: '4'
+            preview: resume.televisionAndFilm?.length.toString()
           },
           {
             href: '/talent/profile/edit/resume/music-videos',
             text: 'Music Videos',
-            preview: '8'
+            preview: resume.musicVideos?.length.toString()
           },
           {
             href: '/talent/profile/edit/resume/live-performances',
             text: 'Live/Stage Performances',
-            preview: '25'
+            preview: resume.livePerformances?.length.toString()
           },
           {
             href: '/talent/profile/edit/resume/commercials',
             text: 'Commercials',
-            preview: '3'
+            preview: resume.commercials?.length.toString()
           },
           {
             href: '/talent/profile/edit/resume/training-education',
             text: 'Training/Education',
-            preview: '2'
+            preview: resume.training?.length.toString()
           },
           {
             href: '/talent/profile/edit/skills',
             text: 'Skills',
-            preview: '11'
+            preview: resume.skills?.length.toString()
           }
         ]}
       />
@@ -73,18 +60,17 @@ export default async function ProfilePage() {
         links={[
           {
             href: '/talent/profile/edit/links/reels',
-            text: 'Reels',
-            preview: '1'
+            text: 'Reels'
           },
           {
             href: '/talent/profile/edit/links/socials',
             text: 'Socials',
-            preview: '4'
+            preview: resume.links?.socials?.length.toString()
           },
           {
             href: '/talent/profile/edit/links/other',
             text: 'Other',
-            preview: '1'
+            preview: resume.links?.portfolio?.length.toString()
           }
         ]}
       />

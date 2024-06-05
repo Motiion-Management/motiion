@@ -60,7 +60,7 @@ export default function Vision() {
   }
 
   const user = useQuery(api.users.getMyUser)
-  const updateMyUser = useMutation(api.users.updateMyUser)
+  const updateMyUser = useMutation(api.users.update)
 
   const nextStep = async () => {
     router.prefetch('/onboarding/2')
@@ -123,11 +123,10 @@ export default function Vision() {
               onClick={() => carousel?.scrollTo(i)}
               key={i}
               size={10}
-              className={`${
-                i === current
+              className={`${i === current
                   ? 'fill-accent stroke-accent'
                   : 'fill-white stroke-white'
-              }`}
+                }`}
             />
           ))}
         </div>

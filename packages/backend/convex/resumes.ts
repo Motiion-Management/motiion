@@ -4,7 +4,7 @@ import { getOneFrom } from 'convex-helpers/server/relationships'
 import { crud } from 'convex-helpers/server'
 import { ConvexError, v } from 'convex/values'
 import { Doc, Id } from './_generated/dataModel'
-import { pick } from 'convex-helpers'
+import { omit, pick } from 'convex-helpers'
 import { Resumes, zFileUploadObjectArray } from './validators/resume'
 import { zodToConvex } from 'convex-helpers/server/zod'
 
@@ -25,6 +25,50 @@ export const getMyResume = authQuery({
       return null
     }
     return getOneFrom(ctx.db, 'resumes', 'userId', ctx.user._id)
+  }
+})
+
+export const addMyRepresentation = authMutation({
+  args: {
+    representation: v.id('agencies')
+  },
+  handler: async (ctx, { representation }) => {
+    const resume = await getOneFrom(ctx.db, 'resumes', 'userId', ctx.user._id)
+
+    if (!resume) {
+      return
+    }
+
+    await ctx.db.patch(resume._id, { representation })
+  }
+})
+
+export const removeMyRepresentation = authMutation({
+  args: {},
+  handler: async (ctx) => {
+    const resume = await getOneFrom(ctx.db, 'resumes', 'userId', ctx.user._id)
+
+    if (!resume) {
+      return
+    }
+
+    await ctx.db.patch(resume._id, { representation: undefined })
+  }
+})
+
+export const updateMyResume = authMutation({
+  args: omit(Resumes.withoutSystemFields, ['userId']),
+  handler: async (ctx, args) => {
+    const resume = await getOneFrom(ctx.db, 'resumes', 'userId', ctx.user._id)
+
+    if (!resume) {
+      ctx.db.insert('resumes', {
+        userId: ctx.user._id,
+        ...args
+      })
+    } else {
+      ctx.db.patch(resume._id, args)
+    }
   }
 })
 
