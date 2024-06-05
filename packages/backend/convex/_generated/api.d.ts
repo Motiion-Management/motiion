@@ -26,7 +26,6 @@ import type * as files from "../files.js";
 import type * as http from "../http.js";
 import type * as pointValues from "../pointValues.js";
 import type * as resumes from "../resumes.js";
-import type * as skills from "../skills.js";
 import type * as training from "../training.js";
 import type * as users from "../users.js";
 import type * as util from "../util.js";
@@ -56,7 +55,6 @@ declare const fullApi: ApiFromModules<{
   http: typeof http;
   pointValues: typeof pointValues;
   resumes: typeof resumes;
-  skills: typeof skills;
   training: typeof training;
   users: typeof users;
   util: typeof util;

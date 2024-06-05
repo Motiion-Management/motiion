@@ -24,7 +24,14 @@ export const zFileUploadObjectArray = z.array(zFileUploadObject)
 
 export const zExperienceReferences = z.array(zid('experiences'))
 export const zTrainingReferences = z.array(zid('training'))
-export const zSkillReferences = z.array(zid('skills'))
+
+export const zSkills = z
+  .object({
+    expert: z.array(z.string()),
+    proficient: z.array(z.string()),
+    novice: z.array(z.string())
+  })
+  .partial()
 
 export const resume = {
   ...attributesPlainObject,
@@ -34,7 +41,7 @@ export const resume = {
   livePerformances: zExperienceReferences.optional(),
   commercials: zExperienceReferences.optional(),
   training: zTrainingReferences.optional(),
-  skills: zSkillReferences.optional(),
+  skills: zSkills.optional(),
   sizing: z.object(sizingPlainObject).optional(),
   displayRepresentation: z.boolean().optional(),
   representation: zid('agencies').optional(),
