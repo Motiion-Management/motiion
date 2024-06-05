@@ -117,3 +117,24 @@ export const deleteUserByTokenId = internalAction({
     await ctx.runMutation(internal.users.destroy, { id: user._id })
   }
 })
+
+export const searchUsers = query({
+  args: {
+    query: v.string() 
+  },
+  handler: async (ctx, { query }) => {
+    console.log('searching for ', query)
+    const results = await ctx.db
+      .query('users')
+      .withSearchIndex('search_users', (q) => q.search('firstName', query))
+      .take(10)
+
+      return results;
+  }
+});
+
+
+
+
+
+
