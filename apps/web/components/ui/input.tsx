@@ -20,7 +20,7 @@ const classes = [
 const Input = React.forwardRef<HTMLInputElement, InputProps>(
   ({ className, type, leadingSlot, trailingSlot, ...props }, ref) => {
     return (
-      <div className="relative">
+      <div className="relative flex-1">
         {leadingSlot && (
           <div className="*:text-primary absolute left-2 top-0 flex h-full items-center">
             {leadingSlot}

@@ -23,8 +23,10 @@ const buttonVariants = cva(
         ghost: 'hover:bg-accent hover:text-accent-foreground',
         link: 'text-primary underline-offset-4 underline decoration-primary hover:decoration-primary/30 ',
         'accent-link': 'text-accent underline-offset-4 hover:underline',
+        'destructive-link':
+          'text-destructive underline-offset-4 hover:underline',
         input:
-          'rounded-lg border border-input bg-input-background text-input-foreground hover:bg-input/10',
+          'rounded-lg border border-input bg-card dark:bg-input-background dark:text-input-foreground hover:bg-input/10',
         'image-upload':
           'rounded-lg border dark:border-input border-primary bg-primary text-primary-foreground hover:bg-primary/90 dark:bg-input-background dark:text-input-foreground dark:hover:bg-input/10'
       },
