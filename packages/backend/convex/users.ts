@@ -118,7 +118,7 @@ export const deleteUserByTokenId = internalAction({
   }
 })
 
-export const searchUsers = query({
+export const searchFirstNameUsers = query({
   args: {
     query: v.string() 
   },
@@ -126,7 +126,22 @@ export const searchUsers = query({
     console.log('searching for ', query)
     const results = await ctx.db
       .query('users')
-      .withSearchIndex('search_users', (q) => q.search('firstName', query))
+      .withSearchIndex('search_first_name_users', (q) => q.search('firstName', query))
+      .take(10)
+
+      return results;
+  }
+});
+
+export const searchLastNameUsers = query({
+  args: {
+    query: v.string() 
+  },
+  handler: async (ctx, { query }) => {
+    console.log('searching for ', query)
+    const results = await ctx.db
+      .query('users')
+      .withSearchIndex('search_last_name_users', (q) => q.search('lastName', query))
       .take(10)
 
       return results;

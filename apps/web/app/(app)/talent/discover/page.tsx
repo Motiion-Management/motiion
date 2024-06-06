@@ -1,22 +1,28 @@
 'use client'
 import { fetchQuery } from 'convex/nextjs'
-import { useQuery } from 'convex/react'
+import { useQuery, useQueries } from 'convex/react'
 import { getAuthToken } from '@/lib/server/utils'
-import { searchUsers } from '@packages/backend/convex/users'
+import { searchFirstNameUsers, searchLastNameUsers } from '@packages/backend/convex/users'
 import { api } from '@packages/backend/convex/_generated/api'
 import Link from 'next/link'
 import { Button } from '@/components/ui/button'
 import { Search } from 'lucide-react'
 import { Input } from '@/components/ui/input'
-import { useState } from 'react';
+import { useState } from 'react'
+import {
+  getPublicResume,
+  getUserHeadshots
+} from '@packages/backend/convex/resumes'
 export default function DiscoverPage() {
-  const [searchQuery, setSearchQuery] = useState('');
-  const searchResults = useQuery(api.users.searchUsers, { query: searchQuery }) || [];
-  const handleSearch = (e) =>{
+  const [searchQuery, setSearchQuery] = useState('')
+  const firstNameResults = useQuery(api.users.searchFirstNameUsers, { query: searchQuery }) || []
+  const lastNameResults = useQuery(api.users.searchLastNameUsers, { query: searchQuery }) || []
+  const searchResults = [...firstNameResults, ...lastNameResults]
+  const handleSearch = (e) => {
     console.log(searchResults)
     setSearchQuery(e.target.value)
   }
-  
+
 
   return (
     <div className="flex flex-col gap-2">
@@ -26,11 +32,21 @@ export default function DiscoverPage() {
         <Input
           type="search"
           placeholder="Search for dance artists."
-          className="pl-8 sm:w-[300px] md:w-[200px] lg:w-[300px] text-primary"
+          className="text-primary pl-8 sm:w-[300px] md:w-[200px] lg:w-[300px]"
           value={searchQuery}
           onChange={handleSearch}
         />
       </div>
+      <div>
+        {searchResults.map((user, index) => (
+          <div key={index}>
+            {/* Render your result here. This is just a placeholder. */}
+            <h2 className="text-lg font-bold">
+              {user.firstName} {user.lastName}
+            </h2>
+          </div>
+        ))}
+      </div>
     </div>
-  );
+  )
 }

@@ -142,10 +142,14 @@ export default defineSchema(
     // user
     users: Users.table
       .index('tokenId', ['tokenId'])
-      .searchIndex('search_users', {
+      .searchIndex('search_first_name_users', {
         searchField: 'firstName',
-        filterFields: ['firstName', 'lastName', 'representationTip']
-      }),
+      })
+      .searchIndex('search_last_name_users', {
+        searchField: 'lastName',
+      })
+      ,
+    
 
     // resume data
     resumes: Resumes.table.index('userId', ['userId']),
