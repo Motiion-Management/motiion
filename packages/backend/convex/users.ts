@@ -120,36 +120,70 @@ export const deleteUserByTokenId = internalAction({
 
 export const searchFirstNameUsers = query({
   args: {
-    query: v.string() 
+    query: v.string()
   },
   handler: async (ctx, { query }) => {
     console.log('searching for ', query)
     const results = await ctx.db
       .query('users')
-      .withSearchIndex('search_first_name_users', (q) => q.search('firstName', query))
+      .withSearchIndex('search_first_name_users', (q) =>
+        q.search('firstName', query)
+      )
       .take(10)
 
-      return results;
+    const fullResults = await Promise.all(
+      results.map(async (result) => {
+        const resume = await getOneFrom(ctx.db, 'resumes', 'userId', result._id)
+        let headshot;
+        if (resume?.headshots && resume.headshots.length > 0) {
+          headshot = {
+            url: await ctx.storage.getUrl(resume.headshots[0].storageId),
+            ...resume.headshots[0]
+          };
+        }
+        return {
+          firstName: result.firstName,
+          lastName: result.lastName,
+          headshot: headshot?.url,
+          representation: resume?.representation
+        }
+      })
+    )
+    return fullResults
   }
-});
+})
 
 export const searchLastNameUsers = query({
   args: {
-    query: v.string() 
+    query: v.string()
   },
   handler: async (ctx, { query }) => {
     console.log('searching for ', query)
     const results = await ctx.db
       .query('users')
-      .withSearchIndex('search_last_name_users', (q) => q.search('lastName', query))
+      .withSearchIndex('search_last_name_users', (q) =>
+        q.search('lastName', query)
+      )
       .take(10)
 
-      return results;
-  }
-});
-
-
-
-
-
-
+      const fullResults = await Promise.all(
+        results.map(async (result) => {
+          const resume = await getOneFrom(ctx.db, 'resumes', 'userId', result._id)
+          let headshot;
+          if (resume?.headshots && resume.headshots.length > 0) {
+            headshot = {
+              url: await ctx.storage.getUrl(resume.headshots[0].storageId),
+              ...resume.headshots[0]
+            };
+          }
+          return {
+            firstName: result.firstName,
+            lastName: result.lastName,
+            headshot: headshot?.url,
+            representation: resume?.representation
+          }
+        })
+      )
+      return fullResults
+    }
+})

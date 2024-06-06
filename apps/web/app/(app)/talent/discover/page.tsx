@@ -5,6 +5,7 @@ import { getAuthToken } from '@/lib/server/utils'
 import { searchFirstNameUsers, searchLastNameUsers } from '@packages/backend/convex/users'
 import { api } from '@packages/backend/convex/_generated/api'
 import Link from 'next/link'
+import Image from 'next/image'
 import { Button } from '@/components/ui/button'
 import { Search } from 'lucide-react'
 import { Input } from '@/components/ui/input'
@@ -43,6 +44,13 @@ export default function DiscoverPage() {
             {/* Render your result here. This is just a placeholder. */}
             <h2 className="text-lg font-bold">
               {user.firstName} {user.lastName}
+              {user.representation}
+              <Image
+                src={user.headshot}
+                alt={`${user.firstName} ${user.lastName}`}
+                width={100}
+                height={100}
+              />
             </h2>
           </div>
         ))}
