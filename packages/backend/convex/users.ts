@@ -141,11 +141,18 @@ export const searchFirstNameUsers = query({
             ...resume.headshots[0]
           };
         }
+        let representation = null
+          let representationName = null
+          if (resume?.representation) {
+            representation = await ctx.db.get(resume.representation)
+            console.log('representation', representation)
+            representationName = representation?.name
+          }
         return {
           firstName: result.firstName,
           lastName: result.lastName,
           headshot: headshot?.url,
-          representation: resume?.representation
+          representation: representationName
         }
       })
     )
@@ -169,18 +176,25 @@ export const searchLastNameUsers = query({
       const fullResults = await Promise.all(
         results.map(async (result) => {
           const resume = await getOneFrom(ctx.db, 'resumes', 'userId', result._id)
-          let headshot;
+          let headshot = null;
           if (resume?.headshots && resume.headshots.length > 0) {
             headshot = {
               url: await ctx.storage.getUrl(resume.headshots[0].storageId),
               ...resume.headshots[0]
             };
           }
+          let representation = null
+          let representationName = null
+          if (resume?.representation) {
+            representation = await ctx.db.get(resume.representation)
+            console.log('representation', representation)
+            representationName = representation?.name
+          }
           return {
             firstName: result.firstName,
             lastName: result.lastName,
             headshot: headshot?.url,
-            representation: resume?.representation
+            representation: representationName
           }
         })
       )
