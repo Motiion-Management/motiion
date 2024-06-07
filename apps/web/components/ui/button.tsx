@@ -17,14 +17,16 @@ const buttonVariants = cva(
           'bg-destructive text-destructive-foreground hover:bg-destructive/90',
         accent: 'bg-accent text-accent-foreground hover:bg-accent/90',
         outline:
-          'border border-input bg-background hover:bg-accent hover:text-accent-foreground',
+          'border border-primary bg-transparent hover:bg-background hover:text-secondary',
         secondary:
           'bg-secondary text-secondary-foreground hover:bg-secondary/80',
         ghost: 'hover:bg-accent hover:text-accent-foreground',
         link: 'text-primary underline-offset-4 underline decoration-primary hover:decoration-primary/30 ',
         'accent-link': 'text-accent underline-offset-4 hover:underline',
+        'destructive-link':
+          'text-destructive underline-offset-4 hover:underline',
         input:
-          'rounded-lg border border-input bg-input-background text-input-foreground hover:bg-input/10',
+          'rounded-lg border border-input bg-card dark:bg-input-background dark:text-input-foreground hover:bg-input/10',
         'image-upload':
           'rounded-lg border dark:border-input border-primary bg-primary text-primary-foreground hover:bg-primary/90 dark:bg-input-background dark:text-input-foreground dark:hover:bg-input/10'
       },
@@ -34,6 +36,7 @@ const buttonVariants = cva(
         sm: 'h-9 px-3 text-link-sm',
         min: 'h-min px-0 py-0 text-link-sm',
         icon: 'h-10 w-10',
+        fab: 'h-auto w-auto p-2 rounded-full',
         container: 'h-full w-full text-link'
       }
     },

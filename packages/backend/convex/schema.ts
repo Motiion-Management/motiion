@@ -6,7 +6,7 @@ import { Table } from 'convex-helpers/server'
 
 import { zodToConvex } from 'convex-helpers/server/zod'
 import { Resumes } from './validators/resume'
-import { location, zProficiency, zVisibility } from './validators/base'
+import { location, zVisibility } from './validators/base'
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export const nullish = <T extends Validator<any, false, any>>(validator: T) =>
@@ -60,12 +60,6 @@ export const Training = Table('training', {
   startYear: v.nullish(v.number),
   endYear: v.nullish(v.number),
   link: v.nullish(v.string)
-})
-
-export const Skills = Table('skills', {
-  userId: v.id('users'),
-  name: v.string,
-  proficiency: zodToConvex(zProficiency)
 })
 
 export const Agents = Table('agents', {
@@ -153,7 +147,6 @@ export default defineSchema(
     resumes: Resumes.table.index('userId', ['userId']),
     experiences: Experiences.table.index('userId', ['userId']),
     training: Training.table.index('userId', ['userId']),
-    skills: Skills.table.index('userId', ['userId']),
 
     // agency
     agents: Agents.table.index('userId', ['userId']),

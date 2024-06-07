@@ -49,9 +49,11 @@ export default async function ProfilePage() {
             preview: resume.training?.length.toString()
           },
           {
-            href: '/talent/profile/edit/skills',
+            href: '/talent/profile/edit/resume/skills',
             text: 'Skills',
-            preview: resume.skills?.length.toString()
+            preview: Object.values(resume.skills || { expert: [] })
+              .reduce((aggr, skillSet) => aggr + skillSet.length, 0)
+              .toString()
           }
         ]}
       />
