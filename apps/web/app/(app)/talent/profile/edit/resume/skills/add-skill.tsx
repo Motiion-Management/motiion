@@ -38,7 +38,7 @@ export const AddSkill: FC<AddSkillProps> = ({ name }) => {
           <FormControl>
             <Input
               type="text"
-              placeholder="Enter the name of your representation..."
+              placeholder="Skill name here..."
               {...skillCtl.field}
             />
           </FormControl>
@@ -50,7 +50,12 @@ export const AddSkill: FC<AddSkillProps> = ({ name }) => {
         </FormItem>
       </div>
       <Separator />
-      <div className="mx-6 grid grid-cols-3 gap-2">
+      <div className="mx-6 grid grid-cols-3 gap-x-2 gap-y-4">
+        <div className="col-span-3 mb-2 flex justify-between">
+          <h4 className="text-h4 capitalize">Proficiency</h4>
+          <span className="text-body-xs">Select one</span>
+        </div>
+
         {PROFICIENCY.map((skill) => (
           <Button
             key={skill}
