@@ -25,13 +25,12 @@ export const zFileUploadObjectArray = z.array(zFileUploadObject)
 export const zExperienceReferences = z.array(zid('experiences'))
 export const zTrainingReferences = z.array(zid('training'))
 
-export const zSkills = z
-  .object({
-    expert: z.array(z.string()),
-    proficient: z.array(z.string()),
-    novice: z.array(z.string())
-  })
-  .partial()
+export const zSkillsPlainObject = {
+  expert: z.array(z.string()),
+  proficient: z.array(z.string()),
+  novice: z.array(z.string())
+}
+export const zSkills = z.object(zSkillsPlainObject).partial()
 
 export const resume = {
   ...attributesPlainObject,

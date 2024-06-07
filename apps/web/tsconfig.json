@@ -24,6 +24,9 @@
     "plugins": [
       {
         "name": "next"
+      },
+      {
+        "name": "ts-plugin-sort-import-suggestions"
       }
     ],
     "paths": {

@@ -7,10 +7,18 @@ import { Preloaded, useMutation, usePreloadedQuery } from 'convex/react'
 import { api } from '@packages/backend/convex/_generated/api'
 import { EditDrawer } from '@/components/features/edit-drawer'
 import { FC } from 'react'
-import { zSkills } from '@packages/backend/convex/validators/resume'
+import { zSkillsPlainObject } from '@packages/backend/convex/validators/resume'
 import { EditSkillList } from './edit-skill-list'
+import { FABAddDrawer } from '@/components/features/fab-add-drawer'
+import { AddSkill } from './add-skill'
+import { zProficiency } from '@packages/backend/convex/validators/base'
 
-const formSchema = zSkills
+const formSchema = z
+  .object({
+    ...zSkillsPlainObject,
+    newSkill: z.object({ skill: z.string(), level: zProficiency })
+  })
+  .partial()
 
 type FormSchema = z.infer<typeof formSchema>
 
@@ -20,16 +28,24 @@ export const SkillsForm: FC<{
   const resume = usePreloadedQuery(preloadedResume)
   const updateMyResume = useMutation(api.resumes.updateMyResume)
 
-  const skills = resume?.skills || { expert: [], proficient: [], novice: [] }
+  const skillsRT = resume?.skills || { expert: [], proficient: [], novice: [] }
   const form = useForm<FormSchema>({
     resolver: zodResolver(formSchema),
     shouldUseNativeValidation: false,
-    defaultValues: skills,
-    values: skills
+    defaultValues: skillsRT,
+    values: skillsRT
   })
-  async function onSubmit(data: FormSchema) {
-    await updateMyResume({ skills: data })
-    form.reset(skills)
+  async function onSubmit({ newSkill, ...skillsObj }: FormSchema) {
+    const skills = { ...skillsObj }
+    if (newSkill) {
+      skills[newSkill.level] = [
+        ...(skillsObj[newSkill.level] || []),
+        newSkill.skill
+      ]
+    }
+    await updateMyResume({ skills })
+
+    form.reset(skillsRT)
   }
 
   return (
@@ -41,24 +57,27 @@ export const SkillsForm: FC<{
         <EditDrawer<FormSchema>
           onSubmit={onSubmit}
           label="Edit Skills"
-          value={skills.expert?.join(', ')}
+          value={skillsRT.expert?.join(', ')}
         >
           <EditSkillList name="expert" />
         </EditDrawer>
         <EditDrawer<FormSchema>
           onSubmit={onSubmit}
           label="Edit Skills"
-          value={skills.proficient?.join(', ')}
+          value={skillsRT.proficient?.join(', ')}
         >
           <EditSkillList name="proficient" />
         </EditDrawer>
         <EditDrawer<FormSchema>
           onSubmit={onSubmit}
           label="Proficient"
-          value={skills.novice?.join(', ')}
+          value={skillsRT.novice?.join(', ')}
         >
           <EditSkillList name="novice" />
         </EditDrawer>
+        <FABAddDrawer<FormSchema> onSubmit={onSubmit} label="Add Skill">
+          <AddSkill name="newSkill" />
+        </FABAddDrawer>
       </form>
     </Form>
   )

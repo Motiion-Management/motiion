@@ -17,5 +17,5 @@ export const zLocation = z.object({
 })
 export const location = zodToConvex(zLocation)
 
-export const PROFICIENCY = ['Novice', 'Proficient', 'Expert'] as const
+export const PROFICIENCY = ['novice', 'proficient', 'expert'] as const
 export const zProficiency = z.enum(PROFICIENCY)
