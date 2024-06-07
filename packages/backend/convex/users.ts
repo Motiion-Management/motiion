@@ -118,36 +118,49 @@ export const deleteUserByTokenId = internalAction({
   }
 })
 
-export const searchFirstNameUsers = query({
+function onlyUnique(value: any, index: number, array: any[]) {
+  return array.indexOf(value) === index
+}
+
+export const searchUsersByName = query({
   args: {
     query: v.string()
   },
   handler: async (ctx, { query }) => {
     console.log('searching for ', query)
-    const results = await ctx.db
+    const fnResults = await ctx.db
       .query('users')
       .withSearchIndex('search_first_name_users', (q) =>
         q.search('firstName', query)
       )
       .take(10)
 
+    const lnResults = await ctx.db
+      .query('users')
+      .withSearchIndex('search_last_name_users', (q) =>
+        q.search('lastName', query)
+      )
+      .take(10)
+
+    const results = [...fnResults, ...lnResults].filter(onlyUnique)
+
     const fullResults = await Promise.all(
       results.map(async (result) => {
         const resume = await getOneFrom(ctx.db, 'resumes', 'userId', result._id)
-        let headshot;
+        let headshot
         if (resume?.headshots && resume.headshots.length > 0) {
           headshot = {
             url: await ctx.storage.getUrl(resume.headshots[0].storageId),
             ...resume.headshots[0]
-          };
+          }
         }
         let representation = null
-          let representationName = null
-          if (resume?.representation) {
-            representation = await ctx.db.get(resume.representation)
-            console.log('representation', representation)
-            representationName = representation?.name
-          }
+        let representationName = null
+        if (resume?.representation) {
+          representation = await ctx.db.get(resume.representation)
+          // console.log('representation', representation)
+          representationName = representation?.name
+        }
         return {
           firstName: result.firstName,
           lastName: result.lastName,
@@ -173,31 +186,31 @@ export const searchLastNameUsers = query({
       )
       .take(10)
 
-      const fullResults = await Promise.all(
-        results.map(async (result) => {
-          const resume = await getOneFrom(ctx.db, 'resumes', 'userId', result._id)
-          let headshot = null;
-          if (resume?.headshots && resume.headshots.length > 0) {
-            headshot = {
-              url: await ctx.storage.getUrl(resume.headshots[0].storageId),
-              ...resume.headshots[0]
-            };
+    const fullResults = await Promise.all(
+      results.map(async (result) => {
+        const resume = await getOneFrom(ctx.db, 'resumes', 'userId', result._id)
+        let headshot = null
+        if (resume?.headshots && resume.headshots.length > 0) {
+          headshot = {
+            url: await ctx.storage.getUrl(resume.headshots[0].storageId),
+            ...resume.headshots[0]
           }
-          let representation = null
-          let representationName = null
-          if (resume?.representation) {
-            representation = await ctx.db.get(resume.representation)
-            console.log('representation', representation)
-            representationName = representation?.name
-          }
-          return {
-            firstName: result.firstName,
-            lastName: result.lastName,
-            headshot: headshot?.url,
-            representation: representationName
-          }
-        })
-      )
-      return fullResults
-    }
+        }
+        let representation = null
+        let representationName = null
+        if (resume?.representation) {
+          representation = await ctx.db.get(resume.representation)
+          console.log('representation', representation)
+          representationName = representation?.name
+        }
+        return {
+          firstName: result.firstName,
+          lastName: result.lastName,
+          headshot: headshot?.url,
+          representation: representationName
+        }
+      })
+    )
+    return fullResults
+  }
 })
