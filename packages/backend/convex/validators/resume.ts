@@ -31,24 +31,3 @@ export const zSkillsPlainObject = {
   novice: z.array(z.string())
 }
 export const zSkills = z.object(zSkillsPlainObject).partial()
-
-export const resume = {
-  ...attributesPlainObject,
-  userId: zid('users'),
-  televisionAndFilm: zExperienceReferences.optional(),
-  musicVideos: zExperienceReferences.optional(),
-  livePerformances: zExperienceReferences.optional(),
-  commercials: zExperienceReferences.optional(),
-  training: zTrainingReferences.optional(),
-  skills: zSkills.optional(),
-  sizing: z.object(sizingPlainObject).optional(),
-  displayRepresentation: z.boolean().optional(),
-  representation: zid('agencies').optional(),
-  yearsOfExperience: z.number().optional(),
-  headshots: zFileUploadObjectArray.optional(),
-  resumeUploads: zFileUploadObjectArray.optional(),
-  links: zLinks.optional()
-}
-export const zResume = z.object(resume)
-
-export const Resumes = Table('resume', zodToConvexFields(resume))
