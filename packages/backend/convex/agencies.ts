@@ -1,8 +1,13 @@
-import { query, mutation } from './_generated/server'
+import {
+  query,
+  mutation,
+  internalQuery,
+  internalMutation
+} from './_generated/server'
 import { authMutation, authQuery } from './util'
 
 import { crud } from 'convex-helpers/server'
-import { Agencies } from './schema'
+import { Agencies } from './validators/agencies'
 import { Doc } from './_generated/dataModel'
 import { v } from 'convex/values'
 
@@ -14,6 +19,12 @@ export const { create, update, destroy } = crud(
   Agencies,
   authQuery,
   authMutation
+)
+
+export const { read: internalRead } = crud(
+  Agencies,
+  internalQuery,
+  internalMutation
 )
 
 export const search = query({
@@ -29,22 +40,28 @@ export const search = query({
   }
 })
 
+type AgencyDocWithLogo = AgencyDoc & { logoUrl: string | null }
+
 export const getAgency = query({
   args: {
     id: v.optional(v.id('agencies'))
   },
-  handler: async (ctx, args) => {
+  handler: async (ctx, args): Promise<AgencyDocWithLogo | null> => {
     if (!args.id) {
       return null
     }
-    const agency = await ctx.db.get(args.id)
+    const agency: AgencyDoc | null = await ctx.db.get(args.id)
 
     if (!agency) {
       return null
     }
+    let logoUrl: string | null = null
+    if (agency.logo) {
+      logoUrl = await ctx.storage.getUrl(agency.logo)
+    }
     return {
       ...agency,
-      logo: agency.logo && (await ctx.storage.getUrl(agency.logo))
+      logoUrl
     }
   }
 })

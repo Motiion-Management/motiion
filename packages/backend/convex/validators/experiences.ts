@@ -1,15 +1,24 @@
 import { zid, zodToConvexFields } from 'convex-helpers/server/zod'
 import { Table } from 'convex-helpers/server'
 import { z } from 'zod'
-import { zVisibility } from './base'
+
+const EXPERIENCE_TYPES = [
+  'television-and-film',
+  'music-videos',
+  'live-performances',
+  'commercials',
+  'training'
+] as const
 
 export const experiences = {
   userId: zid('users'),
-  visibility: zVisibility,
+  public: z.boolean().optional(),
+  type: z.enum(EXPERIENCE_TYPES),
   title: z.string(),
   role: z.array(z.string()),
   credits: z.array(z.string()),
-  year: z.number().optional(),
+  startYear: z.number().optional(),
+  endYear: z.number().optional(),
   link: z.string().optional(),
   media: z.union([zid('_storage'), z.string()]).optional()
 }

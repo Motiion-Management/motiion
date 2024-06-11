@@ -7,7 +7,6 @@ import { FeaturedMembers } from './validators/featuredMembers'
 import { Rewards } from './validators/rewards'
 import { Agencies } from './validators/agencies'
 import { Agents } from './validators/agents'
-import { Training } from './validators/training'
 import { Experiences } from './validators/experiences'
 
 export default defineSchema(
@@ -22,15 +21,11 @@ export default defineSchema(
     // user
     users: Users.table
       .index('tokenId', ['tokenId'])
-      .searchIndex('search_first_name_users', {
-        searchField: 'firstName'
-      })
-      .searchIndex('search_last_name_users', {
-        searchField: 'lastName'
+      .searchIndex('search_user', {
+        searchField: 'searchPattern'
       }),
     // resume data
     experiences: Experiences.table.index('userId', ['userId']),
-    training: Training.table.index('userId', ['userId']),
 
     // agency
     agents: Agents.table.index('userId', ['userId']),

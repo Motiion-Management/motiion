@@ -1,23 +1,18 @@
-import { zid, zodToConvexFields } from 'convex-helpers/server/zod'
+import { zid, zodToConvex, zodToConvexFields } from 'convex-helpers/server/zod'
 import { Table } from 'convex-helpers/server'
 import { z } from 'zod'
-import { zLocation, zVisibility } from './base'
+import { zFileUploadObjectArray, zGender, zLocation } from './base'
 import { attributesPlainObject } from './attributes'
 import { sizingPlainObject } from './sizing'
+import { Doc } from '../_generated/dataModel'
 
-const GENDERS = ['Male', 'Female', 'Non-Binary'] as const
-const gender = z.enum(GENDERS)
-
-export const zFileUploadObject = z.object({
-  storageId: zid('_storage'),
-  title: z.string().optional(),
-  uploadDate: z.string()
-})
-
-export const zFileUploadObjectArray = z.array(zFileUploadObject)
-
-export const zExperienceReferences = z.array(zid('experiences'))
-export const zTrainingReferences = z.array(zid('training'))
+export const ONBOARDING_STEPS = {
+  COMPLETE: 0,
+  VISION: 1,
+  PERSONAL_INFO: 2,
+  HEADSHOTS: 3,
+  RESUME: 4
+} as const
 
 export const zSkillsPlainObject = {
   expert: z.array(z.string()),
@@ -27,19 +22,15 @@ export const zSkillsPlainObject = {
 export const zSkills = z.object(zSkillsPlainObject).partial()
 
 const representation = {
-  agencyId: zid('agencies'),
-  displayRep: z.boolean(),
+  agencyId: zid('agencies').optional(),
+  displayRep: z.boolean().optional(),
   tipDismissed: z.boolean().optional()
 }
 const zRepresentation = z.object(representation)
 
 export const resume = {
+  experiences: z.array(zid('experiences')).optional(),
   uploads: zFileUploadObjectArray.optional(),
-  televisionAndFilm: zExperienceReferences.optional(),
-  musicVideos: zExperienceReferences.optional(),
-  livePerformances: zExperienceReferences.optional(),
-  commercials: zExperienceReferences.optional(),
-  training: zTrainingReferences.optional(),
   skills: zSkills.optional()
 }
 
@@ -69,12 +60,12 @@ export const users = {
   // user info
   email: z.string(),
   firstName: z.string().optional(),
-  lastName: z.string(),
+  lastName: z.string().optional(),
   displayName: z.string().optional(),
   fullName: z.string().optional(),
   phone: z.string().optional(),
   dateOfBirth: z.string().optional(),
-  gender: gender.optional(),
+  gender: zGender.optional(),
   location: zLocation.optional(),
 
   // talent profile
@@ -89,3 +80,14 @@ export const users = {
 export const zUsers = z.object(users)
 
 export const Users = Table('users', zodToConvexFields(users))
+export type UserDoc = Doc<'users'>
+
+export const zClerkCreateUserFields = zUsers.pick({
+  email: true,
+  firstName: true,
+  lastName: true,
+  phone: true,
+  tokenId: true
+})
+
+export const clerkCreateUserFields = zodToConvex(zClerkCreateUserFields)

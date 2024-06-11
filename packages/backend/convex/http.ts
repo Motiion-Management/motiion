@@ -2,7 +2,6 @@ import { httpRouter } from 'convex/server'
 
 import { internal } from './_generated/api'
 import { httpAction } from './_generated/server'
-import { NEW_USER_DEFAULTS } from './users'
 
 const http = httpRouter()
 
@@ -55,8 +54,8 @@ http.route({
             data: {
               tokenId: event.data.id,
               email: event.data.email_addresses[0]?.email_address,
-              firstName: event.data.first_name,
-              lastName: event.data.last_name,
+              firstName: event.data.first_name || undefined,
+              lastName: event.data.last_name || undefined,
               phone: event.data.phone_numbers[0]?.phone_number
             },
             eventType: event.type
