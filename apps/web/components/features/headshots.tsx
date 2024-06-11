@@ -13,12 +13,12 @@ export function Headshots({
   onboarding,
   ItemComponent = CarouselItem
 }: {
-  preloadedHeadshots: Preloaded<typeof api.resumes.getMyHeadshots>
+  preloadedHeadshots: Preloaded<typeof api.users.headshots.getMyHeadshots>
   onboarding?: boolean
   ItemComponent?: typeof CarouselItem | React.FC
 }) {
   const headshots = usePreloadedQuery(preloadedHeadshots)
-  const removeHeadshot = useMutation(api.resumes.removeHeadshot)
+  const removeHeadshot = useMutation(api.users.headshots.removeHeadshot)
 
   return (
     <div className="flex gap-2">
@@ -61,7 +61,7 @@ export function Headshots({
 export function HeadshotCount({
   preloadedHeadshots
 }: {
-  preloadedHeadshots: Preloaded<typeof api.resumes.getMyHeadshots>
+  preloadedHeadshots: Preloaded<typeof api.users.headshots.getMyHeadshots>
 }) {
   const headshots = usePreloadedQuery(preloadedHeadshots)
   return <p className="text-body-xs">{headshots?.length || 0}/5 imported</p>
@@ -73,7 +73,7 @@ export function HeadshotPlaceholder({
   placeholderImage,
   placeholderSlot
 }: {
-  preloadedHeadshots: Preloaded<typeof api.resumes.getMyHeadshots>
+  preloadedHeadshots: Preloaded<typeof api.users.headshots.getMyHeadshots>
   placeholderText?: string
   placeholderImage?: StaticImageData
   placeholderSlot?: React.ReactNode

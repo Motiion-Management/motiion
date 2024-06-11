@@ -3,23 +3,19 @@ import { Button } from '@/components/ui/button'
 import { HeadshotUploadButton } from '@/components/ui/headshot-upload-button'
 import { useMutation, useQuery } from 'convex/react'
 import { useState } from 'react'
-import { ONBOARDING_STEPS } from '@packages/backend/convex/users'
+import { ONBOARDING_STEPS } from '@packages/backend/convex/validators/users'
 import { api } from '@packages/backend/convex/_generated/api'
 
 export function BottomButton() {
-  const headshots = useQuery(api.resumes.getMyHeadshots)
+  const headshots = useQuery(api.users.headshots.getMyHeadshots)
   const headshotsExist = headshots && headshots.length > 0
-  const updateMyUser = useMutation(api.users.update)
-  const user = useQuery(api.users.getMyUser)
+  const updateMyUser = useMutation(api.users.updateMyUser)
   const [loading, setLoading] = useState(false)
 
   async function nextStep() {
     setLoading(true)
     await updateMyUser({
-      id: user!._id,
-      patch: {
-        onboardingStep: ONBOARDING_STEPS.RESUME
-      }
+      onboardingStep: ONBOARDING_STEPS.RESUME
     })
   }
 

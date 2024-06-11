@@ -10,12 +10,12 @@ import {
 } from '@/components/ui/carousel'
 import { useMutation, useQuery } from 'convex/react'
 import { api } from '@packages/backend/convex/_generated/api'
-import { ONBOARDING_STEPS } from '@packages/backend/convex/users'
 import { Circle } from 'lucide-react'
 import { Motif2 } from './motif-2'
 import { Motif3 } from './motif-3'
 import { Motif4 } from './motif-4'
 import { useRouter } from 'next/navigation'
+import { ONBOARDING_STEPS } from '@packages/backend/convex/validators/users'
 
 const Slide = ({
   title,
@@ -123,10 +123,11 @@ export default function Vision() {
               onClick={() => carousel?.scrollTo(i)}
               key={i}
               size={10}
-              className={`${i === current
+              className={`${
+                i === current
                   ? 'fill-accent stroke-accent'
                   : 'fill-white stroke-white'
-                }`}
+              }`}
             />
           ))}
         </div>

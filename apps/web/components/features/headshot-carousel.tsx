@@ -20,7 +20,9 @@ export async function HeadshotCarousel({
   placeholderText?: string
   placeholderImage?: StaticImageData
 }) {
-  const preloadedHeadshots = await preloadQuery(api.resumes.getMyHeadshots)
+  const preloadedHeadshots = await preloadQuery(
+    api.users.headshots.getMyHeadshots
+  )
   //wrap this in a grid to prevent overflow
   return (
     <div className="flex flex-col items-start">

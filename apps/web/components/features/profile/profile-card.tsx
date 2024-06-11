@@ -2,7 +2,7 @@
 import { useState } from 'react'
 import Image from 'next/image'
 import ReactCardFlip from 'react-card-flip'
-import { UserDoc } from '@packages/backend/convex/users'
+import { UserDoc } from '@packages/backend/convex/validators/users'
 import { AspectRatio } from '@/components/ui/aspect-ratio'
 import './profile-card.css'
 import FlipArrowBlack from '@/public/profile-flip-arrow-black.svg'

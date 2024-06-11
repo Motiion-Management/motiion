@@ -17,7 +17,7 @@ export function ResumeUploadButton({ className }: ResumeUploadButtonProps) {
   const { startUpload } = useUploadFiles(
     generateUploadUrl as unknown as () => Promise<string>
   )
-  const saveResume = useMutation(api.resumes.saveResumeUploadIds)
+  const saveResume = useMutation(api.users.resume.saveResumeUploadIds)
   const saveAfterUpload = async (uploaded: UploadFileResponse[]) => {
     await saveResume({
       resumeUploads: uploaded.map(({ name, response }) => ({

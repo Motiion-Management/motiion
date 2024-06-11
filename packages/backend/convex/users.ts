@@ -77,7 +77,7 @@ export const afterUpdate = internalAction({
       id: user._id,
       patch: {
         fullName,
-        searchPattern: searchPattern
+        searchPattern
       }
     })
   }
