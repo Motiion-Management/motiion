@@ -30,9 +30,9 @@ function MaleSizingDrawer(
 export function MaleSizingForm({
   preloadedValues
 }: {
-  preloadedValues: Preloaded<typeof api.resumes.getMySizes>
+  preloadedValues: Preloaded<typeof api.users.getMyUser>
 }) {
-  const updateMyAttributes = useMutation(api.resumes.updateMySizes)
+  const updateMyUser = useMutation(api.users.updateMyUser)
 
   const { sizing } = usePreloadedQuery(preloadedValues) || {
     sizing: {} as FormSchema,
@@ -45,7 +45,7 @@ export function MaleSizingForm({
     values: sizing
   })
   async function onSubmit(data: FormSchema) {
-    await updateMyAttributes({ sizing: data })
+    await updateMyUser({ sizing: data })
     form.reset(sizing)
   }
 

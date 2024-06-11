@@ -1,27 +1,25 @@
-import { preloadMySizes } from '@/lib/server/resumes'
 import { GeneralSizingForm } from './general-sizing-form'
 import { MaleSizingForm } from './male-sizing-form'
 import { FemaleSizingForm } from './female-sizing-form'
-import { me } from '@/lib/server/users'
+import { preloadMe } from '@/lib/server/users'
 import { AccordionCard } from '@/components/ui/accordion-card'
 
 export default async function ProfileEditAttributesPage() {
-  const preloadedSizes = await preloadMySizes()
-  const user = await me()
+  const [preloadedUser, user] = await preloadMe()
 
   return (
     <div className="flex flex-col gap-4">
       <AccordionCard title="General Sizing" defaultOpen>
-        <GeneralSizingForm preloadedValues={preloadedSizes} />
+        <GeneralSizingForm preloadedValues={preloadedUser} />
       </AccordionCard>
       {user.gender !== 'Female' && (
         <AccordionCard title="Male Sizing" defaultOpen>
-          <MaleSizingForm preloadedValues={preloadedSizes} />
+          <MaleSizingForm preloadedValues={preloadedUser} />
         </AccordionCard>
       )}
       {user.gender !== 'Male' && (
         <AccordionCard title="Female Sizing" defaultOpen>
-          <FemaleSizingForm preloadedValues={preloadedSizes} />
+          <FemaleSizingForm preloadedValues={preloadedUser} />
         </AccordionCard>
       )}
     </div>

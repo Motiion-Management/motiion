@@ -94,3 +94,116 @@ export const updateMyResume = authMutation({
     })
   }
 })
+
+// export const getMyAttributes = authQuery({
+//   args: {},
+//   handler: async (ctx) => {
+//     if (!ctx.user) {
+//       return null
+//     }
+//     const resume = await getOneFrom(ctx.db, 'resumes', 'userId', ctx.user._id)
+//
+//     if (!resume) {
+//       return null
+//     }
+//
+//     const { ethnicity, height, eyeColor, hairColor } = resume
+//
+//     return {
+//       ethnicity,
+//       height,
+//       eyeColor,
+//       hairColor
+//     }
+//   }
+// })
+//
+// export const updateMyAttributes = authMutation({
+//   args: pick(Resumes.withoutSystemFields, [
+//     'ethnicity',
+//     'height',
+//     'eyeColor',
+//     'hairColor'
+//   ]),
+//   handler: async (ctx, args) => {
+//     const resume = await getOneFrom(ctx.db, 'resumes', 'userId', ctx.user._id)
+//
+//     if (!resume) {
+//       ctx.db.insert('resumes', {
+//         userId: ctx.user._id,
+//         ...args
+//       })
+//     } else {
+//       ctx.db.patch(resume._id, args)
+//     }
+//   }
+// })
+//
+// export const getMySizes = authQuery({
+//   args: {},
+//   handler: async (ctx) => {
+//     if (!ctx.user) {
+//       return null
+//     }
+//     const resume = await getOneFrom(ctx.db, 'resumes', 'userId', ctx.user._id)
+//
+//     if (!resume) {
+//       return null
+//     }
+//
+//     const { sizing } = resume
+//
+//     return {
+//       sizing,
+//       gender: ctx.user.gender
+//     }
+//   }
+// })
+//
+// export const updateMySizes = authMutation({
+//   args: pick(Resumes.withoutSystemFields, ['sizing']),
+//   handler: async (ctx, args) => {
+//     const resume = await getOneFrom(ctx.db, 'resumes', 'userId', ctx.user._id)
+//
+//     if (!resume) {
+//       ctx.db.insert('resumes', {
+//         userId: ctx.user._id,
+//         ...args
+//       })
+//     } else {
+//       ctx.db.patch(resume._id, args)
+//     }
+//   }
+// })
+//
+//
+// export const getMyStats = authQuery({
+//   args: {},
+//   handler: async (ctx) => {
+//     if (!ctx.user) {
+//       return
+//     }
+//     const resume = await getOneFrom(ctx.db, 'resumes', 'userId', ctx.user._id)
+//
+//     let representation = null
+//     let repLogo = null
+//     if (resume?.representation) {
+//       representation = await ctx.db.get(resume.representation)
+//       if (representation?.logo) {
+//         repLogo = await ctx.storage.getUrl(representation?.logo)
+//       }
+//     }
+//
+//     return {
+//       ...resume,
+//       ...resume?.sizing,
+//       gender: ctx.user.gender,
+//       dateOfBirth: ctx.user.dateOfBirth,
+//       representation: {
+//         ...representation,
+//         logo: repLogo
+//       }
+//     }
+//   }
+// })
+//
