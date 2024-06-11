@@ -5,8 +5,8 @@ import { zLocation } from './base'
 
 export const agencies = {
   name: z.string(),
-  listed: z.boolean(),
-  shortName: z.string(),
+  listed: z.boolean().optional(),
+  shortName: z.string().optional(),
   logo: z.string().optional(),
   websiteUrl: z.string().optional(),
   email: z.string().optional(),

@@ -5,7 +5,7 @@ import { z } from 'zod'
 import { Form } from '@/components/ui/form'
 import { api } from '@packages/backend/convex/_generated/api'
 import { EditDrawer } from '@/components/features/edit-drawer'
-import { resume } from '@packages/backend/convex/validators/resume'
+import { representationObj } from '@packages/backend/convex/validators/users'
 import { AgencyName } from '@/components/features/agencies/agency-name'
 import { Card, CardContent } from '@/components/ui/card'
 import { XCircle } from 'lucide-react'
@@ -17,22 +17,26 @@ import { useMutation, Preloaded, usePreloadedQuery } from 'convex/react'
 
 const formSchema = z
   .object({
-    representation: resume.representation,
+    agencyId: representationObj.agencyId.optional(),
     customRep: z.string().optional()
   })
   .refine((data) => {
-    return !!data.representation || !!data.customRep
+    return !!data.agencyId || !!data.customRep
   }, 'Either select an agency or enter a custom representation')
 
 type FormSchema = z.infer<typeof formSchema>
 
 export const RepresentationForm: React.FC<{
-  preloadedResume: Preloaded<typeof api.resumes.getMyResume>
-}> = ({ preloadedResume }) => {
-  const resume = usePreloadedQuery(preloadedResume)
+  preloadedUser: Preloaded<typeof api.users.getMyUser>
+}> = ({ preloadedUser }) => {
+  const user = usePreloadedQuery(preloadedUser)
 
-  const removeMyRepresentation = useMutation(api.resumes.removeMyRepresentation)
-  const addMyRepresentation = useMutation(api.resumes.addMyRepresentation)
+  const removeMyRepresentation = useMutation(
+    api.users.representation.removeMyRepresentation
+  )
+  const addMyRepresentation = useMutation(
+    api.users.representation.addMyRepresentation
+  )
   const createAgency = useMutation(api.agencies.create)
 
   const form = useForm<FormSchema>({
@@ -44,14 +48,14 @@ export const RepresentationForm: React.FC<{
     form.reset()
   }
 
-  async function onSubmit({ representation, customRep }: FormSchema) {
+  async function onSubmit({ agencyId, customRep }: FormSchema) {
     if (customRep) {
       const newAgency = await createAgency({ name: customRep, listed: false })
-      await addMyRepresentation({ representation: newAgency._id })
+      await addMyRepresentation({ agencyId: newAgency._id })
     }
 
-    if (representation) {
-      await addMyRepresentation({ representation })
+    if (agencyId) {
+      await addMyRepresentation({ agencyId })
     }
     resetForm()
   }
@@ -71,7 +75,7 @@ export const RepresentationForm: React.FC<{
             <EditDrawer<FormSchema>
               onSubmit={onSubmit}
               actionSlot={
-                resume?.representation ? (
+                user?.representation ? (
                   <XCircle
                     className="fill-primary stroke-card cursor-pointer"
                     onClick={removeRepresentation}
@@ -79,8 +83,8 @@ export const RepresentationForm: React.FC<{
                 ) : null
               }
               value={
-                resume?.representation ? (
-                  <AgencyName id={resume.representation} />
+                user?.representation ? (
+                  <AgencyName id={user.representation.agencyId} />
                 ) : (
                   'None'
                 )

@@ -21,12 +21,12 @@ export const zSkillsPlainObject = {
 }
 export const zSkills = z.object(zSkillsPlainObject).partial()
 
-const representation = {
-  agencyId: zid('agencies').optional(),
+export const representationObj = {
+  agencyId: zid('agencies'),
   displayRep: z.boolean().optional(),
   tipDismissed: z.boolean().optional()
 }
-const zRepresentation = z.object(representation)
+export const zRepresentation = z.object(representationObj)
 
 export const resume = {
   experiences: z.array(zid('experiences')).optional(),

@@ -3,13 +3,13 @@ import { v } from 'convex/values'
 
 export const addMyRepresentation = authMutation({
   args: {
-    representation: v.id('agencies')
+    agencyId: v.id('agencies')
   },
-  handler: async (ctx, { representation }) => {
+  handler: async (ctx, { agencyId }) => {
     await ctx.db.patch(ctx.user._id, {
       representation: {
         ...ctx.user.representation,
-        agencyId: representation
+        agencyId
       }
     })
   }

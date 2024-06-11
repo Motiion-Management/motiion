@@ -6,50 +6,9 @@ import { api } from '@packages/backend/convex/_generated/api'
 import { redirect } from 'next/navigation'
 import { Id } from '@packages/backend/convex/_generated/dataModel'
 
-// export async function myHeadshots() {
-//   const token = await getAuthToken()
-//   const headshots = await fetchQuery(
-//     api.users.headshots.getMyHeadshots,
-//     {},
-//     { token }
-//   )
-//
-//   if (!headshots) {
-//     redirect('/sign-in')
-//   }
-//   return headshots
-// }
-
-// export async function myUploads() {
-//   const token = await getAuthToken()
-//   const resume = await fetchQuery(api.users.resume.getMyResume, {}, { token })
-//
-//   return resume?.uploads || []
-// }
-
-// export async function myAttributes() {
-//   const token = await getAuthToken()
-//   const resume = await fetchQuery(api.resumes.getMyAttributes, {}, { token })
-//
-//   if (!resume) {
-//     redirect('/sign-in')
-//   }
-//   return resume
-// }
-
-export async function preloadMySizes() {
-  const token = await getAuthToken()
-  const resume = await preloadQuery(api.resumes.getMySizes, {}, { token })
-
-  if (!resume) {
-    redirect('/sign-in')
-  }
-  return resume
-}
-
 export async function getMyResume() {
   const token = await getAuthToken()
-  const resume = await fetchQuery(api.resumes.getMyResume, {}, { token })
+  const resume = await fetchQuery(api.users.resume.getMyResume, {}, { token })
 
   if (!resume) {
     redirect('/sign-in')
@@ -59,7 +18,7 @@ export async function getMyResume() {
 
 export async function preloadMyResume() {
   const token = await getAuthToken()
-  const resume = await preloadQuery(api.resumes.getMyResume, {}, { token })
+  const resume = await preloadQuery(api.users.resume.getMyResume, {}, { token })
 
   if (!resume) {
     redirect('/sign-in')
@@ -68,7 +27,7 @@ export async function preloadMyResume() {
 }
 
 export async function getPublicResume(userId: Id<'users'>) {
-  const resume = await fetchQuery(api.resumes.getPublicResume, { userId })
+  const resume = await fetchQuery(api.users.resume.getResume, { userId })
 
   if (!resume) {
     redirect('/404')

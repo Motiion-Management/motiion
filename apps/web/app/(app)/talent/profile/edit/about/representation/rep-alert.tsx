@@ -7,17 +7,25 @@ import { useMutation, Preloaded, usePreloadedQuery } from 'convex/react'
 
 export const RepAlert: React.FC<{
   preloadedUser: Preloaded<typeof api.users.getMyUser>
-  preloadedResume: Preloaded<typeof api.resumes.getMyResume>
-}> = ({ preloadedUser, preloadedResume }) => {
+}> = ({ preloadedUser }) => {
   const user = usePreloadedQuery(preloadedUser)
-  const resume = usePreloadedQuery(preloadedResume)
   const updateMyUser = useMutation(api.users.updateMyUser)
   function dismissAlert() {
     updateMyUser({
-      representationTip: true
+      representation: {
+        ...user?.representation,
+        tipDismissed: true
+      }
     })
   }
-  return !user?.representationTip && !resume?.displayRepresentation ? (
+
+  if (
+    !user?.representation?.displayRep &&
+    !user?.representation?.tipDismissed
+  ) {
+    return
+  }
+  return (
     <DismissableAlert
       iconSlot={<Info />}
       variant="info"
@@ -28,5 +36,5 @@ export const RepAlert: React.FC<{
         Check the box above to add information about your representation.
       </AlertDescription>
     </DismissableAlert>
-  ) : null
+  )
 }
