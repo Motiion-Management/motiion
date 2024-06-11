@@ -7,11 +7,11 @@ import { Preloaded, useMutation, usePreloadedQuery } from 'convex/react'
 import { api } from '@packages/backend/convex/_generated/api'
 import { EditDrawer } from '@/components/features/edit-drawer'
 import { FC } from 'react'
-import { zSkillsPlainObject } from '@packages/backend/convex/validators/resume'
 import { EditSkillList } from './edit-skill-list'
 import { FABAddDrawer } from '@/components/features/fab-add-drawer'
 import { AddSkill } from './add-skill'
 import { zProficiency } from '@packages/backend/convex/validators/base'
+import { zSkillsPlainObject } from '@packages/backend/convex/validators/users'
 
 const formSchema = z
   .object({
@@ -23,10 +23,10 @@ const formSchema = z
 type FormSchema = z.infer<typeof formSchema>
 
 export const SkillsForm: FC<{
-  preloadedResume: Preloaded<typeof api.resumes.getMyResume>
+  preloadedResume: Preloaded<typeof api.users.resume.getMyResume>
 }> = ({ preloadedResume }) => {
   const resume = usePreloadedQuery(preloadedResume)
-  const updateMyResume = useMutation(api.resumes.updateMyResume)
+  const updateMyResume = useMutation(api.users.resume.updateMyResume)
 
   const skillsRT = resume?.skills || { expert: [], proficient: [], novice: [] }
   const form = useForm<FormSchema>({

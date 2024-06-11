@@ -16,6 +16,20 @@ export async function getMyResume() {
   return resume
 }
 
+export async function getMyExperienceCounts() {
+  const token = await getAuthToken()
+  const resume = await fetchQuery(
+    api.users.resume.getMyExperienceCounts,
+    {},
+    { token }
+  )
+
+  if (!resume) {
+    redirect('/sign-in')
+  }
+  return resume
+}
+
 export async function preloadMyResume() {
   const token = await getAuthToken()
   const resume = await preloadQuery(api.users.resume.getMyResume, {}, { token })

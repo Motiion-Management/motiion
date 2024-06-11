@@ -4,6 +4,8 @@ import { v } from 'convex/values'
 import { zodToConvex } from 'convex-helpers/server/zod'
 import { UserDoc, resume as resumeObj } from '../validators/users'
 import { zFileUploadObjectArray } from '../validators/base'
+import { EXPERIENCE_TYPES } from '../validators/experiences'
+import { getAll } from 'convex-helpers/server/relationships'
 
 export async function augmentResume(
   ctx: QueryCtx,
@@ -28,9 +30,13 @@ export async function augmentResume(
     })
   )
 
+  const experiences = EXPERIENCE_TYPES.map((type) =>
+    publicExperiences.filter((e) => e?.type === type)
+  )
+
   return {
-    skils: resume.skills,
-    experiences: publicExperiences,
+    skills: resume.skills,
+    experiences,
     uploads
   }
 }
@@ -50,6 +56,27 @@ export const getMyResume = authQuery({
     if (!ctx.user) return
 
     return await augmentResume(ctx, ctx.user)
+  }
+})
+
+const experienceTitles = {
+  'television-film': 'Television & Film',
+  'music-videos': 'Music Videos',
+  'live-performances': 'Live Performances',
+  commercials: 'Commercials',
+  'training-education': 'Training & Education'
+}
+export const getMyExperienceCounts = authQuery({
+  args: {},
+  handler: async (ctx) => {
+    if (!ctx.user?.resume?.experiences) return
+
+    const experiences = await getAll(ctx.db, ctx.user.resume.experiences)
+
+    return EXPERIENCE_TYPES.map((type) => ({
+      count: experiences.filter((e) => e?.type === type).length,
+      title: experienceTitles[type]
+    }))
   }
 })
 

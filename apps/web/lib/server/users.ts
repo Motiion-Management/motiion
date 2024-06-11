@@ -1,16 +1,10 @@
 import 'server-only'
 
-import { fetchQuery, preloadQuery, preloadedQueryResult } from 'convex/nextjs'
-import {
-  getAuthToken,
-  preloadHelper,
-  preloadHelperWithToken
-} from '@/lib/server/utils'
+import { fetchQuery } from 'convex/nextjs'
+import { getAuthToken, preloadHelperWithToken } from '@/lib/server/utils'
 import { api } from '@packages/backend/convex/_generated/api'
 import { redirect } from 'next/navigation'
 import { Id } from '@packages/backend/convex/_generated/dataModel'
-import { Preloaded } from 'convex/react'
-import { UserDoc } from '@packages/backend/convex/validators/users'
 
 export async function me() {
   const token = await getAuthToken()

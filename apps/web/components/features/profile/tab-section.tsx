@@ -2,8 +2,7 @@ import { FC } from 'react'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Accordion } from '@/components/ui/accordion'
 import { SizingCard } from './sizing'
-import { ResumeDoc } from '@packages/backend/convex/resumes'
-import { UserDoc } from '@packages/backend/convex/users'
+import { UserDoc } from '@packages/backend/convex/validators/users'
 import { RepresentationCard } from './representation-card'
 import { AttributesCard } from './attributes-card'
 import { ReelCard } from './reel-card'
@@ -26,13 +25,9 @@ const AccordionTab: FC<{
 
 type TabSectionProps = {
   user: UserDoc
-  resume: ResumeDoc
 }
 
-export const TabSection: React.FC<TabSectionProps> = async ({
-  user,
-  resume
-}) => {
+export const TabSection: React.FC<TabSectionProps> = async ({ user }) => {
   return (
     <Tabs defaultValue="about" className="mt-1">
       <TabsList className="sticky top-16 z-10 mb-4 grid w-full grid-cols-3 rounded-full">
@@ -49,9 +44,9 @@ export const TabSection: React.FC<TabSectionProps> = async ({
 
       {/* ABOUT */}
       <AccordionTab value="about">
-        <AttributesCard user={user} resume={resume} />
-        <SizingCard sizing={resume?.sizing} />
-        <RepresentationCard agencyId={resume?.representation} />
+        <AttributesCard user={user} />
+        <SizingCard user={user} />
+        <RepresentationCard agencyId={user.representation?.agencyId} />
       </AccordionTab>
 
       {/* RESUME */}
@@ -61,9 +56,9 @@ export const TabSection: React.FC<TabSectionProps> = async ({
 
       {/* LINKS */}
       <AccordionTab value="links">
-        <ReelCard resume={resume} />
-        <SocialLinksCard resume={resume} />
-        <PortfolioLinksCard resume={resume} />
+        <ReelCard user={user} />
+        <SocialLinksCard user={user} />
+        <PortfolioLinksCard user={user} />
       </AccordionTab>
     </Tabs>
   )

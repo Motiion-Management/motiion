@@ -2,12 +2,12 @@ import { zid, zodToConvexFields } from 'convex-helpers/server/zod'
 import { Table } from 'convex-helpers/server'
 import { z } from 'zod'
 
-const EXPERIENCE_TYPES = [
-  'television-and-film',
+export const EXPERIENCE_TYPES = [
+  'television-film',
   'music-videos',
   'live-performances',
   'commercials',
-  'training'
+  'training-education'
 ] as const
 
 export const experiences = {
