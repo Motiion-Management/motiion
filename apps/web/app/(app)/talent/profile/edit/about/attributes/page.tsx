@@ -1,14 +1,14 @@
 import { Card, CardContent } from '@/components/ui/card'
-import { preloadMyAttributes } from '@/lib/server/resumes'
 import { AttributesForm } from './attributes-form'
+import { preloadMe } from '@/lib/server/users'
 
 export default async function ProfileEditAttributesPage() {
-  const preloadedAttributes = await preloadMyAttributes()
+  const [preloadedUser] = await preloadMe()
 
   return (
     <Card className="h-fit">
       <CardContent className="divide-border flex flex-col divide-y py-2">
-        <AttributesForm preloadedValues={preloadedAttributes} />
+        <AttributesForm preloadedUser={preloadedUser} />
       </CardContent>
     </Card>
   )

@@ -8,37 +8,36 @@ import { api } from '@packages/backend/convex/_generated/api'
 import {
   ETHNICITY,
   EYECOLOR,
-  HAIRCOLOR,
-  attributesPlainObject
+  HAIRCOLOR
 } from '@packages/backend/convex/validators/attributes'
 import { MultiCheckboxField } from '@/components/ui/form-fields/multi-checkbox'
 import { EditDrawer } from '@/components/features/edit-drawer'
 import { HeightPickerField } from '@/components/ui/form-fields/height-picker'
 import { RadioGroupField } from '@/components/ui/form-fields/radio-group'
 import { formatHeight } from '@/lib/utils'
+import { zUsers } from '@packages/backend/convex/validators/users'
 
-const formSchema = z.object(attributesPlainObject)
+const formSchema = zUsers.pick({ attributes: true })
 
 type FormSchema = z.infer<typeof formSchema>
 
 export function AttributesForm({
-  preloadedValues
+  preloadedUser
 }: {
-  preloadedValues: Preloaded<typeof api.resumes.getMyAttributes>
+  preloadedUser: Preloaded<typeof api.users.getMyUser>
 }) {
-  const updateMyAttributes = useMutation(api.resumes.updateMyAttributes)
+  const updateMyUser = useMutation(api.users.updateMyUser)
 
-  const attributes = usePreloadedQuery(preloadedValues) || ({} as FormSchema)
+  const { attributes } = usePreloadedQuery(preloadedUser) || ({} as FormSchema)
   const form = useForm<FormSchema>({
     resolver: zodResolver(formSchema),
-    // mode: 'onBlur',
     shouldUseNativeValidation: false,
-    defaultValues: attributes,
-    values: attributes
+    defaultValues: { attributes },
+    values: { attributes }
   })
   async function onSubmit(data: FormSchema) {
-    await updateMyAttributes(data)
-    form.reset(attributes)
+    await updateMyUser(data)
+    form.reset({ attributes })
   }
 
   return (
@@ -52,7 +51,7 @@ export function AttributesForm({
           label="Ethnicity"
           value={
             <div className="flex flex-col items-start">
-              {attributes.ethnicity?.sort().map((e) => <div key={e}>{e}</div>)}
+              {attributes?.ethnicity?.sort().map((e) => <div key={e}>{e}</div>)}
             </div>
           }
         >
@@ -68,14 +67,14 @@ export function AttributesForm({
         <EditDrawer<FormSchema>
           onSubmit={onSubmit}
           label="Eyes"
-          value={attributes.eyeColor}
+          value={attributes?.eyeColor}
         >
           <RadioGroupField name="eyeColor" options={EYECOLOR} />
         </EditDrawer>
         <EditDrawer<FormSchema>
           onSubmit={onSubmit}
           label="Hair Color"
-          value={attributes.hairColor}
+          value={attributes?.hairColor}
         >
           <RadioGroupField name="hairColor" options={HAIRCOLOR} />
         </EditDrawer>
