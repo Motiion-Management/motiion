@@ -43,7 +43,7 @@ export function DatePickerField({
     <FormField
       name={name}
       render={({ field: { value, onChange } }) => (
-        <FormItem className={cn('flex w-full flex-wrap', className)}>
+        <FormItem className={cn('flex w-full flex-row flex-wrap', className)}>
           <FormLabel className="basis-full">{label}</FormLabel>
           <Popover>
             <div className={'relative flex w-full basis-full'}>

@@ -5,7 +5,7 @@ import { z } from 'zod'
 
 export const events = {
   attendanceCode: z.number(),
-  pointValue: zid('pointValues'),
+  pointValue: z.number(),
   sponsorAgencyId: zid('agencies').optional(),
   organizers: z.array(zid('users')).optional(),
   title: z.string(),

@@ -5,28 +5,25 @@ import { useMutation, useQuery } from 'convex/react'
 import { api } from '@packages/backend/convex/_generated/api'
 import { Button } from '@/components/ui/button'
 import { CircleX } from 'lucide-react'
-import { ONBOARDING_STEPS } from '@packages/backend/convex/users'
+import { ONBOARDING_STEPS } from '@packages/backend/convex/validators/users'
 import { useState } from 'react'
 import { ResumeUploadButton } from '@/components/ui/resume-upload-button'
 import { Separator } from '@/components/ui/separator'
 import { useRouter } from 'next/navigation'
 
 export default function ResumeUploadStep() {
-  const resumeUploads = useQuery(api.resumes.getMyResumeUploads)
-  const removeResumeUpload = useMutation(api.resumes.removeResumeUpload)
-  const resumeUploadsExist = resumeUploads && resumeUploads.length > 0
-  const updateMyUser = useMutation(api.users.update)
-  const user = useQuery(api.users.getMyUser)
+  const resume = useQuery(api.users.resume.getMyResume)
+  const removeResumeUpload = useMutation(api.users.resume.removeResumeUpload)
+  const resumeUploadsExist = resume?.uploads && resume.uploads.length > 0
+  const updateMyUser = useMutation(api.users.updateMyUser)
+  // const user = useQuery(api.users.getMyUser)
   const [loading, setLoading] = useState(false)
   const router = useRouter()
 
   async function nextStep() {
     setLoading(true)
     await updateMyUser({
-      id: user!._id,
-      patch: {
-        onboardingStep: ONBOARDING_STEPS.COMPLETE
-      }
+      onboardingStep: ONBOARDING_STEPS.COMPLETE
     })
 
     router.push('/talent/home')
@@ -44,10 +41,10 @@ export default function ResumeUploadStep() {
           <div className="flex w-full flex-col gap-5">
             <div className="flex w-full justify-between">
               <h4 className="text-xl font-bold">Resumes</h4>
-              <p className="text-sm">{resumeUploads?.length || 0} imported</p>
+              <p className="text-sm">{resume.uploads.length} imported</p>
             </div>
             <Separator className="bg-ring/50 mb-2" />
-            {resumeUploads.map((resumeUpload, index) => (
+            {resume.uploads.map((resumeUpload, index) => (
               <div
                 className="bg-input flex w-full justify-between rounded-lg p-3"
                 key={index}
