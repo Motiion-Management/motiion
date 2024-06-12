@@ -102,6 +102,7 @@ export const AgencySearchField: React.FC<AgencySearchFieldProps> = ({
           />
         </FormControl>
         <motion.div
+          initial={{ opacity: 0 }}
           animate={{ opacity: searchTerm ? 1 : 0 }}
           className="absolute left-0 right-0 top-full z-10 mt-1 w-full"
         >

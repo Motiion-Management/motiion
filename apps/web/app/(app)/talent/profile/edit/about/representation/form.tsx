@@ -112,12 +112,15 @@ export const RepresentationForm: React.FC<{
                   </TabsList>
                 </div>
                 <Separator />
-                <div className="m-4 flex min-h-[65dvh] flex-col">
-                  <TabsContent value="search" className="grid gap-3">
-                    <AgencySearchField name="agencyId" className="" />
+                <div className="m-4 min-h-[65dvh]">
+                  <TabsContent value="search">
+                    <AgencySearchField name="agencyId" className="grid gap-3" />
                   </TabsContent>
-                  <TabsContent value="manual" className="grid gap-3">
-                    <ManualAgencyInput name="customRep" />
+                  <TabsContent value="manual">
+                    <ManualAgencyInput
+                      name="customRep"
+                      className="grid gap-3"
+                    />
                   </TabsContent>
                 </div>
               </Tabs>

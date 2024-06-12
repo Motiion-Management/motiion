@@ -62,6 +62,7 @@ export const getUserByTokenId = internalQuery({
 export const afterUpdate = internalAction({
   args: Users.withSystemFields,
   handler: async (ctx, user): Promise<void> => {
+    console.log('updating user', user._id, user.fullName, user.displayName)
     let agency: AgencyDoc | null = null
     if (user.representation?.agencyId) {
       agency = await ctx.runQuery(internal.agencies.internalRead, {
@@ -71,7 +72,7 @@ export const afterUpdate = internalAction({
 
     const fullName = formatFullName(user.firstName, user.lastName)
     const searchPattern =
-      `${fullName} ${user.displayName} ${user.location?.city} ${agency?.name}`.trim()
+      `${fullName} ${user.displayName || ''} ${user.location?.city} ${agency?.name}`.trim()
 
     await ctx.runMutation(internal.users.internalUpdate, {
       id: user._id,
