@@ -22,7 +22,7 @@ export const zSkillsPlainObject = {
 export const zSkills = z.object(zSkillsPlainObject).partial()
 
 export const representationObj = {
-  agencyId: zid('agencies'),
+  agencyId: zid('agencies').optional(),
   displayRep: z.boolean().optional(),
   tipDismissed: z.boolean().optional()
 }

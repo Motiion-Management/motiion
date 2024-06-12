@@ -36,6 +36,7 @@ export const AgencySearchField: React.FC<AgencySearchFieldProps> = ({
     id: field.value
   })
 
+  const [currentText, setCurrentText] = useState<string>('')
   const [searchTerm, setSearchTerm] = useState<string>('')
   const [selectedAgency, setSelectedAgency] = useState<AgencyDoc | null>(
     (defaultAgency as AgencyDoc) || null
@@ -52,6 +53,11 @@ export const AgencySearchField: React.FC<AgencySearchFieldProps> = ({
   const debouncedSearchTermChange = useMemo(() => {
     return debounce(handleSearchTermChange, 300)
   }, [])
+
+  const handleTextChange = (e: ChangeEvent<HTMLInputElement>) => {
+    setCurrentText(e.target.value)
+    debounce(handleSearchTermChange, 300)(e)
+  }
 
   useEffect(() => {
     return () => {
@@ -70,7 +76,7 @@ export const AgencySearchField: React.FC<AgencySearchFieldProps> = ({
             type="text"
             placeholder="Search for an agency..."
             defaultValue={defaultAgency?.name}
-            value={selectedAgency?.name || undefined}
+            value={selectedAgency?.name || currentText}
             leadingSlot={<Search size={20} />}
             trailingSlot={
               (searchTerm || selectedAgency) && (
@@ -84,7 +90,7 @@ export const AgencySearchField: React.FC<AgencySearchFieldProps> = ({
                 />
               )
             }
-            onChange={debouncedSearchTermChange}
+            onChange={handleTextChange}
             onFocus={() => {
               field.onChange(undefined)
               setSelectedAgency(null)

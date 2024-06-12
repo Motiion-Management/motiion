@@ -41,6 +41,7 @@ export const RepresentationForm: React.FC<{
 
   const form = useForm<FormSchema>({
     resolver: zodResolver(formSchema),
+    mode: 'onChange',
     shouldUseNativeValidation: false
   })
 
@@ -64,6 +65,8 @@ export const RepresentationForm: React.FC<{
     await removeMyRepresentation()
   }
 
+  if (!user?.representation?.displayRep) return
+
   return (
     <Card className="h-fit">
       <CardContent className="divide-border flex flex-col divide-y py-2">
@@ -73,9 +76,8 @@ export const RepresentationForm: React.FC<{
             onSubmit={form.handleSubmit(onSubmit)}
           >
             <EditDrawer<FormSchema>
-              onSubmit={onSubmit}
               actionSlot={
-                user?.representation ? (
+                user?.representation?.agencyId ? (
                   <XCircle
                     className="fill-primary stroke-card cursor-pointer"
                     onClick={removeRepresentation}
@@ -83,7 +85,7 @@ export const RepresentationForm: React.FC<{
                 ) : null
               }
               value={
-                user?.representation ? (
+                user?.representation.agencyId ? (
                   <AgencyName id={user.representation.agencyId} />
                 ) : (
                   'None'
@@ -112,7 +114,7 @@ export const RepresentationForm: React.FC<{
                 <Separator />
                 <div className="m-4 flex min-h-[65dvh] flex-col">
                   <TabsContent value="search" className="grid gap-3">
-                    <AgencySearchField name="representation" className="" />
+                    <AgencySearchField name="agencyId" className="" />
                   </TabsContent>
                   <TabsContent value="manual" className="grid gap-3">
                     <ManualAgencyInput name="customRep" />

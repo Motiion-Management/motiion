@@ -30,7 +30,7 @@ export function ResumeUploadButton({ className }: ResumeUploadButtonProps) {
 
   return (
     <Button loading={loading} className={className}>
-      Upload Headshots
+      Upload Resume
       <input
         type="file"
         className="absolute h-full w-full cursor-pointer opacity-0"

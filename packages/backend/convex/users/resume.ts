@@ -69,9 +69,8 @@ const experienceTitles = {
 export const getMyExperienceCounts = authQuery({
   args: {},
   handler: async (ctx) => {
-    if (!ctx.user?.resume?.experiences) return
-
-    const experiences = await getAll(ctx.db, ctx.user.resume.experiences)
+    const exp = ctx.user?.resume?.experiences
+    const experiences = exp ? await getAll(ctx.db, exp) : []
 
     return EXPERIENCE_TYPES.map((type) => ({
       count: experiences.filter((e) => e?.type === type).length,

@@ -6,9 +6,9 @@ import { Form } from '@/components/ui/form'
 import { api } from '@packages/backend/convex/_generated/api'
 import { CheckboxField } from '@/components/ui/form-fields/checkbox'
 import { useMutation, Preloaded, usePreloadedQuery } from 'convex/react'
-import { zUsers } from '@packages/backend/convex/validators/users'
+import { users } from '@packages/backend/convex/validators/users'
 
-const formSchema = zUsers.pick({ representation: true })
+const formSchema = users.representation.unwrap()
 
 type FormSchema = z.infer<typeof formSchema>
 
@@ -19,7 +19,7 @@ export const DisplayRepForm: React.FC<{
 
   const updateMyUser = useMutation(api.users.updateMyUser)
 
-  const formValues = { representation: user?.representation }
+  const formValues = user?.representation
   const form = useForm<FormSchema>({
     resolver: zodResolver(formSchema),
     shouldUseNativeValidation: false,
@@ -27,8 +27,8 @@ export const DisplayRepForm: React.FC<{
     values: formValues
   })
 
-  function onSubmit(data: FormSchema) {
-    updateMyUser(data)
+  function onSubmit(representation: FormSchema) {
+    updateMyUser({ representation })
   }
 
   return (
@@ -36,7 +36,7 @@ export const DisplayRepForm: React.FC<{
       <form onSubmit={form.handleSubmit(onSubmit)}>
         <CheckboxField
           buttonProps={{ type: 'submit' }}
-          name="representation.displayRep"
+          name="displayRep"
           label="Display representation on profile."
         />
       </form>

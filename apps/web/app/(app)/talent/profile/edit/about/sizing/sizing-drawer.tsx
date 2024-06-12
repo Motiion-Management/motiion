@@ -6,8 +6,7 @@ import {
 } from '@/components/ui/form-fields/wheel-picker'
 import { UNITS, formatSizeValue } from '@/lib/utils'
 
-export interface SizingDrawerProps<T extends FieldValues>
-  extends Omit<EditDrawerProps<T>, 'children'> {
+export interface SizingDrawerProps extends Omit<EditDrawerProps, 'children'> {
   section: string
   column: string
   values: WheelPickerColumnValues
@@ -20,7 +19,7 @@ export function SizingDrawer<T extends FieldValues>({
   unit,
   values,
   ...rest
-}: SizingDrawerProps<T>) {
+}: SizingDrawerProps) {
   const form = useFormContext<T>()
 
   const value = formatSizeValue(form.getValues()?.[section]?.[column], unit)

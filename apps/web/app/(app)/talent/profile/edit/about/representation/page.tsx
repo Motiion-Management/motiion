@@ -8,13 +8,10 @@ export default async function ProfileEditRepresentationPage() {
   return (
     <div className="flex flex-col gap-4">
       <DisplayRepForm preloadedUser={preloadedUser} />
-      {!user.representation?.displayRep ? (
-        !user.representation?.tipDismissed && (
-          <RepAlert preloadedUser={preloadedUser} />
-        )
-      ) : (
-        <RepresentationForm preloadedUser={preloadedUser} />
+      {!user.representation?.tipDismissed && (
+        <RepAlert preloadedUser={preloadedUser} />
       )}
+      <RepresentationForm preloadedUser={preloadedUser} />
     </div>
   )
 }

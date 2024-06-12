@@ -47,7 +47,6 @@ export function AttributesForm({
         onSubmit={form.handleSubmit(onSubmit)}
       >
         <EditDrawer<FormSchema>
-          onSubmit={onSubmit}
           label="Ethnicity"
           value={
             <div className="flex flex-col items-start">
@@ -58,21 +57,15 @@ export function AttributesForm({
           <MultiCheckboxField name="ethnicity" options={ETHNICITY} />
         </EditDrawer>
         <EditDrawer<FormSchema>
-          onSubmit={onSubmit}
           label="Height"
           value={formatHeight(attributes?.height)}
         >
           <HeightPickerField name="height" label="Height" />
         </EditDrawer>
-        <EditDrawer<FormSchema>
-          onSubmit={onSubmit}
-          label="Eyes"
-          value={attributes?.eyeColor}
-        >
+        <EditDrawer<FormSchema> label="Eyes" value={attributes?.eyeColor}>
           <RadioGroupField name="eyeColor" options={EYECOLOR} />
         </EditDrawer>
         <EditDrawer<FormSchema>
-          onSubmit={onSubmit}
           label="Hair Color"
           value={attributes?.hairColor}
         >

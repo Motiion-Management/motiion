@@ -9,13 +9,14 @@ import { me } from '@/lib/server/users'
 
 export default async function ProfilePage() {
   const user = await me()
+
   const counts = await getMyExperienceCounts()
 
   const resumeLinks = [
-    ...counts.map((count) => ({
-      href: `/talent/profile/edit/resume/${count}`,
-      text: count.title,
-      preview: count.count.toString()
+    ...counts.map(({ count, title }) => ({
+      href: `/talent/profile/edit/resume/${title}`,
+      text: title,
+      preview: count.toString()
     })),
     {
       href: '/talent/profile/edit/resume/skills',

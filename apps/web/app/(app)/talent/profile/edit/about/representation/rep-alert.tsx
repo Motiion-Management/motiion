@@ -19,10 +19,7 @@ export const RepAlert: React.FC<{
     })
   }
 
-  if (
-    !user?.representation?.displayRep &&
-    !user?.representation?.tipDismissed
-  ) {
+  if (!user?.representation?.displayRep || user?.representation?.tipDismissed) {
     return
   }
   return (

@@ -55,21 +55,18 @@ export const SkillsForm: FC<{
         onSubmit={form.handleSubmit(onSubmit)}
       >
         <EditDrawer<FormSchema>
-          onSubmit={onSubmit}
           label="Edit Skills"
           value={skillsRT.expert?.join(', ')}
         >
           <EditSkillList name="expert" />
         </EditDrawer>
         <EditDrawer<FormSchema>
-          onSubmit={onSubmit}
           label="Edit Skills"
           value={skillsRT.proficient?.join(', ')}
         >
           <EditSkillList name="proficient" />
         </EditDrawer>
         <EditDrawer<FormSchema>
-          onSubmit={onSubmit}
           label="Proficient"
           value={skillsRT.novice?.join(', ')}
         >
