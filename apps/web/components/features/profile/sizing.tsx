@@ -24,7 +24,7 @@ export const SizingCard: FC<{
           <Stat label="Shoes" value={sizing?.male?.shoes} />
         </StatGroup>
       )}
-      {gender !== 'Female' && (
+      {gender !== 'Male' && (
         <StatGroup title="Female" cols={2}>
           <Stat label="Hips" value={sizing?.female?.hips} />
           <Stat label="Bust" value={sizing?.female?.bust} />
