@@ -15,9 +15,9 @@ import { EditDrawer } from '@/components/features/edit-drawer'
 import { HeightPickerField } from '@/components/ui/form-fields/height-picker'
 import { RadioGroupField } from '@/components/ui/form-fields/radio-group'
 import { formatHeight } from '@/lib/utils'
-import { zUsers } from '@packages/backend/convex/validators/users'
+import { UserDoc, users } from '@packages/backend/convex/validators/users'
 
-const formSchema = zUsers.pick({ attributes: true })
+const formSchema = users.attributes.unwrap()
 
 type FormSchema = z.infer<typeof formSchema>
 
@@ -28,16 +28,16 @@ export function AttributesForm({
 }) {
   const updateMyUser = useMutation(api.users.updateMyUser)
 
-  const { attributes } = usePreloadedQuery(preloadedUser) || ({} as FormSchema)
+  const { attributes } = usePreloadedQuery(preloadedUser) || ({} as UserDoc)
   const form = useForm<FormSchema>({
     resolver: zodResolver(formSchema),
     shouldUseNativeValidation: false,
-    defaultValues: { attributes },
-    values: { attributes }
+    defaultValues: attributes,
+    values: attributes
   })
-  async function onSubmit(data: FormSchema) {
-    await updateMyUser(data)
-    form.reset({ attributes })
+  async function onSubmit(attributes: FormSchema) {
+    await updateMyUser({ attributes })
+    form.reset(attributes)
   }
 
   return (
