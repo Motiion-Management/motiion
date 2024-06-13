@@ -8,6 +8,13 @@ import { FC } from 'react'
 import Image from 'next/image'
 import { Initials } from './initials'
 import Link from 'next/link'
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuGroup,
+  DropdownMenuItem,
+  DropdownMenuTrigger
+} from '@/components/ui/dropdown-menu'
 
 export const SearchResults: FC<{ searchQuery: string }> = ({ searchQuery }) => {
   const searchResults =
@@ -46,7 +53,31 @@ export const SearchResults: FC<{ searchQuery: string }> = ({ searchQuery }) => {
               </div>
             </Link>
 
-            <BreadcrumbEllipsis />
+            <DropdownMenu>
+              <DropdownMenuTrigger>
+                <BreadcrumbEllipsis />
+              </DropdownMenuTrigger>
+              <DropdownMenuContent className="w-48">
+                <DropdownMenuGroup>
+                  <DropdownMenuItem>
+                    <Link
+                      href={`/talent/${user._id}/edit`}
+                      className="text-link-sm"
+                    >
+                      Share Profile
+                    </Link>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem>
+                    <Link
+                      href={`/talent/${user._id}/delete`}
+                      className="text-link-sm"
+                    >
+                      Message {user.firstName}
+                    </Link>
+                  </DropdownMenuItem>
+                </DropdownMenuGroup>
+              </DropdownMenuContent>
+            </DropdownMenu>
           </div>
         ))}
       </div>
