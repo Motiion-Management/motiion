@@ -72,7 +72,9 @@ export const afterUpdate = internalAction({
 
     const fullName = formatFullName(user.firstName, user.lastName)
     const searchPattern =
-      `${fullName} ${user.displayName || ''} ${user.location?.city} ${agency?.name}`.trim()
+      `${fullName} ${user.displayName || ''} ${user.location?.city || ''} ${user.location?.state || ''} ${agency?.name || ''}`.trim()
+
+    console.log({ fullName, searchPattern })
 
     await ctx.runMutation(internal.users.internalUpdate, {
       id: user._id,
@@ -212,15 +214,9 @@ export const updateDerivedPatterns = internalMutation({
   args: {},
   handler: async (ctx) => {
     const users = await ctx.db.query('users').take(1000)
-    users.forEach(async (user) => {
-      const fullName = formatFullName(user.firstName, user.lastName)
-      const searchPattern =
-        `${fullName} ${user.displayName || ''} ${user.location?.city}`.trim()
 
-      await ctx.db.patch(user._id, {
-        fullName,
-        searchPattern
-      })
+    users.forEach(async (user) => {
+      ctx.scheduler.runAfter(0, internal.users.afterUpdate, user)
     })
   }
 })

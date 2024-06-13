@@ -8,7 +8,7 @@ export const NEW_USER_DEFAULTS = {
 } as const
 
 export function formatFullName(firstName?: string, lastName?: string) {
-  return `${firstName} ${lastName}`.trim()
+  return `${firstName || ''} ${lastName || ''}`.trim()
 }
 
 export function onlyUnique(value: any, index: number, array: any[]) {
