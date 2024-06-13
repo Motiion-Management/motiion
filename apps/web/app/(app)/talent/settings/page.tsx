@@ -24,6 +24,24 @@ export default function Dashboard() {
           <h1 className="text-3xl font-semibold">Settings</h1>
         </div>
         <div className="mx-auto grid w-full max-w-6xl items-start gap-6">
+          <Card>
+            <CardContent>
+              <div className='flex justify-center items-center py-10 divide-x-2 divide-solid '>
+                <div className='pr-10'>
+                    <p>Your Points</p>
+                    <p className='text-secondary font-semibold text-3xl'>250</p>
+                </div>
+                <div className='pl-10'>
+                  <ul>
+                    <li>Input your information</li>
+                    <li>Add headshots</li>
+                    <li>Build your resume</li>
+                    <li>Attend an event</li>
+                    </ul>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
           <SettingsTabs
            links={[
             {
