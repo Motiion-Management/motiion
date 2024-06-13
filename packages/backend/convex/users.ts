@@ -171,45 +171,6 @@ export const search = query({
   }
 })
 
-type Attributes = NonNullable<UserDoc['attributes']>
-export const migrateResumes = internalMutation({
-  args: {},
-  handler: async (ctx) => {
-    const resumes = await ctx.db.query('resumes').take(1000)
-    resumes.forEach(async (resume) => {
-      const user = await ctx.db.get(resume.userId)
-      if (!user) {
-        console.error('user not found', resume.userId)
-        return
-      }
-
-      const migratedUser: Partial<UserDoc> = {
-        resume: {
-          uploads: resume.resumeUploads,
-          skills: resume.skills
-        },
-        headshots: resume.headshots,
-        links: resume.links,
-        sizing: resume.sizing as UserDoc['sizing'],
-        attributes: {
-          ethnicity: resume.ethnicity as Attributes['ethnicity'],
-          eyeColor: resume.eyeColor as Attributes['eyeColor'],
-          hairColor: resume.hairColor as Attributes['hairColor'],
-          height: resume.height,
-          yearsOfExperience: resume.yearsOfExperience
-        }
-      }
-      await ctx.db.patch(user._id, migratedUser)
-      await ctx.db.delete(resume._id)
-
-      await ctx.scheduler.runAfter(0, internal.users.afterUpdate, {
-        ...user,
-        ...migratedUser
-      })
-    })
-  }
-})
-
 export const updateDerivedPatterns = internalMutation({
   args: {},
   handler: async (ctx) => {
