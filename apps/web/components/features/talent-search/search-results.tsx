@@ -7,6 +7,7 @@ import { BreadcrumbEllipsis } from '@/components/ui/breadcrumb'
 import { FC } from 'react'
 import Image from 'next/image'
 import { Initials } from './initials'
+import Link from 'next/link'
 
 export const SearchResults: FC<{ searchQuery: string }> = ({ searchQuery }) => {
   const searchResults =
@@ -14,16 +15,19 @@ export const SearchResults: FC<{ searchQuery: string }> = ({ searchQuery }) => {
 
   return (
     <motion.div
-      className="bg-background/60 absolute left-0 z-10 -ml-4 mt-8 w-screen p-4"
+      className="bg-background/95 absolute left-0 z-10 -mx-6 mt-4 w-[calc(100%+3rem)] px-6"
       animate={{ opacity: searchQuery ? 1 : 0 }}
     >
-      <div className="mt-5 grid">
+      <div className="grid">
         {searchResults.map((user) => (
           <div
             className="my-5 flex items-center justify-between gap-3"
             key={user._id}
           >
-            <div className="flex items-center gap-3">
+            <Link
+              className="flex items-center gap-3"
+              href={`/talent/${user._id}`}
+            >
               {user.headshot?.url ? (
                 <Image
                   width={40}
@@ -40,11 +44,9 @@ export const SearchResults: FC<{ searchQuery: string }> = ({ searchQuery }) => {
                 <h2 className="text-lg font-bold">{user.fullName}</h2>
                 {user.representationName}
               </div>
-            </div>
+            </Link>
 
-            <div>
-              <BreadcrumbEllipsis />
-            </div>
+            <BreadcrumbEllipsis />
           </div>
         ))}
       </div>
