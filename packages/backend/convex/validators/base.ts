@@ -1,4 +1,4 @@
-import { zodToConvex } from 'convex-helpers/server/zod'
+import { zid, zodToConvex } from 'convex-helpers/server/zod'
 import { z } from 'zod'
 
 export const VISIBILITY = ['Public', 'Private'] as const
@@ -19,3 +19,11 @@ export const location = zodToConvex(zLocation)
 
 export const PROFICIENCY = ['novice', 'proficient', 'expert'] as const
 export const zProficiency = z.enum(PROFICIENCY)
+
+export const zFileUploadObject = z.object({
+  storageId: zid('_storage'),
+  title: z.string().optional(),
+  uploadDate: z.string()
+})
+
+export const zFileUploadObjectArray = z.array(zFileUploadObject)

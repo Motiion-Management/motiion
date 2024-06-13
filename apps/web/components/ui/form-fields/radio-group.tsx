@@ -48,7 +48,7 @@ export const RadioGroupField = <T extends RadioGroupOptions>({
                 return (
                   <FormItem
                     key={option.id}
-                    className={`has-[span[data-state="checked"]]:border-ring border-border group flex cursor-pointer items-center rounded-lg border-2`}
+                    className={`has-[span[data-state="checked"]]:border-ring border-border group cursor-pointer flex-row items-center rounded-lg border-2`}
                   >
                     <FormControl>
                       <RadioGroupItem value={option.id} className="" />

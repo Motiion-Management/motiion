@@ -37,5 +37,6 @@ export const attributesPlainObject = {
   ethnicity: zEthnicity,
   hairColor: zHairColor,
   eyeColor: zEyeColor,
-  height: zHeight.optional()
+  height: zHeight.optional(),
+  yearsOfExperience: z.number().optional()
 }

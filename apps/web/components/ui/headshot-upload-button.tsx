@@ -17,7 +17,7 @@ export function HeadshotUploadButton({ className }: HeadshotUploadButtonProps) {
   const { startUpload } = useUploadFiles(
     generateUploadUrl as unknown as () => Promise<string>
   )
-  const saveHeadshots = useMutation(api.resumes.saveHeadshotIds)
+  const saveHeadshots = useMutation(api.users.headshots.saveHeadshotIds)
   const saveAfterUpload = async (uploaded: UploadFileResponse[]) => {
     await saveHeadshots({
       headshots: uploaded.map(({ name, response }) => ({

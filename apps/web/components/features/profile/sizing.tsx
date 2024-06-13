@@ -1,13 +1,11 @@
 import { FC } from 'react'
 import { AccordionCard } from '@/components/ui/accordion-card'
 import { Stat, StatGroup } from '@/components/features/stats'
-import { ResumeDoc } from '@packages/backend/convex/resumes'
-import { UserDoc } from '@packages/backend/convex/users'
+import { UserDoc } from '@packages/backend/convex/validators/users'
 
 export const SizingCard: FC<{
-  sizing?: ResumeDoc['sizing']
-  gender?: UserDoc['gender']
-}> = ({ sizing, gender }) => {
+  user: UserDoc
+}> = ({ user: { sizing, gender } }) => {
   return (
     <AccordionCard title="Sizing" withParent>
       <StatGroup title="General" cols={2}>
@@ -26,7 +24,7 @@ export const SizingCard: FC<{
           <Stat label="Shoes" value={sizing?.male?.shoes} />
         </StatGroup>
       )}
-      {gender !== 'Female' && (
+      {gender !== 'Male' && (
         <StatGroup title="Female" cols={2}>
           <Stat label="Hips" value={sizing?.female?.hips} />
           <Stat label="Bust" value={sizing?.female?.bust} />

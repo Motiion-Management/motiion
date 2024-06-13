@@ -2,7 +2,7 @@
 import { useState } from 'react'
 import Image from 'next/image'
 import ReactCardFlip from 'react-card-flip'
-import { UserDoc } from '@packages/backend/convex/users'
+import { UserDoc } from '@packages/backend/convex/validators/users'
 import { AspectRatio } from '@/components/ui/aspect-ratio'
 import './profile-card.css'
 import FlipArrowBlack from '@/public/profile-flip-arrow-black.svg'
@@ -12,7 +12,6 @@ import { UserStats } from './user-stats'
 import { Button } from '@/components/ui/button'
 import { toast } from 'sonner'
 import { BigHeadshotCarousel } from './big-headshot-carousel'
-import { ResumeDoc } from '@packages/backend/convex/resumes'
 
 async function shareLink(shareTitle: string, shareText: string, link: string) {
   const shareData = {
@@ -32,13 +31,7 @@ async function shareLink(shareTitle: string, shareText: string, link: string) {
   }
 }
 
-export function ProfileCard({
-  user,
-  resume
-}: {
-  user: UserDoc
-  resume: ResumeDoc
-}) {
+export function ProfileCard({ user }: { user: UserDoc }) {
   const [isFlipped, setIsFlipped] = useState(false)
 
   function flip() {
@@ -78,7 +71,7 @@ export function ProfileCard({
             </div>
 
             {/* min-content */}
-            <UserStats resume={resume} user={user} />
+            <UserStats user={user} />
 
             {/* 1fr */}
             <div className="z-10 flex flex-col items-center justify-end gap-5 px-6">

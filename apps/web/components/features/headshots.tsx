@@ -2,26 +2,26 @@
 
 import { api } from '@packages/backend/convex/_generated/api'
 import { Preloaded, useMutation, usePreloadedQuery } from 'convex/react'
-import { CarouselItem } from '../ui/carousel'
 import { HeadshotUploadSquare } from '../ui/headshot-upload-square'
 import Image, { StaticImageData } from 'next/image'
 import { X } from 'lucide-react'
 import { Skeleton } from '../ui/skeleton'
+import { CarouselItem, CarouselContent } from '@/components/ui/carousel'
 
-export function Headshots({
+export function HeadshotsCarouselContent({
   preloadedHeadshots,
   onboarding,
   ItemComponent = CarouselItem
 }: {
-  preloadedHeadshots: Preloaded<typeof api.resumes.getMyHeadshots>
+  preloadedHeadshots: Preloaded<typeof api.users.headshots.getMyHeadshots>
   onboarding?: boolean
   ItemComponent?: typeof CarouselItem | React.FC
 }) {
   const headshots = usePreloadedQuery(preloadedHeadshots)
-  const removeHeadshot = useMutation(api.resumes.removeHeadshot)
+  const removeHeadshot = useMutation(api.users.headshots.removeHeadshot)
 
   return (
-    <div className="flex gap-2">
+    <CarouselContent className="flex gap-2">
       {headshots && headshots.length > 0 && headshots.length < 5 && (
         <ItemComponent className="basis-auto">
           <HeadshotUploadSquare />
@@ -54,14 +54,14 @@ export function Headshots({
           />
         </ItemComponent>
       ))}
-    </div>
+    </CarouselContent>
   )
 }
 
 export function HeadshotCount({
   preloadedHeadshots
 }: {
-  preloadedHeadshots: Preloaded<typeof api.resumes.getMyHeadshots>
+  preloadedHeadshots: Preloaded<typeof api.users.headshots.getMyHeadshots>
 }) {
   const headshots = usePreloadedQuery(preloadedHeadshots)
   return <p className="text-body-xs">{headshots?.length || 0}/5 imported</p>
@@ -73,7 +73,7 @@ export function HeadshotPlaceholder({
   placeholderImage,
   placeholderSlot
 }: {
-  preloadedHeadshots: Preloaded<typeof api.resumes.getMyHeadshots>
+  preloadedHeadshots: Preloaded<typeof api.users.headshots.getMyHeadshots>
   placeholderText?: string
   placeholderImage?: StaticImageData
   placeholderSlot?: React.ReactNode

@@ -2,7 +2,7 @@ import { query, mutation } from './_generated/server'
 import { authMutation, authQuery } from './util'
 
 import { crud } from 'convex-helpers/server'
-import { Agents } from './schema'
+import { Agents } from './validators/agents'
 
 export const { read } = crud(Agents, query, mutation)
 

@@ -1,7 +1,7 @@
 import { zodToConvex } from 'convex-helpers/server/zod'
 import { internalAction } from './_generated/server'
 import { authMutation } from './util'
-import { zFileUploadObjectArray } from './validators/resume'
+import { zFileUploadObjectArray } from './validators/base'
 
 export const generateUploadUrl = authMutation({
   handler: async (ctx) => {

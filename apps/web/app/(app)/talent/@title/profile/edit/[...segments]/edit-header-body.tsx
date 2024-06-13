@@ -1,10 +1,6 @@
 'use client'
-import { UserDoc } from '@packages/backend/convex/users'
+import { UserDoc } from '@packages/backend/convex/validators/users'
 import { usePathname } from 'next/navigation'
-
-function FullName({ firstName = '', lastName = '' }: Partial<UserDoc>) {
-  return `${firstName} ${lastName}`
-}
 
 export function EditHeaderBody({ user }: { user: Partial<UserDoc> }) {
   const pathname = usePathname()
@@ -21,7 +17,7 @@ export function EditHeaderBody({ user }: { user: Partial<UserDoc> }) {
     <div className="flex w-full flex-col gap-2">
       <h1 className="text-primary text-h3 flex-1 capitalize">{page}</h1>
       <span className="text-label-xs uppercase">
-        <FullName {...user} /> / {section}
+        {user.fullName} / {section}
       </span>
     </div>
   )

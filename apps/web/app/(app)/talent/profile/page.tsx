@@ -2,12 +2,30 @@ import { InfoIcon as Info } from 'lucide-react'
 import { HeadshotCarousel } from '@/components/features/headshot-carousel'
 import { AlertDescription } from '@/components/ui/alert'
 import { DismissableAlert } from '@/components/ui/dismissable-alert'
-import { getMyResume } from '@/lib/server/resumes'
+import { getMyExperienceCounts } from '@/lib/server/resumes'
 import { LinkSection } from './link-section'
 import { AboutLinks } from './about-links'
+import { me } from '@/lib/server/users'
 
 export default async function ProfilePage() {
-  const resume = await getMyResume()
+  const user = await me()
+
+  const counts = await getMyExperienceCounts()
+
+  const resumeLinks = [
+    ...counts.map(({ count, title }) => ({
+      href: `/talent/profile/edit/resume/${title}`,
+      text: title,
+      preview: count.toString()
+    })),
+    {
+      href: '/talent/profile/edit/resume/skills',
+      text: 'Skills',
+      preview: Object.values(user.resume?.skills || { expert: [] })
+        .reduce((aggr, skillSet) => aggr + skillSet.length, 0)
+        .toString()
+    }
+  ]
   return (
     <div className="grid w-full grid-cols-1 grid-rows-[repeat(5,min-content)] gap-8 overflow-x-visible">
       <DismissableAlert iconSlot={<Info />} variant="info">
@@ -18,45 +36,9 @@ export default async function ProfilePage() {
 
       <HeadshotCarousel title="Your Headshots" />
 
-      <AboutLinks resume={resume} />
+      <AboutLinks user={user} />
 
-      <LinkSection
-        title="Resume"
-        links={[
-          {
-            href: '/talent/profile/edit/resume/television-film',
-            text: 'Television/Film',
-            preview: resume.televisionAndFilm?.length.toString()
-          },
-          {
-            href: '/talent/profile/edit/resume/music-videos',
-            text: 'Music Videos',
-            preview: resume.musicVideos?.length.toString()
-          },
-          {
-            href: '/talent/profile/edit/resume/live-performances',
-            text: 'Live/Stage Performances',
-            preview: resume.livePerformances?.length.toString()
-          },
-          {
-            href: '/talent/profile/edit/resume/commercials',
-            text: 'Commercials',
-            preview: resume.commercials?.length.toString()
-          },
-          {
-            href: '/talent/profile/edit/resume/training-education',
-            text: 'Training/Education',
-            preview: resume.training?.length.toString()
-          },
-          {
-            href: '/talent/profile/edit/resume/skills',
-            text: 'Skills',
-            preview: Object.values(resume.skills || { expert: [] })
-              .reduce((aggr, skillSet) => aggr + skillSet.length, 0)
-              .toString()
-          }
-        ]}
-      />
+      <LinkSection title="Resume" links={resumeLinks} />
       <LinkSection
         title="Links"
         links={[
@@ -67,12 +49,12 @@ export default async function ProfilePage() {
           {
             href: '/talent/profile/edit/links/socials',
             text: 'Socials',
-            preview: resume.links?.socials?.length.toString()
+            preview: user.links?.socials?.length.toString()
           },
           {
             href: '/talent/profile/edit/links/other',
             text: 'Other',
-            preview: resume.links?.portfolio?.length.toString()
+            preview: user.links?.portfolio?.length.toString()
           }
         ]}
       />

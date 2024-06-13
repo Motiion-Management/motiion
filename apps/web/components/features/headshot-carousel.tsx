@@ -1,11 +1,11 @@
 import { StaticImageData } from 'next/image'
 import { api } from '@packages/backend/convex/_generated/api'
-import { Carousel, CarouselContent } from '@/components/ui/carousel'
+import { Carousel } from '@/components/ui/carousel'
 import {
   HeadshotCount,
   HeadshotPlaceholder,
   HeadshotSkeleton,
-  Headshots
+  HeadshotsCarouselContent
 } from './headshots'
 import { preloadQuery } from 'convex/nextjs'
 
@@ -20,7 +20,9 @@ export async function HeadshotCarousel({
   placeholderText?: string
   placeholderImage?: StaticImageData
 }) {
-  const preloadedHeadshots = await preloadQuery(api.resumes.getMyHeadshots)
+  const preloadedHeadshots = await preloadQuery(
+    api.users.headshots.getMyHeadshots
+  )
   //wrap this in a grid to prevent overflow
   return (
     <div className="flex flex-col items-start">
@@ -30,12 +32,10 @@ export async function HeadshotCarousel({
       </div>
 
       <Carousel opts={{ dragFree: true }} className="w-full">
-        <CarouselContent visible>
-          <Headshots
-            preloadedHeadshots={preloadedHeadshots}
-            onboarding={onboarding}
-          />
-        </CarouselContent>
+        <HeadshotsCarouselContent
+          preloadedHeadshots={preloadedHeadshots}
+          onboarding={onboarding}
+        />
       </Carousel>
       <HeadshotPlaceholder
         preloadedHeadshots={preloadedHeadshots}

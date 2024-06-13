@@ -1,5 +1,4 @@
-import { Button } from '@/components/ui/button'
-import { useRef, useState } from 'react'
+import { useEffect, useRef } from 'react'
 import {
   Drawer,
   DrawerClose,
@@ -10,32 +9,30 @@ import {
 } from '@/components/ui/drawer'
 import { Pencil, X } from 'lucide-react'
 import { FieldValues, useFormContext } from 'react-hook-form'
+import { FormButton } from './form-button'
 
-export interface EditDrawerProps<T extends FieldValues> {
+export interface EditDrawerProps {
   children: React.ReactNode
   label?: string
   value?: React.ReactNode
   actionSlot?: React.ReactNode
-  onSubmit: (formData: T) => Promise<void>
 }
 export function EditDrawer<T extends FieldValues>({
   children,
   label,
   value,
-  actionSlot,
-  onSubmit
-}: EditDrawerProps<T>) {
+  actionSlot
+}: EditDrawerProps) {
   const drawerCloseRef = useRef<HTMLButtonElement>(null)
-  const [loading, setLoading] = useState(false)
 
   const form = useFormContext<T>()
 
-  async function handleSave(data: T) {
-    setLoading(true)
-    await onSubmit(data)
-    drawerCloseRef.current?.click()
-    setLoading(false)
-  }
+  const isSuccessful = form.formState.isSubmitted
+  useEffect(() => {
+    if (isSuccessful) {
+      drawerCloseRef.current?.click()
+    }
+  }, [isSuccessful])
 
   return (
     <Drawer shouldScaleBackground handleOnly>
@@ -55,7 +52,7 @@ export function EditDrawer<T extends FieldValues>({
           {actionSlot}
         </div>
       </div>
-      <DrawerContent>
+      <DrawerContent forceMount>
         <div className="divide-border flex flex-col divide-y">
           <DrawerHeader className="flex justify-between gap-2 p-6 text-start">
             <h4 className="text-h4">{label}</h4>
@@ -65,13 +62,7 @@ export function EditDrawer<T extends FieldValues>({
           </DrawerHeader>
           <div className="py-6">{children}</div>
           <DrawerFooter>
-            <Button
-              loading={loading}
-              onClick={form.handleSubmit(handleSave)}
-              disabled={!form.formState.isValid || !form.formState.isDirty}
-            >
-              Save
-            </Button>
+            <FormButton>Save</FormButton>
           </DrawerFooter>
         </div>
       </DrawerContent>

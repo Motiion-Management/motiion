@@ -1,4 +1,4 @@
-import { ConvexError, v } from 'convex/values'
+import { v, ConvexError } from 'convex/values'
 import {
   internalQuery,
   query,
@@ -10,10 +10,11 @@ import { authMutation, authQuery } from './util'
 
 import { getOneFrom } from 'convex-helpers/server/relationships'
 import { crud } from 'convex-helpers/server'
-import { Users } from './schema'
-import { Doc } from './_generated/dataModel'
+import { UserDoc, Users, clerkCreateUserFields } from './validators/users'
 import { internal } from './_generated/api'
 import { literals, partial } from 'convex-helpers/validators'
+import { NEW_USER_DEFAULTS, formatFullName } from './users/helpers'
+import { AgencyDoc } from './agencies'
 
 export const { paginate, read } = crud(Users, query, mutation)
 
@@ -25,25 +26,6 @@ export const {
 
 export const { update } = crud(Users, authQuery, authMutation)
 
-export type UserDoc = Doc<'users'>
-
-export const ONBOARDING_STEPS = {
-  COMPLETE: 0,
-  VISION: 1,
-  PERSONAL_INFO: 2,
-  HEADSHOTS: 3,
-  RESUME: 4
-} as const
-
-export const NEW_USER_DEFAULTS = {
-  type: 'member',
-  isAdmin: false,
-  pointsEarned: 0,
-  onboardingStep: ONBOARDING_STEPS.VISION,
-  profileTip: false,
-  representationTip: false
-} as const
-
 export const getMyUser = authQuery({
   args: {},
   async handler(ctx) {
@@ -53,10 +35,17 @@ export const getMyUser = authQuery({
 
 export const updateMyUser = authMutation({
   args: partial(Users.withoutSystemFields),
-  async handler(ctx, args) {
+  async handler(ctx, args): Promise<void> {
     await ctx.db.patch(ctx.user._id, {
       ...args
     })
+
+    const user = {
+      ...ctx.user,
+      ...args
+    }
+
+    await ctx.scheduler.runAfter(0, internal.users.afterUpdate, user)
   }
 })
 
@@ -70,17 +59,36 @@ export const getUserByTokenId = internalQuery({
   }
 })
 
-const clerkFields = v.object({
-  email: Users.withoutSystemFields.email,
-  firstName: Users.withoutSystemFields.firstName,
-  lastName: Users.withoutSystemFields.lastName,
-  phone: Users.withoutSystemFields.phone,
-  tokenId: Users.withoutSystemFields.tokenId
+export const afterUpdate = internalAction({
+  args: Users.withSystemFields,
+  handler: async (ctx, user): Promise<void> => {
+    console.log('updating user', user._id, user.fullName, user.displayName)
+    let agency: AgencyDoc | null = null
+    if (user.representation?.agencyId) {
+      agency = await ctx.runQuery(internal.agencies.internalRead, {
+        id: user.representation?.agencyId
+      })
+    }
+
+    const fullName = formatFullName(user.firstName, user.lastName)
+    const searchPattern =
+      `${fullName} ${user.displayName || ''} ${user.location?.city || ''} ${user.location?.state || ''} ${agency?.name || ''}`.trim()
+
+    console.log({ fullName, searchPattern })
+
+    await ctx.runMutation(internal.users.internalUpdate, {
+      id: user._id,
+      patch: {
+        fullName,
+        searchPattern
+      }
+    })
+  }
 })
 
 export const updateOrCreateUserByTokenId = internalAction({
   args: {
-    data: clerkFields,
+    data: clerkCreateUserFields,
     eventType: literals('user.created', 'user.updated')
   },
   handler: async (ctx, { data, eventType }) => {
@@ -88,18 +96,23 @@ export const updateOrCreateUserByTokenId = internalAction({
       tokenId: data.tokenId
     })
 
+    const userData = {
+      ...data,
+      fullName: formatFullName(data.firstName, data.lastName)
+    }
+
     if (user) {
       if (eventType === 'user.created') {
         console.warn('overwriting user', data.tokenId, 'with', data)
       } else
         await ctx.runMutation(internal.users.internalUpdate, {
           id: user._id,
-          patch: data
+          patch: userData
         })
     } else {
       await ctx.runMutation(internal.users.create, {
         ...NEW_USER_DEFAULTS,
-        ...data
+        ...userData
       })
     }
   }
@@ -115,5 +128,95 @@ export const deleteUserByTokenId = internalAction({
     }
 
     await ctx.runMutation(internal.users.destroy, { id: user._id })
+  }
+})
+
+export const search = query({
+  args: {
+    query: v.string()
+  },
+  handler: async (ctx, { query }) => {
+    const results = await ctx.db
+      .query('users')
+      .withSearchIndex('search_user', (q) => q.search('searchPattern', query))
+      .take(10)
+
+    const fullResults = await Promise.all(
+      results.map(async (result) => {
+        let headshot
+        let representationName
+        if (result.representation?.agencyId) {
+          const representation = await ctx.db.get(
+            result.representation.agencyId
+          )
+          representationName = representation?.shortName || representation?.name
+        }
+
+        if (result.headshots?.[0]) {
+          headshot = {
+            url: await ctx.storage.getUrl(result.headshots[0].storageId),
+            ...result.headshots[0]
+          }
+        }
+
+        return {
+          ...result,
+          representationName,
+          headshot
+        }
+      })
+    )
+
+    return fullResults
+  }
+})
+
+type Attributes = NonNullable<UserDoc['attributes']>
+export const migrateResumes = internalMutation({
+  args: {},
+  handler: async (ctx) => {
+    const resumes = await ctx.db.query('resumes').take(1000)
+    resumes.forEach(async (resume) => {
+      const user = await ctx.db.get(resume.userId)
+      if (!user) {
+        console.error('user not found', resume.userId)
+        return
+      }
+
+      const migratedUser: Partial<UserDoc> = {
+        resume: {
+          uploads: resume.resumeUploads,
+          skills: resume.skills
+        },
+        headshots: resume.headshots,
+        links: resume.links,
+        sizing: resume.sizing as UserDoc['sizing'],
+        attributes: {
+          ethnicity: resume.ethnicity as Attributes['ethnicity'],
+          eyeColor: resume.eyeColor as Attributes['eyeColor'],
+          hairColor: resume.hairColor as Attributes['hairColor'],
+          height: resume.height,
+          yearsOfExperience: resume.yearsOfExperience
+        }
+      }
+      await ctx.db.patch(user._id, migratedUser)
+      await ctx.db.delete(resume._id)
+
+      await ctx.scheduler.runAfter(0, internal.users.afterUpdate, {
+        ...user,
+        ...migratedUser
+      })
+    })
+  }
+})
+
+export const updateDerivedPatterns = internalMutation({
+  args: {},
+  handler: async (ctx) => {
+    const users = await ctx.db.query('users').take(1000)
+
+    users.forEach(async (user) => {
+      ctx.scheduler.runAfter(0, internal.users.afterUpdate, user)
+    })
   }
 })

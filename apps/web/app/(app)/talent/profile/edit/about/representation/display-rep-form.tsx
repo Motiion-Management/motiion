@@ -5,22 +5,21 @@ import { z } from 'zod'
 import { Form } from '@/components/ui/form'
 import { api } from '@packages/backend/convex/_generated/api'
 import { CheckboxField } from '@/components/ui/form-fields/checkbox'
-import { resume } from '@packages/backend/convex/validators/resume'
 import { useMutation, Preloaded, usePreloadedQuery } from 'convex/react'
+import { users } from '@packages/backend/convex/validators/users'
 
-const formSchema = z.object({
-  displayRepresentation: resume.displayRepresentation
-})
+const formSchema = users.representation.unwrap()
+
 type FormSchema = z.infer<typeof formSchema>
 
 export const DisplayRepForm: React.FC<{
-  preloadedResume: Preloaded<typeof api.resumes.getMyResume>
-}> = ({ preloadedResume }) => {
-  const resume = usePreloadedQuery(preloadedResume)
+  preloadedUser: Preloaded<typeof api.users.getMyUser>
+}> = ({ preloadedUser }) => {
+  const user = usePreloadedQuery(preloadedUser)
 
-  const updateMyResume = useMutation(api.resumes.updateMyResume)
+  const updateMyUser = useMutation(api.users.updateMyUser)
 
-  const formValues = { displayRepresentation: resume?.displayRepresentation }
+  const formValues = user?.representation
   const form = useForm<FormSchema>({
     resolver: zodResolver(formSchema),
     shouldUseNativeValidation: false,
@@ -28,8 +27,8 @@ export const DisplayRepForm: React.FC<{
     values: formValues
   })
 
-  function onSubmit(data: FormSchema) {
-    updateMyResume(data)
+  function onSubmit(representation: FormSchema) {
+    updateMyUser({ representation })
   }
 
   return (
@@ -37,7 +36,7 @@ export const DisplayRepForm: React.FC<{
       <form onSubmit={form.handleSubmit(onSubmit)}>
         <CheckboxField
           buttonProps={{ type: 'submit' }}
-          name="displayRepresentation"
+          name="displayRep"
           label="Display representation on profile."
         />
       </form>

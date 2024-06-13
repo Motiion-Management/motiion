@@ -9,7 +9,7 @@ import {
   CarouselItem,
   CarouselContent
 } from '@/components/ui/carousel'
-import { UserDoc } from '@packages/backend/convex/users'
+import { UserDoc } from '@packages/backend/convex/validators/users'
 import { AspectRatio } from '@/components/ui/aspect-ratio'
 import './profile-card.css'
 import FlipArrowWhite from '@/public/profile-flip-arrow-white.svg'
@@ -22,7 +22,9 @@ export function BigHeadshotCarousel({
   user: UserDoc
   flip: () => void
 }) {
-  const headshots = useQuery(api.resumes.getUserHeadshots, { userId: user._id })
+  const headshots = useQuery(api.users.headshots.getHeadshots, {
+    userId: user._id
+  })
   const [carousel, setCarousel] = useState<CarouselApi>()
   const [current, setCurrent] = useState(0)
 

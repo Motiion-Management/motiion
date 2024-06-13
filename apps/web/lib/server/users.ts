@@ -1,7 +1,7 @@
 import 'server-only'
 
-import { fetchQuery, preloadQuery } from 'convex/nextjs'
-import { getAuthToken } from '@/lib/server/utils'
+import { fetchQuery } from 'convex/nextjs'
+import { getAuthToken, preloadHelperWithToken } from '@/lib/server/utils'
 import { api } from '@packages/backend/convex/_generated/api'
 import { redirect } from 'next/navigation'
 import { Id } from '@packages/backend/convex/_generated/dataModel'
@@ -17,10 +17,7 @@ export async function me() {
 }
 
 export async function preloadMe() {
-  const token = await getAuthToken()
-  const user = await preloadQuery(api.users.getMyUser, {}, { token })
-
-  return user
+  return preloadHelperWithToken(api.users.getMyUser, {}, 'users')
 }
 
 export async function getPublicUser(id: Id<'users'>) {

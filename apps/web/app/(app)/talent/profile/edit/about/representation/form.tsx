@@ -5,7 +5,7 @@ import { z } from 'zod'
 import { Form } from '@/components/ui/form'
 import { api } from '@packages/backend/convex/_generated/api'
 import { EditDrawer } from '@/components/features/edit-drawer'
-import { resume } from '@packages/backend/convex/validators/resume'
+import { representationObj } from '@packages/backend/convex/validators/users'
 import { AgencyName } from '@/components/features/agencies/agency-name'
 import { Card, CardContent } from '@/components/ui/card'
 import { XCircle } from 'lucide-react'
@@ -17,26 +17,31 @@ import { useMutation, Preloaded, usePreloadedQuery } from 'convex/react'
 
 const formSchema = z
   .object({
-    representation: resume.representation,
+    agencyId: representationObj.agencyId.optional(),
     customRep: z.string().optional()
   })
   .refine((data) => {
-    return !!data.representation || !!data.customRep
+    return !!data.agencyId || !!data.customRep
   }, 'Either select an agency or enter a custom representation')
 
 type FormSchema = z.infer<typeof formSchema>
 
 export const RepresentationForm: React.FC<{
-  preloadedResume: Preloaded<typeof api.resumes.getMyResume>
-}> = ({ preloadedResume }) => {
-  const resume = usePreloadedQuery(preloadedResume)
+  preloadedUser: Preloaded<typeof api.users.getMyUser>
+}> = ({ preloadedUser }) => {
+  const user = usePreloadedQuery(preloadedUser)
 
-  const removeMyRepresentation = useMutation(api.resumes.removeMyRepresentation)
-  const addMyRepresentation = useMutation(api.resumes.addMyRepresentation)
+  const removeMyRepresentation = useMutation(
+    api.users.representation.removeMyRepresentation
+  )
+  const addMyRepresentation = useMutation(
+    api.users.representation.addMyRepresentation
+  )
   const createAgency = useMutation(api.agencies.create)
 
   const form = useForm<FormSchema>({
     resolver: zodResolver(formSchema),
+    mode: 'onChange',
     shouldUseNativeValidation: false
   })
 
@@ -44,14 +49,14 @@ export const RepresentationForm: React.FC<{
     form.reset()
   }
 
-  async function onSubmit({ representation, customRep }: FormSchema) {
+  async function onSubmit({ agencyId, customRep }: FormSchema) {
     if (customRep) {
       const newAgency = await createAgency({ name: customRep, listed: false })
-      await addMyRepresentation({ representation: newAgency._id })
+      await addMyRepresentation({ agencyId: newAgency._id })
     }
 
-    if (representation) {
-      await addMyRepresentation({ representation })
+    if (agencyId) {
+      await addMyRepresentation({ agencyId })
     }
     resetForm()
   }
@@ -59,6 +64,8 @@ export const RepresentationForm: React.FC<{
   async function removeRepresentation() {
     await removeMyRepresentation()
   }
+
+  if (!user?.representation?.displayRep) return
 
   return (
     <Card className="h-fit">
@@ -69,9 +76,8 @@ export const RepresentationForm: React.FC<{
             onSubmit={form.handleSubmit(onSubmit)}
           >
             <EditDrawer<FormSchema>
-              onSubmit={onSubmit}
               actionSlot={
-                resume?.representation ? (
+                user?.representation?.agencyId ? (
                   <XCircle
                     className="fill-primary stroke-card cursor-pointer"
                     onClick={removeRepresentation}
@@ -79,8 +85,8 @@ export const RepresentationForm: React.FC<{
                 ) : null
               }
               value={
-                resume?.representation ? (
-                  <AgencyName id={resume.representation} />
+                user?.representation.agencyId ? (
+                  <AgencyName id={user.representation.agencyId} />
                 ) : (
                   'None'
                 )
@@ -106,12 +112,15 @@ export const RepresentationForm: React.FC<{
                   </TabsList>
                 </div>
                 <Separator />
-                <div className="m-4 flex min-h-[65dvh] flex-col">
-                  <TabsContent value="search" className="grid gap-3">
-                    <AgencySearchField name="representation" className="" />
+                <div className="m-4 min-h-[65dvh]">
+                  <TabsContent value="search">
+                    <AgencySearchField name="agencyId" className="grid gap-3" />
                   </TabsContent>
-                  <TabsContent value="manual" className="grid gap-3">
-                    <ManualAgencyInput name="customRep" />
+                  <TabsContent value="manual">
+                    <ManualAgencyInput
+                      name="customRep"
+                      className="grid gap-3"
+                    />
                   </TabsContent>
                 </div>
               </Tabs>

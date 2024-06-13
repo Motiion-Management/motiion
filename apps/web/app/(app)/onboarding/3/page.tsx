@@ -6,7 +6,7 @@ export default async function Headshot() {
   return (
     <section className="mt-4 grid h-full w-full grid-cols-1 grid-rows-[1fr_min-content] gap-8">
       <HeadshotCarousel
-        title="Headhots"
+        title="Headshots"
         placeholderText={`Upload at least one headshot to continue setting up your account. Your headshot(s) will be viewable to the public.`}
         placeholderImage={placeholder}
         onboarding

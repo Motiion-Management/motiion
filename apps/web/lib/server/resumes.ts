@@ -6,73 +6,30 @@ import { api } from '@packages/backend/convex/_generated/api'
 import { redirect } from 'next/navigation'
 import { Id } from '@packages/backend/convex/_generated/dataModel'
 
-export async function myHeadshots() {
+export async function getMyResume() {
   const token = await getAuthToken()
-  const headshots = await fetchQuery(api.resumes.getMyHeadshots, {}, { token })
+  const resume = await fetchQuery(api.users.resume.getMyResume, {}, { token })
 
-  if (!headshots) {
+  if (!resume) {
     redirect('/sign-in')
   }
-  return headshots
+  return resume
 }
 
-export async function myUploads() {
+export async function getMyExperienceCounts() {
   const token = await getAuthToken()
-  const uploads = await fetchQuery(
-    api.resumes.getMyResumeUploads,
+  const experienceCounts = await fetchQuery(
+    api.users.resume.getMyExperienceCounts,
     {},
     { token }
   )
 
-  if (!uploads) {
-    redirect('/sign-in')
-  }
-  return uploads
-}
-
-export async function myAttributes() {
-  const token = await getAuthToken()
-  const resume = await fetchQuery(api.resumes.getMyAttributes, {}, { token })
-
-  if (!resume) {
-    redirect('/sign-in')
-  }
-  return resume
-}
-
-export async function preloadMyAttributes() {
-  const token = await getAuthToken()
-  const resume = await preloadQuery(api.resumes.getMyAttributes, {}, { token })
-
-  if (!resume) {
-    redirect('/sign-in')
-  }
-  return resume
-}
-
-export async function preloadMySizes() {
-  const token = await getAuthToken()
-  const resume = await preloadQuery(api.resumes.getMySizes, {}, { token })
-
-  if (!resume) {
-    redirect('/sign-in')
-  }
-  return resume
-}
-
-export async function getMyResume() {
-  const token = await getAuthToken()
-  const resume = await fetchQuery(api.resumes.getMyResume, {}, { token })
-
-  if (!resume) {
-    redirect('/sign-in')
-  }
-  return resume
+  return experienceCounts
 }
 
 export async function preloadMyResume() {
   const token = await getAuthToken()
-  const resume = await preloadQuery(api.resumes.getMyResume, {}, { token })
+  const resume = await preloadQuery(api.users.resume.getMyResume, {}, { token })
 
   if (!resume) {
     redirect('/sign-in')
@@ -81,7 +38,7 @@ export async function preloadMyResume() {
 }
 
 export async function getPublicResume(userId: Id<'users'>) {
-  const resume = await fetchQuery(api.resumes.getPublicResume, { userId })
+  const resume = await fetchQuery(api.users.resume.getResume, { userId })
 
   if (!resume) {
     redirect('/404')

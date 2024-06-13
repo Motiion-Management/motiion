@@ -1,10 +1,10 @@
 'use client'
 
-import { ONBOARDING_STEPS } from '@packages/backend/convex/users'
 import { useQuery } from 'convex/react'
 import { api } from '@packages/backend/convex/_generated/api'
 import { useRouter, usePathname } from 'next/navigation'
 import { useEffect } from 'react'
+import { ONBOARDING_STEPS } from '@packages/backend/convex/validators/users'
 
 function checkOnboardingStep(currentStep: number, pathname: string) {
   const currentTarget = `/onboarding/${currentStep}`

@@ -1,8 +1,10 @@
-export default {
+const authConfig = {
   providers: [
     {
       domain: process.env.CLERK_ISSUER_URL,
-      applicationID: "convex",
-    },
-  ],
-};
+      applicationID: 'convex'
+    }
+  ]
+}
+
+export default authConfig

@@ -3,7 +3,7 @@ import { NextResponse } from 'next/server'
 import { getMiddlewareAuthToken } from './lib/server/utils'
 import { fetchQuery } from 'convex/nextjs'
 import { api } from '@packages/backend/convex/_generated/api'
-import { ONBOARDING_STEPS } from '@packages/backend/convex/users'
+import { ONBOARDING_STEPS } from '@packages/backend/convex/validators/users'
 const isProtectedRoute = createRouteMatcher([
   '/admin(.*)',
   '/talent(.*)',

@@ -1,15 +1,15 @@
-import { ResumeDoc } from '@packages/backend/convex/resumes'
 import { LinkSection } from './link-section'
 import { fetchQuery } from 'convex/nextjs'
 import { api } from '@packages/backend/convex/_generated/api'
+import { UserDoc } from '@packages/backend/convex/validators/users'
 
-export const AboutLinks: React.FC<{ resume: ResumeDoc }> = async ({
-  resume
+export const AboutLinks: React.FC<{ user: UserDoc }> = async ({
+  user: resume
 }) => {
   let representation
-  if (resume.representation) {
+  if (resume.representation?.agencyId) {
     representation = await fetchQuery(api.agencies.getAgency, {
-      id: resume?.representation
+      id: resume.representation.agencyId
     })
   }
   return (

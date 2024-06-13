@@ -20,15 +20,21 @@ export const RepresentationCard: React.FC<{
     <AccordionCard title="Representation" withParent>
       <StatGroup>
         <Stat label="Representation" value={representation?.name} />
-        <Stat
-          label="Address"
-          value={locationToString(representation?.location)}
-        />
-        <Stat label="Phone" value={representation?.phone} />
-        <Stat
-          label="Email"
-          value={<Email address={representation?.email || ''} />}
-        />
+        {representation?.location && (
+          <Stat
+            label="Address"
+            value={locationToString(representation.location)}
+          />
+        )}
+        {representation?.phone && (
+          <Stat label="Phone" value={representation.phone} />
+        )}
+        {representation?.email && (
+          <Stat
+            label="Email"
+            value={<Email address={representation.email || ''} />}
+          />
+        )}
       </StatGroup>
     </AccordionCard>
   )

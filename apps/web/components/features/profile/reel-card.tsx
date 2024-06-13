@@ -1,17 +1,17 @@
 'use client'
 
 import { AccordionCard } from '@/components/ui/accordion-card'
-import { ResumeDoc } from '@packages/backend/convex/resumes'
 import Image from 'next/image'
 import FilmIcon from '@/public/Film_Reel.svg'
 import ReactPlayer from 'react-player/lazy'
 import { AspectRatio } from '@/components/ui/aspect-ratio'
 import { AccordionContent } from '@/components/ui/accordion'
+import { UserDoc } from '@packages/backend/convex/validators/users'
 
-export const ReelCard: React.FC<{ resume: ResumeDoc }> = ({ resume }) => {
+export const ReelCard: React.FC<{ user: UserDoc }> = ({ user }) => {
   return (
     <>
-      {resume?.links?.reel && (
+      {user?.links?.reel && (
         <AccordionCard
           title="Reel"
           withParent
@@ -34,7 +34,7 @@ export const ReelCard: React.FC<{ resume: ResumeDoc }> = ({ resume }) => {
                       }
                     }
                   }}
-                  url={resume?.links?.reel || ''}
+                  url={user?.links?.reel || ''}
                 />
               </div>
             </AspectRatio>
