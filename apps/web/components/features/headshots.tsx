@@ -2,13 +2,13 @@
 
 import { api } from '@packages/backend/convex/_generated/api'
 import { Preloaded, useMutation, usePreloadedQuery } from 'convex/react'
-import { CarouselItem } from '../ui/carousel'
 import { HeadshotUploadSquare } from '../ui/headshot-upload-square'
 import Image, { StaticImageData } from 'next/image'
 import { X } from 'lucide-react'
 import { Skeleton } from '../ui/skeleton'
+import { CarouselItem, CarouselContent } from '@/components/ui/carousel'
 
-export function Headshots({
+export function HeadshotsCarouselContent({
   preloadedHeadshots,
   onboarding,
   ItemComponent = CarouselItem
@@ -21,7 +21,7 @@ export function Headshots({
   const removeHeadshot = useMutation(api.users.headshots.removeHeadshot)
 
   return (
-    <div className="flex gap-2">
+    <CarouselContent className="flex gap-2">
       {headshots && headshots.length > 0 && headshots.length < 5 && (
         <ItemComponent className="basis-auto">
           <HeadshotUploadSquare />
@@ -54,7 +54,7 @@ export function Headshots({
           />
         </ItemComponent>
       ))}
-    </div>
+    </CarouselContent>
   )
 }
 
