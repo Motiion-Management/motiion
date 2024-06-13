@@ -13,8 +13,8 @@ export default async function ProfilePage() {
   const counts = await getMyExperienceCounts()
 
   const resumeLinks = [
-    ...counts.map(({ count, title }) => ({
-      href: `/talent/profile/edit/resume/${title}`,
+    ...counts.map(({ count, title, slug }) => ({
+      href: `/talent/profile/edit/resume/${slug}`,
       text: title,
       preview: count.toString()
     })),

@@ -10,6 +10,14 @@ export const EXPERIENCE_TYPES = [
   'training-education'
 ] as const
 
+export const EXPERIENCE_TITLE_MAP = {
+  'television-film': 'Television & Film',
+  'music-videos': 'Music Videos',
+  'live-performances': 'Live Performances',
+  commercials: 'Commercials',
+  'training-education': 'Training & Education'
+} as const
+
 export const experiences = {
   userId: zid('users'),
   public: z.boolean().optional(),
