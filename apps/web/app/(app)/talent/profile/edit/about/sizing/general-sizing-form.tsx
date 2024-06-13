@@ -19,9 +19,7 @@ const formSchema = z.object(sizingPlainObject)
 
 type FormSchema = z.infer<typeof formSchema>
 
-function GeneralSizingDrawer(
-  props: Omit<SizingDrawerProps<FormSchema>, 'section'>
-) {
+function GeneralSizingDrawer(props: Omit<SizingDrawerProps, 'section'>) {
   return <SizingDrawer<FormSchema> section="general" {...props} />
 }
 
@@ -54,31 +52,19 @@ export function GeneralSizingForm({
         onSubmit={form.handleSubmit(onSubmit)}
       >
         <GeneralSizingDrawer
-          onSubmit={onSubmit}
           label="Waist"
           column="waist"
           values={WAIST}
           unit="inches"
         />
         <GeneralSizingDrawer
-          onSubmit={onSubmit}
           label="Inseam"
           column="inseam"
           values={INSEAM}
           unit="inches"
         />
-        <GeneralSizingDrawer
-          onSubmit={onSubmit}
-          label="Glove"
-          column="glove"
-          values={GLOVE}
-        />
-        <GeneralSizingDrawer
-          onSubmit={onSubmit}
-          label="Hat"
-          column="hat"
-          values={HAT}
-        />
+        <GeneralSizingDrawer label="Glove" column="glove" values={GLOVE} />
+        <GeneralSizingDrawer label="Hat" column="hat" values={HAT} />
       </form>
     </Form>
   )

@@ -23,9 +23,7 @@ const formSchema = z.object(sizingPlainObject)
 
 type FormSchema = z.infer<typeof formSchema>
 
-function FemaleSizingDrawer(
-  props: Omit<SizingDrawerProps<FormSchema>, 'section'>
-) {
+function FemaleSizingDrawer(props: Omit<SizingDrawerProps, 'section'>) {
   return <SizingDrawer<FormSchema> section="female" {...props} />
 }
 
@@ -59,63 +57,34 @@ export function FemaleSizingForm({
         onSubmit={form.handleSubmit(onSubmit)}
       >
         <FemaleSizingDrawer
-          onSubmit={onSubmit}
           label="Hips"
           column="hips"
           values={HIPS}
           unit="inches"
         />
         <FemaleSizingDrawer
-          onSubmit={onSubmit}
           label="Bust"
           column="bust"
           values={BUST}
           unit="inches"
         />
         <FemaleSizingDrawer
-          onSubmit={onSubmit}
           label="Underbust"
           column="underbust"
           values={UNDERBUST}
           unit="inches"
         />
+        <FemaleSizingDrawer label="Cup" column="cup" values={CUP} />
         <FemaleSizingDrawer
-          onSubmit={onSubmit}
-          label="Cup"
-          column="cup"
-          values={CUP}
-        />
-        <FemaleSizingDrawer
-          onSubmit={onSubmit}
           label="Coat Length"
           column="coatLength"
           values={COATLENGTH}
           unit="inches"
         />
-        <FemaleSizingDrawer
-          onSubmit={onSubmit}
-          label="Shirt"
-          column="shirt"
-          values={SHIRT}
-        />
-        <FemaleSizingDrawer
-          onSubmit={onSubmit}
-          label="Dress"
-          column="dress"
-          values={DRESSORPANT}
-        />
-        <FemaleSizingDrawer
-          onSubmit={onSubmit}
-          label="Pants"
-          column="pants"
-          values={DRESSORPANT}
-        />
-        <FemaleSizingDrawer
-          onSubmit={onSubmit}
-          label="Shoes"
-          column="shoes"
-          values={SHOESWOMEN}
-        />
+        <FemaleSizingDrawer label="Shirt" column="shirt" values={SHIRT} />
+        <FemaleSizingDrawer label="Dress" column="dress" values={DRESSORPANT} />
+        <FemaleSizingDrawer label="Pants" column="pants" values={DRESSORPANT} />
+        <FemaleSizingDrawer label="Shoes" column="shoes" values={SHOESWOMEN} />
       </form>
     </Form>
   )

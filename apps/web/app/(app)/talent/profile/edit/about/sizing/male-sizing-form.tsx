@@ -21,9 +21,7 @@ const formSchema = z.object(sizingPlainObject)
 
 type FormSchema = z.infer<typeof formSchema>
 
-function MaleSizingDrawer(
-  props: Omit<SizingDrawerProps<FormSchema>, 'section'>
-) {
+function MaleSizingDrawer(props: Omit<SizingDrawerProps, 'section'>) {
   return <SizingDrawer<FormSchema> section="male" {...props} />
 }
 
@@ -56,45 +54,31 @@ export function MaleSizingForm({
         onSubmit={form.handleSubmit(onSubmit)}
       >
         <MaleSizingDrawer
-          onSubmit={onSubmit}
           label="Neck"
           column="neck"
           values={NECK}
           unit="inches"
         />
         <MaleSizingDrawer
-          onSubmit={onSubmit}
           label="Chest"
           column="chest"
           values={CHEST}
           unit="inches"
         />
         <MaleSizingDrawer
-          onSubmit={onSubmit}
           label="Sleeve"
           column="sleeve"
           values={SLEEVE}
           unit="inches"
         />
         <MaleSizingDrawer
-          onSubmit={onSubmit}
           label="Coat Length"
           column="coatLength"
           values={COATLENGTH}
           unit="inches"
         />
-        <MaleSizingDrawer
-          onSubmit={onSubmit}
-          label="Shirt"
-          column="shirt"
-          values={SHIRT}
-        />
-        <MaleSizingDrawer
-          onSubmit={onSubmit}
-          label="Shoes"
-          column="shoes"
-          values={SHOESMEN}
-        />
+        <MaleSizingDrawer label="Shirt" column="shirt" values={SHIRT} />
+        <MaleSizingDrawer label="Shoes" column="shoes" values={SHOESMEN} />
       </form>
     </Form>
   )
