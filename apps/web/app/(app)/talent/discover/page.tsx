@@ -20,7 +20,7 @@ export default function DiscoverPage() {
     return () => {
       debouncedSearch.cancel()
     }
-  })
+  }, [debouncedSearch])
 
   return (
     <div className="flex flex-col gap-2">
