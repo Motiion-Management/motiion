@@ -7,7 +7,7 @@
 }
 
 :where(.timeline > li) {
-  @apply relative grid shrink-0 items-center;
+  @apply relative grid shrink-0 items-center gap-x-3;
   grid-template-rows: var(--timeline-row-start, minmax(0, 1fr)) auto var(
       --timeline-row-end,
       minmax(0, 1fr)
@@ -64,7 +64,8 @@
   }
 }
 :where(.timeline-vertical > li) {
-  --timeline-col-start: min-content;
+  --timeline-col-start: minmax(10%, 1fr);
+  --timeline-col-end: minmax(50%, 8fr);
   --timeline-row-start: min-content;
   --timeline-row-end: minmax(0, 1fr);
 }

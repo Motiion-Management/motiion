@@ -25,6 +25,7 @@ import type * as featuredMembers from "../featuredMembers.js";
 import type * as files from "../files.js";
 import type * as http from "../http.js";
 import type * as rewards from "../rewards.js";
+import type * as users_experiences from "../users/experiences.js";
 import type * as users_headshots from "../users/headshots.js";
 import type * as users_helpers from "../users/helpers.js";
 import type * as users_representation from "../users/representation.js";
@@ -64,6 +65,7 @@ declare const fullApi: ApiFromModules<{
   files: typeof files;
   http: typeof http;
   rewards: typeof rewards;
+  "users/experiences": typeof users_experiences;
   "users/headshots": typeof users_headshots;
   "users/helpers": typeof users_helpers;
   "users/representation": typeof users_representation;

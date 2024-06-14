@@ -2,37 +2,41 @@ import { FC } from 'react'
 import './timeline.css'
 import { AccordionCard } from '@/components/ui/accordion-card'
 
-export type TimelinePoint = {
+export type TimelineEventProps = {
   startYear: number | string
   endYear?: number | string
   title: string
-  content: React.ReactNode
+  children: React.ReactNode
+}
+
+export const TimelineEvent: FC<TimelineEventProps> = ({
+  startYear,
+  endYear,
+  title,
+  children: children
+}) => {
+  return (
+    <li>
+      <hr />
+      <div className="timeline-start">
+        {startYear}
+        {endYear && `- ${endYear}`}
+      </div>
+      <div className="timeline-middle">
+        <div className="timeline-mark" />
+      </div>
+      <AccordionCard className="timeline-end w-full" title={title}>
+        {children}
+      </AccordionCard>
+      <hr />
+    </li>
+  )
 }
 
 export type TimelineProps = {
-  points: TimelinePoint[]
+  children: ReturnType<typeof TimelineEvent>[]
 }
 
-export const Timeline: FC<TimelineProps> = ({ points }) => {
-  return (
-    <ul className="timeline timeline-vertical">
-      {points.map((point, index) => (
-        <li key={index}>
-          <hr />
-          <div className="timeline-start">
-            {point.startYear}
-            {point.endYear && `- ${point.endYear}`}
-          </div>
-          <div className="timeline-middle">
-            <div className="timeline-mark" />
-          </div>
-          <div className="timeline-end">{point.content}</div>
-          <AccordionCard className="timeline-end w-full" title={point.title}>
-            {point.content}
-          </AccordionCard>
-          <hr />
-        </li>
-      ))}
-    </ul>
-  )
+export const Timeline: FC<TimelineProps> = ({ children }) => {
+  return <ul className="timeline timeline-vertical">{children}</ul>
 }

@@ -20,13 +20,13 @@ export const EXPERIENCE_TITLE_MAP = {
 
 export const experiences = {
   userId: zid('users'),
-  public: z.boolean().optional(),
+  private: z.boolean().optional(),
   type: z.enum(EXPERIENCE_TYPES),
   title: z.string(),
   role: z.array(z.string()),
-  credits: z.array(z.string()),
-  startYear: z.number().optional(),
-  endYear: z.number().optional(),
+  credits: z.array(z.string()).optional(),
+  startYear: z.coerce.number(),
+  endYear: z.coerce.number().optional(),
   link: z.string().optional(),
   media: z.union([zid('_storage'), z.string()]).optional()
 }

@@ -151,9 +151,16 @@ export function nullsToUndefined<T>(
 
   // object check based on: https://stackoverflow.com/a/51458052/6489012
   if (obj?.constructor.name === 'Object') {
-    for (let key in obj) {
+    for (const key in obj) {
       obj[key] = nullsToUndefined(obj[key]) as any
     }
   }
   return obj as any
+}
+
+// type predicate filter by not null or undefined
+export function notEmpty<TValue>(
+  value: TValue | null | undefined
+): value is TValue {
+  return value !== null && value !== undefined
 }

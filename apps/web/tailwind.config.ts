@@ -262,13 +262,16 @@ const config: Config = {
         'no-touch': { raw: '(hover: hover)' }
       },
       gridTemplateColumns: {
+        drawer: 'minmax(0, 1fr)',
         'user-screen': 'minmax(0, 1fr)'
       },
       gridTemplateRows: {
+        drawer: 'min-content max-content minmax(0, 1fr) max-content',
         'user-screen': 'max-content minmax(0, 1fr) max-content',
         'user-screen-md': 'max-content max-content minmax(0, 1fr)'
       },
       gridTemplateAreas: {
+        drawer: ['handle', 'header', 'content', 'footer'],
         'user-screen': ['title', 'content', 'nav'],
         'user-screen-md': ['nav', 'title', 'content']
       }

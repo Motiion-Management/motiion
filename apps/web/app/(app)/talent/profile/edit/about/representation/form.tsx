@@ -76,6 +76,7 @@ export const RepresentationForm: React.FC<{
             onSubmit={form.handleSubmit(onSubmit)}
           >
             <EditDrawer<FormSchema>
+              label="Add Representation"
               actionSlot={
                 user?.representation?.agencyId ? (
                   <XCircle
@@ -112,7 +113,7 @@ export const RepresentationForm: React.FC<{
                   </TabsList>
                 </div>
                 <Separator />
-                <div className="m-4 min-h-[65dvh]">
+                <div className="m-4">
                   <TabsContent value="search">
                     <AgencySearchField name="agencyId" className="grid gap-3" />
                   </TabsContent>

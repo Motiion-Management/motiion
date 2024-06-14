@@ -28,7 +28,7 @@ export async function augmentResume(
   const publicExperiences = await Promise.all(
     (resume.experiences || []).map(async (experienceId) => {
       const experience = await ctx.db.get(experienceId)
-      if (!experience || (filterPublic && !experience.public)) return
+      if (!experience || (filterPublic && experience.private)) return
       return experience
     })
   )

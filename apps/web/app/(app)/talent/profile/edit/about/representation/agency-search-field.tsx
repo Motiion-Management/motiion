@@ -46,8 +46,8 @@ export const AgencySearchField: React.FC<AgencySearchFieldProps> = ({
     query: searchTerm
   })
 
-  const handleSearchTermChange = (e: ChangeEvent<HTMLInputElement>) => {
-    setSearchTerm(e.target.value)
+  const handleSearchTermChange = (term: string) => {
+    setSearchTerm(term)
   }
 
   const debouncedSearchTermChange = useMemo(() => {
@@ -56,7 +56,6 @@ export const AgencySearchField: React.FC<AgencySearchFieldProps> = ({
 
   const handleTextChange = (e: ChangeEvent<HTMLInputElement>) => {
     setCurrentText(e.target.value)
-    debounce(handleSearchTermChange, 300)(e)
   }
 
   useEffect(() => {
@@ -90,14 +89,19 @@ export const AgencySearchField: React.FC<AgencySearchFieldProps> = ({
                 />
               )
             }
+            enterKeyHint="search"
+            onKeyUp={(e) => {
+              if (e.key === 'Enter') {
+                //blur this input to trigger the onBlur event
+                debouncedSearchTermChange(e.currentTarget.value)
+                e.currentTarget.blur()
+              }
+            }}
             onChange={handleTextChange}
             onFocus={() => {
               field.onChange(undefined)
               setSelectedAgency(null)
               setSearchTerm((prev) => selectedAgency?.name || prev)
-            }}
-            onBlur={() => {
-              setSearchTerm((prev) => selectedAgency?.name || prev.trim())
             }}
           />
         </FormControl>
@@ -126,6 +130,7 @@ export const AgencySearchField: React.FC<AgencySearchFieldProps> = ({
                       onClick={() => {
                         field.onChange(agency._id)
                         setSelectedAgency(agency)
+                        setCurrentText(agency.name)
                         setSearchTerm('')
                       }}
                       className="px-1 text-start"

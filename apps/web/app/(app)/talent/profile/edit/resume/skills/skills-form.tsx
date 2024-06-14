@@ -72,7 +72,7 @@ export const SkillsForm: FC<{
         >
           <EditSkillList name="novice" />
         </EditDrawer>
-        <FABAddDrawer<FormSchema> onSubmit={onSubmit} label="Add Skill">
+        <FABAddDrawer<FormSchema> label="Add Skill">
           <AddSkill name="newSkill" />
         </FABAddDrawer>
       </form>
