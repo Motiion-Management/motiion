@@ -6,7 +6,7 @@ import Image from 'next/image'
 import { Button } from '@/components/ui/button'
 export default function Support() {
   return (
-    <div className="flex w-full flex-col overflow-hidden">
+    <div className="flex w-full flex-col">
       <main className="bg-background flex flex-1 flex-col gap-4 p-4 md:gap-8 md:p-10">
         <div className="mx-auto w-full max-w-6xl gap-2 pb-5">
           <h1 className="text-3xl font-semibold">Support</h1>
