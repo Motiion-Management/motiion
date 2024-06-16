@@ -21,35 +21,87 @@ import { SettingsTabs } from './settings-tabs'
 import { useQuery } from 'convex/react'
 import { api } from '@packages/backend/convex/_generated/api'
 import { BreadcrumbEllipsis } from '@/components/ui/breadcrumb'
-
+import CheckIcon from '@/public/SettingsCheck.svg'
+import NotCompleteIcon from '@/public/SettingsCheckNotComplete.svg'
+import { ChevronRight } from 'lucide-react'
 export default function Dashboard() {
   const user = useQuery(api.users.getMyUser)
+  const userResumes = user?.resume?.uploads
+  const userHeadshots = user?.headshots
   const onboardingStep = user?.onboardingStep
-
-
-  console.log(onboardingStep)
   return (
     <div className="flex min-h-screen w-full flex-col">
       <main className="bg-background flex min-h-[calc(100vh_-_theme(spacing.16))] flex-1 flex-col gap-4 p-4 md:gap-8 md:p-10">
-        <div className="mx-auto  w-full max-w-6xl gap-2 flex justify-between items-center">
+        <div className="mx-auto  flex w-full max-w-6xl items-center justify-between gap-2">
           <h1 className="text-3xl font-semibold">Settings</h1>
           <BreadcrumbEllipsis />
         </div>
         <div className="mx-auto grid w-full max-w-6xl items-start gap-6">
           <Card>
             <CardContent>
-              <div className="flex items-center justify-center divide-x-2 divide-solid py-10 ">
+              <div className="flex items-center justify-center divide-x-2 divide-solid py-10">
                 <div className="pr-10">
                   <p>Your Points</p>
                   <p className="text-secondary text-3xl font-semibold">250</p>
                 </div>
                 <div className="pl-10">
-                  <ul>
-                    <li>Input your information</li>
-                    <li>Add headshots</li>
-                    <li>Build your resume</li>
-                    <li>Attend an event</li>
+                  <ul className='pb-5'>
+                    <li className="flex gap-1 pb-1">
+                      <Image
+                        width={20}
+                        height={20}
+                        alt={
+                          onboardingStep >= 3
+                            ? 'Completed Check Icon'
+                            : 'Not Completed Check Icon'
+                        }
+                        src={onboardingStep >= 3 ? CheckIcon : NotCompleteIcon}
+                      />
+                      Input your information
+                    </li>
+                    <li className="flex gap-1 pb-1">
+                      <Image
+                        width={20}
+                        height={20}
+                        alt={
+                          userHeadshots?.length > 0
+                            ? 'Completed Check Icon'
+                            : 'Not Completed Check Icon'
+                        }
+                        src={
+                          userHeadshots?.length > 0
+                            ? CheckIcon
+                            : NotCompleteIcon
+                        }
+                      />
+                      Add headshots
+                    </li>
+                    <li className="flex gap-1 pb-1">
+                      <Image
+                        width={20}
+                        height={20}
+                        alt={
+                          userResumes?.length > 0
+                            ? 'Completed Check Icon'
+                            : 'Not Completed Check Icon'
+                        }
+                        src={
+                          userResumes?.length > 0 ? CheckIcon : NotCompleteIcon
+                        }
+                      />
+                      Build your resume
+                    </li>
+                    <li className="flex gap-1 pb-1">
+                      <Image
+                        width={20}
+                        height={20}
+                        alt="Check"
+                        src={NotCompleteIcon}
+                      />{' '}
+                      Attend an event
+                    </li>
                   </ul>
+                 <a className='flex font-semibold pointer'>Manage Points<ChevronRight /></a>
                 </div>
               </div>
             </CardContent>
