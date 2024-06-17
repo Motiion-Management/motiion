@@ -62,7 +62,7 @@ export default function Dashboard() {
                             ? 'Completed Check Icon'
                             : 'Not Completed Check Icon'
                         }
-                        src={onboardingStep >= 3 ? CheckIcon : NotCompleteIcon}
+                        src={onboardingStep === 0 ? CheckIcon : NotCompleteIcon}
                       />
                       Input your information
                     </li>
