@@ -14,11 +14,11 @@ import {
 } from '@/components/ui/form-fields/date-picker'
 import { SelectField } from '@/components/ui/form-fields/select'
 import { LocationField } from '@/components/ui/form-fields/location'
+import {
+  ONBOARDING_STEPS,
+  UserDoc
+} from '@packages/backend/convex/validators/users'
 import { AccordionPlus } from '@/components/ui/accordion-plus'
-import { Id } from '@packages/backend/convex/_generated/dataModel'
-import { ONBOARDING_STEPS } from '@packages/backend/convex/validators/users'
-import { useState } from 'react'
-import { useRouter } from 'next/navigation'
 
 const formSchema = z.object({
   firstName: z.string().min(2, {
@@ -63,30 +63,19 @@ const formSchema = z.object({
 
 type FormSchema = z.infer<typeof formSchema>
 
-export function PersonalDetailsFormProvider({
-  id,
-  defaultValues
-}: {
-  id: Id<'users'>
-  defaultValues: Partial<FormSchema>
-}) {
+export function AccountDetailsFormProvider({ user }: { user: UserDoc }) {
   const updateMyUser = useMutation(api.users.update)
 
-  const router = useRouter()
-  const [loading, setLoading] = useState(false)
   const form = useForm<FormSchema>({
     resolver: zodResolver(formSchema),
     shouldUseNativeValidation: false,
-    defaultValues
+    defaultValues: user
   })
   async function onSubmit(data: FormSchema) {
-    router.prefetch('/onboarding/2')
-    setLoading(true)
     await updateMyUser({
-      id,
+      id: user._id,
       patch: { ...data, onboardingStep: ONBOARDING_STEPS.HEADSHOTS }
     })
-    router.push('/onboarding/2')
   }
 
   return (
@@ -125,12 +114,8 @@ export function PersonalDetailsFormProvider({
           />
           <LocationField name="location" required className="col-span-2" />
         </div>
-        <Button
-          className="sticky bottom-0 z-10 mt-2 shadow-lg"
-          type="submit"
-          loading={loading}
-        >
-          Continue
+        <Button className="sticky bottom-0 z-10 mt-2 shadow-lg" type="submit">
+          Save
         </Button>
 
         {/* {children} */}

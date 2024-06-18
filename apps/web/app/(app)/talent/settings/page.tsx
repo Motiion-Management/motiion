@@ -1,89 +1,98 @@
-import Link from 'next/link'
+'use client'
 
-import { Button } from '@/components/ui/button'
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle
-} from '@/components/ui/card'
-import { Checkbox } from '@/components/ui/checkbox'
-import { Input } from '@/components/ui/input'
-import { Header } from './header'
+import Image from 'next/image'
+import { Card, CardContent } from '@/components/ui/card'
+
+import UserIcon from '@/public/UserIcon.svg'
+import HelpIcon from '@/public/Help.svg'
+import LockIcon from '@/public/Lock.svg'
+import { SettingsTabs } from './settings-tabs'
+import { useQuery } from 'convex/react'
+import { api } from '@packages/backend/convex/_generated/api'
+import CheckIcon from '@/public/SettingsCheck.svg'
+import NotCompleteIcon from '@/public/SettingsCheckNotComplete.svg'
+import { FC } from 'react'
+
+const PointEntry: FC<{ text: string; completed: boolean }> = ({
+  text,
+  completed
+}) => {
+  return (
+    <li className="grid grid-cols-[auto_1fr] gap-1">
+      <Image
+        width={20}
+        height={20}
+        alt={completed ? 'Completed Check Icon' : 'Not Completed Check Icon'}
+        src={completed ? CheckIcon : NotCompleteIcon}
+      />
+      {text}
+    </li>
+  )
+}
+
+const PointsList: FC<{ children: React.ReactNode }> = ({ children }) => {
+  return <ul className="text-body-xs">{children}</ul>
+}
 
 export default function Dashboard() {
+  const user = useQuery(api.users.getMyUser)
+  const userResumes = user?.resume?.uploads || []
+  const userHeadshots = user?.headshots || []
+  const onboardingStep = user?.onboardingStep
+
   return (
-    <div className="flex min-h-screen w-full flex-col">
-      <Header />
-      <main className="bg-background flex min-h-[calc(100vh_-_theme(spacing.16))] flex-1 flex-col gap-4 p-4 md:gap-8 md:p-10">
-        <div className="mx-auto grid w-full max-w-6xl gap-2">
-          <h1 className="text-3xl font-semibold">Settings</h1>
-        </div>
-        <div className="mx-auto grid w-full max-w-6xl items-start gap-6 md:grid-cols-[180px_1fr] lg:grid-cols-[250px_1fr]">
-          <nav
-            className="text-muted-foreground grid gap-4 text-sm"
-            x-chunk="dashboard-04-chunk-0"
-          >
-            <Link href="#" className="text-primary font-semibold">
-              General
-            </Link>
-            <Link href="#">Security</Link>
-            <Link href="#">Integrations</Link>
-            <Link href="#">Support</Link>
-            <Link href="#">Organizations</Link>
-            <Link href="#">Advanced</Link>
-          </nav>
-          <div className="grid gap-6">
-            <Card x-chunk="dashboard-04-chunk-1">
-              <CardHeader>
-                <CardTitle>Store Name</CardTitle>
-                <CardDescription>
-                  Used to identify your store in the marketplace.
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <form>
-                  <Input placeholder="Store Name" />
-                </form>
-              </CardContent>
-              <CardFooter className="border-t px-6 py-4">
-                <Button>Save</Button>
-              </CardFooter>
-            </Card>
-            <Card x-chunk="dashboard-04-chunk-2">
-              <CardHeader>
-                <CardTitle>Plugins Directory</CardTitle>
-                <CardDescription>
-                  The directory within your project, in which your plugins are
-                  located.
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <form className="flex flex-col gap-4">
-                  <Input
-                    placeholder="Project Name"
-                    defaultValue="/content/plugins"
-                  />
-                  <div className="flex items-center space-x-2">
-                    <Checkbox id="include" defaultChecked />
-                    <label
-                      htmlFor="include"
-                      className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-                    >
-                      Allow administrators to change the directory.
-                    </label>
-                  </div>
-                </form>
-              </CardContent>
-              <CardFooter className="border-t px-6 py-4">
-                <Button>Save</Button>
-              </CardFooter>
-            </Card>
+    <div className="grid w-full max-w-6xl grid-rows-[auto_1fr] gap-6">
+      <Card className="py-10">
+        <CardContent className="grid grid-cols-[1fr_2fr] items-center gap-4 divide-x-2 py-0">
+          <div className="grid place-items-center">
+            <p className="text-body-sm">Your Points</p>
+            <p className="text-secondary text-3xl font-semibold">250</p>
           </div>
-        </div>
-      </main>
+          <div className="grid place-items-center pl-4">
+            <PointsList>
+              <PointEntry
+                text="Input your information"
+                completed={onboardingStep === 0}
+              />
+              <PointEntry
+                text="Add headshots"
+                completed={userHeadshots?.length > 0}
+              />
+              <PointEntry
+                text="Build your resume"
+                completed={userResumes?.length > 0}
+              />
+
+              <PointEntry
+                text="Attend an event"
+                completed={onboardingStep === 3}
+              />
+            </PointsList>
+          </div>
+        </CardContent>
+      </Card>
+      <SettingsTabs
+        links={[
+          {
+            href: '/talent/settings/account',
+            header: 'Account Details',
+            subtext: 'Update your personal and account info',
+            iconPath: UserIcon
+          },
+          {
+            href: '/talent/settings/support',
+            header: 'Support',
+            subtext: 'Contact us for any issues you may experience',
+            iconPath: HelpIcon
+          },
+          {
+            href: '/talent/settings/privacy',
+            header: 'Data & Privacy',
+            subtext: 'Update your account information',
+            iconPath: LockIcon
+          }
+        ]}
+      />
     </div>
   )
 }

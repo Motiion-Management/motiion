@@ -31,7 +31,7 @@
     --utility: 216 14.29% 93.14%;
     --input: 216 14.29% 93.14%;
     --input-background: 216 14.29% 93.14%;
-    --input-foreground: 216 14.29% 93.14%;
+    --input-foreground: 225 7% 12%;
     --border: 216 14.29% 93.14%;
     --ring: 174, 100%, 24%;
     --radius: 0.5rem;
@@ -62,7 +62,6 @@
     --destructive: 19 99% 46%;
     --destructive-foreground: 0 0% 100%;
 
-
     --utility: 216 14.29% 93.14%;
     --input: 174.1 100% 23.92%;
     --input-background: 174.1 100% 23.92%/20%;
@@ -72,7 +71,7 @@
     --ring: 174.1 47% 90%;
   }
 }
-  
+
 @layer base {
   * {
     @apply border-border;
