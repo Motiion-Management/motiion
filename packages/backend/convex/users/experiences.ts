@@ -39,7 +39,9 @@ export const getMyExperiences = authQuery({
 
     const experienceIds = ctx.user.resume.experiences
     const experiences = await getAll(ctx.db, experienceIds)
-    return experiences.filter(notEmpty)
+    return experiences
+      .filter(notEmpty)
+      .sort((a, b) => b.startYear - a.startYear)
   }
 })
 
@@ -51,7 +53,10 @@ export const getMyExperiencesByType = authQuery({
     const experienceIds = ctx.user.resume.experiences
     const experiences = await getAll(ctx.db, experienceIds)
 
-    return experiences.filter(notEmpty).filter((exp) => exp.type === args.type)
+    return experiences
+      .filter(notEmpty)
+      .filter((exp) => exp.type === args.type)
+      .sort((a, b) => b.startYear - a.startYear)
   }
 })
 
@@ -63,6 +68,9 @@ export const getUserPublicExperiences = query({
     const experienceIds = user.resume.experiences
     const experiences = await getAll(ctx.db, experienceIds)
 
-    return experiences.filter(notEmpty).filter((exp) => !exp?.private)
+    return experiences
+      .filter(notEmpty)
+      .filter((exp) => !exp?.private)
+      .sort((a, b) => b.startYear - a.startYear)
   }
 })
