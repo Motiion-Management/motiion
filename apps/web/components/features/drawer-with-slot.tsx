@@ -5,25 +5,21 @@ import {
   DrawerClose,
   DrawerContent,
   DrawerFooter,
-  DrawerHeader,
-  DrawerTitle,
-  DrawerTrigger
+  DrawerHeader
 } from '@/components/ui/drawer'
-import { Pencil, X } from 'lucide-react'
+import { X } from 'lucide-react'
 import { FieldValues, useFormContext } from 'react-hook-form'
 import { FormButton } from './form-button'
 
 export interface EditDrawerProps {
   children: React.ReactNode
-  label?: string
-  value?: React.ReactNode
-  actionSlot?: React.ReactNode
+  titleSlot?: React.ReactNode
+  triggerSlot: React.ReactNode
 }
-export function EditDrawer<T extends FieldValues>({
+export function DrawerWithSlots<T extends FieldValues>({
   children,
-  label,
-  value,
-  actionSlot
+  titleSlot,
+  triggerSlot
 }: EditDrawerProps) {
   const drawerCloseRef = useRef<HTMLButtonElement>(null)
 
@@ -38,30 +34,15 @@ export function EditDrawer<T extends FieldValues>({
 
   return (
     <Drawer shouldScaleBackground handleOnly>
-      <div className="relative">
-        <DrawerTrigger className="flex w-full items-center justify-between gap-2 py-3">
-          <div className="flex flex-col items-start gap-2">
-            {label && (
-              <div className="text-label-xs text-ring uppercase">{label}</div>
-            )}
-            <div className="text-body-xs capitalize">{value || 'None'}</div>
-          </div>
-          {!actionSlot && (
-            <Pencil size={16.5} className="fill-black stroke-white" />
-          )}
-        </DrawerTrigger>
-        <div className="absolute right-0 top-0 grid h-full place-items-center">
-          {actionSlot}
-        </div>
-      </div>
+      <div className="">{triggerSlot}</div>
       <DrawerContent forceMount>
         <DrawerHeader className="flex items-center justify-between gap-2 p-6 ">
-          <DrawerTitle>{label}</DrawerTitle>
+          {titleSlot}
           <DrawerClose ref={drawerCloseRef}>
             <X size={24} strokeWidth={1.5} className="" />
           </DrawerClose>
         </DrawerHeader>
-        <div className="py-6">{children}</div>
+        <div className="overflow-scroll">{children}</div>
         <DrawerFooter>
           <FormButton>Save</FormButton>
         </DrawerFooter>

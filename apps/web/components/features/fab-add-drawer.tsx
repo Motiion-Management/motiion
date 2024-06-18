@@ -38,9 +38,7 @@ export function FABAddDrawer<T extends FieldValues>({
   return (
     <Drawer shouldScaleBackground handleOnly>
       <DrawerTrigger asChild>
-        {/* trigger */}
         <FAB />
-        {/* trigger */}
       </DrawerTrigger>
       <DrawerContent forceMount>
         <DrawerHeader className="flex items-center justify-between gap-2 p-6 ">

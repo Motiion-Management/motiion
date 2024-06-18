@@ -1,6 +1,7 @@
 import { zid, zodToConvexFields } from 'convex-helpers/server/zod'
 import { Table } from 'convex-helpers/server'
 import { z } from 'zod'
+import { Doc } from '../_generated/dataModel'
 
 export const EXPERIENCE_TYPES = [
   'television-film',
@@ -34,3 +35,5 @@ export const experiences = {
 export const zExperiences = z.object(experiences)
 
 export const Experiences = Table('experiences', zodToConvexFields(experiences))
+
+export type ExperienceDoc = Doc<'experiences'>

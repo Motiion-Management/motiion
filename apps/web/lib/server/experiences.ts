@@ -25,6 +25,23 @@ export async function fetchMyExperiencesByType({
   )
 }
 
+export async function preloadMyExperiencesByType({
+  type
+}: {
+  type: ExperienceType
+}) {
+  const token = await getAuthToken()
+  const preloadedExperiences = await preloadQuery(
+    api.users.experiences.getMyExperiencesByType,
+    { type },
+    { token }
+  )
+
+  const experiences = preloadedQueryResult(preloadedExperiences)
+
+  return { preloadedExperiences, experiences }
+}
+
 export async function preloadMyExperiences() {
   const token = await getAuthToken()
   const preloadedResult = await preloadQuery(
