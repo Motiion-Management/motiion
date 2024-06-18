@@ -1,12 +1,6 @@
 'use client'
 
 import Image from 'next/image'
-import { Button } from '@/components/ui/button'
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger
-} from '@/components/ui/popover'
 import { Card, CardContent } from '@/components/ui/card'
 
 import UserIcon from '@/public/UserIcon.svg'
@@ -37,7 +31,7 @@ const PointEntry: FC<{ text: string; completed: boolean }> = ({
 }
 
 const PointsList: FC<{ children: React.ReactNode }> = ({ children }) => {
-  return <ul className="text-body-xs pb-5">{children}</ul>
+  return <ul className="text-body-xs">{children}</ul>
 }
 
 export default function Dashboard() {
@@ -49,12 +43,12 @@ export default function Dashboard() {
   return (
     <div className="grid w-full max-w-6xl grid-rows-[auto_1fr] gap-6">
       <Card className="py-10">
-        <CardContent className="flex items-center justify-between gap-4 divide-x-2 py-0">
-          <div>
+        <CardContent className="grid grid-cols-[1fr_2fr] items-center gap-4 divide-x-2 py-0">
+          <div className="grid place-items-center">
             <p className="text-body-sm">Your Points</p>
             <p className="text-secondary text-3xl font-semibold">250</p>
           </div>
-          <div className="pl-4">
+          <div className="grid place-items-center pl-4">
             <PointsList>
               <PointEntry
                 text="Input your information"
