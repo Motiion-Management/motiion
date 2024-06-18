@@ -51,7 +51,7 @@ export const TabSection: React.FC<TabSectionProps> = async ({ user }) => {
 
       {/* RESUME */}
       <TabsContent value="resume" className="grid gap-3">
-        <ResumeLinksTab userId={user._id} />
+        <ResumeLinksTab user={user} />
       </TabsContent>
 
       {/* LINKS */}

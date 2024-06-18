@@ -55,11 +55,26 @@ export async function preloadMyExperiences() {
   return [preloadedResult, result]
 }
 
-export async function getUserPublicExperiences(userId: Id<'users'>) {
+export async function fetchUserPublicExperiences(userId: Id<'users'>) {
   const token = await getAuthToken()
   return await fetchQuery(
     api.users.experiences.getUserPublicExperiences,
     { userId },
+    { token }
+  )
+}
+
+export async function fetchUserPublicExperiencesByType({
+  userId,
+  type
+}: {
+  userId: Id<'users'>
+  type: ExperienceType
+}) {
+  const token = await getAuthToken()
+  return await fetchQuery(
+    api.users.experiences.getUserPublicExperiencesByType,
+    { userId, type },
     { token }
   )
 }

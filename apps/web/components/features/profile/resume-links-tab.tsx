@@ -8,50 +8,40 @@ import CommercialIcon from '@/public/Commercial.svg'
 import LiveIcon from '@/public/Theatre_Mask.svg'
 import TrainingIcon from '@/public/Classroom.svg'
 import SkillsIcon from '@/public/Layers.svg'
-import { Id } from '@packages/backend/convex/_generated/dataModel'
+import { fetchUserPublicExperienceCounts } from '@/lib/server/resumes'
+import { UserDoc } from '@packages/backend/convex/validators/users'
 
-export const ResumeLinksTab: React.FC<{ userId: Id<'users'> }> = ({
-  userId
-}) => {
-  const profilePath = `/talent/${userId}`
+export const ResumeLinksTab: React.FC<{
+  user: UserDoc
+}> = async ({ user }) => {
+  const counts = await fetchUserPublicExperienceCounts(user._id)
+
+  const profilePath = `/talent/${user._id}`
+
+  const icons = {
+    'television-film': FilmIcon,
+    'music-videos': VideoIcon,
+    'live-performances': LiveIcon,
+    commercials: CommercialIcon,
+    training: TrainingIcon
+  }
   const resumeItems = [
+    ...counts.map(({ count, title, slug }) => ({
+      href: [profilePath, slug].join('/'),
+      text: title,
+      icon: icons[slug],
+      preview: count.toString()
+    })),
     {
-      icon: FilmIcon,
-      href: profilePath + '/television-film',
-      text: 'Television/Film',
-      preview: ''
-    },
-    {
-      icon: VideoIcon,
-      href: profilePath + '/music-videos',
-      text: 'Music Videos',
-      preview: ''
-    },
-    {
-      icon: LiveIcon,
-      href: profilePath + '/live-performances',
-      text: 'Live/Stage Performances',
-      preview: ''
-    },
-    {
-      icon: CommercialIcon,
-      href: profilePath + '/commercials',
-      text: 'Commercials',
-      preview: ''
-    },
-    {
-      icon: TrainingIcon,
-      href: profilePath + '/training-education',
-      text: 'Training/Education',
-      preview: ''
-    },
-    {
-      icon: SkillsIcon,
       href: profilePath + '/skills',
       text: 'Skills',
-      preview: ''
+      icon: SkillsIcon,
+      preview: Object.values(user.resume?.skills || { expert: [] })
+        .reduce((aggr, skillSet) => aggr + skillSet.length, 0)
+        .toString()
     }
   ]
+
   return (
     <>
       {resumeItems.map((item, key) => (

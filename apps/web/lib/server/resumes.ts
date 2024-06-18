@@ -27,6 +27,15 @@ export async function getMyExperienceCounts() {
   return experienceCounts
 }
 
+export async function fetchUserPublicExperienceCounts(id: Id<'users'>) {
+  const experienceCounts = await fetchQuery(
+    api.users.resume.getUserPublicExperienceCounts,
+    { id }
+  )
+
+  return experienceCounts
+}
+
 export async function preloadMyResume() {
   const token = await getAuthToken()
   const resume = await preloadQuery(api.users.resume.getMyResume, {}, { token })

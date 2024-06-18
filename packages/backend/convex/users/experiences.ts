@@ -74,3 +74,19 @@ export const getUserPublicExperiences = query({
       .sort((a, b) => b.startYear - a.startYear)
   }
 })
+
+export const getUserPublicExperiencesByType = query({
+  args: { userId: v.id('users'), type: Experiences.withoutSystemFields.type },
+  handler: async (ctx, args) => {
+    const user = await ctx.db.get(args.userId)
+    if (!user?.resume?.experiences) return []
+    const experienceIds = user.resume.experiences
+    const experiences = await getAll(ctx.db, experienceIds)
+
+    return experiences
+      .filter(notEmpty)
+      .filter((exp) => exp.type === args.type)
+      .filter((exp) => !exp?.private)
+      .sort((a, b) => b.startYear - a.startYear)
+  }
+})

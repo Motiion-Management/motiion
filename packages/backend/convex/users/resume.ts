@@ -76,6 +76,24 @@ export const getMyExperienceCounts = authQuery({
   }
 })
 
+export const getUserPublicExperienceCounts = query({
+  args: { id: v.id('users') },
+  handler: async (ctx, args) => {
+    const user = await ctx.db.get(args.id)
+
+    const exp = user?.resume?.experiences
+    const experiences = (exp ? await getAll(ctx.db, exp) : []).filter(
+      (e) => !e?.private
+    )
+
+    return EXPERIENCE_TYPES.map((type) => ({
+      count: experiences.filter((e) => e?.type === type).length,
+      title: EXPERIENCE_TITLE_MAP[type],
+      slug: type
+    }))
+  }
+})
+
 export const saveResumeUploadIds = authMutation({
   args: {
     resumeUploads: zodToConvex(zFileUploadObjectArray)
