@@ -8,7 +8,7 @@ export const EXPERIENCE_TYPES = [
   'music-videos',
   'live-performances',
   'commercials',
-  'training-education'
+  'training'
 ] as const
 
 export const EXPERIENCE_TITLE_MAP = {
@@ -16,7 +16,7 @@ export const EXPERIENCE_TITLE_MAP = {
   'music-videos': 'Music Videos',
   'live-performances': 'Live Performances',
   commercials: 'Commercials',
-  'training-education': 'Training & Education'
+  training: 'Training & Education'
 } as const
 
 export const experiences = {
@@ -25,6 +25,7 @@ export const experiences = {
   type: z.enum(EXPERIENCE_TYPES),
   title: z.string(),
   role: z.array(z.string()),
+  references: z.array(z.string()).optional(),
   credits: z.array(z.string()).optional(),
   startYear: z.coerce.number(),
   endYear: z.coerce.number().optional(),
@@ -32,7 +33,12 @@ export const experiences = {
   media: z.union([zid('_storage'), z.string()]).optional()
 }
 
-export const zExperiences = z.object(experiences)
+export const zExperiences = z.object(experiences).superRefine((data) => {
+  if (data.endYear && data.startYear > data.endYear) {
+    return { startYear: 'Start year must be before end year' }
+  }
+  return true
+})
 
 export const Experiences = Table('experiences', zodToConvexFields(experiences))
 

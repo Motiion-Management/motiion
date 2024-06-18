@@ -2,11 +2,13 @@ import { FC } from 'react'
 import './timeline.css'
 import { AccordionCard } from '@/components/ui/accordion-card'
 import { cn } from '@/lib/utils'
+import { EyeOff } from 'lucide-react'
 
 export type TimelineEventProps = {
   startYear: number | string
   endYear?: number | string
   title: string
+  hidden?: boolean
   children: React.ReactNode
 }
 
@@ -14,7 +16,8 @@ export const TimelineEvent: FC<TimelineEventProps> = ({
   startYear,
   endYear,
   title,
-  children: children
+  hidden,
+  children
 }) => {
   return (
     <li>
@@ -26,7 +29,12 @@ export const TimelineEvent: FC<TimelineEventProps> = ({
       <div className="timeline-middle">
         <div className="timeline-mark" />
       </div>
-      <AccordionCard className="timeline-end w-full" title={title} defaultOpen>
+      <AccordionCard
+        startIconSlot={hidden && <EyeOff />}
+        className="timeline-end w-full"
+        title={title}
+        defaultOpen
+      >
         {children}
       </AccordionCard>
       <hr />

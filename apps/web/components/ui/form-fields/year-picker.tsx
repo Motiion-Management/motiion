@@ -23,17 +23,21 @@ const yearOptions = Array(
 type YearPickerFieldProps = {
   name: string
   label: string
+  className?: string
+  tabIndex?: number
   required?: boolean
 }
 
 export const YearPickerField: FC<YearPickerFieldProps> = ({
   name,
   label,
+  className,
+  tabIndex,
   required
 }) => {
   const values = useWatch({ [name]: true })
   return (
-    <div>
+    <div className={className}>
       <div className="flex items-center justify-between gap-2 px-3">
         {label && <h6 className="text-h6">{label}</h6>}
         {required && <span className="text-xs">Required</span>}
@@ -44,9 +48,11 @@ export const YearPickerField: FC<YearPickerFieldProps> = ({
             className="flex w-full items-center justify-between gap-2 py-3"
             asChild
           >
-            <Button variant="input" tabIndex={2}>
+            <Button variant="input" tabIndex={tabIndex}>
               <span className="w-full text-start">
-                {values[name] || 'Set Year'}
+                {values[name] || (
+                  <span className="text-foreground/50">Set Year</span>
+                )}
               </span>
             </Button>
           </DrawerTrigger>
