@@ -14,7 +14,7 @@ import {
 } from '@/components/ui/form-fields/date-picker'
 import { SelectField } from '@/components/ui/form-fields/select'
 import { LocationField } from '@/components/ui/form-fields/location'
-import { AccordionPlus } from './accordion'
+import { AccordionPlus } from '@/components/ui/accordion-plus'
 import { Id } from '@packages/backend/convex/_generated/dataModel'
 import { ONBOARDING_STEPS } from '@packages/backend/convex/validators/users'
 import { useState } from 'react'

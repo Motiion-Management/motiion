@@ -3,15 +3,19 @@
 /* .dark .pka-panel, .pka-panel { */
 /*   border-color: transparent; */
 /* } */
-.dark .pka-panel-footer, .pka-panel-footer {
+.pka-panel-footer,
+.pka-panel-footer {
   border-top-color: hsl(var(--muted));
 }
-.dark .pka-panel-suggestion-label-name, .pka-panel-suggestion-label-name {
+.pka-panel-suggestion-label-name,
+.pka-panel-suggestion-label-name {
   color: hsl(var(--foreground));
 }
-.dark .pka-active, .pka-active {
+.pka-active,
+.pka-active {
   color: hsl(var(--accent-foreground)) !important;
 }
-.dark .pka-active .pka-panel-suggestion-label-name, .pka-active .pka-panel-suggestion-label-name {
+.pka-active .pka-panel-suggestion-label-name,
+.pka-active .pka-panel-suggestion-label-name {
   color: hsl(var(--accent-foreground)) !important;
 }

@@ -11,6 +11,8 @@ const alertVariants = cva(
         default:
           'bg-background text-foreground [&>svg]:fill-foreground  [&>svg]:stroke-background',
         info: 'bg-muted text-muted-foreground [&>svg]:fill-muted-foreground  [&>svg]:stroke-muted',
+        accent:
+          'bg-accent/10 border-accent text-[#052446] [&>svg]:fill-accent  [&>svg]:stroke-accent-foreground',
         destructive:
           'border-destructive/50 text-destructive dark:border-destructive [&>svg]:stroke-destructive [&>svg]:fill-destructive-foreground'
       }
@@ -24,7 +26,7 @@ const alertVariants = cva(
 const Alert = React.forwardRef<
   HTMLDivElement,
   React.HTMLAttributes<HTMLDivElement> &
-  VariantProps<typeof alertVariants> & { iconSlot?: React.ReactNode }
+    VariantProps<typeof alertVariants> & { iconSlot?: React.ReactNode }
 >(({ className, variant, iconSlot, children, ...props }, ref) => (
   <div
     ref={ref}

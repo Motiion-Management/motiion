@@ -14,9 +14,11 @@ import {
 } from '@/components/ui/form-fields/date-picker'
 import { SelectField } from '@/components/ui/form-fields/select'
 import { LocationField } from '@/components/ui/form-fields/location'
-import { AccordionPlus } from '../../onboarding/2/accordion'
-import { Id } from '@packages/backend/convex/_generated/dataModel'
-import { ONBOARDING_STEPS } from '@packages/backend/convex/validators/users'
+import {
+  ONBOARDING_STEPS,
+  UserDoc
+} from '@packages/backend/convex/validators/users'
+import { AccordionPlus } from '@/components/ui/accordion-plus'
 
 const formSchema = z.object({
   firstName: z.string().min(2, {
@@ -61,23 +63,17 @@ const formSchema = z.object({
 
 type FormSchema = z.infer<typeof formSchema>
 
-export function AccountDetailsFormProvider({
-  id,
-  defaultValues
-}: {
-  id: Id<'users'>
-  defaultValues: Partial<FormSchema>
-}) {
+export function AccountDetailsFormProvider({ user }: { user: UserDoc }) {
   const updateMyUser = useMutation(api.users.update)
 
   const form = useForm<FormSchema>({
     resolver: zodResolver(formSchema),
     shouldUseNativeValidation: false,
-    defaultValues
+    defaultValues: user
   })
   async function onSubmit(data: FormSchema) {
     await updateMyUser({
-      id,
+      id: user._id,
       patch: { ...data, onboardingStep: ONBOARDING_STEPS.HEADSHOTS }
     })
   }
@@ -118,10 +114,7 @@ export function AccountDetailsFormProvider({
           />
           <LocationField name="location" required className="col-span-2" />
         </div>
-        <Button
-          className="sticky bottom-0 z-10 mt-2 shadow-lg"
-          type="submit"
-        >
+        <Button className="sticky bottom-0 z-10 mt-2 shadow-lg" type="submit">
           Save
         </Button>
 
