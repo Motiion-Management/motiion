@@ -4,7 +4,10 @@ import { v } from 'convex/values'
 import { zodToConvex } from 'convex-helpers/server/zod'
 import { UserDoc, resume as resumeObj } from '../validators/users'
 import { zFileUploadObjectArray } from '../validators/base'
-import { EXPERIENCE_TYPES } from '../validators/experiences'
+import {
+  EXPERIENCE_TITLE_MAP,
+  EXPERIENCE_TYPES
+} from '../validators/experiences'
 import { getAll } from 'convex-helpers/server/relationships'
 
 export async function augmentResume(
@@ -25,7 +28,7 @@ export async function augmentResume(
   const publicExperiences = await Promise.all(
     (resume.experiences || []).map(async (experienceId) => {
       const experience = await ctx.db.get(experienceId)
-      if (!experience || (filterPublic && !experience.public)) return
+      if (!experience || (filterPublic && experience.private)) return
       return experience
     })
   )
@@ -59,13 +62,6 @@ export const getMyResume = authQuery({
   }
 })
 
-const experienceTitles = {
-  'television-film': 'Television & Film',
-  'music-videos': 'Music Videos',
-  'live-performances': 'Live Performances',
-  commercials: 'Commercials',
-  'training-education': 'Training & Education'
-}
 export const getMyExperienceCounts = authQuery({
   args: {},
   handler: async (ctx) => {
@@ -74,7 +70,26 @@ export const getMyExperienceCounts = authQuery({
 
     return EXPERIENCE_TYPES.map((type) => ({
       count: experiences.filter((e) => e?.type === type).length,
-      title: experienceTitles[type]
+      title: EXPERIENCE_TITLE_MAP[type],
+      slug: type
+    }))
+  }
+})
+
+export const getUserPublicExperienceCounts = query({
+  args: { id: v.id('users') },
+  handler: async (ctx, args) => {
+    const user = await ctx.db.get(args.id)
+
+    const exp = user?.resume?.experiences
+    const experiences = (exp ? await getAll(ctx.db, exp) : []).filter(
+      (e) => !e?.private
+    )
+
+    return EXPERIENCE_TYPES.map((type) => ({
+      count: experiences.filter((e) => e?.type === type).length,
+      title: EXPERIENCE_TITLE_MAP[type],
+      slug: type
     }))
   }
 })

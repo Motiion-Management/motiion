@@ -5,7 +5,7 @@ export const FormButton: React.FC<ButtonProps> = ({ children, ...props }) => {
   const formState = useFormState()
 
   return (
-    <form>
+    <form onSubmit={(e) => e.preventDefault()}>
       <Button
         type="submit"
         loading={formState.isSubmitting}

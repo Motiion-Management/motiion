@@ -27,7 +27,7 @@ export const customFontSizes = {
   h3: [
     pxToRem(24),
     {
-      fontWeight: '500',
+      fontWeight: '600',
       letterSpacing: '-0.02em',
       lineHeight: '1.2'
     }
@@ -35,7 +35,7 @@ export const customFontSizes = {
   h4: [
     pxToRem(18),
     {
-      fontWeight: '500',
+      fontWeight: '600',
       letterSpacing: '-0.02em',
       lineHeight: '1.2'
     }
@@ -43,7 +43,7 @@ export const customFontSizes = {
   h5: [
     pxToRem(16),
     {
-      fontWeight: '500',
+      fontWeight: '600',
       letterSpacing: '-0.02em',
       lineHeight: '1.4'
     }
@@ -51,7 +51,7 @@ export const customFontSizes = {
   h6: [
     pxToRem(12),
     {
-      fontWeight: '500',
+      fontWeight: '600',
       letterSpacing: '-0.02em',
       lineHeight: '1.4'
     }
@@ -262,13 +262,16 @@ const config: Config = {
         'no-touch': { raw: '(hover: hover)' }
       },
       gridTemplateColumns: {
+        drawer: 'minmax(0, 1fr)',
         'user-screen': 'minmax(0, 1fr)'
       },
       gridTemplateRows: {
+        drawer: 'min-content max-content minmax(0, 1fr) max-content',
         'user-screen': 'max-content minmax(0, 1fr) max-content',
         'user-screen-md': 'max-content max-content minmax(0, 1fr)'
       },
       gridTemplateAreas: {
+        drawer: ['handle', 'header', 'content', 'footer'],
         'user-screen': ['title', 'content', 'nav'],
         'user-screen-md': ['nav', 'title', 'content']
       }

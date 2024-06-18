@@ -1,64 +1,56 @@
-import { Button } from '@/components/ui/button'
-import { useRef, useState } from 'react'
+'use client'
+import { useEffect, useRef } from 'react'
 import {
   Drawer,
+  DrawerBody,
   DrawerClose,
   DrawerContent,
   DrawerFooter,
   DrawerHeader,
+  DrawerTitle,
   DrawerTrigger
 } from '@/components/ui/drawer'
 import { X } from 'lucide-react'
 import { FieldValues, useFormContext } from 'react-hook-form'
 import { FAB } from '../ui/floating-action-button'
+import { FormButton } from './form-button'
 
-export interface FABAddDrawerProps<T extends FieldValues> {
+export interface FABAddDrawerProps {
   children: React.ReactNode
   label?: string
-  value?: React.ReactNode
-  onSubmit: (formData: T) => Promise<void>
 }
+
 export function FABAddDrawer<T extends FieldValues>({
   children,
-  label,
-  onSubmit
-}: FABAddDrawerProps<T>) {
+  label
+}: FABAddDrawerProps) {
   const drawerCloseRef = useRef<HTMLButtonElement>(null)
-  const [loading, setLoading] = useState(false)
 
   const form = useFormContext<T>()
 
-  async function handleSave(data: T) {
-    setLoading(true)
-    await onSubmit(data)
-    drawerCloseRef.current?.click()
-    setLoading(false)
-  }
+  const isSuccessful = form.formState.isSubmitted
+  useEffect(() => {
+    if (isSuccessful) {
+      drawerCloseRef.current?.click()
+    }
+  }, [isSuccessful])
 
   return (
     <Drawer shouldScaleBackground handleOnly>
       <DrawerTrigger asChild>
         <FAB />
       </DrawerTrigger>
-      <DrawerContent>
-        <div className="divide-border flex flex-col divide-y">
-          <DrawerHeader className="flex justify-between gap-2 p-6 text-start">
-            <h4 className="text-h4">{label}</h4>
-            <DrawerClose ref={drawerCloseRef}>
-              <X size={24} strokeWidth={1.5} />
-            </DrawerClose>
-          </DrawerHeader>
-          <div className="py-6">{children}</div>
-          <DrawerFooter>
-            <Button
-              loading={loading}
-              onClick={form.handleSubmit(handleSave)}
-              disabled={!form.formState.isValid}
-            >
-              Add
-            </Button>
-          </DrawerFooter>
-        </div>
+      <DrawerContent forceMount>
+        <DrawerHeader className="flex items-center justify-between gap-2 p-6 ">
+          <DrawerTitle>{label}</DrawerTitle>
+          <DrawerClose ref={drawerCloseRef}>
+            <X size={24} strokeWidth={1.5} className="" />
+          </DrawerClose>
+        </DrawerHeader>
+        <DrawerBody>{children}</DrawerBody>
+        <DrawerFooter>
+          <FormButton>Add</FormButton>
+        </DrawerFooter>
       </DrawerContent>
     </Drawer>
   )

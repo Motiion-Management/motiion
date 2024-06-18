@@ -10,11 +10,11 @@ export const RepLogo: React.FC<{ id: Id<'agencies'> }> = ({ id }) => {
   })
   return (
     <>
-      {agency?.logo && (
+      {agency?.logoUrl && (
         <Image
           width={50}
           height={30}
-          src={agency.logo}
+          src={agency.logoUrl}
           alt={agency.shortName || agency.name}
         />
       )}

@@ -17,10 +17,10 @@ export async function me() {
 }
 
 export async function preloadMe() {
-  return preloadHelperWithToken(api.users.getMyUser, {}, 'users')
+  return await preloadHelperWithToken(api.users.getMyUser, {}, 'users')
 }
 
-export async function getPublicUser(id: Id<'users'>) {
+export async function fetchPublicUser(id: Id<'users'>) {
   const token = await getAuthToken()
   const user = await fetchQuery(api.users.read, { id }, { token })
 

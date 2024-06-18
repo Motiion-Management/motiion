@@ -46,7 +46,7 @@ const DrawerContent = React.forwardRef<
     <DrawerPrimitive.Content
       ref={ref}
       className={cn(
-        'bg-card fixed inset-x-0 bottom-0 z-50 mt-24 flex h-auto flex-col rounded-t-2xl border',
+        'bg-card grid-cols-drawer grid-rows-drawer grid-areas-drawer fixed inset-x-0 bottom-0 z-50 mt-24 grid h-full max-h-[95dvh] overflow-auto rounded-t-2xl border after:!h-auto',
         className
       )}
       {...props}
@@ -58,12 +58,27 @@ const DrawerContent = React.forwardRef<
 ))
 DrawerContent.displayName = 'DrawerContent'
 
+const DrawerBody: React.FC<React.HTMLAttributes<HTMLDivElement>> = ({
+  className,
+  children,
+  ...props
+}) => (
+  <div
+    className={cn('grid-in-content flex flex-col overflow-auto', className)}
+    {...props}
+  >
+    {children}
+  </div>
+)
 const DrawerHeader = ({
   className,
   ...props
 }: React.HTMLAttributes<HTMLDivElement>) => (
   <div
-    className={cn('grid gap-1.5 p-4 text-center sm:text-left', className)}
+    className={cn(
+      'grid-in-header grid gap-1.5 border-b p-4 text-center sm:text-left',
+      className
+    )}
     {...props}
   />
 )
@@ -74,7 +89,10 @@ const DrawerFooter = ({
   ...props
 }: React.HTMLAttributes<HTMLDivElement>) => (
   <div
-    className={cn('mt-auto flex flex-col gap-2 p-4', className)}
+    className={cn(
+      'grid-in-footer bg-card z-20 mt-auto flex flex-col gap-2 border-t p-4',
+      className
+    )}
     {...props}
   />
 )
@@ -114,6 +132,7 @@ export {
   DrawerTrigger,
   DrawerClose,
   DrawerHandle,
+  DrawerBody,
   DrawerContent,
   DrawerHeader,
   DrawerFooter,

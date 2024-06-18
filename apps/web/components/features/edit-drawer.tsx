@@ -1,3 +1,4 @@
+'use client'
 import { useEffect, useRef } from 'react'
 import {
   Drawer,
@@ -5,6 +6,7 @@ import {
   DrawerContent,
   DrawerFooter,
   DrawerHeader,
+  DrawerTitle,
   DrawerTrigger
 } from '@/components/ui/drawer'
 import { Pencil, X } from 'lucide-react'
@@ -53,18 +55,16 @@ export function EditDrawer<T extends FieldValues>({
         </div>
       </div>
       <DrawerContent forceMount>
-        <div className="divide-border flex flex-col divide-y">
-          <DrawerHeader className="flex justify-between gap-2 p-6 text-start">
-            <h4 className="text-h4">{label}</h4>
-            <DrawerClose ref={drawerCloseRef}>
-              <X size={24} strokeWidth={1.5} className="" />
-            </DrawerClose>
-          </DrawerHeader>
-          <div className="py-6">{children}</div>
-          <DrawerFooter>
-            <FormButton>Save</FormButton>
-          </DrawerFooter>
-        </div>
+        <DrawerHeader className="flex items-center justify-between gap-2 p-6 ">
+          <DrawerTitle>{label}</DrawerTitle>
+          <DrawerClose ref={drawerCloseRef}>
+            <X size={24} strokeWidth={1.5} className="" />
+          </DrawerClose>
+        </DrawerHeader>
+        <div className="py-6">{children}</div>
+        <DrawerFooter>
+          <FormButton>Save</FormButton>
+        </DrawerFooter>
       </DrawerContent>
     </Drawer>
   )
