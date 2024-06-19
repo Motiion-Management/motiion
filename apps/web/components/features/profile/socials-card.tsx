@@ -16,13 +16,15 @@ export const SocialLinksCard: React.FC<{ user: UserDoc }> = ({ user }) => {
     >
       <AccordionContent>
         <div className="mt-4 flex gap-4">
-          {user?.links?.socials?.map(({ link, platform }) => (
-            <SocialLink
-              key={platform}
-              link={link}
-              platform={platform as SocialLinkProps['platform']}
-            />
-          ))}
+          {Object.entries(user?.links?.socials || {}).map(
+            ([platform, link]) => (
+              <SocialLink
+                key={platform}
+                link={link}
+                platform={platform as SocialLinkProps['platform']}
+              />
+            )
+          )}
         </div>
       </AccordionContent>
     </AccordionCard>

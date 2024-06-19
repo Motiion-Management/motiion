@@ -39,11 +39,15 @@ export const zResume = z.object(resume)
 export const links = {
   reel: z.string().optional(),
   socials: z
-    .array(z.object({ platform: z.string(), link: z.string() }))
+    .object({
+      instagram: z.string().optional(),
+      facebook: z.string().optional(),
+      twitter: z.string().optional(),
+      linkedin: z.string().optional(),
+      tiktok: z.string().optional()
+    })
     .optional(),
-  portfolio: z
-    .array(z.object({ title: z.string(), link: z.string() }))
-    .optional()
+  other: z.array(z.object({ label: z.string(), url: z.string() })).optional()
 }
 
 export const zLinks = z.object(links)

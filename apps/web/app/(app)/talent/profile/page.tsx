@@ -36,9 +36,10 @@ export default async function ProfilePage() {
 
       <HeadshotCarousel title="Your Headshots" />
 
+      <LinkSection title="Resume" links={resumeLinks} />
+
       <AboutLinks user={user} />
 
-      <LinkSection title="Resume" links={resumeLinks} />
       <LinkSection
         title="Links"
         links={[
@@ -49,12 +50,12 @@ export default async function ProfilePage() {
           {
             href: '/talent/profile/edit/links/socials',
             text: 'Socials',
-            preview: user.links?.socials?.length.toString()
+            preview: Object.values(user.links?.socials || {}).length.toString()
           },
           {
             href: '/talent/profile/edit/links/other',
             text: 'Other',
-            preview: user.links?.portfolio?.length.toString()
+            preview: user.links?.other?.length.toString()
           }
         ]}
       />

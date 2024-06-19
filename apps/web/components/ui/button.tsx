@@ -6,7 +6,7 @@ import { cn } from '@/lib/utils'
 import { LoaderCircle } from 'lucide-react'
 
 const buttonVariants = cva(
-  'rounded-full inline-flex items-center justify-center whitespace-nowrap ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50',
+  'rounded-full inline-flex items-center justify-center whitespace-nowrap ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 *:transition-colors',
   {
     variants: {
       variant: {
@@ -24,7 +24,7 @@ const buttonVariants = cva(
         link: 'text-primary underline-offset-4 underline decoration-primary hover:decoration-primary/30 ',
         'accent-link': 'text-accent underline-offset-4 hover:underline',
         'destructive-link':
-          'text-destructive underline-offset-4 hover:underline',
+          'text-destructive hover:[&>svg]:fill-destructive/40  underline-offset-4 hover:underline',
         input:
           'rounded-lg border border-input bg-card dark:bg-input-background dark:text-input-foreground hover:bg-input/10',
         'image-upload':

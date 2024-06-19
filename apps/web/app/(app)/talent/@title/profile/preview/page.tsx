@@ -10,7 +10,7 @@ export default function TitleSlot() {
       actionSlot={
         <Link href="/talent/profile">
           <Badge className="flex gap-2">
-            Preview <Eye />
+            Edit <Eye />
           </Badge>
         </Link>
       }

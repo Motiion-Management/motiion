@@ -1,13 +1,10 @@
-import { fetchQuery } from 'convex/nextjs'
-import { getAuthToken } from '@/lib/server/utils'
-import { api } from '@packages/backend/convex/_generated/api'
+import { me } from '@/lib/server/users'
 
 export default async function HomePage() {
-  const token = await getAuthToken()
-  const user = await fetchQuery(api.users.getMyUser, {}, { token })
+  const user = await me()
   return (
     <div>
-      {user ? <p>Logged in as {user.firstName}</p> : <p>Not logged in</p>}
+      <p>Logged in as {user.firstName}</p>
       <h1>Home</h1>
     </div>
   )
