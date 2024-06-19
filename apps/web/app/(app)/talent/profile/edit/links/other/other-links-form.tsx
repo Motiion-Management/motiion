@@ -44,7 +44,7 @@ export function OtherLinksForm({
   return (
     <Form {...form}>
       <form
-        className="grid h-full grid-rows-[1fr_auto] gap-8 px-4"
+        className="grid h-full grid-rows-[1fr_auto] gap-8"
         onSubmit={form.handleSubmit(onSubmit)}
       >
         <LinkFieldArray />
@@ -70,7 +70,7 @@ export const LinkFieldArray = () => {
         >
           <InputField
             name={`other.${index}.label`}
-            label="Label for your link"
+            label="Display as"
             placeholder="Portfolio"
             type="text"
           />
@@ -92,13 +92,13 @@ export const LinkFieldArray = () => {
       ))}
       <div className="grid grid-cols-[2fr_3fr_auto] items-center gap-2">
         <Button
-          variant="input"
-          className="mr-3 grid grid-cols-[auto_1fr]"
+          variant="link"
+          className="grid grid-cols-[auto_auto] justify-start gap-2"
           size="input"
         >
           <PlusCircle
             size={24}
-            className="stroke-card fill-accent cursor-pointer justify-self-start"
+            className="stroke-card fill-primary cursor-pointer justify-self-start"
             onClick={() => append({ label: '', url: '' })}
           />
           Add another
