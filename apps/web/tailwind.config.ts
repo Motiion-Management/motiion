@@ -262,15 +262,18 @@ const config: Config = {
         'no-touch': { raw: '(hover: hover)' }
       },
       gridTemplateColumns: {
+        'social-input': 'auto 1fr',
         drawer: 'minmax(0, 1fr)',
         'user-screen': 'minmax(0, 1fr)'
       },
       gridTemplateRows: {
+        'social-input': '1rem 1fr',
         drawer: 'min-content max-content minmax(0, 1fr) max-content',
         'user-screen': 'max-content minmax(0, 1fr) max-content',
         'user-screen-md': 'max-content max-content minmax(0, 1fr)'
       },
       gridTemplateAreas: {
+        'social-input': ['... input', 'icon input'],
         drawer: ['handle', 'header', 'content', 'footer'],
         'user-screen': ['title', 'content', 'nav'],
         'user-screen-md': ['nav', 'title', 'content']
