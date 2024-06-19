@@ -7,7 +7,7 @@ import { RepresentationCard } from './representation-card'
 import { AttributesCard } from './attributes-card'
 import { ReelCard } from './reel-card'
 import { SocialLinksCard } from './socials-card'
-import { PortfolioLinksCard } from './portfolio-links-card'
+import { OtherLinksCard } from './other-links-card'
 import { ResumeLinksTab } from './resume-links-tab'
 
 const AccordionTab: FC<{
@@ -58,7 +58,7 @@ export const TabSection: React.FC<TabSectionProps> = async ({ user }) => {
       <AccordionTab value="links">
         <ReelCard user={user} />
         <SocialLinksCard user={user} />
-        <PortfolioLinksCard user={user} />
+        <OtherLinksCard user={user} />
       </AccordionTab>
     </Tabs>
   )

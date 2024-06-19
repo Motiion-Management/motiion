@@ -55,7 +55,7 @@ export default async function ProfilePage() {
           {
             href: '/talent/profile/edit/links/other',
             text: 'Other',
-            preview: user.links?.portfolio?.length.toString()
+            preview: user.links?.other?.length.toString()
           }
         ]}
       />

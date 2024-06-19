@@ -47,9 +47,7 @@ export const links = {
       tiktok: z.string().optional()
     })
     .optional(),
-  portfolio: z
-    .array(z.object({ title: z.string(), link: z.string() }))
-    .optional()
+  other: z.array(z.object({ label: z.string(), url: z.string() })).optional()
 }
 
 export const zLinks = z.object(links)
