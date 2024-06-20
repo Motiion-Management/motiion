@@ -6,9 +6,9 @@ import {
   internalMutation,
   internalAction
 } from './_generated/server'
-import { authMutation, authQuery } from './util'
+import { authMutation, authQuery, notEmpty } from './util'
 
-import { getOneFrom } from 'convex-helpers/server/relationships'
+import { getAll, getOneFrom } from 'convex-helpers/server/relationships'
 import { crud } from 'convex-helpers/server'
 import { UserDoc, Users, clerkCreateUserFields } from './validators/users'
 import { internal } from './_generated/api'
@@ -179,5 +179,61 @@ export const updateDerivedPatterns = internalMutation({
     users.forEach(async (user) => {
       ctx.scheduler.runAfter(0, internal.users.afterUpdate, user)
     })
+  }
+})
+
+export const addFavoriteUser = authMutation({
+  args: {
+    userId: v.id('users')
+  },
+  handler: async (ctx, { userId }) => {
+    const existing = ctx.user.favoriteUsers || []
+    await ctx.db.patch(ctx.user._id, {
+      favoriteUsers: existing.concat(userId)
+    })
+  }
+})
+
+export const removeFavoriteUser = authMutation({
+  args: {
+    userId: v.id('users')
+  },
+  handler: async (ctx, { userId }) => {
+    const existing = ctx.user.favoriteUsers || []
+    await ctx.db.patch(ctx.user._id, {
+      favoriteUsers: existing.filter((id) => id !== userId)
+    })
+  }
+})
+
+export const getFavoriteUsersForCarousel = authQuery({
+  args: {},
+  handler: async (ctx) => {
+    const users = await getAll(ctx.db, ctx.user?.favoriteUsers || [])
+
+    if (users.length === 0) {
+      return []
+    }
+    return Promise.all(
+      users.filter(notEmpty).map(async (user) => {
+        const headshots = user.headshots?.filter(notEmpty) || []
+        return {
+          userId: user._id,
+          label: user.displayName || user.fullName || '',
+          headshotUrl: headshots[0]
+            ? (await ctx.storage.getUrl(headshots[0].storageId)) || ''
+            : ''
+        }
+      })
+    )
+  }
+})
+
+export const isFavoriteUser = authQuery({
+  args: {
+    userId: v.id('users')
+  },
+  handler: async (ctx, { userId }) => {
+    return ctx.user && (ctx.user.favoriteUsers || []).includes(userId)
   }
 })

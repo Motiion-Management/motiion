@@ -7,6 +7,8 @@ import {
 import Image from 'next/image'
 import Link from 'next/link'
 import { Skeleton } from '@/components/ui/skeleton'
+import { Id } from '@packages/backend/convex/_generated/dataModel'
+import { AspectRatio } from '@/components/ui/aspect-ratio'
 
 export function ProfileSkeleton({ count = 1 }: { count?: number }) {
   return [...Array(count)].map((_, i) => (
@@ -23,29 +25,31 @@ export function ProfileSkeleton({ count = 1 }: { count?: number }) {
 }
 export const FeaturedCarousel: FC<{
   title: string
-  profiles: { src: string; label: string; href: string }[]
+  profiles: { headshotUrl: string; label: string; userId: Id<'users'> }[]
 }> = ({ title, profiles }) => {
   return (
     <div className="grid gap-4">
       <h2 className="text-h5">{title}</h2>
       <Carousel opts={{ dragFree: true }} className="overflow-scroll">
         <CarouselContent className="flex gap-4">
-          {profiles.map((headshot, index) => (
+          {profiles.map((profile, index) => (
             <CarouselItem
-              key={headshot.src + index}
-              className="h-[148px] w-[100px] basis-1/4"
+              key={profile.headshotUrl + index}
+              className="basis-1/3"
             >
-              <Link href={headshot.href} className="grid">
-                <Image
-                  className="rounded-lg object-cover "
-                  src={headshot.src}
-                  layout="fill"
-                  alt={headshot.label}
-                />
-                <span>{headshot.label}</span>
+              <Link href={`/talent/${profile.userId}`} className="">
+                <AspectRatio ratio={123 / 180} className="">
+                  <Image
+                    className="rounded-lg object-cover "
+                    src={profile.headshotUrl}
+                    layout="fill"
+                    alt={profile.label}
+                  />
+                </AspectRatio>
+                <span className="text-h6">{profile.label}</span>
               </Link>
             </CarouselItem>
-          )) && <ProfileSkeleton count={8} />}
+          )) || <ProfileSkeleton count={8} />}
         </CarouselContent>
       </Carousel>
     </div>

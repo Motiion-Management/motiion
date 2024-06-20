@@ -1,5 +1,6 @@
 import { Separator } from '@/components/ui/separator'
 import { FeaturedCarousel } from './featured-carousel'
+import { FavoritesCarousel } from './favorites-carousel'
 
 export default function DiscoverPage() {
   return (
@@ -8,7 +9,7 @@ export default function DiscoverPage() {
       <Separator />
       <FeaturedCarousel title="Featured Talent" profiles={[]} />
       <Separator />
-      <FeaturedCarousel title="Saved Profiles" profiles={[]} />
+      <FavoritesCarousel />
     </div>
   )
 }
