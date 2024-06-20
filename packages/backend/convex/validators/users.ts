@@ -60,6 +60,7 @@ export const users = {
   searchPattern: z.string().optional(),
   pointsEarned: z.number(),
   onboardingStep: z.number(),
+  favoriteUsers: z.array(zid('users')).optional(),
 
   // user info
   email: z.string(),
