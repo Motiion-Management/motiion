@@ -89,8 +89,8 @@ export const TimelineEventCard: FC<TimelineEventCardProps> = ({ event }) => {
   const type = useQuery(api.eventTypes.read, { id: event.type })
 
   return (
-    <Link href={`/talent/events/${event._id}`}>
-      <Card className="timeline-end w-full">
+    <Link href={`/talent/events/${event._id}`} className="flex-1">
+      <Card className="w-full">
         <CardHeader>
           <CardTitle className="text-h6">{event.title}</CardTitle>
         </CardHeader>

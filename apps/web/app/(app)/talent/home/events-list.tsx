@@ -1,4 +1,5 @@
 'use client'
+import { Button } from '@/components/ui/button'
 import {
   Timeline,
   TimelineEventCard,
@@ -38,6 +39,12 @@ export const EventsList: FC = () => {
           ))}
         </TimelineEventSection>
       ))}
+
+      {status === 'CanLoadMore' && (
+        <Button loading={isLoading} onClick={() => loadMore(5)}>
+          Load More Events
+        </Button>
+      )}
     </Timeline>
   )
 }
