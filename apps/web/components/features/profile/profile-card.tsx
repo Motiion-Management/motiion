@@ -67,7 +67,7 @@ export function ProfileCard({ user }: { user: UserDoc }) {
               <div className="text-h3 pt-4">
                 {user.firstName} {user.lastName}
               </div>
-              <div className="text-h5">{user.location?.city}</div>
+              <div className="text-h5 uppercase">{user.location?.city}</div>
             </div>
 
             {/* min-content */}
