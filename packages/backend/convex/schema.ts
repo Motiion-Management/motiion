@@ -15,7 +15,9 @@ export default defineSchema({
   featuredMembers: FeaturedMembers.table,
   rewards: Rewards.table,
   eventTypes: EventTypes.table,
-  events: Events.table.index('attendanceCode', ['attendanceCode']),
+  events: Events.table
+    .index('attendanceCode', ['attendanceCode'])
+    .index('startDate', ['startDate']),
 
   // user
   users: Users.table.index('tokenId', ['tokenId']).searchIndex('search_user', {
