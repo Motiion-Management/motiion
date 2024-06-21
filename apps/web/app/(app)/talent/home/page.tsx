@@ -1,11 +1,11 @@
-import { me } from '@/lib/server/users'
+import { Skeleton } from '@/components/ui/skeleton'
+import { EventsList } from './events-list'
 
 export default async function HomePage() {
-  const user = await me()
   return (
-    <div>
-      <p>Logged in as {user.firstName}</p>
-      <h1>Home</h1>
+    <div className="grid grid-rows-[auto_1fr] gap-8 px-2">
+      <Skeleton className="h-[25dvh] w-full" />
+      <EventsList />
     </div>
   )
 }

@@ -2,7 +2,7 @@ import {
   ExperienceType,
   fetchUserPublicExperiencesByType
 } from '@/lib/server/experiences'
-import { Timeline, TimelineEvent } from '@/components/ui/timeline'
+import { Timeline, ResumeTimelineEvent } from '@/components/ui/timeline'
 import { Id } from '@packages/backend/convex/_generated/dataModel'
 import { VideoOrLink } from './video-or-link'
 import { ProfileHeaderBody } from './profile-header-body'
@@ -43,7 +43,7 @@ export default async function ResumeExperienceEditPage({
       <Separator />
       <Timeline className="flex-1 ">
         {experiences.map((experience) => (
-          <TimelineEvent
+          <ResumeTimelineEvent
             key={experience._id}
             title={experience.title}
             startYear={experience.startYear}
@@ -62,7 +62,7 @@ export default async function ResumeExperienceEditPage({
                 border
               />
             </div>
-          </TimelineEvent>
+          </ResumeTimelineEvent>
         ))}
       </Timeline>
     </div>
