@@ -1,7 +1,7 @@
 'use client'
 import { FC } from 'react'
 
-import { Timeline, TimelineEvent } from '@/components/ui/timeline'
+import { Timeline, ResumeTimelineEvent } from '@/components/ui/timeline'
 import { Separator } from '@/components/ui/separator'
 import { Preloaded, usePreloadedQuery } from 'convex/react'
 import { api } from '@packages/backend/convex/_generated/api'
@@ -16,7 +16,7 @@ export const EditableTimeline: FC<{
   return (
     <Timeline className="flex-1">
       {experiences.map((experience) => (
-        <TimelineEvent
+        <ResumeTimelineEvent
           key={experience._id}
           title={experience.title}
           startYear={experience.startYear}
@@ -42,7 +42,7 @@ export const EditableTimeline: FC<{
             <Separator />
             <EditTrainingForm experience={experience} />
           </div>
-        </TimelineEvent>
+        </ResumeTimelineEvent>
       ))}
     </Timeline>
   )

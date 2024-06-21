@@ -2,6 +2,7 @@ import { zLocation, zVisibility } from './base'
 import { zid, zodToConvexFields } from 'convex-helpers/server/zod'
 import { Table } from 'convex-helpers/server'
 import { z } from 'zod'
+import { Doc } from '../_generated/dataModel'
 
 export const events = {
   attendanceCode: z.number(),
@@ -12,7 +13,7 @@ export const events = {
   type: zid('eventTypes'),
   description: z.string().optional(),
   websiteUrl: z.string().optional(),
-  location: zLocation,
+  location: zLocation.optional(),
   startDate: z.string(),
   endDate: z.string(),
   active: z.boolean(),
@@ -33,3 +34,24 @@ export const events = {
 
 export const zEvents = z.object(events)
 export const Events = Table('events', zodToConvexFields(events))
+
+export const generateAttendanceCode = () =>
+  ((1 + Math.random() * 9) | 0) +
+  [...Array(5)].map(() => (Math.random() * 10) | 0).join(``)
+
+export const welcomeEvent = {
+  active: true,
+  attendanceCode: 123456,
+  description: '',
+  endDate: 'Fri Aug 16 2024',
+  organizers: undefined,
+  pointValue: 50,
+  sponsorAgencyId: '',
+  startDate: 'Mon Jun 08 2024',
+  timeline: undefined,
+  title: 'Welcome to Motiion!',
+  type: 'kd75ym0r3vhef385dwd5fjx1ms6vc7nk',
+  websiteUrl: 'https://motiion.com'
+}
+
+export type EventDoc = Doc<'events'>

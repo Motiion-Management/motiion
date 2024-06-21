@@ -53,3 +53,9 @@ export function calculateAge(dateOfBirth?: string | null) {
   const dob = toDate(dateOfBirth)
   return differenceInYears(endOfToday(), dob)
 }
+
+export function notEmpty<TValue>(
+  value: TValue | null | undefined
+): value is TValue {
+  return value !== null && value !== undefined
+}
