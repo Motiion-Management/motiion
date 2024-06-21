@@ -1,3 +1,4 @@
+'use client'
 import { FC } from 'react'
 import './timeline.css'
 import { AccordionCard } from '@/components/ui/accordion-card'
