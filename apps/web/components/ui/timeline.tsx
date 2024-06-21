@@ -74,7 +74,7 @@ export const TimelineEventSection: FC<TimelineEventSectionProps> = ({
       <div className="timeline-middle">
         <div className="timeline-mark" />
       </div>
-      <div className="timeline-end w-full">{children}</div>
+      <div className="timeline-end grid w-full gap-3 pb-1">{children}</div>
       <hr />
     </li>
   )
@@ -91,11 +91,9 @@ export const TimelineEventCard: FC<TimelineEventCardProps> = ({ event }) => {
 
   return (
     <Link href={`/talent/events/${event._id}`} className="flex-1">
-      <Card className="w-full">
-        <CardHeader>
-          <CardTitle className="text-h6">{event.title}</CardTitle>
-        </CardHeader>
-        <CardContent className="flex items-end justify-between">
+      <Card className="grid w-full gap-4 p-4">
+        <CardTitle className="text-h6">{event.title}</CardTitle>
+        <div className="flex items-end justify-between">
           <div className="grid flex-1 grid-cols-[auto_1fr] items-center gap-2">
             <Image
               src="/icons/Clock.svg"
@@ -128,7 +126,7 @@ export const TimelineEventCard: FC<TimelineEventCardProps> = ({ event }) => {
             )}
           </div>
           <span className="text-label-xs text-primary/70">{type?.name}</span>
-        </CardContent>
+        </div>
       </Card>
     </Link>
   )

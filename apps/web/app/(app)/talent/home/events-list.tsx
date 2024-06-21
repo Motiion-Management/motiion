@@ -31,7 +31,7 @@ export const EventsList: FC = () => {
 
   return (
     <Timeline>
-      <h2 className="text-h5">Upcoming Events</h2>
+      <h2 className="text-h5 mb-4">Upcoming Events</h2>
       {resultsByDate.map(([startDate, events], index) => (
         <TimelineEventSection key={index} startDate={new Date(startDate)}>
           {events?.map((event, eventIndex) => (
@@ -41,9 +41,16 @@ export const EventsList: FC = () => {
       ))}
 
       {status === 'CanLoadMore' && (
-        <Button loading={isLoading} onClick={() => loadMore(5)}>
-          Load More Events
-        </Button>
+        <div className="flex justify-end">
+          <Button
+            variant="outline"
+            loading={isLoading}
+            onClick={() => loadMore(5)}
+            className=""
+          >
+            Load More Events
+          </Button>
+        </div>
       )}
     </Timeline>
   )
