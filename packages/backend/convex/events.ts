@@ -16,7 +16,10 @@ export const paginate = query({
     const events = await filter(
       ctx.db.query('events'),
       async (event) => event.active
-    ).paginate(args.paginationOpts)
+    )
+      .withIndex('startDate')
+      .order('desc')
+      .paginate(args.paginationOpts)
 
     return events
   }
