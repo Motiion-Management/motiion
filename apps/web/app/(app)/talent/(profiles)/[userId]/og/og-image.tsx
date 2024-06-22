@@ -222,7 +222,7 @@ export const OGImage = async ({ userId }: { userId: Id<'users'> }) => {
           >
             <Stat label="age" value={calculateAge(user.dateOfBirth)} />
             <Stat label="Yrs Exp" value={user.attributes?.yearsOfExperience} />
-            <Stat label="Gender" value={user?.gender?.[0]} />
+            <Stat label="Gender" value={user.gender?.[0]} />
             <Stat
               label="Height"
               value={formatHeight(user.attributes?.height)}
