@@ -89,7 +89,7 @@ export const OGImage = async ({ userId }: { userId: Id<'users'> }) => {
           backgroundImage: 'linear-gradient(to bottom, #007064, #1C1D20)',
           display: 'flex',
           alignItems: 'center',
-          justifyContent: 'center',
+          justifyContent: 'space-between',
           padding: '2rem'
         }}
       >
@@ -98,10 +98,10 @@ export const OGImage = async ({ userId }: { userId: Id<'users'> }) => {
           style={{
             position: 'absolute',
             opacity: 0.1,
-            width: '60%',
-            height: '60%',
-            top: '60%',
-            left: '40%'
+            width: '624px',
+            height: '402px',
+            top: '337px',
+            left: '490px'
           }}
           width="102"
           height="66"
@@ -125,7 +125,7 @@ export const OGImage = async ({ userId }: { userId: Id<'users'> }) => {
             style={{
               display: 'flex',
               justifyContent: 'flex-start',
-              padding: '2rem 1rem',
+              padding: '2rem 1rem 2rem 3rem',
               width: '392.58px'
             }}
           >
