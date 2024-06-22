@@ -125,7 +125,7 @@ export const OGImage = async ({ userId }: { userId: Id<'users'> }) => {
             style={{
               display: 'flex',
               justifyContent: 'flex-start',
-              padding: '2rem 1rem 2rem 2rem',
+              padding: '2rem 1rem',
               width: '392.58px'
             }}
           >
