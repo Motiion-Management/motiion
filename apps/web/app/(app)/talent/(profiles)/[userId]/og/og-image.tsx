@@ -135,7 +135,11 @@ export const OGImage = async ({ userId }: { userId: Id<'users'> }) => {
               alt=""
               height="550px"
               width="365.58px"
-              style={{ borderRadius: '14px' }}
+              style={{
+                borderRadius: '14px',
+                objectFit: 'cover',
+                objectPosition: 'center'
+              }}
             />
           </div>
         )}
