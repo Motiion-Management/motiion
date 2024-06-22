@@ -34,7 +34,7 @@ export function UserStats({ user }: { user: UserDoc }) {
           label="Shoes"
           value={user.sizing?.male?.shoes || user.sizing?.female?.shoes}
         />
-        <Stat label="Jacket" value={user.sizing?.male?.coatLength} />
+        <Stat label="Jacket" value={user.sizing?.male?.coatLength?.[0]} />
       </div>
       <div className="text-primary-foreground flex items-center justify-between gap-5 px-5">
         Representation
