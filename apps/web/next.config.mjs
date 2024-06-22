@@ -13,7 +13,7 @@ export default withSerwist({
     return [
       {
         source: '/',
-        destination: 'https://turquoise-book-156994.framer.app/'
+        destination: 'https://motiion.framer.website/'
       }
     ]
   },
