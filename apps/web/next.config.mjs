@@ -9,6 +9,14 @@ const withSerwist = withSerwistInit({
 })
 
 export default withSerwist({
+  async rewrites() {
+    return [
+      {
+        source: '/',
+        destination: 'https://turquoise-book-156994.framer.app/'
+      }
+    ]
+  },
   images: {
     remotePatterns: [
       { protocol: 'https', hostname: '*.convex.cloud', port: '' }
