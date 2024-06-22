@@ -11,7 +11,7 @@ import EmailIcon from '@/public/profile-email-icon.svg'
 import { UserStats } from './user-stats'
 import { Button } from '@/components/ui/button'
 import { BigHeadshotCarousel } from './big-headshot-carousel'
-import { createShareLink, shareLink } from '@/lib/utils'
+import { createShareLink } from '@/lib/utils'
 
 export function ProfileCard({ user }: { user: UserDoc }) {
   const [isFlipped, setIsFlipped] = useState(false)
