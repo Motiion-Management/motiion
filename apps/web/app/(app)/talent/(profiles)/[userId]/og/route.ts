@@ -7,8 +7,7 @@ import { NextRequest } from 'next/server'
 // import { fetchQuery } from 'convex/nextjs'
 
 export const runtime = 'edge'
-export const alt = 'Motiion Profile Card'
-export const size = {
+const size = {
   width: 1200,
   height: 630
 }
