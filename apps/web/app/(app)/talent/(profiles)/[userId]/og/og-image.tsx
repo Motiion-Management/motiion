@@ -89,7 +89,7 @@ export const OGImage = async ({ userId }: { userId: Id<'users'> }) => {
           backgroundImage: 'linear-gradient(to bottom, #007064, #1C1D20)',
           display: 'flex',
           alignItems: 'center',
-          justifyContent: 'space-between',
+          justifyContent: 'center',
           padding: '2rem'
         }}
       >
@@ -125,7 +125,7 @@ export const OGImage = async ({ userId }: { userId: Id<'users'> }) => {
             style={{
               display: 'flex',
               justifyContent: 'flex-start',
-              padding: '2rem 1rem',
+              padding: '2rem 1rem 2rem 2rem',
               width: '392.58px'
             }}
           >

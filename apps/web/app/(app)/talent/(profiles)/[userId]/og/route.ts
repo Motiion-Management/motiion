@@ -19,29 +19,16 @@ export async function GET(request: NextRequest) {
     .split('/')
     .pop() as Id<'users'>
 
-  // const user = await fetchPublicUser(userId)
-  //
-  // const agency =
-  //   user?.representation?.agencyId &&
-  //   (await fetchQuery(api.agencies.getAgency, {
-  //     id: user.representation.agencyId
-  //   }))
-  //
-  // const headshots =
-  //   user?.headshots?.[0] &&
-  //   (await fetchQuery(api.users.headshots.getHeadshots, { userId }))
-  // const headshot = headshots?.[0]
-
   const montserratMedium = fetch(
     new URL(
-      '../../../../../public/fonts/Montserrat-Medium.ttf',
+      '../../../../../../public/fonts/Montserrat-Medium.ttf',
       import.meta.url
     )
   ).then((res) => res.arrayBuffer())
 
   const montserratSemibold = fetch(
     new URL(
-      '../../../../../public/fonts/Montserrat-SemiBold.ttf',
+      '../../../../../../public/fonts/Montserrat-SemiBold.ttf',
       import.meta.url
     )
   ).then((res) => res.arrayBuffer())
