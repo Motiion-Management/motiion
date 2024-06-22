@@ -9,6 +9,7 @@ import ConvexClientProvider from './ConvexClientProvider'
 import { ThemeProvider } from './theme-provider'
 import { splashTags } from './splash-page-tags'
 import { RefreshPWA } from './refresh-pwa'
+import { domain } from '@/constants/general'
 
 const montserrat = Montserrat({
   subsets: ['latin'],
@@ -18,9 +19,11 @@ const montserrat = Montserrat({
 const APP_NAME = 'Motiion'
 const APP_DEFAULT_TITLE = 'Motiion'
 const APP_TITLE_TEMPLATE = '%s - Motiion'
-const APP_DESCRIPTION = 'The dance ecosystem in motiion.'
+const APP_DESCRIPTION =
+  'The dance ecosystem in motiion. Connect with dancers, choreographers, and agencies on the move.'
 
 export const metadata: Metadata = {
+  metadataBase: new URL(domain),
   applicationName: APP_NAME,
   title: {
     default: APP_DEFAULT_TITLE,
