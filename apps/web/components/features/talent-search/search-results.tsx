@@ -65,7 +65,7 @@ export const SearchResults: FC<{ searchQuery: string }> = ({ searchQuery }) => {
                     <Button
                       onClick={createShareLink(
                         `Motiion - ${user.firstName} ${user.lastName}`,
-                        'Check out my profile on Motiion, the network for dancers.',
+                        'Check out this profile on Motiion, the network for dancers.',
                         `/talent/${user._id}`
                       )}
                       variant="link"
