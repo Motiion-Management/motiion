@@ -1,4 +1,5 @@
 import { type ClassValue, clsx } from 'clsx'
+import { toast } from 'sonner'
 import { extendTailwindMerge } from 'tailwind-merge'
 import { toDate, differenceInYears, endOfToday } from 'date-fns'
 
@@ -58,4 +59,34 @@ export function notEmpty<TValue>(
   value: TValue | null | undefined
 ): value is TValue {
   return value !== null && value !== undefined
+}
+
+export async function shareLink(
+  shareTitle: string,
+  shareText: string,
+  link: string
+) {
+  const shareData = {
+    title: shareTitle,
+    text: shareText,
+    url: link
+  }
+  try {
+    if (navigator?.share && navigator.canShare(shareData)) {
+      await navigator.share(shareData)
+    } else {
+      throw new Error('Web Share API not supported')
+    }
+  } catch (e: any) {
+    toast.error(e.message || 'Failed to share link')
+    console.error(e)
+  }
+}
+
+export function createShareLink(
+  shareTitle: string,
+  shareText: string,
+  link: string
+) {
+  return async () => await shareLink(shareTitle, shareText, link)
 }
