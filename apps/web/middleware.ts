@@ -6,7 +6,8 @@ import { api } from '@packages/backend/convex/_generated/api'
 import { ONBOARDING_STEPS } from '@packages/backend/convex/validators/users'
 const isProtectedRoute = createRouteMatcher([
   '/admin(.*)',
-  '/talent(.*)',
+  '/talent/profile(.*)',
+  '/talent/settings(.*)',
   '/onboarding(.*)',
   '/[...segments](.*)'
 ])

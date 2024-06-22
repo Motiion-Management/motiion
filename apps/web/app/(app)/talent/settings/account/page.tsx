@@ -1,8 +1,8 @@
 import { AccountDetailsFormProvider } from './form'
-import { me } from '@/lib/server/users'
+import { meX } from '@/lib/server/users'
 
 export default async function Account() {
-  const user = await me()
+  const user = await meX()
 
   return <AccountDetailsFormProvider user={user}></AccountDetailsFormProvider>
 }

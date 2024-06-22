@@ -10,26 +10,8 @@ import ForwardingIcon from '@/public/profile-forwarding-icon.svg'
 import EmailIcon from '@/public/profile-email-icon.svg'
 import { UserStats } from './user-stats'
 import { Button } from '@/components/ui/button'
-import { toast } from 'sonner'
 import { BigHeadshotCarousel } from './big-headshot-carousel'
-
-async function shareLink(shareTitle: string, shareText: string, link: string) {
-  const shareData = {
-    title: shareTitle,
-    text: shareText,
-    url: link
-  }
-  try {
-    if (navigator?.share && navigator.canShare(shareData)) {
-      await navigator.share(shareData)
-    } else {
-      throw new Error('Web Share API not supported')
-    }
-  } catch (e: any) {
-    toast.error(e.message || 'Failed to share link')
-    console.error(e)
-  }
-}
+import { createShareLink } from '@/lib/utils'
 
 export function ProfileCard({ user }: { user: UserDoc }) {
   const [isFlipped, setIsFlipped] = useState(false)
@@ -67,7 +49,7 @@ export function ProfileCard({ user }: { user: UserDoc }) {
               <div className="text-h3 pt-4">
                 {user.firstName} {user.lastName}
               </div>
-              <div className="text-h5">{user.location?.city}</div>
+              <div className="text-h5 uppercase">{user.location?.city}</div>
             </div>
 
             {/* min-content */}
@@ -84,13 +66,11 @@ export function ProfileCard({ user }: { user: UserDoc }) {
               <Button
                 variant="inverted"
                 className="flex w-full gap-1"
-                onClick={async () =>
-                  await shareLink(
-                    `Motiion - ${user.firstName} ${user.lastName}`,
-                    'Check out my profile on Motiion, the network for dancers.',
-                    '/talent/profile/preview' //TODO: replace with user profile link when page is done
-                  )
-                }
+                onClick={createShareLink(
+                  `Motiion - ${user.firstName} ${user.lastName}`,
+                  'Check out my profile on Motiion, the network for dancers.',
+                  `/talent/${user._id}`
+                )}
               >
                 <Image alt="Email Icon" src={ForwardingIcon} />
                 Share Profile

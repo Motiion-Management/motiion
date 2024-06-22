@@ -3,7 +3,7 @@ import {
   preloadMyExperiencesByType
 } from '@/lib/server/experiences'
 import { NewExperienceForm } from './new-experience-form'
-import { me } from '@/lib/server/users'
+import { meX } from '@/lib/server/users'
 import { EditableTimeline } from './editable-timeline'
 
 export default async function ResumeExperienceEditPage({
@@ -11,7 +11,7 @@ export default async function ResumeExperienceEditPage({
 }: {
   params: { experience: ExperienceType }
 }) {
-  const user = await me()
+  const user = await meX()
   const { preloadedExperiences } = await preloadMyExperiencesByType({
     type: experienceType
   })

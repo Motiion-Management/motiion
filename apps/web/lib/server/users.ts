@@ -10,6 +10,13 @@ export async function me() {
   const token = await getAuthToken()
   const user = await fetchQuery(api.users.getMyUser, {}, { token })
 
+  return user
+}
+
+export async function meX() {
+  const token = await getAuthToken()
+  const user = await fetchQuery(api.users.getMyUser, {}, { token })
+
   if (!user) {
     redirect('/sign-in')
   }

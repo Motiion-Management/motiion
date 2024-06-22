@@ -15,6 +15,8 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger
 } from '@/components/ui/dropdown-menu'
+import { Button } from '@/components/ui/button'
+import { createShareLink } from '@/lib/utils'
 
 export const SearchResults: FC<{ searchQuery: string }> = ({ searchQuery }) => {
   const searchResults =
@@ -60,19 +62,20 @@ export const SearchResults: FC<{ searchQuery: string }> = ({ searchQuery }) => {
               <DropdownMenuContent className="w-48">
                 <DropdownMenuGroup>
                   <DropdownMenuItem>
-                    <Link
-                      href={`/talent/${user._id}/edit`}
-                      className="text-link-sm"
+                    <Button
+                      onClick={createShareLink(
+                        `Motiion - ${user.firstName} ${user.lastName}`,
+                        'Check out this profile on Motiion, the network for dancers.',
+                        `/talent/${user._id}`
+                      )}
+                      variant="link"
                     >
                       Share Profile
-                    </Link>
+                    </Button>
                   </DropdownMenuItem>
                   <DropdownMenuItem>
-                    <Link
-                      href={`/talent/${user._id}/delete`}
-                      className="text-link-sm"
-                    >
-                      Message {user.firstName}
+                    <Link href={`mailto:${user.email}`}>
+                      <Button variant="link">Contact {user.firstName}</Button>
                     </Link>
                   </DropdownMenuItem>
                 </DropdownMenuGroup>

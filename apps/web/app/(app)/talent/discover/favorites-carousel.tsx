@@ -5,7 +5,10 @@ import { useQuery } from 'convex/react'
 import { api } from '@packages/backend/convex/_generated/api'
 
 export const FavoritesCarousel: FC = () => {
+  const user = useQuery(api.users.getMyUser)
   const profiles = useQuery(api.users.getFavoriteUsersForCarousel) || []
 
-  return <FeaturedCarousel title="Favorite Profiles" profiles={profiles} />
+  return (
+    user && <FeaturedCarousel title="Favorite Profiles" profiles={profiles} />
+  )
 }
