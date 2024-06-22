@@ -69,8 +69,12 @@ export async function shareLink(
   const shareData = {
     title: shareTitle,
     text: shareText,
-    url: link
+    url: new URL(
+      link.includes('://') ? link : `${window.location.origin}${link}`
+    ).toString()
   }
+
+  console.log('shareData', shareData)
   try {
     if (navigator?.share && navigator.canShare(shareData)) {
       await navigator.share(shareData)
