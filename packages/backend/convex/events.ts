@@ -22,6 +22,8 @@ export const paginate = query({
       .order('desc')
       .paginate(args.paginationOpts)
 
+    Object.entries(Object.groupBy(events, ({ startDate }) => startDate))
+
     return events
   }
 })
