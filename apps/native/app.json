@@ -3,6 +3,7 @@
     "name": "Motiion",
     "slug": "motiion",
     "version": "1.0.0",
+    "scheme": "motiion",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",
@@ -13,6 +14,7 @@
     },
     "assetBundlePatterns": ["**/*"],
     "ios": {
+      "bundleIdentifier": "io.motiion",
       "supportsTablet": true
     },
     "android": {
@@ -24,6 +26,6 @@
     "web": {
       "favicon": "./assets/favicon.png"
     },
-    "plugins": ["expo-font"]
+    "plugins": ["expo-font", "expo-router"]
   }
 }
