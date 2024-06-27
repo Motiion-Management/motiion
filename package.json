@@ -1,4 +1,5 @@
 {
+  "name": "motiion",
   "private": true,
   "scripts": {
     "add:web": "pnpm add --filter web-app",
@@ -26,13 +27,25 @@
   "engines": {
     "node": ">=18"
   },
+  "packageManager": "pnpm@9.0.6",
   "workspaces": [
     "apps/*",
     "packages/*"
   ],
+  "nohoist": [
+    "**/expo-router",
+    "**/expo-router/**"
+  ],
   "pnpm": {
     "patchedDependencies": {
       "react-mobile-picker@1.0.0": "patches/react-mobile-picker@1.0.0.patch"
+    },
+    "peerDependencyRules": {
+      "ignoreMissing": [
+        "@babel/*",
+        "expo-modules-*",
+        "typescript"
+      ]
     }
   }
 }

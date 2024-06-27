@@ -17,13 +17,19 @@ export const EventsList: FC = () => {
     { initialNumItems: 5 }
   )
 
-  const [resultsByDate, setResultsByDate] = useState<
-    [string, EventDoc[] | undefined][]
-  >([])
+  type ResultGroup = [string, EventDoc[] | undefined]
+  const [resultsByDate, setResultsByDate] = useState<ResultGroup[]>([])
 
   useEffect(() => {
     const groupedResults = Object.entries(
-      Object.groupBy(results, ({ startDate }) => startDate)
+      results.reduce((acc: { [key: string]: EventDoc[] }, event) => {
+        const key = event.startDate // extract the startDate as key
+        if (!acc[key]) {
+          acc[key] = [] // initialize an empty array if key doesn't exist
+        }
+        acc[key].push(event) // push the event into the corresponding array
+        return acc // return the accumulator for the next iteration
+      }, {})
     )
 
     setResultsByDate(groupedResults)

@@ -1,6 +1,7 @@
 {
   "name": "Motiion",
   "short_name": "Motiion",
+  "description": "The dance ecosystem is in motiion. Join the movement.",
   "version": "1.0.0",
   "manifest_version": 2,
   "icons": [
