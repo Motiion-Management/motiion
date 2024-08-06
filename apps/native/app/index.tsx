@@ -1,6 +1,6 @@
-import { SignedIn, useAuth } from '@clerk/clerk-expo'
+import WelcomeConsentScreen from '@/components/screens/welcome-consent'
+import { SignedIn, SignedOut, useAuth } from '@clerk/clerk-expo'
 import { Redirect } from 'expo-router'
-import { Text } from 'react-native'
 
 export default function Splash() {
   const { isSignedIn } = useAuth()
@@ -9,8 +9,13 @@ export default function Splash() {
     return <Redirect href={'/sign-in'} />
   }
   return (
-    <SignedIn>
-      <Redirect href={'/talent/home'} />
-    </SignedIn>
+    <>
+      <SignedIn>
+        <Redirect href={'/talent/home'} />
+      </SignedIn>
+      <SignedOut>
+        <WelcomeConsentScreen />
+      </SignedOut>
+    </>
   )
 }
