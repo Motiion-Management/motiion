@@ -1,10 +1,7 @@
 {
-    "compilerOptions": {
-        "target": "ESNext",
-        // "module": "NodeNext",
-        // "moduleResolution": "NodeNext",
-        "jsx": "preserve",
-        "moduleResolution": "Bundler",
-    }
-    // "extends": "expo/tsconfig.base"
+  "compilerOptions": {
+    "jsx": "preserve",
+    "moduleResolution": "Bundler",
+  },
+  "extends": "expo/tsconfig.base"
 }
