@@ -30,13 +30,17 @@ const tokenCache = {
   }
 }
 
-const convex = new ConvexReactClient(process.env.EXPO_PUBLIC_CONVEX_URL)
+const convex = new ConvexReactClient(process.env.EXPO_PUBLIC_CONVEX_URL!)
 
-export default function ConvexClientProvider({ children }) {
+export default function ConvexClientProvider({
+  children
+}: {
+  children: React.ReactNode
+}) {
   return (
     <ClerkProvider
       tokenCache={tokenCache}
-      publishableKey={process.env.EXPO_PUBLIC_CLERK_PUBLISHABLE_KEY}
+      publishableKey={process.env.EXPO_PUBLIC_CLERK_PUBLISHABLE_KEY!}
     >
       <ClerkLoaded>
         <ConvexProviderWithClerk client={convex} useAuth={useAuth}>
