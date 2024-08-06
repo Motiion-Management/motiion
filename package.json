@@ -6,7 +6,7 @@
     "add:web": "pnpm add --filter web-app",
     "add:native": "pnpm add --filter native-app",
     "add:backend": "pnpm add --filter @packages/backend",
-    "dev": "turbo run dev",
+    "dev": "turbo run dev --ui tui",
     "web": "turbo run dev --filter web-app",
     "native": "turbo run dev --filter native-app",
     "backend": "turbo run dev --filter @packages/backend",
