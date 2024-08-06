@@ -3,5 +3,5 @@
     "jsx": "preserve",
     "moduleResolution": "Bundler",
   },
-  // "extends": "expo/tsconfig.base"
+  "extends": "expo/tsconfig.base"
 }
