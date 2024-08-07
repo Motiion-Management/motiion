@@ -8,11 +8,8 @@ export default function AuthLayout() {
   return (
     <Stack screenOptions={SCREEN_OPTIONS}>
       <Stack.Screen name="index" />
-      <Stack.Screen name="(login)" options={LOGIN_MODAL_OPTIONS} />
-      <Stack.Screen
-        name="(create-account)"
-        options={CREATE_ACCOUNT_MODAL_OPTIONS}
-      />
+      <Stack.Screen name="sign-in" options={LOGIN_MODAL_OPTIONS} />
+      <Stack.Screen name="sign-up" options={CREATE_ACCOUNT_MODAL_OPTIONS} />
     </Stack>
   )
 }
@@ -35,7 +32,7 @@ const CREATE_ACCOUNT_MODAL_OPTIONS = {
   headerShadowVisible: false,
   headerLeft() {
     return (
-      <Link asChild href="/auth">
+      <Link asChild href="/">
         <Button variant="plain" className="ios:px-0">
           <Text className="text-primary">Cancel</Text>
         </Button>
