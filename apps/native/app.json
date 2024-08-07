@@ -1,6 +1,7 @@
 {
   "expo": {
     "name": "Motiion",
+    "description": "The place for dance talent and choreographers.",
     "slug": "motiion",
     "version": "1.0.0",
     "scheme": "motiion",
@@ -8,31 +9,26 @@
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",
     "splash": {
-      "image": "./assets/splash.png",
+      "image": "./assets/icon.png",
       "resizeMode": "contain",
-      "backgroundColor": "#0D87E1"
+      "backgroundColor": "#1c1d20"
     },
-    "assetBundlePatterns": [
-      "**/*"
-    ],
+    "assetBundlePatterns": ["**/*"],
     "ios": {
-      "bundleIdentifier": "io.motiion",
+      "bundleIdentifier": "io.motiion.motiion",
       "supportsTablet": true
     },
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
-        "backgroundColor": "#ffffff"
+        "backgroundColor": "#1c1d20"
       },
-      "package": "io.motiion"
+      "package": "io.motiion.motiion"
     },
     "web": {
-      "favicon": "./assets/favicon.png"
+      "favicon": "./assets/favicon.ico"
     },
-    "plugins": [
-      "expo-font",
-      "expo-router"
-    ],
+    "plugins": ["expo-font", "expo-router"],
     "extra": {
       "router": {
         "origin": false
