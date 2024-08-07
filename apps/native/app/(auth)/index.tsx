@@ -9,13 +9,11 @@ import { Text } from '@/components/nativewindui/Text'
 import { AlertAnchor } from '@/components/nativewindui/Alert'
 import { AlertRef } from '@/components/nativewindui/Alert/types'
 import { Button } from '@/components/nativewindui/Button'
+import { GoogleButton } from '@/components/auth/GoogleButton'
+import { AppleButton } from '@/components/auth/AppleButton'
 
 const LOGO_SOURCE = {
   uri: 'https://nativewindui.com/_next/image?url=/_next/static/media/logo.28276aeb.png&w=2048&q=75'
-}
-
-const GOOGLE_SOURCE = {
-  uri: 'https://www.pngall.com/wp-content/uploads/13/Google-Logo.png'
 }
 
 export default function AuthIndexScreen() {
@@ -51,44 +49,9 @@ export default function AuthIndexScreen() {
                 <Text>Sign up free</Text>
               </Button>
             </Link>
-            <Button
-              variant="secondary"
-              className="ios:border-foreground/60"
-              size={Platform.select({ ios: 'lg', default: 'md' })}
-              onPress={() => {
-                alertRef.current?.alert({
-                  title: 'Suggestion',
-                  message: 'Use @react-native-google-signin/google-signin',
-                  buttons: [{ text: 'OK', style: 'cancel' }]
-                })
-              }}
-            >
-              <Image
-                source={GOOGLE_SOURCE}
-                className="absolute left-4 h-4 w-4"
-                resizeMode="contain"
-              />
-              <Text className="ios:text-foreground">Continue with Google</Text>
-            </Button>
-            {Platform.OS === 'ios' && (
-              <Button
-                variant="secondary"
-                className="ios:border-foreground/60"
-                size={Platform.select({ ios: 'lg', default: 'md' })}
-                onPress={() => {
-                  alertRef.current?.alert({
-                    title: 'Suggestion',
-                    message: 'Use expo-apple-authentication',
-                    buttons: [{ text: 'OK', style: 'cancel' }]
-                  })
-                }}
-              >
-                <Text className="ios:text-foreground absolute left-4 text-[22px]">
-                  
-                </Text>
-                <Text className="ios:text-foreground">Continue with Apple</Text>
-              </Button>
-            )}
+
+            <GoogleButton />
+            <AppleButton />
             <Link href="/(auth)/sign-in" asChild>
               <Button
                 variant="plain"

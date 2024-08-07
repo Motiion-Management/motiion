@@ -1,5 +1,5 @@
 import { Stack } from 'expo-router'
-import { SignedIn, useAuth } from '@clerk/clerk-expo'
+import { useAuth } from '@clerk/clerk-expo'
 import { Redirect } from 'expo-router'
 
 export default function RootLayout() {
