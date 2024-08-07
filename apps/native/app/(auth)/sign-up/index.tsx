@@ -96,7 +96,7 @@ export default function InfoScreen() {
                     returnKeyType="next"
                     blurOnSubmit={false}
                     onSubmitEditing={() => {
-                      router.push('/auth/(create-account)/credentials')
+                      router.push('/(auth)/sign-up/credentials')
                     }}
                   />
                 </FormItem>
@@ -119,7 +119,7 @@ export default function InfoScreen() {
             <Button
               size="lg"
               onPress={() => {
-                router.push('/auth/(create-account)/credentials')
+                router.push('/(auth)/sign-up/credentials')
               }}
             >
               <Text>Continue</Text>
@@ -131,7 +131,7 @@ export default function InfoScreen() {
               variant="plain"
               className="px-2"
               onPress={() => {
-                router.replace('/auth/(login)')
+                router.replace('/(auth)/sign-in')
               }}
             >
               <Text className="text-primary text-sm">
@@ -145,7 +145,7 @@ export default function InfoScreen() {
                   return
                 }
                 KeyboardController.dismiss()
-                router.push('/auth/(create-account)/credentials')
+                router.push('/(auth)/sign-up/credentials')
               }}
             >
               <Text className="text-sm">Next</Text>
@@ -157,7 +157,7 @@ export default function InfoScreen() {
         <Button
           variant="plain"
           onPress={() => {
-            router.replace('/auth/(login)')
+            router.replace('/(auth)/sign-in')
           }}
         >
           <Text className="text-primary text-sm">Already have an account?</Text>
