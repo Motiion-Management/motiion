@@ -33,7 +33,7 @@ export default function LoginScreen() {
           headerShadowVisible: false,
           headerLeft() {
             return (
-              <Link asChild href="/auth">
+              <Link asChild href="/">
                 <Button variant="plain" className="ios:px-0">
                   <Text className="text-primary">Cancel</Text>
                 </Button>
@@ -110,7 +110,7 @@ export default function LoginScreen() {
                 </FormItem>
               </FormSection>
               <View className="flex-row">
-                <Link asChild href="/auth/(login)/forgot-password">
+                <Link asChild href="/(auth)/sign-in/forgot-password">
                   <Button size="sm" variant="plain" className="px-0.5">
                     <Text className="text-primary text-sm">
                       Forgot password?
@@ -148,7 +148,7 @@ export default function LoginScreen() {
               variant="plain"
               className="px-2"
               onPress={() => {
-                router.replace('/auth/(create-account)')
+                router.replace('/(auth)/sign-up')
               }}
             >
               <Text className="text-primary px-0.5 text-sm">
@@ -176,7 +176,7 @@ export default function LoginScreen() {
         <Button
           variant="plain"
           onPress={() => {
-            router.replace('/auth/(create-account)')
+            router.replace('/(auth)/sign-up')
           }}
         >
           <Text className="text-primary text-sm">Create Account</Text>

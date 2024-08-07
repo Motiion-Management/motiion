@@ -1,6 +1,5 @@
 import '../global.css'
 import 'expo-dev-client'
-// import 'react-native-reanimated'
 import { KeyboardProvider } from 'react-native-keyboard-controller'
 import { PortalHost } from '@rn-primitives/portal'
 
@@ -32,20 +31,18 @@ export default function RootLayout() {
         style={isDarkColorScheme ? 'light' : 'dark'}
       />
 
-      <ConvexClientProvider>
-        <KeyboardProvider statusBarTranslucent navigationBarTranslucent>
-          <NavThemeProvider value={NAV_THEME[colorScheme]}>
+      <KeyboardProvider statusBarTranslucent navigationBarTranslucent>
+        <NavThemeProvider value={NAV_THEME[colorScheme]}>
+          <ConvexClientProvider>
             <Stack screenOptions={{ header: LightHeader }}>
               {/* <Stack screenOptions={{ headerShown: false }}> */}
               <Stack.Screen name="(app)" />
-              {/* <Stack.Screen name="sign-in" /> */}
-              {/* <Stack.Screen name="sign-up" /> */}
-              <Stack.Screen name="index" />
+              <Stack.Screen name="(auth)" />
             </Stack>
             <PortalHost />
-          </NavThemeProvider>
-        </KeyboardProvider>
-      </ConvexClientProvider>
+          </ConvexClientProvider>
+        </NavThemeProvider>
+      </KeyboardProvider>
     </>
   )
 }
