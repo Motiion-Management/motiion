@@ -16,7 +16,16 @@
     "assetBundlePatterns": ["**/*"],
     "ios": {
       "bundleIdentifier": "io.motiion.motiion",
-      "supportsTablet": true
+      "supportsTablet": true,
+      "entitlements": {
+        "com.apple.developer.associated-domains": ["applinks:motiion.io"],
+        "com.apple.developer.authentication-services.autofill-credential-provider": true,
+        "com.apple.developer.usernotifications.communication": true,
+        "com.apple.developer.user-fonts": true,
+        "aps-environment": "production",
+        "com.apple.developer.applesignin": ["Default"],
+        "com.apple.developer.usernotifications.time-sensitive": true
+      }
     },
     "android": {
       "adaptiveIcon": {
