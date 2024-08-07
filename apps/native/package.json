@@ -4,7 +4,7 @@
     "main": "expo-router/entry",
     "private": true,
     "scripts": {
-        "dev": "expo start",
+        "dev": "expo start --tunnel",
         "start": "expo start",
         "android": "expo run:android",
         "ios": "expo run:ios",
