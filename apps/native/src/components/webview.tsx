@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useRef } from 'react'
 import { WebView as RNWebView, WebViewNavigation } from 'react-native-webview'
 import { useAuth } from '@clerk/clerk-expo'
 import { router } from 'expo-router'
@@ -14,7 +14,7 @@ export default function WebView({ path }) {
 
   const uri = new URL(path || '404', baseURL)
 
-  // const [currentURI, setURI] = useState(uri.toString())
+  const [currentURI, setURI] = useState(uri.toString())
 
   const { getToken, signOut } = useAuth()
   getToken().then((token) => setToken(token))
@@ -22,38 +22,58 @@ export default function WebView({ path }) {
   console.log('token:', token)
   console.log('uri:', uri.toString())
 
+  function signOutAndNavigate() {
+    signOut()
+    router.navigate('/(auth)')
+  }
+
+  const webviewRef = useRef<RNWebView>(null)
+
   function handleNavigationStateChange(navState: WebViewNavigation) {
     const { url } = navState
     if (!url) return
 
     console.log('URL:', url)
     if (url.includes(baseURL)) {
+      // webviewRef.current?.stopLoading()
       console.log('path: ', url.replace(baseURL, ''))
       router.navigate(url.replace(baseURL, ''))
     } else if (url.startsWith('/')) {
+      // webviewRef.current?.stopLoading()
       if (url === '/sign-out') {
-        signOut()
+        signOutAndNavigate()
+      } else {
+        router.navigate(url)
       }
-      router.navigate(url)
     } else {
       WebBrowser.openBrowserAsync(url)
     }
   }
 
   return (
-    <View>
-      <Button onPress={() => signOut()}>
+    <>
+      <Button className="h-10" onPress={() => signOutAndNavigate()}>
         <Text>Sign Out</Text>
       </Button>
-      <RNWebView
-        source={{
-          uri: uri.toString(),
-          headers: {
-            Authorization: `Bearer ${token}`
-          }
-        }}
-        onNavigationStateChange={handleNavigationStateChange}
-      />
-    </View>
+      {token && (
+        <RNWebView
+          ref={webviewRef}
+          source={{
+            uri: currentURI,
+            headers: {
+              Authorization: `Bearer ${token}`
+            }
+          }}
+          onShouldStartLoadWithRequest={(request) => {
+            // If we're loading the current URI, allow it to load
+            if (request.url === currentURI) return true
+            // We're loading a new URL -- change state first
+            setURI(request.url)
+            return false
+          }}
+          onNavigationStateChange={handleNavigationStateChange}
+        />
+      )}
+    </>
   )
 }
