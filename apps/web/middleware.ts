@@ -1,4 +1,8 @@
-import { clerkMiddleware, createRouteMatcher } from '@clerk/nextjs/server'
+import {
+  clerkClient,
+  clerkMiddleware,
+  createRouteMatcher
+} from '@clerk/nextjs/server'
 import { NextResponse } from 'next/server'
 import { getMiddlewareAuthToken } from './lib/server/utils'
 import { fetchQuery } from 'convex/nextjs'
@@ -13,7 +17,11 @@ const isProtectedRoute = createRouteMatcher([
 ])
 
 export default clerkMiddleware(async (auth, req) => {
-  console.log('middleware', req.nextUrl.pathname)
+  // const result = await clerkClient.authenticateRequest(req)
+  // const token = req.headers.get('authorization') || ''
+  // const sessionId = req.nextUrl.searchParams.get('sessionId') || ''
+  // await clerkClient.sessions.verifySession(sessionId, token)
+  // console.log(result)
   if (isProtectedRoute(req)) {
     auth().protect()
     const token = await getMiddlewareAuthToken(auth)
@@ -31,7 +39,9 @@ export default clerkMiddleware(async (auth, req) => {
   }
   const requestHeaders = new Headers(req.headers)
   requestHeaders.set('x-pathname', req.nextUrl.pathname)
+  // requestHeaders.set('authorization', req.headers.get('authorization') || '')
 
+  // console.log('headers', requestHeaders)
   return NextResponse.next({
     headers: requestHeaders
   })
@@ -40,5 +50,6 @@ export default clerkMiddleware(async (auth, req) => {
 export const config = {
   // The following matcher runs middleware on all routes
   // except static assets.
+  //
   matcher: ['/((?!.*\\..*|_next).*)', '/', '/(api|trpc)(.*)']
 }

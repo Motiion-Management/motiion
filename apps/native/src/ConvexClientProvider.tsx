@@ -4,6 +4,7 @@ import { ConvexReactClient } from 'convex/react'
 import { ConvexProviderWithClerk } from 'convex/react-clerk'
 import { ClerkProvider, useAuth, ClerkLoaded } from '@clerk/clerk-expo'
 import * as SecureStore from 'expo-secure-store'
+import ClerkSessionProvider from './SessionProvider'
 
 const tokenCache = {
   async getToken(key: string) {
@@ -23,6 +24,7 @@ const tokenCache = {
   },
   async saveToken(key: string, value: string) {
     try {
+      console.log(key, ' SAVED 🔐 AS ', value, '\n')
       return SecureStore.setItemAsync(key, value)
     } catch (err) {
       return
@@ -42,11 +44,13 @@ export default function ConvexClientProvider({
       tokenCache={tokenCache}
       publishableKey={process.env.EXPO_PUBLIC_CLERK_PUBLISHABLE_KEY!}
     >
-      <ClerkLoaded>
-        <ConvexProviderWithClerk client={convex} useAuth={useAuth}>
-          {children}
-        </ConvexProviderWithClerk>
-      </ClerkLoaded>
+      <ClerkSessionProvider>
+        <ClerkLoaded>
+          <ConvexProviderWithClerk client={convex} useAuth={useAuth}>
+            {children}
+          </ConvexProviderWithClerk>
+        </ClerkLoaded>
+      </ClerkSessionProvider>
     </ClerkProvider>
   )
 }
