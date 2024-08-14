@@ -11,7 +11,7 @@ export default function RootLayout() {
   return (
     <Stack screenOptions={{ headerShown: false }}>
       <Stack.Screen name="onboarding" />
-      <Stack.Screen name="talent" />
+      {/* <Stack.Screen name="talent" /> */}
     </Stack>
   )
 }

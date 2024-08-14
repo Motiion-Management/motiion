@@ -3,7 +3,6 @@ import WebView from '@/components/webview'
 
 export default function SettingsPages() {
   const { path } = useLocalSearchParams()
-  console.log('SETTINGS PATH ==', path)
 
   const slug =
     typeof path === 'undefined'
@@ -11,5 +10,6 @@ export default function SettingsPages() {
       : typeof path === 'string'
         ? path
         : path.join('/')
-  return <WebView path={`/talent/settings/${slug}`} />
+
+  return <WebView path={`/talent/${slug}`} />
 }
