@@ -19,3 +19,6 @@ ios/
 android/
 
 build-*.ipa
+build-*.tar.gz
+
+

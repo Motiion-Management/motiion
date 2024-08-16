@@ -1,18 +1,24 @@
 'use client'
 import { useUser, useSignIn } from '@clerk/nextjs'
 import { useEffect, useState } from 'react'
-import { useSearchParams } from 'next/navigation'
+import { useRouter, useSearchParams } from 'next/navigation'
+import Loading from '@/app/(app)/loading'
 
 export default function AcceptToken() {
   const { signIn, setActive } = useSignIn()
   const { user } = useUser()
   const [signInProcessed, setSignInProcessed] = useState<boolean>(false)
   const signInToken = useSearchParams().get('token')
+  const destination = useSearchParams().get('path')
+
+  const router = useRouter()
 
   useEffect(() => {
     if (!signIn || !setActive || !signInToken) {
       return
     }
+
+    console.log('signInToken', signInToken)
 
     const createSignIn = async () => {
       try {
@@ -34,17 +40,12 @@ export default function AcceptToken() {
     createSignIn()
   }, [signIn, setActive])
 
-  if (!signInToken) {
-    return <div>no token provided</div>
+  if (!signInToken || !user) {
+    router.replace('/sign-in')
   }
-
   if (!signInProcessed) {
-    return <div>loading</div>
+    router.replace(destination || '/')
   }
 
-  if (!user) {
-    return <div>error invalid token</div>
-  }
-
-  return <div>Signed in as {user.id}</div>
+  return <Loading />
 }
