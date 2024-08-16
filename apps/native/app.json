@@ -8,6 +8,7 @@
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",
+    "sdkVersion": "UNVERSIONED",
     "splash": {
       "image": "./assets/icon.png",
       "resizeMode": "contain",
@@ -36,7 +37,12 @@
     "web": {
       "favicon": "./assets/favicon.ico"
     },
-    "plugins": ["expo-font", "expo-router"],
+    "plugins": [
+      "expo-font",
+      "expo-router",
+      "expo-localization",
+      "expo-secure-store"
+    ],
     "extra": {
       "router": {
         "origin": false
