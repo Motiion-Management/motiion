@@ -53,7 +53,7 @@ export default function ClerkSessionProvider({
         baseURL,
         {
           name: '__session',
-          // httpOnly: true,
+          httpOnly: true,
           value: token,
           // replace 'http://', 'https://', and any port specifier with '' to set secure cookies
           domain: baseURL
