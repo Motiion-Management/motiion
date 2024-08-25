@@ -106,9 +106,6 @@ importers:
       expo-constants:
         specifier: 17.0.0-canary-20240814-ce0f7d5
         version: 17.0.0-canary-20240814-ce0f7d5(expo@52.0.0-canary-20240814-ce0f7d5(@babel/core@7.25.2)(@babel/preset-env@7.25.3(@babel/core@7.25.2))(@expo/metro-runtime@3.3.0-canary-20240814-ce0f7d5(react-native@0.75.2(@babel/core@7.25.2)(@babel/preset-env@7.25.3(@babel/core@7.25.2))(@types/react@18.2.79)(react@18.3.1)(typescript@5.3.3)))(react-native-webview@13.8.6(react-native@0.75.2(@babel/core@7.25.2)(@babel/preset-env@7.25.3(@babel/core@7.25.2))(@types/react@18.2.79)(react@18.3.1)(typescript@5.3.3))(react@18.3.1))(react-native@0.75.2(@babel/core@7.25.2)(@babel/preset-env@7.25.3(@babel/core@7.25.2))(@types/react@18.2.79)(react@18.3.1)(typescript@5.3.3))(react@18.3.1))(react-native@0.75.2(@babel/core@7.25.2)(@babel/preset-env@7.25.3(@babel/core@7.25.2))(@types/react@18.2.79)(react@18.3.1)(typescript@5.3.3))
-      expo-dev-client:
-        specifier: 5.0.0-canary-20240814-ce0f7d5
-        version: 5.0.0-canary-20240814-ce0f7d5(expo@52.0.0-canary-20240814-ce0f7d5(@babel/core@7.25.2)(@babel/preset-env@7.25.3(@babel/core@7.25.2))(@expo/metro-runtime@3.3.0-canary-20240814-ce0f7d5(react-native@0.75.2(@babel/core@7.25.2)(@babel/preset-env@7.25.3(@babel/core@7.25.2))(@types/react@18.2.79)(react@18.3.1)(typescript@5.3.3)))(react-native-webview@13.8.6(react-native@0.75.2(@babel/core@7.25.2)(@babel/preset-env@7.25.3(@babel/core@7.25.2))(@types/react@18.2.79)(react@18.3.1)(typescript@5.3.3))(react@18.3.1))(react-native@0.75.2(@babel/core@7.25.2)(@babel/preset-env@7.25.3(@babel/core@7.25.2))(@types/react@18.2.79)(react@18.3.1)(typescript@5.3.3))(react@18.3.1))
       expo-device:
         specifier: 7.0.0-canary-20240814-ce0f7d5
         version: 7.0.0-canary-20240814-ce0f7d5(expo@52.0.0-canary-20240814-ce0f7d5(@babel/core@7.25.2)(@babel/preset-env@7.25.3(@babel/core@7.25.2))(@expo/metro-runtime@3.3.0-canary-20240814-ce0f7d5(react-native@0.75.2(@babel/core@7.25.2)(@babel/preset-env@7.25.3(@babel/core@7.25.2))(@types/react@18.2.79)(react@18.3.1)(typescript@5.3.3)))(react-native-webview@13.8.6(react-native@0.75.2(@babel/core@7.25.2)(@babel/preset-env@7.25.3(@babel/core@7.25.2))(@types/react@18.2.79)(react@18.3.1)(typescript@5.3.3))(react@18.3.1))(react-native@0.75.2(@babel/core@7.25.2)(@babel/preset-env@7.25.3(@babel/core@7.25.2))(@types/react@18.2.79)(react@18.3.1)(typescript@5.3.3))(react@18.3.1))
@@ -3116,9 +3113,6 @@ packages:
   ajv@6.12.6:
     resolution: {integrity: sha512-j3fVLgvTo527anyYyJOGTYJbG+vnnQYvE0m5mmkc1TK+nxAppkCLMIL0aZ4dblVCNoGShhm+kzE4ZUykBoMg4g==}
 
-  ajv@8.11.0:
-    resolution: {integrity: sha512-wGgprdCvMalC0BztXvitD2hC04YffAvtsUn93JbGXYLAtCUO4xd17mCCZQxUOItiBwZvJScWo8NIvQMQ71rdpg==}
-
   ajv@8.17.1:
     resolution: {integrity: sha512-B/gBuNg5SiMTrPkC+A2+cW0RszwxYmn6VYxB/inlBStS5nx6xHIt/ehKRhIMhqusl7a8LjQoZnjCs5vhwxOQ1g==}
 
@@ -4157,26 +4151,6 @@ packages:
     peerDependencies:
       expo: '*'
 
-  expo-dev-client@5.0.0-canary-20240814-ce0f7d5:
-    resolution: {integrity: sha512-4AJGY1UHF0YyKIi6fqjsSr7stCCnp4I5EZ2AE5feeE3N44rta5upOfR7DFOOGH1eidb4ekh4Gm2ltABd4is/Ug==}
-    peerDependencies:
-      expo: '*'
-
-  expo-dev-launcher@5.0.0-canary-20240814-ce0f7d5:
-    resolution: {integrity: sha512-UfZj7xB4LyjtuEWIU4zIEvlg7fWc1FfRYVi8VZeN7VuOTQDktMmEhY/iHe4PToSmmAYmxwDhgszHrhU2MK7KWg==}
-    peerDependencies:
-      expo: '*'
-
-  expo-dev-menu-interface@1.8.4-canary-20240814-ce0f7d5:
-    resolution: {integrity: sha512-ZMpPBfbY0apfR//f5N0HoeRz/YppqaD+bBEjG/DM455yXsbHYemQVMdtFzfv0ZUlnH7+jDeAUE9dPwzutBSRRQ==}
-    peerDependencies:
-      expo: '*'
-
-  expo-dev-menu@6.0.0-canary-20240814-ce0f7d5:
-    resolution: {integrity: sha512-8qTNwMbY4PX1xWrxwYsZizdwcNO2T+WZLTHkjUIzpJHi0xMJ9L6mP7fW++sRihmcRz8toMaUSvR32lsX7hQRag==}
-    peerDependencies:
-      expo: '*'
-
   expo-device@7.0.0-canary-20240814-ce0f7d5:
     resolution: {integrity: sha512-IcoczKMphq80woI9fuKc4vJ9TvDK0zyuDINQRMalU0lVe10E+B0ykL2eq73ExARNAnzGOpl/w2n+/5r1pdgeAw==}
     peerDependencies:
@@ -4205,9 +4179,6 @@ packages:
       react-native-web:
         optional: true
 
-  expo-json-utils@1.0.0-canary-20240814-ce0f7d5:
-    resolution: {integrity: sha512-3J5uK5gbXTukTVlzP8woemnV1Y1O0wpf/ST0zb169rX547neA5eF6Y6Qy+Ut1VjgqUqo/C3GAKesI+y2VBuGqg==}
-
   expo-keep-awake@14.0.0-canary-20240814-ce0f7d5:
     resolution: {integrity: sha512-ARKMY6fvejHF68jcaQcvAFujGuvEXwGpL6W2kkfQfASAG/vmpmuNUc8Y+shhV4oB3Zd2hxOnR5xT7yq8tkf9Pw==}
     peerDependencies:
@@ -4232,11 +4203,6 @@ packages:
     peerDependencies:
       expo: '*'
       react: '*'
-
-  expo-manifests@1.0.0-canary-20240814-ce0f7d5:
-    resolution: {integrity: sha512-2WuiTFfDWyUlpJQ53JGPJsB8I2C6N2Q3TfoeaJQ2/C18qYq48m5vW0AZkgnhhjP6jhcIaTRCCQoQXmmx33UkAg==}
-    peerDependencies:
-      expo: '*'
 
   expo-modules-autolinking@1.12.0-canary-20240814-ce0f7d5:
     resolution: {integrity: sha512-n7QY6QVDGsvTXca3FwN9OWREVurBcXUyL+yMGf542FNsjdtUB+AZ95QkOBSOuvmpgD2csxaMpDr7us7Nf9ESaA==}
@@ -4292,11 +4258,6 @@ packages:
     peerDependencies:
       react: '*'
       react-native: '*'
-
-  expo-updates-interface@1.0.0-canary-20240814-ce0f7d5:
-    resolution: {integrity: sha512-/pak90lnaJGszaCvbaailwu8oqbTF0cTkRsLluaqF4pKMhJJWgv26EclJi/cxPW8OTOIppStejnpTWoy50jn4g==}
-    peerDependencies:
-      expo: '*'
 
   expo-web-browser@14.0.0-canary-20240814-ce0f7d5:
     resolution: {integrity: sha512-MEavcLKCREWeutVZdONi5+1wdhB12nF6UifdGYy5o/bSiaI8+sxc24uj0S2dfTLjoG9lJC3OSsocCvU7kRRBcA==}
@@ -10884,13 +10845,6 @@ snapshots:
       json-schema-traverse: 0.4.1
       uri-js: 4.4.1
 
-  ajv@8.11.0:
-    dependencies:
-      fast-deep-equal: 3.1.3
-      json-schema-traverse: 1.0.0
-      require-from-string: 2.0.2
-      uri-js: 4.4.1
-
   ajv@8.17.1:
     dependencies:
       fast-deep-equal: 3.1.3
@@ -12135,38 +12089,6 @@ snapshots:
       base64-js: 1.5.1
       expo: 52.0.0-canary-20240814-ce0f7d5(@babel/core@7.25.2)(@babel/preset-env@7.25.3(@babel/core@7.25.2))(@expo/metro-runtime@3.3.0-canary-20240814-ce0f7d5(react-native@0.75.2(@babel/core@7.25.2)(@babel/preset-env@7.25.3(@babel/core@7.25.2))(@types/react@18.2.79)(react@18.3.1)(typescript@5.3.3)))(react-native-webview@13.8.6(react-native@0.75.2(@babel/core@7.25.2)(@babel/preset-env@7.25.3(@babel/core@7.25.2))(@types/react@18.2.79)(react@18.3.1)(typescript@5.3.3))(react@18.3.1))(react-native@0.75.2(@babel/core@7.25.2)(@babel/preset-env@7.25.3(@babel/core@7.25.2))(@types/react@18.2.79)(react@18.3.1)(typescript@5.3.3))(react@18.3.1)
 
-  expo-dev-client@5.0.0-canary-20240814-ce0f7d5(expo@52.0.0-canary-20240814-ce0f7d5(@babel/core@7.25.2)(@babel/preset-env@7.25.3(@babel/core@7.25.2))(@expo/metro-runtime@3.3.0-canary-20240814-ce0f7d5(react-native@0.75.2(@babel/core@7.25.2)(@babel/preset-env@7.25.3(@babel/core@7.25.2))(@types/react@18.2.79)(react@18.3.1)(typescript@5.3.3)))(react-native-webview@13.8.6(react-native@0.75.2(@babel/core@7.25.2)(@babel/preset-env@7.25.3(@babel/core@7.25.2))(@types/react@18.2.79)(react@18.3.1)(typescript@5.3.3))(react@18.3.1))(react-native@0.75.2(@babel/core@7.25.2)(@babel/preset-env@7.25.3(@babel/core@7.25.2))(@types/react@18.2.79)(react@18.3.1)(typescript@5.3.3))(react@18.3.1)):
-    dependencies:
-      expo: 52.0.0-canary-20240814-ce0f7d5(@babel/core@7.25.2)(@babel/preset-env@7.25.3(@babel/core@7.25.2))(@expo/metro-runtime@3.3.0-canary-20240814-ce0f7d5(react-native@0.75.2(@babel/core@7.25.2)(@babel/preset-env@7.25.3(@babel/core@7.25.2))(@types/react@18.2.79)(react@18.3.1)(typescript@5.3.3)))(react-native-webview@13.8.6(react-native@0.75.2(@babel/core@7.25.2)(@babel/preset-env@7.25.3(@babel/core@7.25.2))(@types/react@18.2.79)(react@18.3.1)(typescript@5.3.3))(react@18.3.1))(react-native@0.75.2(@babel/core@7.25.2)(@babel/preset-env@7.25.3(@babel/core@7.25.2))(@types/react@18.2.79)(react@18.3.1)(typescript@5.3.3))(react@18.3.1)
-      expo-dev-launcher: 5.0.0-canary-20240814-ce0f7d5(expo@52.0.0-canary-20240814-ce0f7d5(@babel/core@7.25.2)(@babel/preset-env@7.25.3(@babel/core@7.25.2))(@expo/metro-runtime@3.3.0-canary-20240814-ce0f7d5(react-native@0.75.2(@babel/core@7.25.2)(@babel/preset-env@7.25.3(@babel/core@7.25.2))(@types/react@18.2.79)(react@18.3.1)(typescript@5.3.3)))(react-native-webview@13.8.6(react-native@0.75.2(@babel/core@7.25.2)(@babel/preset-env@7.25.3(@babel/core@7.25.2))(@types/react@18.2.79)(react@18.3.1)(typescript@5.3.3))(react@18.3.1))(react-native@0.75.2(@babel/core@7.25.2)(@babel/preset-env@7.25.3(@babel/core@7.25.2))(@types/react@18.2.79)(react@18.3.1)(typescript@5.3.3))(react@18.3.1))
-      expo-dev-menu: 6.0.0-canary-20240814-ce0f7d5(expo@52.0.0-canary-20240814-ce0f7d5(@babel/core@7.25.2)(@babel/preset-env@7.25.3(@babel/core@7.25.2))(@expo/metro-runtime@3.3.0-canary-20240814-ce0f7d5(react-native@0.75.2(@babel/core@7.25.2)(@babel/preset-env@7.25.3(@babel/core@7.25.2))(@types/react@18.2.79)(react@18.3.1)(typescript@5.3.3)))(react-native-webview@13.8.6(react-native@0.75.2(@babel/core@7.25.2)(@babel/preset-env@7.25.3(@babel/core@7.25.2))(@types/react@18.2.79)(react@18.3.1)(typescript@5.3.3))(react@18.3.1))(react-native@0.75.2(@babel/core@7.25.2)(@babel/preset-env@7.25.3(@babel/core@7.25.2))(@types/react@18.2.79)(react@18.3.1)(typescript@5.3.3))(react@18.3.1))
-      expo-dev-menu-interface: 1.8.4-canary-20240814-ce0f7d5(expo@52.0.0-canary-20240814-ce0f7d5(@babel/core@7.25.2)(@babel/preset-env@7.25.3(@babel/core@7.25.2))(@expo/metro-runtime@3.3.0-canary-20240814-ce0f7d5(react-native@0.75.2(@babel/core@7.25.2)(@babel/preset-env@7.25.3(@babel/core@7.25.2))(@types/react@18.2.79)(react@18.3.1)(typescript@5.3.3)))(react-native-webview@13.8.6(react-native@0.75.2(@babel/core@7.25.2)(@babel/preset-env@7.25.3(@babel/core@7.25.2))(@types/react@18.2.79)(react@18.3.1)(typescript@5.3.3))(react@18.3.1))(react-native@0.75.2(@babel/core@7.25.2)(@babel/preset-env@7.25.3(@babel/core@7.25.2))(@types/react@18.2.79)(react@18.3.1)(typescript@5.3.3))(react@18.3.1))
-      expo-manifests: 1.0.0-canary-20240814-ce0f7d5(expo@52.0.0-canary-20240814-ce0f7d5(@babel/core@7.25.2)(@babel/preset-env@7.25.3(@babel/core@7.25.2))(@expo/metro-runtime@3.3.0-canary-20240814-ce0f7d5(react-native@0.75.2(@babel/core@7.25.2)(@babel/preset-env@7.25.3(@babel/core@7.25.2))(@types/react@18.2.79)(react@18.3.1)(typescript@5.3.3)))(react-native-webview@13.8.6(react-native@0.75.2(@babel/core@7.25.2)(@babel/preset-env@7.25.3(@babel/core@7.25.2))(@types/react@18.2.79)(react@18.3.1)(typescript@5.3.3))(react@18.3.1))(react-native@0.75.2(@babel/core@7.25.2)(@babel/preset-env@7.25.3(@babel/core@7.25.2))(@types/react@18.2.79)(react@18.3.1)(typescript@5.3.3))(react@18.3.1))
-      expo-updates-interface: 1.0.0-canary-20240814-ce0f7d5(expo@52.0.0-canary-20240814-ce0f7d5(@babel/core@7.25.2)(@babel/preset-env@7.25.3(@babel/core@7.25.2))(@expo/metro-runtime@3.3.0-canary-20240814-ce0f7d5(react-native@0.75.2(@babel/core@7.25.2)(@babel/preset-env@7.25.3(@babel/core@7.25.2))(@types/react@18.2.79)(react@18.3.1)(typescript@5.3.3)))(react-native-webview@13.8.6(react-native@0.75.2(@babel/core@7.25.2)(@babel/preset-env@7.25.3(@babel/core@7.25.2))(@types/react@18.2.79)(react@18.3.1)(typescript@5.3.3))(react@18.3.1))(react-native@0.75.2(@babel/core@7.25.2)(@babel/preset-env@7.25.3(@babel/core@7.25.2))(@types/react@18.2.79)(react@18.3.1)(typescript@5.3.3))(react@18.3.1))
-    transitivePeerDependencies:
-      - supports-color
-
-  expo-dev-launcher@5.0.0-canary-20240814-ce0f7d5(expo@52.0.0-canary-20240814-ce0f7d5(@babel/core@7.25.2)(@babel/preset-env@7.25.3(@babel/core@7.25.2))(@expo/metro-runtime@3.3.0-canary-20240814-ce0f7d5(react-native@0.75.2(@babel/core@7.25.2)(@babel/preset-env@7.25.3(@babel/core@7.25.2))(@types/react@18.2.79)(react@18.3.1)(typescript@5.3.3)))(react-native-webview@13.8.6(react-native@0.75.2(@babel/core@7.25.2)(@babel/preset-env@7.25.3(@babel/core@7.25.2))(@types/react@18.2.79)(react@18.3.1)(typescript@5.3.3))(react@18.3.1))(react-native@0.75.2(@babel/core@7.25.2)(@babel/preset-env@7.25.3(@babel/core@7.25.2))(@types/react@18.2.79)(react@18.3.1)(typescript@5.3.3))(react@18.3.1)):
-    dependencies:
-      ajv: 8.11.0
-      expo: 52.0.0-canary-20240814-ce0f7d5(@babel/core@7.25.2)(@babel/preset-env@7.25.3(@babel/core@7.25.2))(@expo/metro-runtime@3.3.0-canary-20240814-ce0f7d5(react-native@0.75.2(@babel/core@7.25.2)(@babel/preset-env@7.25.3(@babel/core@7.25.2))(@types/react@18.2.79)(react@18.3.1)(typescript@5.3.3)))(react-native-webview@13.8.6(react-native@0.75.2(@babel/core@7.25.2)(@babel/preset-env@7.25.3(@babel/core@7.25.2))(@types/react@18.2.79)(react@18.3.1)(typescript@5.3.3))(react@18.3.1))(react-native@0.75.2(@babel/core@7.25.2)(@babel/preset-env@7.25.3(@babel/core@7.25.2))(@types/react@18.2.79)(react@18.3.1)(typescript@5.3.3))(react@18.3.1)
-      expo-dev-menu: 6.0.0-canary-20240814-ce0f7d5(expo@52.0.0-canary-20240814-ce0f7d5(@babel/core@7.25.2)(@babel/preset-env@7.25.3(@babel/core@7.25.2))(@expo/metro-runtime@3.3.0-canary-20240814-ce0f7d5(react-native@0.75.2(@babel/core@7.25.2)(@babel/preset-env@7.25.3(@babel/core@7.25.2))(@types/react@18.2.79)(react@18.3.1)(typescript@5.3.3)))(react-native-webview@13.8.6(react-native@0.75.2(@babel/core@7.25.2)(@babel/preset-env@7.25.3(@babel/core@7.25.2))(@types/react@18.2.79)(react@18.3.1)(typescript@5.3.3))(react@18.3.1))(react-native@0.75.2(@babel/core@7.25.2)(@babel/preset-env@7.25.3(@babel/core@7.25.2))(@types/react@18.2.79)(react@18.3.1)(typescript@5.3.3))(react@18.3.1))
-      expo-manifests: 1.0.0-canary-20240814-ce0f7d5(expo@52.0.0-canary-20240814-ce0f7d5(@babel/core@7.25.2)(@babel/preset-env@7.25.3(@babel/core@7.25.2))(@expo/metro-runtime@3.3.0-canary-20240814-ce0f7d5(react-native@0.75.2(@babel/core@7.25.2)(@babel/preset-env@7.25.3(@babel/core@7.25.2))(@types/react@18.2.79)(react@18.3.1)(typescript@5.3.3)))(react-native-webview@13.8.6(react-native@0.75.2(@babel/core@7.25.2)(@babel/preset-env@7.25.3(@babel/core@7.25.2))(@types/react@18.2.79)(react@18.3.1)(typescript@5.3.3))(react@18.3.1))(react-native@0.75.2(@babel/core@7.25.2)(@babel/preset-env@7.25.3(@babel/core@7.25.2))(@types/react@18.2.79)(react@18.3.1)(typescript@5.3.3))(react@18.3.1))
-      resolve-from: 5.0.0
-      semver: 7.6.3
-    transitivePeerDependencies:
-      - supports-color
-
-  expo-dev-menu-interface@1.8.4-canary-20240814-ce0f7d5(expo@52.0.0-canary-20240814-ce0f7d5(@babel/core@7.25.2)(@babel/preset-env@7.25.3(@babel/core@7.25.2))(@expo/metro-runtime@3.3.0-canary-20240814-ce0f7d5(react-native@0.75.2(@babel/core@7.25.2)(@babel/preset-env@7.25.3(@babel/core@7.25.2))(@types/react@18.2.79)(react@18.3.1)(typescript@5.3.3)))(react-native-webview@13.8.6(react-native@0.75.2(@babel/core@7.25.2)(@babel/preset-env@7.25.3(@babel/core@7.25.2))(@types/react@18.2.79)(react@18.3.1)(typescript@5.3.3))(react@18.3.1))(react-native@0.75.2(@babel/core@7.25.2)(@babel/preset-env@7.25.3(@babel/core@7.25.2))(@types/react@18.2.79)(react@18.3.1)(typescript@5.3.3))(react@18.3.1)):
-    dependencies:
-      expo: 52.0.0-canary-20240814-ce0f7d5(@babel/core@7.25.2)(@babel/preset-env@7.25.3(@babel/core@7.25.2))(@expo/metro-runtime@3.3.0-canary-20240814-ce0f7d5(react-native@0.75.2(@babel/core@7.25.2)(@babel/preset-env@7.25.3(@babel/core@7.25.2))(@types/react@18.2.79)(react@18.3.1)(typescript@5.3.3)))(react-native-webview@13.8.6(react-native@0.75.2(@babel/core@7.25.2)(@babel/preset-env@7.25.3(@babel/core@7.25.2))(@types/react@18.2.79)(react@18.3.1)(typescript@5.3.3))(react@18.3.1))(react-native@0.75.2(@babel/core@7.25.2)(@babel/preset-env@7.25.3(@babel/core@7.25.2))(@types/react@18.2.79)(react@18.3.1)(typescript@5.3.3))(react@18.3.1)
-
-  expo-dev-menu@6.0.0-canary-20240814-ce0f7d5(expo@52.0.0-canary-20240814-ce0f7d5(@babel/core@7.25.2)(@babel/preset-env@7.25.3(@babel/core@7.25.2))(@expo/metro-runtime@3.3.0-canary-20240814-ce0f7d5(react-native@0.75.2(@babel/core@7.25.2)(@babel/preset-env@7.25.3(@babel/core@7.25.2))(@types/react@18.2.79)(react@18.3.1)(typescript@5.3.3)))(react-native-webview@13.8.6(react-native@0.75.2(@babel/core@7.25.2)(@babel/preset-env@7.25.3(@babel/core@7.25.2))(@types/react@18.2.79)(react@18.3.1)(typescript@5.3.3))(react@18.3.1))(react-native@0.75.2(@babel/core@7.25.2)(@babel/preset-env@7.25.3(@babel/core@7.25.2))(@types/react@18.2.79)(react@18.3.1)(typescript@5.3.3))(react@18.3.1)):
-    dependencies:
-      expo: 52.0.0-canary-20240814-ce0f7d5(@babel/core@7.25.2)(@babel/preset-env@7.25.3(@babel/core@7.25.2))(@expo/metro-runtime@3.3.0-canary-20240814-ce0f7d5(react-native@0.75.2(@babel/core@7.25.2)(@babel/preset-env@7.25.3(@babel/core@7.25.2))(@types/react@18.2.79)(react@18.3.1)(typescript@5.3.3)))(react-native-webview@13.8.6(react-native@0.75.2(@babel/core@7.25.2)(@babel/preset-env@7.25.3(@babel/core@7.25.2))(@types/react@18.2.79)(react@18.3.1)(typescript@5.3.3))(react@18.3.1))(react-native@0.75.2(@babel/core@7.25.2)(@babel/preset-env@7.25.3(@babel/core@7.25.2))(@types/react@18.2.79)(react@18.3.1)(typescript@5.3.3))(react@18.3.1)
-      expo-dev-menu-interface: 1.8.4-canary-20240814-ce0f7d5(expo@52.0.0-canary-20240814-ce0f7d5(@babel/core@7.25.2)(@babel/preset-env@7.25.3(@babel/core@7.25.2))(@expo/metro-runtime@3.3.0-canary-20240814-ce0f7d5(react-native@0.75.2(@babel/core@7.25.2)(@babel/preset-env@7.25.3(@babel/core@7.25.2))(@types/react@18.2.79)(react@18.3.1)(typescript@5.3.3)))(react-native-webview@13.8.6(react-native@0.75.2(@babel/core@7.25.2)(@babel/preset-env@7.25.3(@babel/core@7.25.2))(@types/react@18.2.79)(react@18.3.1)(typescript@5.3.3))(react@18.3.1))(react-native@0.75.2(@babel/core@7.25.2)(@babel/preset-env@7.25.3(@babel/core@7.25.2))(@types/react@18.2.79)(react@18.3.1)(typescript@5.3.3))(react@18.3.1))
-      semver: 7.6.3
-
   expo-device@7.0.0-canary-20240814-ce0f7d5(expo@52.0.0-canary-20240814-ce0f7d5(@babel/core@7.25.2)(@babel/preset-env@7.25.3(@babel/core@7.25.2))(@expo/metro-runtime@3.3.0-canary-20240814-ce0f7d5(react-native@0.75.2(@babel/core@7.25.2)(@babel/preset-env@7.25.3(@babel/core@7.25.2))(@types/react@18.2.79)(react@18.3.1)(typescript@5.3.3)))(react-native-webview@13.8.6(react-native@0.75.2(@babel/core@7.25.2)(@babel/preset-env@7.25.3(@babel/core@7.25.2))(@types/react@18.2.79)(react@18.3.1)(typescript@5.3.3))(react@18.3.1))(react-native@0.75.2(@babel/core@7.25.2)(@babel/preset-env@7.25.3(@babel/core@7.25.2))(@types/react@18.2.79)(react@18.3.1)(typescript@5.3.3))(react@18.3.1)):
     dependencies:
       expo: 52.0.0-canary-20240814-ce0f7d5(@babel/core@7.25.2)(@babel/preset-env@7.25.3(@babel/core@7.25.2))(@expo/metro-runtime@3.3.0-canary-20240814-ce0f7d5(react-native@0.75.2(@babel/core@7.25.2)(@babel/preset-env@7.25.3(@babel/core@7.25.2))(@types/react@18.2.79)(react@18.3.1)(typescript@5.3.3)))(react-native-webview@13.8.6(react-native@0.75.2(@babel/core@7.25.2)(@babel/preset-env@7.25.3(@babel/core@7.25.2))(@types/react@18.2.79)(react@18.3.1)(typescript@5.3.3))(react@18.3.1))(react-native@0.75.2(@babel/core@7.25.2)(@babel/preset-env@7.25.3(@babel/core@7.25.2))(@types/react@18.2.79)(react@18.3.1)(typescript@5.3.3))(react@18.3.1)
@@ -12188,8 +12110,6 @@ snapshots:
       expo: 52.0.0-canary-20240814-ce0f7d5(@babel/core@7.25.2)(@babel/preset-env@7.25.3(@babel/core@7.25.2))(@expo/metro-runtime@3.3.0-canary-20240814-ce0f7d5(react-native@0.75.2(@babel/core@7.25.2)(@babel/preset-env@7.25.3(@babel/core@7.25.2))(@types/react@18.2.79)(react@18.3.1)(typescript@5.3.3)))(react-native-webview@13.8.6(react-native@0.75.2(@babel/core@7.25.2)(@babel/preset-env@7.25.3(@babel/core@7.25.2))(@types/react@18.2.79)(react@18.3.1)(typescript@5.3.3))(react@18.3.1))(react-native@0.75.2(@babel/core@7.25.2)(@babel/preset-env@7.25.3(@babel/core@7.25.2))(@types/react@18.2.79)(react@18.3.1)(typescript@5.3.3))(react@18.3.1)
       react: 18.3.1
       react-native: 0.75.2(@babel/core@7.25.2)(@babel/preset-env@7.25.3(@babel/core@7.25.2))(@types/react@18.2.79)(react@18.3.1)(typescript@5.3.3)
-
-  expo-json-utils@1.0.0-canary-20240814-ce0f7d5: {}
 
   expo-keep-awake@14.0.0-canary-20240814-ce0f7d5(expo@52.0.0-canary-20240814-ce0f7d5(@babel/core@7.25.2)(@babel/preset-env@7.25.3(@babel/core@7.25.2))(@expo/metro-runtime@3.3.0-canary-20240814-ce0f7d5(react-native@0.75.2(@babel/core@7.25.2)(@babel/preset-env@7.25.3(@babel/core@7.25.2))(@types/react@18.2.79)(react@18.3.1)(typescript@5.3.3)))(react-native-webview@13.8.6(react-native@0.75.2(@babel/core@7.25.2)(@babel/preset-env@7.25.3(@babel/core@7.25.2))(@types/react@18.2.79)(react@18.3.1)(typescript@5.3.3))(react@18.3.1))(react-native@0.75.2(@babel/core@7.25.2)(@babel/preset-env@7.25.3(@babel/core@7.25.2))(@types/react@18.2.79)(react@18.3.1)(typescript@5.3.3))(react@18.3.1))(react@18.3.1):
     dependencies:
@@ -12217,14 +12137,6 @@ snapshots:
       expo: 52.0.0-canary-20240814-ce0f7d5(@babel/core@7.25.2)(@babel/preset-env@7.25.3(@babel/core@7.25.2))(@expo/metro-runtime@3.3.0-canary-20240814-ce0f7d5(react-native@0.75.2(@babel/core@7.25.2)(@babel/preset-env@7.25.3(@babel/core@7.25.2))(@types/react@18.2.79)(react@18.3.1)(typescript@5.3.3)))(react-native-webview@13.8.6(react-native@0.75.2(@babel/core@7.25.2)(@babel/preset-env@7.25.3(@babel/core@7.25.2))(@types/react@18.2.79)(react@18.3.1)(typescript@5.3.3))(react@18.3.1))(react-native@0.75.2(@babel/core@7.25.2)(@babel/preset-env@7.25.3(@babel/core@7.25.2))(@types/react@18.2.79)(react@18.3.1)(typescript@5.3.3))(react@18.3.1)
       react: 18.3.1
       rtl-detect: 1.1.2
-
-  expo-manifests@1.0.0-canary-20240814-ce0f7d5(expo@52.0.0-canary-20240814-ce0f7d5(@babel/core@7.25.2)(@babel/preset-env@7.25.3(@babel/core@7.25.2))(@expo/metro-runtime@3.3.0-canary-20240814-ce0f7d5(react-native@0.75.2(@babel/core@7.25.2)(@babel/preset-env@7.25.3(@babel/core@7.25.2))(@types/react@18.2.79)(react@18.3.1)(typescript@5.3.3)))(react-native-webview@13.8.6(react-native@0.75.2(@babel/core@7.25.2)(@babel/preset-env@7.25.3(@babel/core@7.25.2))(@types/react@18.2.79)(react@18.3.1)(typescript@5.3.3))(react@18.3.1))(react-native@0.75.2(@babel/core@7.25.2)(@babel/preset-env@7.25.3(@babel/core@7.25.2))(@types/react@18.2.79)(react@18.3.1)(typescript@5.3.3))(react@18.3.1)):
-    dependencies:
-      '@expo/config': 9.1.0-canary-20240814-ce0f7d5
-      expo: 52.0.0-canary-20240814-ce0f7d5(@babel/core@7.25.2)(@babel/preset-env@7.25.3(@babel/core@7.25.2))(@expo/metro-runtime@3.3.0-canary-20240814-ce0f7d5(react-native@0.75.2(@babel/core@7.25.2)(@babel/preset-env@7.25.3(@babel/core@7.25.2))(@types/react@18.2.79)(react@18.3.1)(typescript@5.3.3)))(react-native-webview@13.8.6(react-native@0.75.2(@babel/core@7.25.2)(@babel/preset-env@7.25.3(@babel/core@7.25.2))(@types/react@18.2.79)(react@18.3.1)(typescript@5.3.3))(react@18.3.1))(react-native@0.75.2(@babel/core@7.25.2)(@babel/preset-env@7.25.3(@babel/core@7.25.2))(@types/react@18.2.79)(react@18.3.1)(typescript@5.3.3))(react@18.3.1)
-      expo-json-utils: 1.0.0-canary-20240814-ce0f7d5
-    transitivePeerDependencies:
-      - supports-color
 
   expo-modules-autolinking@1.12.0-canary-20240814-ce0f7d5:
     dependencies:
@@ -12299,10 +12211,6 @@ snapshots:
     dependencies:
       react: 18.3.1
       react-native: 0.75.2(@babel/core@7.25.2)(@babel/preset-env@7.25.3(@babel/core@7.25.2))(@types/react@18.2.79)(react@18.3.1)(typescript@5.3.3)
-
-  expo-updates-interface@1.0.0-canary-20240814-ce0f7d5(expo@52.0.0-canary-20240814-ce0f7d5(@babel/core@7.25.2)(@babel/preset-env@7.25.3(@babel/core@7.25.2))(@expo/metro-runtime@3.3.0-canary-20240814-ce0f7d5(react-native@0.75.2(@babel/core@7.25.2)(@babel/preset-env@7.25.3(@babel/core@7.25.2))(@types/react@18.2.79)(react@18.3.1)(typescript@5.3.3)))(react-native-webview@13.8.6(react-native@0.75.2(@babel/core@7.25.2)(@babel/preset-env@7.25.3(@babel/core@7.25.2))(@types/react@18.2.79)(react@18.3.1)(typescript@5.3.3))(react@18.3.1))(react-native@0.75.2(@babel/core@7.25.2)(@babel/preset-env@7.25.3(@babel/core@7.25.2))(@types/react@18.2.79)(react@18.3.1)(typescript@5.3.3))(react@18.3.1)):
-    dependencies:
-      expo: 52.0.0-canary-20240814-ce0f7d5(@babel/core@7.25.2)(@babel/preset-env@7.25.3(@babel/core@7.25.2))(@expo/metro-runtime@3.3.0-canary-20240814-ce0f7d5(react-native@0.75.2(@babel/core@7.25.2)(@babel/preset-env@7.25.3(@babel/core@7.25.2))(@types/react@18.2.79)(react@18.3.1)(typescript@5.3.3)))(react-native-webview@13.8.6(react-native@0.75.2(@babel/core@7.25.2)(@babel/preset-env@7.25.3(@babel/core@7.25.2))(@types/react@18.2.79)(react@18.3.1)(typescript@5.3.3))(react@18.3.1))(react-native@0.75.2(@babel/core@7.25.2)(@babel/preset-env@7.25.3(@babel/core@7.25.2))(@types/react@18.2.79)(react@18.3.1)(typescript@5.3.3))(react@18.3.1)
 
   expo-web-browser@14.0.0-canary-20240814-ce0f7d5(expo@52.0.0-canary-20240814-ce0f7d5(@babel/core@7.25.2)(@babel/preset-env@7.25.3(@babel/core@7.25.2))(@expo/metro-runtime@3.3.0-canary-20240814-ce0f7d5(react-native@0.75.2(@babel/core@7.25.2)(@babel/preset-env@7.25.3(@babel/core@7.25.2))(@types/react@18.2.79)(react@18.3.1)(typescript@5.3.3)))(react-native-webview@13.8.6(react-native@0.75.2(@babel/core@7.25.2)(@babel/preset-env@7.25.3(@babel/core@7.25.2))(@types/react@18.2.79)(react@18.3.1)(typescript@5.3.3))(react@18.3.1))(react-native@0.75.2(@babel/core@7.25.2)(@babel/preset-env@7.25.3(@babel/core@7.25.2))(@types/react@18.2.79)(react@18.3.1)(typescript@5.3.3))(react@18.3.1))(react-native@0.75.2(@babel/core@7.25.2)(@babel/preset-env@7.25.3(@babel/core@7.25.2))(@types/react@18.2.79)(react@18.3.1)(typescript@5.3.3)):
     dependencies:
