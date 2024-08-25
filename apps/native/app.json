@@ -5,10 +5,10 @@
     "slug": "motiion",
     "version": "1.0.0",
     "scheme": "motiion",
+    "sdkVersion": "UNVERSIONED",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",
-    "sdkVersion": "UNVERSIONED",
     "splash": {
       "image": "./assets/icon.png",
       "resizeMode": "contain",
@@ -17,15 +17,7 @@
     "assetBundlePatterns": ["**/*"],
     "ios": {
       "bundleIdentifier": "io.motiion.motiion",
-      "supportsTablet": true,
-      "entitlements": {
-        "com.apple.developer.associated-domains": ["applinks:motiion.io"],
-        "com.apple.developer.authentication-services.autofill-credential-provider": true,
-        "com.apple.developer.usernotifications.communication": true,
-        "aps-environment": "production",
-        "com.apple.developer.applesignin": ["Default"],
-        "com.apple.developer.usernotifications.time-sensitive": true
-      }
+      "supportsTablet": true
     },
     "android": {
       "adaptiveIcon": {
@@ -35,6 +27,8 @@
       "package": "io.motiion.motiion"
     },
     "web": {
+      "bundler": "metro",
+      "output": "static",
       "favicon": "./assets/favicon.ico"
     },
     "plugins": [
