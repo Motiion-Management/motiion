@@ -38,7 +38,8 @@
   ],
   "pnpm": {
     "patchedDependencies": {
-      "react-mobile-picker@1.0.0": "patches/react-mobile-picker@1.0.0.patch"
+      "react-mobile-picker@1.0.0": "patches/react-mobile-picker@1.0.0.patch",
+      "sweet-sfsymbols@0.7.0": "patches/sweet-sfsymbols@0.7.0.patch"
     },
     "peerDependencyRules": {
       "ignoreMissing": [

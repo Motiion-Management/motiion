@@ -5,6 +5,7 @@
     "slug": "motiion",
     "version": "1.0.0",
     "scheme": "motiion",
+    "sdkVersion": "UNVERSIONED",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",
@@ -34,9 +35,23 @@
       "package": "io.motiion.motiion"
     },
     "web": {
+      "bundler": "metro",
+      "output": "static",
       "favicon": "./assets/favicon.ico"
     },
-    "plugins": ["expo-font", "expo-router"],
+    "plugins": [
+      "expo-font",
+      "expo-router",
+      "expo-secure-store",
+      [
+        "expo-build-properties",
+        {
+          "ios": {
+            "deploymentTarget": "15.1"
+          }
+        }
+      ]
+    ],
     "extra": {
       "router": {
         "origin": false
