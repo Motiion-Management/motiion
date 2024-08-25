@@ -127,9 +127,6 @@ importers:
       expo-navigation-bar:
         specifier: 3.0.8-canary-20240814-ce0f7d5
         version: 3.0.8-canary-20240814-ce0f7d5(expo@52.0.0-canary-20240814-ce0f7d5(@babel/core@7.25.2)(@babel/preset-env@7.25.3(@babel/core@7.25.2))(@expo/metro-runtime@3.3.0-canary-20240814-ce0f7d5(react-native@0.75.2(@babel/core@7.25.2)(@babel/preset-env@7.25.3(@babel/core@7.25.2))(@types/react@18.2.79)(react@18.3.1)(typescript@5.3.3)))(react-native-webview@13.8.6(react-native@0.75.2(@babel/core@7.25.2)(@babel/preset-env@7.25.3(@babel/core@7.25.2))(@types/react@18.2.79)(react@18.3.1)(typescript@5.3.3))(react@18.3.1))(react-native@0.75.2(@babel/core@7.25.2)(@babel/preset-env@7.25.3(@babel/core@7.25.2))(@types/react@18.2.79)(react@18.3.1)(typescript@5.3.3))(react@18.3.1))(react-native@0.75.2(@babel/core@7.25.2)(@babel/preset-env@7.25.3(@babel/core@7.25.2))(@types/react@18.2.79)(react@18.3.1)(typescript@5.3.3))(react@18.3.1)
-      expo-random:
-        specifier: ~14.0.1
-        version: 14.0.1(expo@52.0.0-canary-20240814-ce0f7d5(@babel/core@7.25.2)(@babel/preset-env@7.25.3(@babel/core@7.25.2))(@expo/metro-runtime@3.3.0-canary-20240814-ce0f7d5(react-native@0.75.2(@babel/core@7.25.2)(@babel/preset-env@7.25.3(@babel/core@7.25.2))(@types/react@18.2.79)(react@18.3.1)(typescript@5.3.3)))(react-native-webview@13.8.6(react-native@0.75.2(@babel/core@7.25.2)(@babel/preset-env@7.25.3(@babel/core@7.25.2))(@types/react@18.2.79)(react@18.3.1)(typescript@5.3.3))(react@18.3.1))(react-native@0.75.2(@babel/core@7.25.2)(@babel/preset-env@7.25.3(@babel/core@7.25.2))(@types/react@18.2.79)(react@18.3.1)(typescript@5.3.3))(react@18.3.1))
       expo-router:
         specifier: 4.0.0-canary-20240814-ce0f7d5
         version: 4.0.0-canary-20240814-ce0f7d5(m2ll7yd3pts4yltyg6anegazsa)
@@ -4242,11 +4239,6 @@ packages:
       expo: '*'
       react: '*'
       react-native: '*'
-
-  expo-random@14.0.1:
-    resolution: {integrity: sha512-gX2mtR9o+WelX21YizXUCD/y+a4ZL+RDthDmFkHxaYbdzjSYTn8u/igoje/l3WEO+/RYspmqUFa8w/ckNbt6Vg==}
-    peerDependencies:
-      expo: '*'
 
   expo-router@4.0.0-canary-20240814-ce0f7d5:
     resolution: {integrity: sha512-B9TmWF3Ek1I73ach10PgJ3KTS/EVdxWDoCmwZrGKdh8wkQAonj8XJeJj5w5HobELt/OFIzow+0bD+es1IQ9kxQ==}
@@ -12231,11 +12223,6 @@ snapshots:
       react-native: 0.75.2(@babel/core@7.25.2)(@babel/preset-env@7.25.3(@babel/core@7.25.2))(@types/react@18.2.79)(react@18.3.1)(typescript@5.3.3)
     transitivePeerDependencies:
       - supports-color
-
-  expo-random@14.0.1(expo@52.0.0-canary-20240814-ce0f7d5(@babel/core@7.25.2)(@babel/preset-env@7.25.3(@babel/core@7.25.2))(@expo/metro-runtime@3.3.0-canary-20240814-ce0f7d5(react-native@0.75.2(@babel/core@7.25.2)(@babel/preset-env@7.25.3(@babel/core@7.25.2))(@types/react@18.2.79)(react@18.3.1)(typescript@5.3.3)))(react-native-webview@13.8.6(react-native@0.75.2(@babel/core@7.25.2)(@babel/preset-env@7.25.3(@babel/core@7.25.2))(@types/react@18.2.79)(react@18.3.1)(typescript@5.3.3))(react@18.3.1))(react-native@0.75.2(@babel/core@7.25.2)(@babel/preset-env@7.25.3(@babel/core@7.25.2))(@types/react@18.2.79)(react@18.3.1)(typescript@5.3.3))(react@18.3.1)):
-    dependencies:
-      base64-js: 1.5.1
-      expo: 52.0.0-canary-20240814-ce0f7d5(@babel/core@7.25.2)(@babel/preset-env@7.25.3(@babel/core@7.25.2))(@expo/metro-runtime@3.3.0-canary-20240814-ce0f7d5(react-native@0.75.2(@babel/core@7.25.2)(@babel/preset-env@7.25.3(@babel/core@7.25.2))(@types/react@18.2.79)(react@18.3.1)(typescript@5.3.3)))(react-native-webview@13.8.6(react-native@0.75.2(@babel/core@7.25.2)(@babel/preset-env@7.25.3(@babel/core@7.25.2))(@types/react@18.2.79)(react@18.3.1)(typescript@5.3.3))(react@18.3.1))(react-native@0.75.2(@babel/core@7.25.2)(@babel/preset-env@7.25.3(@babel/core@7.25.2))(@types/react@18.2.79)(react@18.3.1)(typescript@5.3.3))(react@18.3.1)
 
   expo-router@4.0.0-canary-20240814-ce0f7d5(m2ll7yd3pts4yltyg6anegazsa):
     dependencies:
