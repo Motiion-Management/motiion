@@ -30,6 +30,7 @@
     "cookie": "link:@clerk/shared/cookie",
     "expo": "52.0.0-canary-20240814-ce0f7d5",
     "expo-auth-session": "5.5.3-canary-20240814-ce0f7d5",
+    "expo-build-properties": "1.0.0-canary-20240814-ce0f7d5",
     "expo-constants": "17.0.0-canary-20240814-ce0f7d5",
     "expo-dev-client": "5.0.0-canary-20240814-ce0f7d5",
     "expo-device": "7.0.0-canary-20240814-ce0f7d5",
