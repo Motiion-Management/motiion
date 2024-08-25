@@ -1,0 +1,13 @@
+diff --git a/ios/SweetSFSymbols.podspec b/ios/SweetSFSymbols.podspec
+index 6249073100275aa4440e6330381fbc402ea8e46a..091d62437c6e40a429277cbb4667a6e29ea4e3e4 100644
+--- a/ios/SweetSFSymbols.podspec
++++ b/ios/SweetSFSymbols.podspec
+@@ -10,7 +10,7 @@ Pod::Spec.new do |s|
+   s.license        = package['license']
+   s.author         = package['author']
+   s.homepage       = package['homepage']
+-  s.platform       = :ios, '13.0'
++  s.platform       = :ios, '15.1'
+   s.swift_version  = '5.4'
+   s.source         = { git: 'https://github.com/andrew-levy/sweet-sfsymbols' }
+   s.static_framework = true
