@@ -10,6 +10,7 @@ import { ThemeProvider } from './theme-provider'
 import { splashTags } from './splash-page-tags'
 import { RefreshPWA } from './refresh-pwa'
 import { domain } from '@/constants/general'
+import { InstallPWA } from './install-pwa'
 
 const montserrat = Montserrat({
   subsets: ['latin'],
@@ -74,6 +75,7 @@ export default function RootLayout({
           <ThemeProvider> {children}</ThemeProvider>
         </ConvexClientProvider>
         <RefreshPWA />
+        <InstallPWA />
         <SpeedInsights />
         <Analytics />
         <Toaster richColors />

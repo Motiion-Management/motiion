@@ -1,5 +1,7 @@
 {
   "private": true,
+  "packageManager": "pnpm@9.0.6",
+  "name": "motiion",
   "scripts": {
     "add:web": "pnpm add --filter web-app",
     "add:native": "pnpm add --filter native-app",
