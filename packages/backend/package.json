@@ -11,8 +11,8 @@
   "license": "ISC",
   "dependencies": {
     "@clerk/clerk-sdk-node": "^5.0.9",
-    "convex": "^1.12.1",
-    "convex-helpers": "^0.1.41",
+    "convex": "^1.15.0",
+    "convex-helpers": "^0.1.56",
     "date-fns": "^3.6.0",
     "openai": "^4.47.3",
     "svix": "^1.24.0",

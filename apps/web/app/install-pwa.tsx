@@ -1,8 +1,17 @@
 'use client'
 
+import { useEffect, useState } from 'react'
 import PWAPrompt from 'react-ios-pwa-prompt'
 
 export function InstallPWA() {
+  const [isBrowser, setIsBrowser] = useState(false)
+
+  useEffect(() => {
+    if (typeof window === 'undefined') {
+      setIsBrowser(true)
+    }
+  }, [setIsBrowser])
+  if (!isBrowser) return null
   return (
     <PWAPrompt
       promptOnVisit={1}
