@@ -1,5 +1,7 @@
 {
   "private": true,
+  "packageManager": "pnpm@9.0.6",
+  "name": "motiion",
   "scripts": {
     "add:web": "pnpm add --filter web-app",
     "add:native": "pnpm add --filter native-app",
@@ -10,18 +12,19 @@
     "backend": "turbo run dev --filter @packages/backend",
     "build": "turbo run build",
     "clean": "turbo run clean && rm -rf node_modules",
+    "type-check": "tsc --noEmit",
     "format": "prettier --write \"**/*.{ts,tsx,js,jsx,json,md}\" --ignore-path .gitignore"
   },
   "devDependencies": {
     "eslint": "^8.57.0",
-    "eslint-config-next": "14.2.3",
+    "eslint-config-next": "14.2.9",
     "eslint-config-prettier": "^9.1.0",
-    "next": "14.2.3",
-    "prettier": "^3.3.0",
-    "prettier-plugin-tailwindcss": "^0.5.12",
+    "next": "14.2.9",
+    "prettier": "^3.3.3",
+    "prettier-plugin-tailwindcss": "^0.6.6",
     "turbo": "latest",
-    "typescript": "^5.4.3",
-    "typescript-eslint": "^7.12.0"
+    "typescript": "^5.6.2",
+    "typescript-eslint": "^8.5.0"
   },
   "engines": {
     "node": ">=18"
@@ -29,10 +32,5 @@
   "workspaces": [
     "apps/*",
     "packages/*"
-  ],
-  "pnpm": {
-    "patchedDependencies": {
-      "react-mobile-picker@1.0.0": "patches/react-mobile-picker@1.0.0.patch"
-    }
-  }
+  ]
 }

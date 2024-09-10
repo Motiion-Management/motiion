@@ -13,8 +13,12 @@ const isProtectedRoute = createRouteMatcher([
 ])
 
 export default clerkMiddleware(async (auth, req) => {
+
   if (isProtectedRoute(req)) {
     auth().protect()
+  }
+
+  if (auth().userId) {
     const token = await getMiddlewareAuthToken(auth)
     const data = await fetchQuery(api.users.getMyUser, {}, { token })
     if (data) {
@@ -25,6 +29,8 @@ export default clerkMiddleware(async (auth, req) => {
         req.nextUrl.pathname !== onboardingTarget
       ) {
         return NextResponse.redirect(new URL(onboardingTarget, req.url))
+      } else if (req.nextUrl.pathname === '/') {
+        return NextResponse.redirect(new URL('/talent/home', req.url))
       }
     }
   }

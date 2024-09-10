@@ -1,6 +1,6 @@
 import {
   SiInstagram,
-  SiTwitter,
+  SiX,
   SiLinkedin,
   SiFacebook,
   SiTiktok,
@@ -12,7 +12,7 @@ const iconMap = {
   instagram: SiInstagram,
   tiktok: SiTiktok,
   youtube: SiYoutube,
-  twitter: SiTwitter,
+  twitter: SiX,
   facebook: SiFacebook,
   linkedin: SiLinkedin
 } as const
