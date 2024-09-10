@@ -18,16 +18,13 @@ import { Id } from './_generated/dataModel'
 
 export const authQuery = customQuery(
   query,
-  {
-    args: {}, // Explicitly define args as an empty object
-    input: customCtx(async (ctx) => {
-      try {
-        return { user: await getUserOrThrow(ctx) }
-      } catch (err) {
-        return { user: null }
-      }
-    })
-  }
+  customCtx(async (ctx) => {
+    try {
+      return { user: await getUserOrThrow(ctx) }
+    } catch (err) {
+      return { user: null }
+    }
+  })
 )
 
 export const authAction = customAction(
