@@ -1,6 +1,8 @@
 {
   "compilerOptions": {
     "target": "ESNext",
+    // "module": "NodeNext",
+    // "moduleResolution": "NodeNext",
     "jsx": "preserve"
   }
   // "extends": "expo/tsconfig.base"

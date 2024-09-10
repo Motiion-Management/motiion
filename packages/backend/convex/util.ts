@@ -59,10 +59,7 @@ export const authAction = customAction(
 
 export const authMutation = customMutation(
   mutation,
-  {
-    args: {}, // Explicitly define args as an empty object
-    input: customCtx(async (ctx) => ({ user: await getUserOrThrow(ctx) }))
-  }
+  customCtx(async (ctx) => ({ user: await getUserOrThrow(ctx) }))
 )
 
 export const adminAuthAction = customAction(
