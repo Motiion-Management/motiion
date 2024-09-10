@@ -7,7 +7,7 @@ export function InstallPWA() {
   const [isBrowser, setIsBrowser] = useState(false)
 
   useEffect(() => {
-    if (typeof window === 'undefined') {
+    if (typeof window !== 'undefined') {
       setIsBrowser(true)
     }
   }, [setIsBrowser])
