@@ -29,18 +29,23 @@ type TabSectionProps = {
 
 export const TabSection: React.FC<TabSectionProps> = async ({ user }) => {
   return (
-    <Tabs defaultValue="about" className="mt-1">
+    <Tabs defaultValue="resume" className="mt-1">
       <TabsList className="sticky top-16 z-10 mb-4 grid w-full grid-cols-3 rounded-full">
-        <TabsTrigger className="rounded-full" value="about">
-          About
-        </TabsTrigger>
         <TabsTrigger className="rounded-full" value="resume">
           Resume
+        </TabsTrigger>
+        <TabsTrigger className="rounded-full" value="about">
+          About
         </TabsTrigger>
         <TabsTrigger className="rounded-full" value="links">
           Links
         </TabsTrigger>
       </TabsList>
+
+      {/* RESUME */}
+      <TabsContent value="resume" className="grid gap-3">
+        <ResumeLinksTab user={user} />
+      </TabsContent>
 
       {/* ABOUT */}
       <AccordionTab value="about">
@@ -48,11 +53,6 @@ export const TabSection: React.FC<TabSectionProps> = async ({ user }) => {
         <SizingCard user={user} />
         <RepresentationCard agencyId={user.representation?.agencyId} />
       </AccordionTab>
-
-      {/* RESUME */}
-      <TabsContent value="resume" className="grid gap-3">
-        <ResumeLinksTab user={user} />
-      </TabsContent>
 
       {/* LINKS */}
       <AccordionTab value="links">
