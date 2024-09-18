@@ -1,4 +1,6 @@
 import { v, ConvexError } from 'convex/values'
+import { paginationOptsValidator } from 'convex/server'
+import { filter } from 'convex-helpers/server/filter'
 import {
   internalQuery,
   query,
@@ -10,13 +12,13 @@ import { authMutation, authQuery, notEmpty } from './util'
 
 import { getAll, getOneFrom } from 'convex-helpers/server/relationships'
 import { crud } from 'convex-helpers/server'
-import { UserDoc, Users, clerkCreateUserFields } from './validators/users'
+import { UserDoc, Users, clerkCreateUserFields, ONBOARDING_STEPS } from './validators/users'
 import { internal } from './_generated/api'
 import { literals, partial } from 'convex-helpers/validators'
 import { NEW_USER_DEFAULTS, formatFullName } from './users/helpers'
 import { AgencyDoc } from './agencies'
 
-export const { paginate, read } = crud(Users, query, mutation)
+export const { read } = crud(Users, query, mutation)
 
 export const {
   create,
@@ -212,7 +214,7 @@ export const getFavoriteUsersForCarousel = authQuery({
     const users = await getAll(ctx.db, ctx.user?.favoriteUsers || [])
 
     if (users.length === 0) {
-      return []
+      return
     }
     return Promise.all(
       users.filter(notEmpty).map(async (user) => {
@@ -226,6 +228,31 @@ export const getFavoriteUsersForCarousel = authQuery({
         }
       })
     )
+  }
+})
+
+export const paginateProfiles = query({
+  args: { paginationOpts: paginationOptsValidator },
+  async handler(ctx, args) {
+    const results = await filter(
+      ctx.db.query('users'),
+      async (user) => user.onboardingStep === ONBOARDING_STEPS.COMPLETE
+    )
+      .paginate(args.paginationOpts)
+
+    return {
+      ...results,
+      page: await Promise.all(results.page.map(async (user) => {
+        const headshots = user.headshots?.filter(notEmpty) || []
+        return {
+          userId: user._id,
+          label: user.displayName || user.fullName || '',
+          headshotUrl: headshots[0]
+            ? (await ctx.storage.getUrl(headshots[0].storageId)) || ''
+            : ''
+        }
+      }))
+    }
   }
 })
 

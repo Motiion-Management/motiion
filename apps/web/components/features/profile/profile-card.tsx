@@ -22,7 +22,7 @@ export function ProfileCard({ user }: { user: UserDoc }) {
   return (
     <AspectRatio
       ratio={24 / 40}
-      className="h-full w-auto group-data-[open=true]:pointer-events-none"
+      className=" w-auto group-data-[open=true]:pointer-events-none"
       id="ar"
     >
       <ReactCardFlip
@@ -33,17 +33,17 @@ export function ProfileCard({ user }: { user: UserDoc }) {
         isFlipped={isFlipped}
         flipDirection="horizontal"
       >
-        <AspectRatio
-          ratio={24 / 40}
-          className="h-full w-auto group-data-[open=true]:pointer-events-none"
+        <div
+          // ratio={24 / 40}
+          className="w-auto group-data-[open=true]:pointer-events-none"
         >
           <BigHeadshotCarousel flip={flip} user={user} />
-        </AspectRatio>
-        <AspectRatio
-          ratio={24 / 40}
+        </div>
+        <div
+          // ratio={24 / 40}
           className="h-full w-auto group-data-[open=true]:pointer-events-none"
         >
-          <div className="stats-card relative grid h-full w-full grid-cols-1 grid-rows-[min-content_min-content_1fr_min-content] gap-4 overflow-hidden rounded-xl py-4">
+          <div className="stats-card h-[75dvh] relative grid  w-full grid-cols-1 grid-rows-[min-content_min-content_min-content] gap-4 overflow-hidden rounded-xl py-4">
             {/* min-content */}
             <div className="text-primary-foreground left-4 top-4 z-10 flex flex-col px-5">
               <div className="text-h3 pt-4">
@@ -58,13 +58,16 @@ export function ProfileCard({ user }: { user: UserDoc }) {
             {/* 1fr */}
             <div className="z-10 flex flex-col items-center justify-end gap-5 px-6">
               <a href={`mailto:${user.email}`} className="w-full">
-                <Button variant="inverted" className="flex w-full gap-1">
+                <Button variant="inverted"
+                  size='sm'
+                  className="flex w-full gap-1">
                   <Image alt="Email Icon" src={EmailIcon} />
                   Contact
                 </Button>
               </a>
               <Button
                 variant="inverted"
+                size='sm'
                 className="flex w-full gap-1"
                 onClick={createShareLink(
                   `Motiion - ${user.firstName} ${user.lastName}`,
@@ -78,13 +81,16 @@ export function ProfileCard({ user }: { user: UserDoc }) {
             </div>
 
             {/* min-content */}
-            <div className="z-50 flex items-end justify-end p-5">
+            <div
+              className="absolute bottom-9 right-5 z-[1000]"
+            // className="z-50 flex items-end justify-end p-5"
+            >
               <Button variant="inverted" size="icon" onClick={flip}>
                 <Image alt="" src={FlipArrowBlack} />
               </Button>
             </div>
           </div>
-        </AspectRatio>
+        </div>
       </ReactCardFlip>
     </AspectRatio>
   )

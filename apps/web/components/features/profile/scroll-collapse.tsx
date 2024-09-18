@@ -34,11 +34,11 @@ export const ScrollCollapse: FC<ScrollCollapseProps> = ({
     <motion.div
       onClick={expand}
       animate={{
-        height: isCollapsed ? 50 : 'auto'
+        height: isCollapsed ? 50 : '75dvh'
       }}
       transition={{ duration: 0.35 }}
       data-collapsed={isCollapsed ? 'true' : 'false'}
-      className={'group sticky top-0 z-20 overflow-clip rounded-xl'}
+      className={'group sticky top-0 z-20 h-full overflow-clip rounded-xl'}
     >
       {children}
       <motion.button

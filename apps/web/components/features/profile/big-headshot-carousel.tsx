@@ -51,20 +51,20 @@ export function BigHeadshotCarousel({
     }
   }
   return (
-    <div className={`relative grid`}>
+    <div className={`relative grid h-[75dvh]`}>
       <div className="absolute top-0 z-10 flex w-full flex-col px-4 group-data-[collapsed=true]:hidden">
         <div className="flex w-full justify-center gap-5 pt-3">
           {headshots && headshots.length > 0
             ? headshots.map((_, index) => (
-                <Progress
-                  className={
-                    current === index
-                      ? 'bg-accent z-10 h-2 w-16'
-                      : 'bg-background z-10 h-2 w-16'
-                  }
-                  key={index}
-                />
-              ))
+              <Progress
+                className={
+                  current === index
+                    ? 'bg-accent z-10 h-2 w-16'
+                    : 'bg-background z-10 h-2 w-16'
+                }
+                key={index}
+              />
+            ))
             : null}
         </div>
         <div className="text-primary-foreground z-10 flex flex-col self-start">
@@ -75,7 +75,7 @@ export function BigHeadshotCarousel({
         </div>
       </div>
 
-      <Carousel setApi={setCarousel} className="absolute left-0 top-0 w-full">
+      <Carousel setApi={setCarousel} className="absolute h-full left-0 top-0 w-full">
         <CarouselContent>
           {headshots && headshots.length > 0 ? (
             headshots.map((headshot, index) => (
