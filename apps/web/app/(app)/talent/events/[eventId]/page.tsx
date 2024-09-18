@@ -41,6 +41,7 @@ export default async function EventPage({
           <CardTitle className="text-h4">Event Details</CardTitle>
         </CardHeader>
         <CardContent className="grid gap-4">
+          <ReadOnlyField value={format(toDate(event.startDate), 'MMMM dd, yyyy')} label="date" />
           <div className="grid grid-cols-2 gap-2">
             <ReadOnlyField value={toTime(event.startDate)} label="starts" />
             {event.endDate && event.startDate !== event.endDate && <ReadOnlyField value={toTime(event.endDate)} label="ends" />}
