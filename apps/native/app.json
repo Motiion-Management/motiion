@@ -1,6 +1,7 @@
 {
   "expo": {
     "name": "Motiion",
+    "owner": "motiion",
     "description": "The place for dance talent and choreographers.",
     "slug": "motiion",
     "version": "1.0.0",
@@ -44,7 +45,6 @@
       "eas": {
         "projectId": "26b62811-8f3e-4bab-9548-9ab85dfa7cb2"
       }
-    },
-    "owner": "motiion"
+    }
   }
 }
