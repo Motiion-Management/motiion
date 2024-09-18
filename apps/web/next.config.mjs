@@ -22,6 +22,7 @@ export default withSerwist({
       { protocol: 'https', hostname: '*.convex.cloud', port: '' }
     ]
   },
+  output: 'export',
   env: {
     NEXT_PUBLIC_CLERK_SIGN_IN_URL: '/sign-in',
     NEXT_PUBLIC_CLERK_SIGN_UP_URL: '/sign-up',
