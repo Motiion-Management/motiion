@@ -28,7 +28,7 @@ function NavLink({ href, children }: NavLinkProps) {
 
 export function Nav({ className }: { className?: string }) {
   return (
-    <nav className={cn('-mb-8 border-t bg-white pb-6 ', className)}>
+    <nav className={cn('-mb-8 border-t bg-white standalone:pb-4', className)}>
       <div className="mx-auto grid max-w-md grid-cols-4 grid-rows-1 gap-2 px-4">
         <NavLink href="/talent/home">
           <Home size={24} />
