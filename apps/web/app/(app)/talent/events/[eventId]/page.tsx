@@ -6,7 +6,8 @@ import { fetchQuery } from 'convex/nextjs'
 import { redirect } from 'next/navigation'
 import { format, toDate } from 'date-fns'
 import { Separator } from '@/components/ui/separator'
-import { Link } from 'lucide-react'
+import { Button } from '@/components/ui/button'
+import { Link, Compass } from 'lucide-react'
 
 const ReadOnlyField = ({ value, label }: { value: string; label: string }) => {
   return (
@@ -42,13 +43,24 @@ export default async function EventPage({
         <CardContent className="grid gap-4">
           <div className="grid grid-cols-2 gap-2">
             <ReadOnlyField value={toTime(event.startDate)} label="starts" />
-            <ReadOnlyField value={toTime(event.endDate)} label="ends" />
+            {event.endDate && event.startDate !== event.endDate && <ReadOnlyField value={toTime(event.endDate)} label="ends" />}
           </div>
           {event.location && (
-            <ReadOnlyField
-              value={event.location.name || event.location.address || ''}
-              label="location"
-            />
+            <div className="grid grid-cols-[1fr_min-content] gap-2 items-center">
+              <ReadOnlyField
+                value={event.location.name || event.location.address || ''}
+                label="location"
+              />
+              <Button asChild variant='outline' size='sm' className='mt-2' >
+                <a
+                  className="text-body-sm flex items-center gap-2 hover:underline"
+                  target="_blank"
+                  href={`//maps.apple.com/?q=${event.location.address},${event.location.city},${event.location.state},${event.location.zipCode}`}
+                >
+                  Go <Compass />
+                </a>
+              </Button>
+            </div>
           )}
           {event.description && (
             <div className="grid gap-2">
@@ -65,12 +77,15 @@ export default async function EventPage({
               <span className="text-label-xs text-secondary uppercase">
                 website
               </span>
-              <a
-                className="text-body-sm flex items-center gap-2 hover:underline"
-                href={event.websiteUrl}
-              >
-                {event.websiteUrl} <Link size={12} />
-              </a>
+              <Button asChild variant='secondary' >
+                <a
+                  className="text-body-sm flex items-center gap-2 hover:underline"
+                  target="_blank"
+                  href={event.websiteUrl}
+                >
+                  See More <Link size={12} />
+                </a>
+              </Button>
             </div>
           )}
         </CardContent>
