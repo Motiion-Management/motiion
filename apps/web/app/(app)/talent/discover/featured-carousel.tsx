@@ -11,12 +11,15 @@ export const FeaturedCarousel: FC<{
   title: string
   profiles?: Profile[] | null
 }> = ({ title, profiles }) => {
-
   if (!profiles) return null
   return (
     <div className="grid gap-4">
       <h2 className="text-h5">{title}</h2>
-      <Carousel opts={{ dragFree: true }} className="overflow-scroll">
+      <Carousel
+        opts={{ dragFree: true }}
+        className="overflow-scroll"
+        style={{ scrollbarWidth: 'none' }}
+      >
         <CarouselContent className="flex gap-4">
           {profiles.map((profile, index) => (
             <CarouselItem
