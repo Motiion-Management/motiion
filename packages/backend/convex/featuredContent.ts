@@ -11,3 +11,15 @@ export const { create, update, destroy } = crud(
   authQuery,
   authMutation
 )
+
+export const getCurrent = query({
+  args: {},
+  async handler(ctx) {
+    const featuredContent = await ctx.db.query('featuredContent').first()
+
+    if (!featuredContent) return
+
+    return { ...featuredContent, image: await ctx.storage.getUrl(featuredContent.media) }
+
+  }
+})
