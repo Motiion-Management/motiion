@@ -16,6 +16,7 @@ export const UsersGrid: FC = () => {
 
   return (
     <div className='grid grid-cols-2 gap-2'>
+      <h2 className="text-h5 col-span-2">The Community</h2>
       {results?.map((profile, index) => (
         <DiscoverProfileCard
           key={profile.headshotUrl + index}
