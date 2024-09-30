@@ -1,30 +1,24 @@
-'use client'
-import React, { useState, useEffect } from 'react'
+import { fetchQuery } from 'convex/nextjs'
 import { api } from '@packages/backend/convex/_generated/api'
 
-export default function AdminPage() {
-  const [events, setEvents] = useState([])
+export default async function AdminPage() {
+  const events = await fetchQuery(api.events.read)
   const [newEvent, setNewEvent] = useState({
     title: '',
     startDate: '',
     endDate: ''
   })
 
-  useEffect(() => {
-    // Fetch events from the backend
-    api.events.read().then(setEvents)
-  }, [])
-
   const handleCreateEvent = async () => {
-    await api.events.create(newEvent)
+    await fetchQuery(api.events.create, newEvent)
     setNewEvent({ title: '', startDate: '', endDate: '' })
-    const updatedEvents = await api.events.read()
+    const updatedEvents = await fetchQuery(api.events.read)
     setEvents(updatedEvents)
   }
 
   const handleDeleteEvent = async (eventId) => {
-    await api.events.destroy({ id: eventId })
-    const updatedEvents = await api.events.read()
+    await fetchQuery(api.events.destroy, { id: eventId })
+    const updatedEvents = await fetchQuery(api.events.read)
     setEvents(updatedEvents)
   }
 
