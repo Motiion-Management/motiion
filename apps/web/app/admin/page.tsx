@@ -4,7 +4,7 @@ import { useQuery, useMutation } from 'convex/react'
 import { api } from '@packages/backend/convex/_generated/api'
 
 export default function AdminPage() {
-  const events = useQuery(api.events.read) || []
+  const events = useQuery(api.events.paginate, { paginationOpts: { pageSize: 10 } })?.page || []
   const [newEvent, setNewEvent] = useState({
     title: '',
     startDate: '',
