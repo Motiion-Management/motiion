@@ -1,5 +1,8 @@
 'use client'
 import { useState } from 'react'
+import { useForm } from 'react-hook-form'
+import { zodResolver } from '@hookform/resolvers/zod'
+import { zEvents } from '@packages/backend/convex/validators/events'
 import { usePaginatedQuery, useMutation } from 'convex/react'
 import { api } from '@packages/backend/convex/_generated/api'
 
@@ -10,11 +13,13 @@ export default function AdminPage() {
     isLoading,
     loadMore
   } = usePaginatedQuery(api.events.paginate, {}, { initialNumItems: 10 })
-  const [newEvent, setNewEvent] = useState({
-    title: '',
-    startDate: '',
-    endDate: ''
+  const { register, handleSubmit, formState: { errors } } = useForm({
+    resolver: zodResolver(zEvents.pick({ title: true, startDate: true, endDate: true }))
   })
+
+  const onSubmit = async (data) => {
+    await createEvent(data)
+  }
 
   const createEvent = useMutation(api.events.create)
   const deleteEvent = useMutation(api.events.destroy)
@@ -60,34 +65,31 @@ export default function AdminPage() {
         </section>
         <section id="events">
           <h2>Manage Events</h2>
-          <div>
-            <h3>Create New Event</h3>
-            <input
-              type="text"
-              placeholder="Title"
-              value={newEvent.title}
-              onChange={(e) =>
-                setNewEvent({ ...newEvent, title: e.target.value })
-              }
-            />
-            <input
-              type="date"
-              placeholder="Start Date"
-              value={newEvent.startDate}
-              onChange={(e) =>
-                setNewEvent({ ...newEvent, startDate: e.target.value })
-              }
-            />
-            <input
-              type="date"
-              placeholder="End Date"
-              value={newEvent.endDate}
-              onChange={(e) =>
-                setNewEvent({ ...newEvent, endDate: e.target.value })
-              }
-            />
-            <button onClick={handleCreateEvent}>Create Event</button>
-          </div>
+          <form onSubmit={handleSubmit(onSubmit)}>
+              <h3>Create New Event</h3>
+              <input
+                type="text"
+                placeholder="Title"
+                {...register('title')}
+              />
+              {errors.title && <span>{errors.title.message}</span>}
+              
+              <input
+                type="date"
+                placeholder="Start Date"
+                {...register('startDate')}
+              />
+              {errors.startDate && <span>{errors.startDate.message}</span>}
+              
+              <input
+                type="date"
+                placeholder="End Date"
+                {...register('endDate')}
+              />
+              {errors.endDate && <span>{errors.endDate.message}</span>}
+              
+              <button type="submit">Create Event</button>
+          </form>
           <ul>
             {events.map((event) => (
               <li key={event._id}>
