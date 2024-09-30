@@ -4,7 +4,7 @@ import { authMutation, authQuery } from './util'
 import { crud } from 'convex-helpers/server'
 import { FeaturedContent } from './validators/featuredContent'
 
-export const { read } = crud(FeaturedContent, query, mutation)
+export const { read, getAll } = crud(FeaturedContent, query, mutation)
 
 export const { create, update, destroy } = crud(
   FeaturedContent,

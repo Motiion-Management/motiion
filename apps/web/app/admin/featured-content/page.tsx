@@ -1,5 +1,5 @@
 'use client'
-import { usePaginatedQuery, useMutation } from 'convex/react'
+import { useQuery, useMutation } from 'convex/react'
 import { api } from '@packages/backend/convex/_generated/api'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
@@ -7,11 +7,7 @@ import { zFeaturedContent } from '@packages/backend/convex/validators/featuredCo
 import { useState } from 'react'
 
 export default function FeaturedContentPage() {
-  const { results, status, isLoading, loadMore } = usePaginatedQuery(
-    api.featuredContent.paginate,
-    {},
-    { initialNumItems: 5 }
-  )
+  const featuredContent = useQuery(api.featuredContent.getAll)
 
   const { register, handleSubmit, formState: { errors } } = useForm({
     resolver: zodResolver(zFeaturedContent)
@@ -48,7 +44,7 @@ export default function FeaturedContentPage() {
       </form>
 
       <div>
-        {results.map((content, index) => (
+        {featuredContent?.map((content, index) => (
           <div key={index}>
             <h2>{content.title}</h2>
             <p>{content.description}</p>
@@ -60,11 +56,6 @@ export default function FeaturedContentPage() {
             </button>
           </div>
         ))}
-        {status === 'CanLoadMore' && (
-          <button onClick={() => loadMore(5)} disabled={isLoading}>
-            Load More
-          </button>
-        )}
       </div>
     </div>
   )
