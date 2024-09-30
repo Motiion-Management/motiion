@@ -18,6 +18,7 @@ export const paginate = query({
       async (event) => event.active
     )
       .withIndex('startDate')
+      .filter((q) => q.eq(q.field('active'), true))
       .order('desc')
       .paginate(args.paginationOpts)
 

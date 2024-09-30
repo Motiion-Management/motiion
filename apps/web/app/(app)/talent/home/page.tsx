@@ -11,26 +11,29 @@ export default async function HomePage() {
   return (
     <div className="flex flex-col gap-8 px-2">
       {featuredEvent?.image && (
-        <div className='grid grid-cols-2 gap-4'>
-          <Link href={`${featuredEvent.link}`} className=" h-min">
-            <AspectRatio ratio={123 / 180} className="relative">
+        <div className="grid grid-cols-1 gap-4">
+          <Link href={`${featuredEvent.link}`} className="h-min">
+            <AspectRatio ratio={300 / 180} className="relative">
               <Image
-                className="rounded-lg object-cover relative z-10"
-
+                className="relative z-10 rounded-lg object-cover"
                 src={featuredEvent.image}
                 layout="fill"
                 alt={featuredEvent.title}
               />
             </AspectRatio>
           </Link>
-          <div className='flex flex-col gap-2'>
-            <h2 className='text-lg font-bold text-end'>{featuredEvent.title}</h2>
-            <span className='text-sm text-end'>{featuredEvent.description}</span>
-            <Button asChild variant='secondary' className='self-end mt-4'>
-              <Link href={`${featuredEvent.link}`}>
-                Learn More
-              </Link>
-            </Button>
+          <div className="flex flex-col gap-2">
+            <h2 className="text-end text-lg font-bold">
+              {featuredEvent.title}
+            </h2>
+            <span className="text-end text-sm">
+              {featuredEvent.description}
+            </span>
+            {featuredEvent.link && (
+              <Button asChild variant="secondary" className="mt-4 self-end">
+                <Link href={`${featuredEvent.link}`}>Learn More</Link>
+              </Button>
+            )}
           </div>
         </div>
       )}

@@ -29,6 +29,9 @@ export const EventsList: FC = () => {
     setResultsByDate(groupedResults)
   }, [results])
 
+  if (results.length === 0) {
+    return null
+  }
   return (
     <Timeline>
       <h2 className="text-h5 mb-4">Upcoming Events</h2>
