@@ -1,10 +1,13 @@
 'use client'
 import { useState } from 'react'
-import { useQuery, useMutation } from 'convex/react'
+import { usePaginatedQuery, useMutation } from 'convex/react'
 import { api } from '@packages/backend/convex/_generated/api'
 
 export default function AdminPage() {
-  const events = useQuery(api.events.paginate, { paginationOpts: { pageSize: 10 } })?.page || []
+  const { results: events, status, isLoading, loadMore } = usePaginatedQuery(
+    api.events.paginate,
+    { paginationOpts: { pageSize: 10 } }
+  )
   const [newEvent, setNewEvent] = useState({
     title: '',
     startDate: '',
@@ -45,7 +48,14 @@ export default function AdminPage() {
         <section id="users">
           <h2>Manage Users</h2>
           {/* User management components will go here */}
-        </section>
+          {status === 'CanLoadMore' && (
+            <div className="flex justify-end">
+              <button onClick={() => loadMore(10)} disabled={isLoading}>
+                Load More Events
+              </button>
+            </div>
+          )}
+        </section> 
         <section id="events">
           <h2>Manage Events</h2>
           <div>
