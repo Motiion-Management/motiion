@@ -4,10 +4,12 @@ import { usePaginatedQuery, useMutation } from 'convex/react'
 import { api } from '@packages/backend/convex/_generated/api'
 
 export default function AdminPage() {
-  const { results: events, status, isLoading, loadMore } = usePaginatedQuery(
-    api.events.paginate,
-    { paginationOpts: { pageSize: 10 } }
-  )
+  const {
+    results: events,
+    status,
+    isLoading,
+    loadMore
+  } = usePaginatedQuery(api.events.paginate, {}, { initialNumItems: 10 })
   const [newEvent, setNewEvent] = useState({
     title: '',
     startDate: '',
@@ -55,7 +57,7 @@ export default function AdminPage() {
               </button>
             </div>
           )}
-        </section> 
+        </section>
         <section id="events">
           <h2>Manage Events</h2>
           <div>
