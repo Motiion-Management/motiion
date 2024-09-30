@@ -1,5 +1,4 @@
 'use client'
-import { useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { zEvents } from '@packages/backend/convex/validators/events'
@@ -13,21 +12,17 @@ export default function AdminPage() {
     isLoading,
     loadMore
   } = usePaginatedQuery(api.events.paginate, {}, { initialNumItems: 10 })
-  const { register, handleSubmit, formState: { errors } } = useForm({
+  const { register, handleSubmit, formState: { errors } } = useForm<z.infer<typeof zEvents>>({
     resolver: zodResolver(zEvents.pick({ title: true, startDate: true, endDate: true }))
   })
 
-  const onSubmit = async (data) => {
+  const onSubmit = async (data: z.infer<typeof zEvents>) => {
     await createEvent(data)
   }
 
   const createEvent = useMutation(api.events.create)
   const deleteEvent = useMutation(api.events.destroy)
 
-  const handleCreateEvent = async () => {
-    await createEvent(newEvent)
-    setNewEvent({ title: '', startDate: '', endDate: '' })
-  }
 
   const handleDeleteEvent = async (eventId) => {
     await deleteEvent({ id: eventId })
