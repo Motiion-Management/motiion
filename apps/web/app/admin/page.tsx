@@ -1,27 +1,32 @@
-import React, { useState, useEffect } from 'react';
-import { api } from 'convex/react'; // Assuming you have a Convex API setup
+'use client'
+import React, { useState, useEffect } from 'react'
+import { api } from '@packages/backend/convex/_generated/api'
 
 export default function AdminPage() {
-  const [events, setEvents] = useState([]);
-  const [newEvent, setNewEvent] = useState({ title: '', startDate: '', endDate: '' });
+  const [events, setEvents] = useState([])
+  const [newEvent, setNewEvent] = useState({
+    title: '',
+    startDate: '',
+    endDate: ''
+  })
 
   useEffect(() => {
     // Fetch events from the backend
-    api.events.read().then(setEvents);
-  }, []);
+    api.events.read().then(setEvents)
+  }, [])
 
   const handleCreateEvent = async () => {
-    await api.events.create(newEvent);
-    setNewEvent({ title: '', startDate: '', endDate: '' });
-    const updatedEvents = await api.events.read();
-    setEvents(updatedEvents);
-  };
+    await api.events.create(newEvent)
+    setNewEvent({ title: '', startDate: '', endDate: '' })
+    const updatedEvents = await api.events.read()
+    setEvents(updatedEvents)
+  }
 
   const handleDeleteEvent = async (eventId) => {
-    await api.events.destroy({ id: eventId });
-    const updatedEvents = await api.events.read();
-    setEvents(updatedEvents);
-  };
+    await api.events.destroy({ id: eventId })
+    const updatedEvents = await api.events.read()
+    setEvents(updatedEvents)
+  }
 
   return (
     <div>
@@ -29,9 +34,15 @@ export default function AdminPage() {
         <h1>Admin Panel</h1>
         <nav>
           <ul>
-            <li><a href="#users">Manage Users</a></li>
-            <li><a href="#events">Manage Events</a></li>
-            <li><a href="#settings">Settings</a></li>
+            <li>
+              <a href="#users">Manage Users</a>
+            </li>
+            <li>
+              <a href="#events">Manage Events</a>
+            </li>
+            <li>
+              <a href="#settings">Settings</a>
+            </li>
           </ul>
         </nav>
       </header>
@@ -48,27 +59,35 @@ export default function AdminPage() {
               type="text"
               placeholder="Title"
               value={newEvent.title}
-              onChange={(e) => setNewEvent({ ...newEvent, title: e.target.value })}
+              onChange={(e) =>
+                setNewEvent({ ...newEvent, title: e.target.value })
+              }
             />
             <input
               type="date"
               placeholder="Start Date"
               value={newEvent.startDate}
-              onChange={(e) => setNewEvent({ ...newEvent, startDate: e.target.value })}
+              onChange={(e) =>
+                setNewEvent({ ...newEvent, startDate: e.target.value })
+              }
             />
             <input
               type="date"
               placeholder="End Date"
               value={newEvent.endDate}
-              onChange={(e) => setNewEvent({ ...newEvent, endDate: e.target.value })}
+              onChange={(e) =>
+                setNewEvent({ ...newEvent, endDate: e.target.value })
+              }
             />
             <button onClick={handleCreateEvent}>Create Event</button>
           </div>
           <ul>
-            {events.map(event => (
+            {events.map((event) => (
               <li key={event._id}>
                 {event.title} ({event.startDate} - {event.endDate})
-                <button onClick={() => handleDeleteEvent(event._id)}>Delete</button>
+                <button onClick={() => handleDeleteEvent(event._id)}>
+                  Delete
+                </button>
               </li>
             ))}
           </ul>
@@ -79,5 +98,5 @@ export default function AdminPage() {
         </section>
       </main>
     </div>
-  );
+  )
 }
