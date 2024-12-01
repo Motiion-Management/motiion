@@ -2,12 +2,9 @@ import '../global.css';
 import 'expo-dev-client';
 import { ThemeProvider as NavThemeProvider } from '@react-navigation/native';
 import { Icon } from '@roninoss/icons';
-
-
 import { Link, Stack } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import { Pressable, View } from 'react-native';
-
 
 import { ThemeToggle } from '~/components/ThemeToggle';
 import { cn } from '~/lib/cn';
@@ -31,16 +28,14 @@ export default function RootLayout() {
       />
       {/* WRAP YOUR APP WITH ANY ADDITIONAL PROVIDERS HERE */}
       {/* <ExampleProvider> */}
-       
-        
-        <NavThemeProvider value={NAV_THEME[colorScheme]}>
-          <Stack screenOptions={SCREEN_OPTIONS}>
-            <Stack.Screen name="index" options={INDEX_OPTIONS} />
-            <Stack.Screen name="modal" options={MODAL_OPTIONS} />
-          </Stack>
-        </NavThemeProvider>
-        
-        
+
+      <NavThemeProvider value={NAV_THEME[colorScheme]}>
+        <Stack screenOptions={SCREEN_OPTIONS}>
+          <Stack.Screen name="index" options={INDEX_OPTIONS} />
+          <Stack.Screen name="modal" options={MODAL_OPTIONS} />
+        </Stack>
+      </NavThemeProvider>
+
       {/* </ExampleProvider> */}
     </>
   );
