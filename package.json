@@ -8,7 +8,7 @@
     "add:backend": "pnpm add --filter @packages/backend",
     "dev": "turbo run dev",
     "web": "turbo run dev --filter web-app",
-    "native": "turbo run dev --filter native-app",
+    "native": "turbo run dev --filter native-app --ui tui",
     "backend": "turbo run dev --filter @packages/backend",
     "build": "turbo run build",
     "clean": "turbo run clean && rm -rf node_modules",
