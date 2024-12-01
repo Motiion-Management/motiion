@@ -1,29 +1,34 @@
 // Learn more https://docs.expo.dev/guides/monorepos
+// Learn more https://docs.expo.io/guides/customizing-metro
+/**
+ * @type {import('expo/metro-config')}
+ */
+const { getDefaultConfig } = require('expo/metro-config')
+const { withNativeWind } = require('nativewind/metro')
 
-const { getDefaultConfig } = require("expo/metro-config");
-const { FileStore } = require("metro-cache");
-const path = require("path");
+const path = require('path')
 
-const projectRoot = __dirname;
-const workspaceRoot = path.resolve(projectRoot, "../..");
+// Find the project and workspace directories
+const projectRoot = __dirname
+// This can be replaced with `find-yarn-workspace-root`
+const workspaceRoot = path.resolve(projectRoot, '../..')
 
-const config = getDefaultConfig(projectRoot);
+const config = getDefaultConfig(projectRoot)
+const globalCSS = path.resolve(projectRoot, 'global.css')
+const tailwindConfigPath = path.resolve(projectRoot, 'tailwind.config.js')
 
-// #1 - Watch all files in the monorepo
-config.watchFolders = [workspaceRoot];
-// #3 - Force resolving nested modules to the folders below
-config.resolver.disableHierarchicalLookup = true;
-// #2 - Try resolving with project modules first, then workspace modules
+// 1. Watch all files within the monorepo
+config.watchFolders = [workspaceRoot]
+// 2. Let Metro know where to resolve packages and in what order
 config.resolver.nodeModulesPaths = [
-  path.resolve(projectRoot, "node_modules"),
-  path.resolve(workspaceRoot, "node_modules"),
-];
+  path.resolve(projectRoot, 'node_modules'),
+  path.resolve(workspaceRoot, 'node_modules')
+]
+// 3. Force Metro to resolve (sub)dependencies only from the `nodeModulesPaths`
+config.resolver.disableHierarchicalLookup = true
 
-// Use turborepo to restore the cache when possible
-config.cacheStores = [
-  new FileStore({
-    root: path.join(projectRoot, "node_modules", ".cache", "metro"),
-  }),
-];
-
-module.exports = config;
+module.exports = withNativeWind(config, {
+  input: globalCSS,
+  configPath: tailwindConfigPath,
+  projectRoot
+})

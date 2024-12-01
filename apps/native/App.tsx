@@ -1,44 +1,39 @@
-import { View, StatusBar, Platform } from 'react-native';
-import { useFonts } from 'expo-font';
-import { LogBox } from 'react-native';
-import Navigation from './src/navigation/Navigation';
-import ConvexClientProvider from './ConvexClientProvider';
+import React from 'react'
+import { View, StatusBar } from 'react-native'
+import { useFonts } from 'expo-font'
+import { LogBox } from 'react-native'
+import Navigation from './src/navigation/Navigation'
+import ConvexClientProvider from './ConvexClientProvider'
+import { SafeAreaProvider } from 'react-native-safe-area-context'
 
 export default function App() {
-  LogBox.ignoreLogs(['Warning: ...']);
-  LogBox.ignoreAllLogs();
+  LogBox.ignoreLogs(['Warning: ...'])
+  LogBox.ignoreAllLogs()
 
-  const [loaded] = useFonts({
-    Bold: require('./src/assets/fonts/Inter-Bold.ttf'),
-    SemiBold: require('./src/assets/fonts/Inter-SemiBold.ttf'),
-    Medium: require('./src/assets/fonts/Inter-Medium.ttf'),
-    Regular: require('./src/assets/fonts/Inter-Regular.ttf'),
+  const [fontsLoaded, fontError] = useFonts({
+    'Inter-Bold': require('./src/assets/fonts/Inter-Bold.ttf'),
+    'Inter-SemiBold': require('./src/assets/fonts/Inter-SemiBold.ttf'),
+    'Inter-Medium': require('./src/assets/fonts/Inter-Medium.ttf'),
+    'Inter-Regular': require('./src/assets/fonts/Inter-Regular.ttf'),
+    'Montserrat-Bold': require('./src/assets/fonts/Montserrat-Bold.ttf'),
+    'Montserrat-SemiBold': require('./src/assets/fonts/Montserrat-SemiBold.ttf'),
+    'Montserrat-Medium': require('./src/assets/fonts/Montserrat-Medium.ttf'),
+    'Montserrat-Regular': require('./src/assets/fonts/Montserrat-Regular.ttf'),
+    'Montserrat-Light': require('./src/assets/fonts/Montserrat-Light.ttf')
+  })
 
-    MBold: require('./src/assets/fonts/Montserrat-Bold.ttf'),
-    MSemiBold: require('./src/assets/fonts/Montserrat-SemiBold.ttf'),
-    MMedium: require('./src/assets/fonts/Montserrat-Medium.ttf'),
-    MRegular: require('./src/assets/fonts/Montserrat-Regular.ttf'),
-    MLight: require('./src/assets/fonts/Montserrat-Light.ttf'),
-  });
-  if (!loaded) {
-    return false;
+  if (!fontsLoaded && !fontError) {
+    return null
   }
 
-  const STATUS_BAR_HEIGHT =
-    Platform.OS === 'ios' ? 50 : StatusBar.currentHeight;
-
   return (
-    <ConvexClientProvider>
-      <View style={{ flex: 1 }}>
-        <View style={{ height: STATUS_BAR_HEIGHT, backgroundColor: '#0D87E1' }}>
-          <StatusBar
-            translucent
-            backgroundColor={'#0D87E1'}
-            barStyle="light-content"
-          />
+    <SafeAreaProvider>
+      <ConvexClientProvider>
+        <View className="bg-background flex-1">
+          <StatusBar barStyle="light-content" backgroundColor="#0D87E1" />
+          <Navigation />
         </View>
-        <Navigation />
-      </View>
-    </ConvexClientProvider>
-  );
+      </ConvexClientProvider>
+    </SafeAreaProvider>
+  )
 }
