@@ -1,11 +1,32 @@
 {
   "$schema": "https://turbo.build/schema.json",
-  "globalDependencies": ["**/.env.*local"],
-  "globalEnv": ["CONVEX_DEPLOY_KEY", "NEXT_PUBLIC_CONVEX_URL"],
+  "globalDependencies": [
+    "**/.env.*local"
+  ],
+  "globalEnv": [
+    "CONVEX_DEPLOY_KEY",
+    "NEXT_PUBLIC_CONVEX_URL"
+  ],
   "tasks": {
     "build": {
-      "outputs": ["dist/**", ".next/**", "!.next/cache/**"],
-      "dependsOn": ["^build"]
+      "outputs": [
+        "dist/**",
+        ".next/**",
+        "!.next/cache/**"
+      ],
+      "dependsOn": [
+        "^build"
+      ]
+    },
+    "build:dev": {
+      "dependsOn": [
+        "^build"
+      ]
+    },
+    "build:dev:ios": {
+      "dependsOn": [
+        "^build"
+      ]
     },
     "dev": {
       "cache": false,
