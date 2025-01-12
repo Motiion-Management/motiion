@@ -11,6 +11,7 @@ import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { KeyboardProvider } from 'react-native-keyboard-controller';
 
 import { ThemeToggle } from '~/components/ThemeToggle';
+import ConvexClientProvider from '~/components/providers/ConvexClientProvider';
 import { cn } from '~/lib/cn';
 import { useColorScheme, useInitialAndroidBarSync } from '~/lib/useColorScheme';
 import { NAV_THEME } from '~/theme';
@@ -33,20 +34,22 @@ export default function RootLayout() {
       {/* WRAP YOUR APP WITH ANY ADDITIONAL PROVIDERS HERE */}
       {/* <ExampleProvider> */}
 
-      <GestureHandlerRootView style={{ flex: 1 }}>
-        <KeyboardProvider statusBarTranslucent navigationBarTranslucent>
-          <BottomSheetModalProvider>
-            <ActionSheetProvider>
-              <NavThemeProvider value={NAV_THEME[colorScheme]}>
-                <Stack screenOptions={SCREEN_OPTIONS}>
-                  <Stack.Screen name="index" options={INDEX_OPTIONS} />
-                  <Stack.Screen name="modal" options={MODAL_OPTIONS} />
-                </Stack>
-              </NavThemeProvider>
-            </ActionSheetProvider>
-          </BottomSheetModalProvider>
-        </KeyboardProvider>
-      </GestureHandlerRootView>
+      <ConvexClientProvider>
+        <GestureHandlerRootView style={{ flex: 1 }}>
+          <KeyboardProvider statusBarTranslucent navigationBarTranslucent>
+            <BottomSheetModalProvider>
+              <ActionSheetProvider>
+                <NavThemeProvider value={NAV_THEME[colorScheme]}>
+                  <Stack screenOptions={SCREEN_OPTIONS}>
+                    <Stack.Screen name="index" options={INDEX_OPTIONS} />
+                    <Stack.Screen name="modal" options={MODAL_OPTIONS} />
+                  </Stack>
+                </NavThemeProvider>
+              </ActionSheetProvider>
+            </BottomSheetModalProvider>
+          </KeyboardProvider>
+        </GestureHandlerRootView>
+      </ConvexClientProvider>
 
       {/* </ExampleProvider> */}
     </>
