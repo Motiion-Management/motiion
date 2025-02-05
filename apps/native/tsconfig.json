@@ -1,6 +1,7 @@
 {
   "extends": "expo/tsconfig.base",
   "compilerOptions": {
+    "jsx": "preserve",
     "allowJs": true,
     "strict": true,
     "baseUrl": ".",
