@@ -20,9 +20,9 @@ const buttonVariants = cva('flex-row items-center justify-center gap-2', {
     size: {
       none: '',
       sm: 'py-1 px-2.5 rounded-full',
-      md: 'ios:rounded-lg py-2 ios:py-1.5 ios:px-3.5 px-5 rounded-full',
-      lg: 'py-2.5 px-5 ios:py-2 rounded-xl gap-2',
-      icon: 'ios:rounded-lg h-10 w-10 rounded-full',
+      md: 'ios:rounded-full py-2 ios:py-1.5 ios:px-3.5 px-5 rounded-full',
+      lg: 'py-2.5 px-5 ios:py-2 rounded-full gap-2',
+      icon: 'ios:rounded-full h-10 w-10 rounded-full',
     },
   },
   defaultVariants: {
@@ -38,7 +38,7 @@ const androidRootVariants = cva('overflow-hidden', {
       icon: 'rounded-full',
       sm: 'rounded-full',
       md: 'rounded-full',
-      lg: 'rounded-xl',
+      lg: 'rounded-full',
     },
   },
   defaultVariants: {
