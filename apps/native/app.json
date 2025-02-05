@@ -17,7 +17,18 @@
           "launchMode": "most-recent"
         }
       ],
-      "expo-font",
+      [
+        "expo-font",
+        {
+          "fonts": [
+            "assets/fonts/Montserrat Light.ttf",
+            "assets/fonts/Montserrat Medium.ttf",
+            "assets/fonts/Montserrat Regular.ttf",
+            "assets/fonts/Montserrat SemiBold.ttf",
+            "assets/fonts/Montserrat Bold.ttf"
+          ]
+        }
+      ],
       "expo-secure-store",
       "expo-video"
     ],

@@ -1,12 +1,32 @@
+import { customFontSizes } from './lib/theme/fontSizes';
+
 const { hairlineWidth, platformSelect } = require('nativewind/theme');
 
-/** @type {import('tailwindcss').Config} */
 module.exports = {
   // NOTE: Update this to include the paths to all of your component files.
   content: ['./app/**/*.{js,jsx,ts,tsx}', './components/**/*.{js,jsx,ts,tsx}'],
   presets: [require('nativewind/preset')],
   theme: {
     extend: {
+      darkMode: 'class',
+      letterSpacing: {
+        'very-tight': '-0.04em',
+        tight: '-0.025em',
+        normal: '-0.02em',
+        loose: '-0.01em',
+        'very-loose': '0.06em',
+      },
+      fontSize: JSON.parse(JSON.stringify(customFontSizes)),
+      fontWeight: {
+        light: '300',
+        normal: '400',
+        medium: '500',
+        semibold: '600',
+        bold: '700',
+      },
+      fontFamily: {
+        sans: ['Montserrat', 'sans-serif'],
+      },
       colors: {
         border: withOpacity('border'),
         input: withOpacity('input'),
@@ -42,6 +62,11 @@ module.exports = {
           foreground: withOpacity('card-foreground'),
         },
       },
+      borderRadius: {
+        lg: 'var(--radius)',
+        md: 'calc(var(--radius) - 2px)',
+        sm: 'calc(var(--radius) - 4px)',
+      },
       borderWidth: {
         hairline: hairlineWidth(),
       },
@@ -50,8 +75,8 @@ module.exports = {
   plugins: [],
 };
 
-function withOpacity(variableName) {
-  return ({ opacityValue }) => {
+function withOpacity(variableName: string) {
+  return ({ opacityValue }: { opacityValue: number }) => {
     if (opacityValue !== undefined) {
       return platformSelect({
         ios: `rgb(var(--${variableName}) / ${opacityValue})`,
