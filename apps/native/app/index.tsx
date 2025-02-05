@@ -21,6 +21,11 @@ export default function RootScreen() {
       <SignedOut>
         <ImageBackground source={require('./background.png')} className="h-full">
           <SafeAreaView style={{ flex: 1 }}>
+            <View className="mt-[25%] flex w-full items-center">
+              <Text variant="largeTitle" color="primary">
+                motiion
+              </Text>
+            </View>
             <View className="ios:justify-end flex-1 justify-center gap-4 px-6 py-4">
               <View className="ios:pb-5 ios:pt-2 pb-2">
                 <Text variant="body">

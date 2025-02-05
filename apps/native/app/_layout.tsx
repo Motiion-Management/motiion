@@ -45,15 +45,11 @@ export default function RootLayout() {
                     <Stack.Screen
                       name="index"
                       options={{
-                        headerTransparent: true,
+                        headerShown: false,
                         title: 'motiion',
-                        headerTitle: ({ children }) => (
-                          <View className="mt-[25%] flex w-full items-center ">
-                            <Text variant="largeTitle" color="primary">
-                              {children}
-                            </Text>
-                          </View>
-                        ),
+                        // headerTitle: ({ children }) => (
+                        //
+                        // ),
                       }}
                     />
                   </Stack>
