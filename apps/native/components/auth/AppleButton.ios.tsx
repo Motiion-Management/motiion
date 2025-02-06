@@ -32,8 +32,8 @@ export const AppleButton = () => {
       className="ios:border-foreground/60"
       size={Platform.select({ ios: 'lg', default: 'md' })}
       onPress={onPress}>
-      <Text className="ios:text-foreground absolute left-4 text-[22px]"></Text>
-      <Text className="ios:text-foreground">Continue with Apple</Text>
+      <Text className="absolute left-4 text-[22px]"></Text>
+      <Text>Continue with Apple</Text>
     </Button>
   );
 };

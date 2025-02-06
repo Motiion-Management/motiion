@@ -50,7 +50,7 @@ export const GoogleButton = () => {
       size={Platform.select({ ios: 'lg', default: 'md' })}
       onPress={onPress}>
       <Image source={GOOGLE_SOURCE} className="absolute left-4 h-4 w-4" resizeMode="contain" />
-      <Text className="ios:text-foreground">Continue with Google</Text>
+      <Text>Continue with Google</Text>
     </Button>
   );
 };

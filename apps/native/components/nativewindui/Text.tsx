@@ -7,16 +7,18 @@ import { cn } from '~/lib/cn';
 
 cssInterop(UITextView, { className: 'style' });
 
-const textVariants = cva('text-foreground', {
+const textVariants = cva('text-foreground font-sans', {
   variants: {
     variant: {
-      largeTitle: 'text-h1',
-      title1: 'text-h2',
-      title2: 'text-h3',
-      title3: 'text-h4',
-      heading: 'text-h5',
-      subhead: 'text-h6',
-      body: 'text-body',
+      largeTitle: 'text-h1 font-bold',
+      title1: 'text-h2 font-bold',
+      title2: 'text-h3 font-bold',
+      title3: 'text-h4 font-bold',
+      heading: 'text-h5 font-bold',
+      subhead: 'text-h6 font-bold',
+      body: 'text-body font-normal',
+      bodySm: 'text-body-sm font-normal',
+      bodyXs: 'text-body-sm font-normal',
       callout: 'text-body-lg',
       footnote: 'text-[13px] leading-5',
       caption1: 'text-xs',

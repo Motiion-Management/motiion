@@ -41,6 +41,10 @@ module.exports = {
           DEFAULT: withOpacity('secondary'),
           foreground: withOpacity('secondary-foreground'),
         },
+        tonal: {
+          DEFAULT: withOpacity('tonal'),
+          foreground: withOpacity('tonal-foreground'),
+        },
         destructive: {
           DEFAULT: withOpacity('destructive'),
           foreground: withOpacity('destructive-foreground'),
@@ -79,12 +83,12 @@ function withOpacity(variableName: string) {
   return ({ opacityValue }: { opacityValue: number }) => {
     if (opacityValue !== undefined) {
       return platformSelect({
-        ios: `rgb(var(--${variableName}) / ${opacityValue})`,
+        ios: `hsla(var(--${variableName}) / ${opacityValue})`,
         android: `rgb(var(--android-${variableName}) / ${opacityValue})`,
       });
     }
     return platformSelect({
-      ios: `rgb(var(--${variableName}))`,
+      ios: `hsla(var(--${variableName}))`,
       android: `rgb(var(--android-${variableName}))`,
     });
   };

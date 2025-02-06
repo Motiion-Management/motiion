@@ -9,7 +9,7 @@ export const customFontSizes = {
     pxToRem(40),
     {
       fontWeight: '600',
-      letterSpacing: '-0.02em',
+      letterSpacing: '-2%',
       lineHeight: '1.2',
     },
   ],
@@ -17,7 +17,7 @@ export const customFontSizes = {
     pxToRem(32),
     {
       fontWeight: '600',
-      letterSpacing: '-0.02em',
+      letterSpacing: '-2%',
       lineHeight: '1.2',
     },
   ],
@@ -25,7 +25,7 @@ export const customFontSizes = {
     pxToRem(24),
     {
       fontWeight: '600',
-      letterSpacing: '-0.02em',
+      letterSpacing: '-2%',
       lineHeight: '1.2',
     },
   ],
@@ -33,7 +33,7 @@ export const customFontSizes = {
     pxToRem(18),
     {
       fontWeight: '600',
-      letterSpacing: '-0.02em',
+      letterSpacing: '-2%',
       lineHeight: '1.2',
     },
   ],
@@ -41,7 +41,7 @@ export const customFontSizes = {
     pxToRem(16),
     {
       fontWeight: '600',
-      letterSpacing: '-0.02em',
+      letterSpacing: '-2%',
       lineHeight: '1.4',
     },
   ],
@@ -49,7 +49,7 @@ export const customFontSizes = {
     pxToRem(12),
     {
       fontWeight: '600',
-      letterSpacing: '-0.02em',
+      letterSpacing: '-2%',
       lineHeight: '1.4',
     },
   ],
@@ -57,7 +57,7 @@ export const customFontSizes = {
     pxToRem(18),
     {
       fontWeight: '400',
-      letterSpacing: '-0.025em',
+      letterSpacing: '-2.5%',
       lineHeight: '1.5',
     },
   ],
@@ -65,7 +65,7 @@ export const customFontSizes = {
     pxToRem(16),
     {
       fontWeight: '400',
-      letterSpacing: '-0.025em',
+      letterSpacing: '-2.5%',
       lineHeight: '1.5',
     },
   ],
@@ -73,7 +73,7 @@ export const customFontSizes = {
     pxToRem(14),
     {
       fontWeight: '400',
-      letterSpacing: '-0.025em',
+      letterSpacing: '-2.5%',
       lineHeight: '1.4',
     },
   ],
@@ -81,7 +81,7 @@ export const customFontSizes = {
     pxToRem(12),
     {
       fontWeight: '400',
-      letterSpacing: '-0.025em',
+      letterSpacing: '-2.5%',
       lineHeight: '1.4',
     },
   ],
@@ -89,7 +89,7 @@ export const customFontSizes = {
     pxToRem(18),
     {
       fontWeight: '700',
-      letterSpacing: '-0.01em',
+      letterSpacing: '-1%',
       lineHeight: '1.5',
     },
   ],
@@ -97,7 +97,7 @@ export const customFontSizes = {
     pxToRem(16),
     {
       fontWeight: '700',
-      letterSpacing: '-0.01em',
+      letterSpacing: '-1%',
       lineHeight: '1.5',
     },
   ],
@@ -105,7 +105,7 @@ export const customFontSizes = {
     pxToRem(14),
     {
       fontWeight: '700',
-      letterSpacing: '-0.01em',
+      letterSpacing: '-1%',
       lineHeight: '1.2',
     },
   ],
@@ -113,7 +113,7 @@ export const customFontSizes = {
     pxToRem(48),
     {
       fontWeight: '500',
-      letterSpacing: '-0.04em',
+      letterSpacing: '-4%',
       lineHeight: '1.2',
     },
   ],
@@ -121,7 +121,7 @@ export const customFontSizes = {
     pxToRem(24),
     {
       fontWeight: '500',
-      letterSpacing: '-0.02em',
+      letterSpacing: '-2%',
       lineHeight: '1.2',
     },
   ],
@@ -129,7 +129,7 @@ export const customFontSizes = {
     pxToRem(18),
     {
       fontWeight: '500',
-      letterSpacing: '-0.02em',
+      letterSpacing: '-2%',
       lineHeight: '1.2',
     },
   ],
@@ -137,7 +137,7 @@ export const customFontSizes = {
     pxToRem(10),
     {
       fontWeight: '500',
-      letterSpacing: '0.06em',
+      letterSpacing: '6%',
       lineHeight: '1.2',
     },
   ],

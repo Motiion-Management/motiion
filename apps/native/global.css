@@ -4,25 +4,40 @@
 
 @layer base {
   :root {
-    --background: 242 242 247;
-    --foreground: 0 0 0;
-    --card: 255 255 255;
-    --card-foreground: 8 28 30;
-    --popover: 230 230 235;
-    --popover-foreground: 0 0 0;
-    --primary: 0 123 254;
-    --primary-foreground: 255 255 255;
-    --secondary: 45 175 231;
-    --secondary-foreground: 255 255 255;
-    --muted: 175 176 180;
-    --muted-foreground: 142 142 147;
-    --accent: 255 40 84;
-    --accent-foreground: 255 255 255;
-    --destructive: 255 56 43;
-    --destructive-foreground: 255 255 255;
-    --border: 230 230 235;
-    --input: 210 210 215;
-    --ring: 230 230 235;
+    --background: 0 0% 98.04%;
+    --foreground: 225 70% 4%;
+
+    --muted: 216 14% 93%;
+    --muted-foreground: 225 7% 12%;
+
+    --popover: 225 40% 98%;
+    --popover-foreground: 225 70% 3%;
+
+    --card: 0 0% 100%;
+    --card-foreground: 216 8.2% 11.96%;
+
+    --primary: 225 7% 12%;
+    --primary-foreground: 0 0% 100%;
+
+    --tonal: 173.02 100% 16.86%;
+    --tonal-foreground: 0 0% 100%;
+
+    --secondary: 173.02 100% 16.86%;
+    --secondary-foreground: 0 0% 100%;
+
+    --accent: 173.55 100% 36.47%;
+    --accent-foreground: 0 0% 100%;
+
+    --destructive: 349.66 99.02% 40.2%;
+    --destructive-foreground: 0 0% 100%;
+
+    --utility: 216 14.29% 93.14%;
+    --input: 216 14.29% 93.14%;
+    --input-background: 216 14.29% 93.14%;
+    --input-foreground: 225 7% 12%;
+    --border: 216 14.29% 93.14%;
+    --ring: 174, 100%, 24%;
+    --radius: 0.5rem;
 
     --android-background: 249 249 255;
     --android-foreground: 0 0 0;
@@ -47,25 +62,40 @@
 
   @media (prefers-color-scheme: dark) {
     :root {
-      --background: 0 0 0;
-      --foreground: 255 255 255;
-      --card: 21 21 24;
-      --card-foreground: 255 255 255;
-      --popover: 40 40 42;
-      --popover-foreground: 255 255 255;
-      --primary: 3 133 255;
-      --primary-foreground: 255 255 255;
-      --secondary: 100 211 254;
-      --secondary-foreground: 255 255 255;
-      --muted: 70 70 73;
-      --muted-foreground: 142 142 147;
-      --accent: 255 52 95;
-      --accent-foreground: 255 255 255;
-      --destructive: 254 67 54;
-      --destructive-foreground: 255 255 255;
-      --border: 40 40 42;
-      --input: 55 55 57;
-      --ring: 40 40 42;
+      --background: 225 47% 2%;
+      --foreground: 225 29% 98%;
+
+      --muted: 195 33% 15%;
+      --muted-foreground: 195 12% 60%;
+
+      --popover: 225 47% 3%;
+      --popover-foreground: 225 29% 99%;
+
+      --card: 225 6.67% 11.76%;
+      --card-foreground: 0 0% 100%;
+
+      --primary: 0 0% 100%;
+      --primary-foreground: 225 40% 1.96%;
+
+      --secondary: 195 7% 12%;
+      --secondary-foreground: 195 7% 72%;
+
+      --tonal: 174 100% 40%;
+      --tonal-foreground: 195 7% 12%;
+
+      --accent: 173.82 100% 40%;
+      --accent-foreground: 225 40% 1.96%;
+
+      --destructive: 19 99% 46%;
+      --destructive-foreground: 0 0% 100%;
+
+      --utility: 216 14.29% 93.14%;
+      --input: 174.1 100% 23.92%;
+      --input-background: 174.1 100% 23.92%/20%;
+      --input-foreground: 225 99% 98%;
+
+      --border: 225 8% 10%;
+      --ring: 174.1 47% 90%;
 
       --android-background: 0 0 0;
       --android-foreground: 255 255 255;
