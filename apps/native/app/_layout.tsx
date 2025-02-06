@@ -27,8 +27,6 @@ export default function RootLayout() {
         key={`root-status-bar-${isDarkColorScheme ? 'light' : 'dark'}`}
         style={isDarkColorScheme ? 'light' : 'dark'}
       />
-      {/* WRAP YOUR APP WITH ANY ADDITIONAL PROVIDERS HERE */}
-      {/* <ExampleProvider> */}
 
       <ConvexClientProvider>
         <GestureHandlerRootView style={{ flex: 1 }}>
@@ -44,10 +42,22 @@ export default function RootLayout() {
                       name="index"
                       options={{
                         headerShown: false,
-                        title: 'motiion',
-                        // headerTitle: ({ children }) => (
-                        //
-                        // ),
+                        title: 'root',
+                      }}
+                    />
+                    <Stack.Screen
+                      name="auth"
+                      options={{
+                        headerShown: false,
+                        title: 'auth',
+                      }}
+                    />
+
+                    <Stack.Screen
+                      name="(modals)"
+                      options={{
+                        headerShown: false,
+                        presentation: 'modal',
                       }}
                     />
                   </Stack>
@@ -57,8 +67,6 @@ export default function RootLayout() {
           </KeyboardProvider>
         </GestureHandlerRootView>
       </ConvexClientProvider>
-
-      {/* </ExampleProvider> */}
     </>
   );
 }

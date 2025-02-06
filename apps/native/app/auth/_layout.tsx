@@ -7,7 +7,6 @@ import { Text } from '~/components/nativewindui/Text';
 export default function AuthLayout() {
   return (
     <Stack screenOptions={SCREEN_OPTIONS}>
-      <Stack.Screen name="index" />
       <Stack.Screen name="(login)" options={LOGIN_MODAL_OPTIONS} />
       <Stack.Screen name="(create-account)" options={CREATE_ACCOUNT_MODAL_OPTIONS} />
     </Stack>
@@ -16,18 +15,15 @@ export default function AuthLayout() {
 
 const SCREEN_OPTIONS = {
   headerShown: false,
-  animation: 'ios', // for android
 } as const;
 
 const LOGIN_MODAL_OPTIONS = {
   presentation: 'modal',
-  animation: 'ios', // for android
   headerShown: false,
 } as const;
 
 const CREATE_ACCOUNT_MODAL_OPTIONS = {
   presentation: 'modal',
-  animation: 'ios', // for android
   headerShown: Platform.OS === 'ios',
   headerShadowVisible: false,
   headerLeft() {
