@@ -15,7 +15,7 @@ const buttonVariants = cva('flex-row items-center justify-center gap-2', {
       outline: 'ios:border-primary ios:active:bg-primary/5 border border-foreground/40',
       secondary:
         'ios:bg-background/10 dark:ios:bg-background/40 ios:active:bg-background/50 bg-primary/15 dark:bg-primary/30',
-      tonal: 'active:opacity-80 bg-secondary',
+      tonal: 'active:opacity-80 bg-tonal',
       plain: 'ios:active:opacity-70',
     },
     size: {
@@ -53,7 +53,7 @@ const buttonTextVariants = cva('font-bold text-link', {
       primary: 'text-primary-foreground',
       secondary: 'ios:text-primary text-foreground',
       outline: 'ios:text-primary text-foreground',
-      tonal: 'text-secondary-foreground',
+      tonal: 'text-tonal-foreground',
       plain: 'text-foreground',
     },
     size: {
