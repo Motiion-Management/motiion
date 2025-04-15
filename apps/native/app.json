@@ -62,7 +62,8 @@
       },
       "infoPlist": {
         "ITSAppUsesNonExemptEncryption": false
-      }
+      },
+      "appleTeamId": "67VB85RULJ"
     },
     "android": {
       "package": "io.motiion.motiion",

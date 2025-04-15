@@ -76,7 +76,7 @@ export default function AuthIndexScreen() {
               <Text className="ios:text-foreground">Continue with Apple</Text>
             </Button>
           )}
-          <Link href="/auth/(login)" asChild>
+          <Link href="/auth" asChild>
             <Button variant="plain" size={Platform.select({ ios: 'lg', default: 'md' })}>
               <Text className="text-primary">Log in</Text>
             </Button>

@@ -1,12 +1,10 @@
 import { SignedIn, SignedOut } from '@clerk/clerk-expo';
 import { Link, Redirect } from 'expo-router';
-import { colorScheme, useColorScheme } from 'nativewind';
+import { colorScheme } from 'nativewind';
 import * as React from 'react';
 import { ImageBackground, Platform, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
-import { AppleButton } from '~/components/auth/AppleButton';
-import { GoogleButton } from '~/components/auth/GoogleButton';
 import { AlertAnchor } from '~/components/nativewindui/Alert';
 import { AlertRef } from '~/components/nativewindui/Alert/types';
 import { Button } from '~/components/nativewindui/Button';
@@ -34,13 +32,13 @@ export default function RootScreen() {
                 <Text variant="bodySm">
                   By creating an account, you agree to our{' '}
                   <Link
-                    className="text-tonal text-link-sm underline"
+                    className="text-link-sm text-tonal underline"
                     href="/(modals)/terms-and-conditions">
                     Terms and Conditions
                   </Link>{' '}
                   and{' '}
                   <Link
-                    className="text-tonal text-link-sm underline"
+                    className="text-link-sm text-tonal underline"
                     href="/(modals)/privacy-policy">
                     Privacy Policy
                   </Link>
@@ -52,9 +50,6 @@ export default function RootScreen() {
                   <Text>Create Account</Text>
                 </Button>
               </Link>
-
-              <GoogleButton />
-              <AppleButton />
 
               <Link href="/auth/(login)" asChild>
                 <Button variant="plain" size={Platform.select({ ios: 'lg', default: 'md' })}>

@@ -10,8 +10,8 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@clerk/clerk-sdk-node": "^5.0.9",
-    "convex": "^1.15.0",
+    "@clerk/clerk-sdk-node": "^5.1.6",
+    "convex": "^1.23.0",
     "convex-helpers": "0.1.57-alpha.1",
     "date-fns": "^3.6.0",
     "openai": "^4.47.3",
