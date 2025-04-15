@@ -29,12 +29,12 @@ export default function RootLayout() {
         style={isDarkColorScheme ? 'light' : 'dark'}
       />
 
-      <ConvexClientProvider>
-        <GestureHandlerRootView style={{ flex: 1 }}>
-          <KeyboardProvider statusBarTranslucent navigationBarTranslucent>
-            <BottomSheetModalProvider>
-              <ActionSheetProvider>
-                <NavThemeProvider value={NAV_THEME[colorScheme]}>
+      <GestureHandlerRootView style={{ flex: 1 }}>
+        <KeyboardProvider statusBarTranslucent navigationBarTranslucent>
+          <BottomSheetModalProvider>
+            <ActionSheetProvider>
+              <NavThemeProvider value={NAV_THEME[colorScheme]}>
+                <ConvexClientProvider>
                   <Stack
                     screenOptions={{
                       animation: 'ios_from_right', // for android
@@ -61,12 +61,12 @@ export default function RootLayout() {
                       }}
                     />
                   </Stack>
-                </NavThemeProvider>
-              </ActionSheetProvider>
-            </BottomSheetModalProvider>
-          </KeyboardProvider>
-        </GestureHandlerRootView>
-      </ConvexClientProvider>
+                </ConvexClientProvider>
+              </NavThemeProvider>
+            </ActionSheetProvider>
+          </BottomSheetModalProvider>
+        </KeyboardProvider>
+      </GestureHandlerRootView>
     </>
   );
 }

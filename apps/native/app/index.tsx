@@ -1,8 +1,7 @@
-import { SignedIn, SignedOut } from '@clerk/clerk-expo';
+import { SignedIn, SignedOut, useAuth } from '@clerk/clerk-expo';
 import { Link, Redirect } from 'expo-router';
-import { colorScheme } from 'nativewind';
 import * as React from 'react';
-import { ImageBackground, Platform, View } from 'react-native';
+import { ActivityIndicator, ImageBackground, Platform, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { AlertAnchor } from '~/components/nativewindui/Alert';
@@ -10,10 +9,20 @@ import { AlertRef } from '~/components/nativewindui/Alert/types';
 import { Button } from '~/components/nativewindui/Button';
 import { Text } from '~/components/nativewindui/Text';
 
-colorScheme.set('dark');
-
 export default function RootScreen() {
   const alertRef = React.useRef<AlertRef>(null);
+  // const { isLoaded } = useAuth();
+  //
+  // console.log('isLoaded', isLoaded);
+  //
+  // if (!isLoaded) {
+  //   return (
+  //     <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+  //       <ActivityIndicator size="large" />
+  //     </View>
+  //   );
+  // }
+
   return (
     <>
       <SignedIn>

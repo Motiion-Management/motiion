@@ -10,7 +10,7 @@
   },
   "dependencies": {
     "@clerk/clerk-react": "^5.28.0",
-    "@clerk/nextjs": "^5.7.5",
+    "@clerk/nextjs": "^6.15.0",
     "@headlessui/react": "^1.7.17",
     "@heroicons/react": "^2.1.1",
     "@hookform/resolvers": "^3.4.2",
@@ -70,7 +70,7 @@
     "tailwindcss-displaymodes": "^1.0.8",
     "ts-plugin-sort-import-suggestions": "^1.0.4",
     "vaul": "^0.9.1",
-    "zod": "^3.23.8"
+    "zod": "^3.24.2"
   },
   "devDependencies": {
     "@savvywombat/tailwindcss-grid-areas": "^4.0.0",
