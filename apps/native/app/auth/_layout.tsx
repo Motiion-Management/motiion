@@ -1,38 +1,34 @@
-import { Link, Stack } from 'expo-router';
-import { Platform } from 'react-native';
+import { Stack } from 'expo-router';
 
-import { Button } from '~/components/nativewindui/Button';
-import { Text } from '~/components/nativewindui/Text';
+import BackgroundGradientView from '~/components/ui/BackgroundGradientView';
 
 export default function AuthLayout() {
   return (
-    <Stack screenOptions={SCREEN_OPTIONS}>
-      <Stack.Screen name="(login)" options={LOGIN_MODAL_OPTIONS} />
-      <Stack.Screen name="(create-account)" options={CREATE_ACCOUNT_MODAL_OPTIONS} />
-    </Stack>
+    <BackgroundGradientView>
+      <Stack screenOptions={{ ...SCREEN_OPTIONS }}>
+        <Stack.Screen name="(login)" options={LOGIN_SCREEN_OPTIONS} />
+        <Stack.Screen name="(create-account)" options={CREATE_ACCOUNT_SCREEN_OPTIONS} />
+      </Stack>
+    </BackgroundGradientView>
   );
 }
 
 const SCREEN_OPTIONS = {
   headerShown: false,
+  contentStyle: {
+    backgroundColor: 'transparent',
+  },
 } as const;
 
-const LOGIN_MODAL_OPTIONS = {
-  presentation: 'modal',
+const LOGIN_SCREEN_OPTIONS = {
   headerShown: false,
+  contentStyle: {
+    backgroundColor: 'transparent',
+  },
 } as const;
 
-const CREATE_ACCOUNT_MODAL_OPTIONS = {
-  presentation: 'modal',
-  headerShown: Platform.OS === 'ios',
-  headerShadowVisible: false,
-  headerLeft() {
-    return (
-      <Link asChild href="/auth">
-        <Button variant="plain" className="ios:px-0">
-          <Text className="text-primary">Cancel</Text>
-        </Button>
-      </Link>
-    );
+const CREATE_ACCOUNT_SCREEN_OPTIONS = {
+  contentStyle: {
+    backgroundColor: 'transparent',
   },
 } as const;

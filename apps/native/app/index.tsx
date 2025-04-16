@@ -1,6 +1,7 @@
 import { SignedIn, SignedOut, useAuth } from '@clerk/clerk-expo';
 import { Link, Redirect } from 'expo-router';
-import * as React from 'react';
+import { colorScheme } from 'nativewind';
+import React from 'react';
 import { ActivityIndicator, ImageBackground, Platform, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
@@ -32,12 +33,12 @@ export default function RootScreen() {
         <ImageBackground source={require('./background.png')} className="h-full">
           <SafeAreaView style={{ flex: 1 }}>
             <View className="mt-[25%] flex w-full items-center">
-              <Text variant="largeTitle" color="primary">
+              <Text variant="largeTitle" color="primaryInverted">
                 motiion
               </Text>
             </View>
-            <View className="ios:justify-end flex-1 justify-center gap-4 px-6 py-4">
-              <View className="ios:pb-5 ios:pt-2 pb-2">
+            <View className="ios:justify-end flex-1 justify-center gap-4 px-6 py-2">
+              <View className="ios:pt-2">
                 <Text variant="bodySm">
                   By creating an account, you agree to our{' '}
                   <Link

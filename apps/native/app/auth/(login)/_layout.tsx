@@ -6,6 +6,5 @@ export default function LoginLayout() {
 }
 
 const SCREEN_OPTIONS = {
-  animation: 'ios', // for android
   headerShown: Platform.OS === 'ios',
 } as const;

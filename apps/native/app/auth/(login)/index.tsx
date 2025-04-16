@@ -28,7 +28,7 @@ export default function LoginScreen() {
           headerShadowVisible: false,
           headerLeft() {
             return (
-              <Link asChild href="/auth">
+              <Link asChild href="/">
                 <Button variant="plain" className="ios:px-0">
                   <Text className="text-primary">Cancel</Text>
                 </Button>
