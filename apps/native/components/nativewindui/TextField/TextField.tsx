@@ -124,7 +124,7 @@ const TextField = React.forwardRef<TextFieldRef, TextFieldProps>(
               ref={inputRef}
               editable={editable}
               className={cn(
-                'text-foreground flex-1 rounded py-3 pl-2.5 text-[17px] dark:placeholder:text-white/30',
+                'placeholder:text-foreground/30 flex-1 rounded py-3 pl-2.5 text-[17px] text-foreground',
                 materialVariant === 'filled' && !!label && 'pb-2 pt-5',
                 className
               )}
@@ -139,7 +139,7 @@ const TextField = React.forwardRef<TextFieldRef, TextFieldProps>(
           </InputWrapper>
           {!materialHideActionIcons && (
             <>
-              {!!errorMessage ? (
+              {errorMessage ? (
                 <MaterialErrorIcon />
               ) : (
                 !!value && isFocused && <MaterialClearIcon clearText={clear} editable={editable} />

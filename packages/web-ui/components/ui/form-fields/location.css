@@ -1,0 +1,21 @@
+@import './placekit.css';
+
+/* .dark .pka-panel, .pka-panel { */
+/*   border-color: transparent; */
+/* } */
+.pka-panel-footer,
+.pka-panel-footer {
+  border-top-color: hsl(var(--muted));
+}
+.pka-panel-suggestion-label-name,
+.pka-panel-suggestion-label-name {
+  color: hsl(var(--foreground));
+}
+.pka-active,
+.pka-active {
+  color: hsl(var(--accent-foreground)) !important;
+}
+.pka-active .pka-panel-suggestion-label-name,
+.pka-active .pka-panel-suggestion-label-name {
+  color: hsl(var(--accent-foreground)) !important;
+}

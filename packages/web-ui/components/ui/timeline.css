@@ -1,0 +1,183 @@
+.timeline {
+  @apply relative flex;
+}
+
+.timeline-mark {
+  @apply bg-accent my-1 h-2 w-2 rounded-full;
+}
+
+:where(.timeline > li) {
+  @apply relative grid shrink-0 items-center gap-x-3;
+  grid-template-rows: var(--timeline-row-start, minmax(0, 1fr)) auto var(
+      --timeline-row-end,
+      minmax(0, 1fr)
+    );
+  grid-template-columns: var(--timeline-col-start, minmax(0, 1fr)) auto var(
+      --timeline-col-end,
+      minmax(0, 1fr)
+    );
+}
+.timeline > li > hr {
+  @apply bg-border w-[0.5px] border-0;
+}
+:where(.timeline > li > hr) {
+  &:first-child {
+    @apply col-start-1 row-start-2;
+  }
+  &:last-child {
+    @apply col-start-3 col-end-[none] row-start-2 row-end-auto;
+  }
+}
+
+.timeline-start {
+  @apply text-label-xs col-start-1 col-end-4 row-start-1 row-end-2 m-1 self-end justify-self-center;
+}
+.timeline-middle {
+  @apply col-start-2 row-start-2;
+}
+.timeline-end {
+  @apply col-start-1 col-end-4 row-start-3 row-end-4 m-1 self-start justify-self-center;
+}
+
+.timeline-vertical {
+  @apply flex-col;
+}
+.timeline-compact,
+.timeline-horizontal.timeline-compact {
+  --timeline-row-start: 0;
+  .timeline-start {
+    @apply col-start-1 col-end-4 row-start-3 row-end-4 m-1 self-start justify-self-center;
+  }
+  li:has(.timeline-start) .timeline-end {
+    @apply col-start-[none] row-start-auto;
+  }
+}
+.timeline-vertical.timeline-compact {
+  & > li {
+    --timeline-col-start: 0;
+  }
+  .timeline-start {
+    @apply col-start-3 col-end-4 row-start-1 row-end-4 self-center justify-self-start;
+  }
+  li:has(.timeline-start) .timeline-end {
+    @apply col-start-auto row-start-[none];
+  }
+}
+:where(.timeline-vertical > li) {
+  --timeline-col-start: minmax(10%, 1fr);
+  --timeline-col-end: minmax(50%, 8fr);
+  --timeline-row-start: min-content;
+  --timeline-row-end: minmax(0, 1fr);
+}
+.timeline-vertical > li > hr {
+  @apply h-full;
+}
+
+.timeline-vertical > li:first-of-type > hr:first-of-type {
+  @apply hidden;
+}
+.timeline-vertical > li:last-of-type > hr:last-of-type {
+  @apply hidden;
+}
+
+:where(.timeline-vertical > li) {
+  @apply justify-items-center;
+}
+:where(.timeline-vertical > li > hr) {
+  &:first-child {
+    @apply col-start-2 row-start-1;
+  }
+  &:last-child {
+    @apply col-start-2 col-end-auto row-start-3 row-end-[none];
+  }
+}
+.timeline-vertical .timeline-start {
+  @apply col-start-1 col-end-2 row-start-1 row-end-3 self-center justify-self-end;
+}
+.timeline-vertical .timeline-end {
+  @apply col-start-3 col-end-4 row-start-1 row-end-4 self-center justify-self-start;
+}
+.timeline-vertical:where(.timeline-snap-icon) > li {
+  --timeline-col-start: minmax(0, 1fr);
+  --timeline-row-start: 0.5rem;
+}
+/* horizontal */
+.timeline-horizontal {
+  @apply flex-row;
+}
+.timeline-horizontal > li > hr {
+  @apply w-full;
+}
+:where(.timeline-horizontal > li) {
+  @apply items-center;
+}
+:where(.timeline-horizontal > li > hr) {
+  &:first-child {
+    @apply col-start-1 row-start-2;
+  }
+  &:last-child {
+    @apply col-start-3 col-end-[none] row-start-2  row-end-auto;
+  }
+}
+.timeline-horizontal .timeline-start {
+  @apply col-start-1 col-end-4 row-start-1 row-end-2 self-end justify-self-center;
+}
+.timeline-horizontal .timeline-end {
+  @apply col-start-1 col-end-4 row-start-3 row-end-4 self-start justify-self-center;
+}
+
+:where(.timeline-snap-icon) > li,
+.timeline-horizontal:where(.timeline-snap-icon) > li {
+  --timeline-col-start: 0.5rem;
+  --timeline-row-start: minmax(0, 1fr);
+}
+
+.timeline-vertical > li > hr {
+  @apply w-[2px];
+}
+
+:where(.timeline-vertical:has(.timeline-middle) > li > hr) {
+  &:first-child {
+    @apply rounded-b-full rounded-t-none;
+  }
+  &:last-child {
+    @apply rounded-b-none rounded-t-full;
+  }
+}
+:where(
+    .timeline-vertical:not(:has(.timeline-middle)) :first-child > hr:last-child
+  ) {
+  @apply rounded-b-none rounded-t-full;
+}
+:where(
+    .timeline-vertical:not(:has(.timeline-middle)) :last-child > hr:first-child
+  ) {
+  @apply rounded-b-full rounded-t-none;
+}
+
+/* horizontal */
+.timeline-horizontal > li > hr {
+  @apply h-1;
+}
+:where(.timeline-horizontal:has(.timeline-middle) > li > hr) {
+  &:first-child {
+    @apply rounded-e-full rounded-s-none;
+  }
+  &:last-child {
+    @apply rounded-e-none rounded-s-full;
+  }
+}
+:where(
+    .timeline-horizontal:not(:has(.timeline-middle))
+      :first-child
+      > hr:last-child
+  ) {
+  @apply rounded-e-none rounded-s-full;
+}
+:where(
+    .timeline-horizontal:not(:has(.timeline-middle))
+      :last-child
+      > hr:first-child
+  ) {
+  @apply rounded-e-full rounded-s-none;
+}

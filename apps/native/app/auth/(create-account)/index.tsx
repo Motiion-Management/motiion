@@ -1,6 +1,7 @@
+import { useSignUp } from '@clerk/clerk-expo';
 import { router } from 'expo-router';
-import * as React from 'react';
-import { Platform, View } from 'react-native';
+import React, { useState } from 'react';
+import { ActivityIndicator, Platform, View } from 'react-native';
 import {
   KeyboardAwareScrollView,
   KeyboardController,
@@ -14,10 +15,18 @@ import { Text } from '~/components/nativewindui/Text';
 import { TextField } from '~/components/nativewindui/TextField';
 
 export default function InfoScreen() {
+  const { isLoaded, signUp } = useSignUp();
   const insets = useSafeAreaInsets();
-  const [focusedTextField, setFocusedTextField] = React.useState<'first-name' | 'last-name' | null>(
-    null
-  );
+  const [phoneNumber, setPhoneNumber] = useState('');
+
+  if (!isLoaded) {
+    return (
+      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+        <ActivityIndicator size="large" />
+      </View>
+    );
+  }
+
   return (
     <View className="flex-1 bg-transparent" style={{ paddingBottom: insets.bottom }}>
       <KeyboardAwareScrollView
@@ -25,42 +34,20 @@ export default function InfoScreen() {
         bounces={false}
         keyboardDismissMode="interactive"
         keyboardShouldPersistTaps="handled"
-        contentContainerClassName="ios:pt-4 px-4 ">
+        contentContainerClassName="pt-4 px-4 ">
         <Text variant="title1" className="">
           What's your phone number?
         </Text>
         <View className="ios:pt-4 pt-6">
-          <Form className="gap-2">
-            <FormSection className="ios:bg-background">
-              <FormItem>
-                <TextField
-                  placeholder={Platform.select({ ios: 'First Name', default: '' })}
-                  label={Platform.select({ ios: undefined, default: 'First Name' })}
-                  onSubmitEditing={() => KeyboardController.setFocusTo('next')}
-                  blurOnSubmit={false}
-                  autoFocus
-                  onFocus={() => setFocusedTextField('first-name')}
-                  onBlur={() => setFocusedTextField(null)}
-                  textContentType="name"
-                  returnKeyType="next"
-                />
-              </FormItem>
-              <FormItem>
-                <TextField
-                  placeholder={Platform.select({ ios: 'Last Name', default: '' })}
-                  label={Platform.select({ ios: undefined, default: 'Last Name' })}
-                  onFocus={() => setFocusedTextField('last-name')}
-                  onBlur={() => setFocusedTextField(null)}
-                  textContentType="givenName"
-                  returnKeyType="next"
-                  blurOnSubmit={false}
-                  onSubmitEditing={() => {
-                    router.push('/auth/(create-account)/credentials');
-                  }}
-                />
-              </FormItem>
-            </FormSection>
-          </Form>
+          <TextField
+            placeholder="XXX XXX XXXX"
+            label="Phone Number"
+            // onSubmitEditing={() => KeyboardController.setFocusTo('next')}
+            blurOnSubmit
+            autoFocus
+            textContentType="telephoneNumber"
+            returnKeyType="done"
+          />
         </View>
       </KeyboardAwareScrollView>
       <KeyboardStickyView
@@ -68,39 +55,15 @@ export default function InfoScreen() {
           closed: 0,
           opened: Platform.select({ ios: insets.bottom + 30, default: insets.bottom }),
         }}>
-        {Platform.OS === 'ios' ? (
-          <View className=" px-12 py-4">
-            <Button
-              size="lg"
-              onPress={() => {
-                router.push('/auth/(create-account)/credentials');
-              }}>
-              <Text>Continue</Text>
-            </Button>
-          </View>
-        ) : (
-          <View className="flex-row justify-between py-4 pl-6 pr-8">
-            <Button
-              variant="plain"
-              className="px-2"
-              onPress={() => {
-                router.replace('/auth/(login)');
-              }}>
-              <Text className="text-sm text-primary">Already have an account?</Text>
-            </Button>
-            <Button
-              onPress={() => {
-                if (focusedTextField === 'first-name') {
-                  KeyboardController.setFocusTo('next');
-                  return;
-                }
-                KeyboardController.dismiss();
-                router.push('/auth/(create-account)/credentials');
-              }}>
-              <Text className="text-sm">Next</Text>
-            </Button>
-          </View>
-        )}
+        <View className=" px-12 py-4">
+          <Button
+            size="lg"
+            onPress={() => {
+              router.push('/auth/(create-account)/credentials');
+            }}>
+            <Text>Continue</Text>
+          </Button>
+        </View>
       </KeyboardStickyView>
       {Platform.OS === 'ios' && (
         <Button

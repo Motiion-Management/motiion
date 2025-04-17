@@ -63,12 +63,15 @@ const TextField = React.forwardRef<TextFieldRef, TextFieldProps>(
             </Text>
           </View>
         )}
-        <View className="flex-row">
+        <View className="flex-row border-b border-b-foreground">
           {!!leftView && !label && leftView}
           <TextInput
             ref={inputRef}
             editable={editable}
-            className={cn('text-foreground flex-1 px-2.5 py-3 text-[17px]', className)}
+            className={cn(
+              ' placeholder:text-foreground/40 flex-1 py-3 text-[17px] text-foreground',
+              className
+            )}
             onChangeText={onChangeText}
             value={value}
             clearButtonMode="while-editing"
