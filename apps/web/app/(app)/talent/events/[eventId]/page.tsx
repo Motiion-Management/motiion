@@ -22,11 +22,17 @@ function toTime(timestamp: string) {
   return format(toDate(timestamp), 'h:mm a')
 }
 
-export default async function EventPage({
-  params: { eventId }
-}: {
-  params: { eventId: Id<'events'> }
-}) {
+export default async function EventPage(
+  props: {
+    params: Promise<{ eventId: Id<'events'> }>
+  }
+) {
+  const params = await props.params;
+
+  const {
+    eventId
+  } = params;
+
   const event = await fetchQuery(api.events.read, { id: eventId })
   if (!event) redirect('/talent/home')
   const type = await fetchQuery(api.eventTypes.read, { id: event.type })

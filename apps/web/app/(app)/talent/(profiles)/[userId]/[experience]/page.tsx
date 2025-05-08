@@ -26,11 +26,18 @@ const ExperienceField = ({
     </>
   )
 
-export default async function ResumeExperienceEditPage({
-  params: { userId, experience: experienceType }
-}: {
-  params: { userId: Id<'users'>; experience: ExperienceType }
-}) {
+export default async function ResumeExperienceEditPage(
+  props: {
+    params: Promise<{ userId: Id<'users'>; experience: ExperienceType }>
+  }
+) {
+  const params = await props.params;
+
+  const {
+    userId,
+    experience: experienceType
+  } = params;
+
   const user = await fetchPublicUser(userId)
   const experiences = await fetchUserPublicExperiencesByType({
     userId,

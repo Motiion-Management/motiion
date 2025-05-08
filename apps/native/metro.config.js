@@ -32,7 +32,14 @@ config.cacheStores = [
   }),
 ];
 
-module.exports = withNativeWind(config, {
+config.transformer = {
+  ...config.transformer,
+  _expoRelativeProjectRoot: projectRoot,
+};
+
+const withNativewindConfig = withNativeWind(config, {
   input: globalCSS,
   inlineRem: 16,
 });
+
+module.exports = withNativewindConfig;

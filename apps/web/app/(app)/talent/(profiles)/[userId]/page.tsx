@@ -5,10 +5,11 @@ import { TabSection } from '@/components/features/profile/tab-section'
 import { fetchPublicUser } from '@/lib/server/users'
 
 type UserProfileRouteProps = {
-  params: { userId: Id<'users'> }
+  params: Promise<{ userId: Id<'users'> }>
 }
 
-export async function generateMetadata({ params }: UserProfileRouteProps) {
+export async function generateMetadata(props: UserProfileRouteProps) {
+  const params = await props.params;
   const user = await fetchPublicUser(params.userId)
   const title = user.fullName || 'Dancer Profile'
   const description = `See my full dancer profile on Motiion, and join the dance community with the best connections in the world!`
@@ -41,9 +42,8 @@ export async function generateMetadata({ params }: UserProfileRouteProps) {
   }
 }
 
-export default async function UserProfilePage({
-  params
-}: UserProfileRouteProps) {
+export default async function UserProfilePage(props: UserProfileRouteProps) {
+  const params = await props.params;
   const user = await fetchPublicUser(params.userId)
   return (
     <div className="flex flex-col gap-2 ">
