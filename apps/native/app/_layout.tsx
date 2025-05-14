@@ -1,10 +1,12 @@
 import '../global.css';
 import 'expo-dev-client';
 import { ActionSheetProvider } from '@expo/react-native-action-sheet';
+import { Host } from '@expo/ui/swift-ui';
 import { BottomSheetModalProvider } from '@gorhom/bottom-sheet';
 import { ThemeProvider as NavThemeProvider } from '@react-navigation/native';
 import { Stack } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
+import { Dimensions } from 'react-native';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { KeyboardProvider } from 'react-native-keyboard-controller';
 
@@ -20,6 +22,7 @@ export {
 export default function RootLayout() {
   useInitialAndroidBarSync();
   const { colorScheme, isDarkColorScheme } = useColorScheme();
+  const { width } = Dimensions.get('window');
 
   return (
     <>
@@ -27,7 +30,6 @@ export default function RootLayout() {
         key={`root-status-bar-${isDarkColorScheme ? 'light' : 'dark'}`}
         style={isDarkColorScheme ? 'light' : 'dark'}
       />
-
       <GestureHandlerRootView style={{ flex: 1 }}>
         <KeyboardProvider statusBarTranslucent navigationBarTranslucent>
           <BottomSheetModalProvider>
