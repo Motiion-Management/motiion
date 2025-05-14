@@ -7,6 +7,8 @@ type TextFieldProps = TextInputProps & {
   label?: string;
   labelClassName?: string;
   containerClassName?: string;
+  invalid?: boolean;
+  displayOnly?: boolean;
   /**
    * For accessibility, can be overridden by accessibilityHint
    * @Material - shows error state with destructive color and icon

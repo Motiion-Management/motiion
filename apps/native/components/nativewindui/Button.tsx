@@ -87,12 +87,14 @@ function convertToRGBA(rgb: string, opacity: number): string {
 const ANDROID_RIPPLE = {
   dark: {
     primary: { color: convertToRGBA(COLORS.dark.grey3, 0.4), borderless: false },
+    outline: { color: convertToRGBA(COLORS.dark.grey5, 0.8), borderless: false },
     secondary: { color: convertToRGBA(COLORS.dark.grey5, 0.8), borderless: false },
     plain: { color: convertToRGBA(COLORS.dark.grey5, 0.8), borderless: false },
     tonal: { color: convertToRGBA(COLORS.dark.grey5, 0.8), borderless: false },
   },
   light: {
     primary: { color: convertToRGBA(COLORS.light.grey4, 0.4), borderless: false },
+    outline: { color: convertToRGBA(COLORS.dark.grey5, 0.8), borderless: false },
     secondary: { color: convertToRGBA(COLORS.light.grey5, 0.4), borderless: false },
     plain: { color: convertToRGBA(COLORS.light.grey5, 0.4), borderless: false },
     tonal: { color: convertToRGBA(COLORS.light.grey6, 0.4), borderless: false },
