@@ -29,21 +29,25 @@ export const BaseOnboardingScreen = ({
       <KeyboardAwareScrollView
         bottomOffset={Platform.select({ ios: 8 })}
         bounces={false}
+        disableScrollOnKeyboardHide
+        contentInsetAdjustmentBehavior="never"
         keyboardDismissMode="interactive"
         keyboardShouldPersistTaps="handled"
-        contentContainerClassName="pt-4 px-4 ">
-        <Text variant="title1" className="">
-          {title}
-        </Text>
-        <View className="ios:pt-4 gap-4 pt-6">
-          {children}
-          {helpText && (
-            <View className="pt-2">
-              <Text className="text-sm text-secondary-foreground" variant="body">
-                {helpText}
-              </Text>
-            </View>
-          )}
+        contentContainerClassName="px-4 ">
+        <View className="flex-1 justify-center">
+          <Text variant="title1" className="">
+            {title}
+          </Text>
+          <View className="ios:pt-4 gap-4 pt-6">
+            {children}
+            {helpText && (
+              <View className="pt-2">
+                <Text className="text-sm text-secondary-foreground" variant="body">
+                  {helpText}
+                </Text>
+              </View>
+            )}
+          </View>
         </View>
       </KeyboardAwareScrollView>
       <KeyboardStickyView

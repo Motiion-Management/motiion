@@ -2,7 +2,6 @@ import { useSignUp } from '@clerk/clerk-expo';
 import { router } from 'expo-router';
 import React from 'react';
 import { ActivityIndicator, View } from 'react-native';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import z from 'zod';
 
 import { useAppForm } from '~/components/form/appForm';
