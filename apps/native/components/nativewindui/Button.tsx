@@ -1,9 +1,9 @@
-import * as Slot from '@rn-primitives/slot';
 import { cva, type VariantProps } from 'class-variance-authority';
 import * as React from 'react';
 import { Platform, Pressable, PressableProps, View, ViewStyle } from 'react-native';
 
 import { TextClassContext } from '~/components/nativewindui/Text';
+import { Slot } from '~/components/primitives/slot';
 import { cn } from '~/lib/cn';
 import { useColorScheme } from '~/lib/useColorScheme';
 import { COLORS } from '~/theme/colors';
@@ -119,7 +119,7 @@ type AndroidOnlyButtonProps = {
 
 type ButtonProps = PressableProps & ButtonVariantProps & AndroidOnlyButtonProps;
 
-const Root = Platform.OS === 'android' ? View : Slot.Pressable;
+const Root = Platform.OS === 'android' ? View : Slot;
 
 const Button = React.forwardRef<React.ElementRef<typeof Pressable>, ButtonProps>(
   (

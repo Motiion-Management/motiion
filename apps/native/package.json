@@ -45,7 +45,6 @@
     "@rn-primitives/radio-group": "^1.1.0",
     "@rn-primitives/select": "^1.1.0",
     "@rn-primitives/separator": "^1.1.0",
-    "@rn-primitives/slot": "^1.1.0",
     "@rn-primitives/switch": "^1.1.0",
     "@rn-primitives/toggle-group": "^1.1.0",
     "@rn-primitives/tooltip": "^1.1.0",
