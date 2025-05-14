@@ -39,16 +39,16 @@ export default function RootScreen() {
             </View>
             <View className="ios:justify-end flex-1 justify-center gap-4 px-6 py-2">
               <View className="ios:pt-2">
-                <Text variant="bodySm">
+                <Text variant="bodySm" className="text-center">
                   By creating an account, you agree to our{' '}
                   <Link
-                    className="text-link-sm text-tonal underline"
+                    className="text-link-sm text-tonal-foreground underline"
                     href="/(modals)/terms-and-conditions">
                     Terms and Conditions
                   </Link>{' '}
                   and{' '}
                   <Link
-                    className="text-link-sm text-tonal underline"
+                    className="text-link-sm text-tonal-foreground underline"
                     href="/(modals)/privacy-policy">
                     Privacy Policy
                   </Link>

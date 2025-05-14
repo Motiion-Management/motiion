@@ -19,8 +19,8 @@
     --primary: 225 7% 12%;
     --primary-foreground: 0 0% 100%;
 
-    --tonal: 173.02 100% 16.86%;
-    --tonal-foreground: 0 0% 100%;
+    --tonal: 174 100% 40%;
+    --tonal-foreground: 174 100% 12%;
 
     --secondary: 173.02 100% 16.86%;
     --secondary-foreground: 0 0% 100%;
@@ -80,8 +80,8 @@
       --secondary: 195 7% 12%;
       --secondary-foreground: 195 7% 72%;
 
-      --tonal: 174 100% 40%;
-      --tonal-foreground: 195 7% 12%;
+      --tonal: 174 100% 12%;
+      --tonal-foreground: 174 100% 40%;
 
       --accent: 173.82 100% 40%;
       --accent-foreground: 225 40% 1.96%;
