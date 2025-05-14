@@ -1,23 +1,40 @@
 import { useSignUp } from '@clerk/clerk-expo';
 import { router } from 'expo-router';
-import React, { useState } from 'react';
-import { ActivityIndicator, Platform, View } from 'react-native';
-import {
-  KeyboardAwareScrollView,
-  KeyboardController,
-  KeyboardStickyView,
-} from 'react-native-keyboard-controller';
+import React from 'react';
+import { ActivityIndicator, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import z from 'zod';
 
+import { useAppForm } from '~/components/form/appForm';
+import { BaseOnboardingScreen } from '~/components/layouts/BaseOnboardingScreen';
 import { Button } from '~/components/nativewindui/Button';
-import { Form, FormItem, FormSection } from '~/components/nativewindui/Form';
 import { Text } from '~/components/nativewindui/Text';
-import { TextField } from '~/components/nativewindui/TextField';
 
 export default function InfoScreen() {
   const { isLoaded, signUp } = useSignUp();
-  const insets = useSafeAreaInsets();
-  const [phoneNumber, setPhoneNumber] = useState('');
+  // zod validator for form including 1 field of phone
+  const phoneSchema = z.object({
+    countryCode: z.string().min(1, { message: 'Country code is required' }),
+    phone: z
+      .string()
+      .min(10, { message: 'Phone number must be at least 10 digits' })
+      .max(15, { message: 'Phone number must be at most 15 digits' }),
+  });
+  const form = useAppForm({
+    validators: {
+      onChange: phoneSchema,
+    },
+    onSubmit: async (values) => {
+      try {
+        await signUp?.create({
+          phoneNumber: values.phone,
+        });
+        router.push('/auth/(create-account)/verify-phone');
+      } catch (error) {
+        console.error('Error creating sign up:', error);
+      }
+    },
+  });
 
   if (!isLoaded) {
     return (
@@ -28,44 +45,12 @@ export default function InfoScreen() {
   }
 
   return (
-    <View className="flex-1 bg-transparent" style={{ paddingBottom: insets.bottom }}>
-      <KeyboardAwareScrollView
-        bottomOffset={Platform.select({ ios: 8 })}
-        bounces={false}
-        keyboardDismissMode="interactive"
-        keyboardShouldPersistTaps="handled"
-        contentContainerClassName="pt-4 px-4 ">
-        <Text variant="title1" className="">
-          What's your phone number?
-        </Text>
-        <View className="ios:pt-4 pt-6">
-          <TextField
-            placeholder="XXX XXX XXXX"
-            label="Phone Number"
-            // onSubmitEditing={() => KeyboardController.setFocusTo('next')}
-            blurOnSubmit
-            autoFocus
-            textContentType="telephoneNumber"
-            returnKeyType="done"
-          />
-        </View>
-      </KeyboardAwareScrollView>
-      <KeyboardStickyView
-        offset={{
-          closed: 0,
-          opened: Platform.select({ ios: insets.bottom + 30, default: insets.bottom }),
-        }}>
-        <View className=" px-12 py-4">
-          <Button
-            size="lg"
-            onPress={() => {
-              router.push('/auth/(create-account)/credentials');
-            }}>
-            <Text>Continue</Text>
-          </Button>
-        </View>
-      </KeyboardStickyView>
-      {Platform.OS === 'ios' && (
+    <BaseOnboardingScreen
+      title="What's your phone number?"
+      helpText="We will send you a verification code to this number."
+      nextHref="/auth/(create-account)/verify-phone"
+      canProgress={!form}
+      secondaryActionSlot={
         <Button
           variant="plain"
           onPress={() => {
@@ -73,7 +58,11 @@ export default function InfoScreen() {
           }}>
           <Text className="text-sm text-primary">Already have an account?</Text>
         </Button>
-      )}
-    </View>
+      }>
+      <View className="min-h-12 flex-1 flex-row gap-6">
+        <form.AppField name="countryCode" children={(field) => <field.CountryCode />} />
+        <form.AppField name="phone" children={(field) => <field.PhoneNumber />} />
+      </View>
+    </BaseOnboardingScreen>
   );
 }

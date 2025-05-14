@@ -1,5 +1,6 @@
 import { createFormHook } from '@tanstack/react-form';
 
+import { CountryCode } from './CountryCode';
 import { PhoneNumber } from './PhoneNumber';
 import { fieldContext, formContext } from './context';
 
@@ -9,6 +10,7 @@ const { useAppForm } = createFormHook({
   // We'll learn more about these options later
   fieldComponents: {
     PhoneNumber,
+    CountryCode,
   },
   formComponents: {},
 });

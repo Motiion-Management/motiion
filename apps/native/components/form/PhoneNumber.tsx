@@ -1,6 +1,3 @@
-import { View } from 'react-native';
-
-import { CountryCode } from './CountryCode';
 import { useFieldContext } from './context';
 import { TextField } from '../nativewindui/TextField';
 
@@ -25,7 +22,7 @@ const formatPhoneNumber = (phoneNumber: string) => {
 
   // Check if the input is blank or too short
   if (cleaned.length === 0) {
-    return '';
+    return undefined;
   } else if (cleaned.length < 4) {
     // Just show the area code being built: (X, (XX, (XXX
     return `(${cleaned}`;
@@ -46,23 +43,19 @@ const formatPhoneNumber = (phoneNumber: string) => {
 export const PhoneNumber = () => {
   const field = useFieldContext<string>();
   return (
-    <View className="min-h-12 flex-1 flex-row gap-6">
-      <CountryCode />
-
-      <TextField
-        containerClassName="flex-1"
-        placeholder="XXX XXX XXXX"
-        label="Phone Number"
-        value={formatPhoneNumber(field.state.value)}
-        onChangeText={(text) => field.handleChange(cleanPhoneNumber(text))}
-        submitBehavior="blurAndSubmit"
-        errorMessage={field.state.meta.errors[0]}
-        autoFocus
-        textContentType="telephoneNumber"
-        autoComplete="tel"
-        keyboardType="number-pad"
-        returnKeyType="done"
-      />
-    </View>
+    <TextField
+      containerClassName="flex-1"
+      placeholder="XXX XXX XXXX"
+      label="Phone Number"
+      value={formatPhoneNumber(field.state.value)}
+      onChangeText={(text) => field.handleChange(cleanPhoneNumber(text))}
+      submitBehavior="blurAndSubmit"
+      errorMessage={field.state.meta.errors[0]}
+      autoFocus
+      textContentType="telephoneNumber"
+      autoComplete="tel"
+      keyboardType="number-pad"
+      returnKeyType="done"
+    />
   );
 };
