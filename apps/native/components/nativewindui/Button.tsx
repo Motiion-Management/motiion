@@ -15,7 +15,7 @@ const buttonVariants = cva('flex-row items-center justify-center gap-2', {
       outline: 'ios:border-primary ios:active:bg-primary/5 border border-foreground/40',
       secondary:
         'ios:bg-background/10 dark:ios:bg-background/40 ios:active:bg-background/50 bg-primary/15 dark:bg-primary/30',
-      tonal: ' active:opacity-80 bg-tonal',
+      tonal: 'active:opacity-80 bg-tonal',
       plain: 'ios:active:opacity-70',
     },
     size: {
@@ -128,6 +128,7 @@ const Button = React.forwardRef<React.ElementRef<typeof Pressable>, ButtonProps>
   ) => {
     const { colorScheme } = useColorScheme();
 
+    console.log('disabled', props.disabled);
     return (
       <TextClassContext.Provider value={buttonTextVariants({ variant, size })}>
         <Root

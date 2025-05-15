@@ -11,16 +11,21 @@ export const BaseOnboardingScreen = ({
   title,
   children,
   helpText,
-  nextHref,
   canProgress = false,
-  secondaryActionSlot,
+  primaryAction,
+  secondaryAction,
 }: {
   title: string;
   children: React.ReactNode;
   helpText?: string;
-  nextHref: Href;
   canProgress?: boolean;
-  secondaryActionSlot?: React.ReactNode;
+  primaryAction: {
+    onPress: () => void;
+  };
+  secondaryAction?: {
+    onPress: () => void;
+    text: string;
+  };
 }) => {
   const insets = useSafeAreaInsets();
 
@@ -56,16 +61,22 @@ export const BaseOnboardingScreen = ({
           opened: Platform.select({ ios: insets.bottom + 30, default: insets.bottom }),
         }}>
         <View className="flex-row items-center justify-end px-4 py-10">
-          <View className="flex-1 flex-row justify-start">{secondaryActionSlot}</View>
+          <View className="flex-1 flex-row justify-start">
+            {secondaryAction && (
+              <Button variant="plain" onPress={secondaryAction.onPress}>
+                <Text className="text-sm text-primary">{secondaryAction.text}</Text>
+              </Button>
+            )}
+          </View>
           <Button
-            disabled={canProgress}
+            disabled={!canProgress}
             size="icon"
             variant="tonal"
             onPress={() => {
               if (!canProgress) {
                 return;
               }
-              router.push(nextHref);
+              primaryAction.onPress();
             }}>
             <Icon name="chevron-right" size={16} color="#00CCB7" />
           </Button>

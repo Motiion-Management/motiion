@@ -4,6 +4,11 @@ settings:
   autoInstallPeers: true
   excludeLinksFromLockfile: false
 
+patchedDependencies:
+  react-native-phone-entry@0.2.2:
+    hash: xdj7jc7wnucitam5cuhlkyqhay
+    path: patches/react-native-phone-entry@0.2.2.patch
+
 importers:
 
   .:
@@ -250,7 +255,7 @@ importers:
         version: 6.7.1(react-native@0.79.2(@babel/core@7.27.1)(@types/react@19.0.14)(react@19.0.0))(react@19.0.0)
       react-native-phone-entry:
         specifier: ^0.2.2
-        version: 0.2.2(react-art@16.13.1(react@19.0.0))(react-dom@19.0.0(react@19.0.0))(react-native-web@0.20.0(react-dom@19.0.0(react@19.0.0))(react@19.0.0))(react-native@0.79.2(@babel/core@7.27.1)(@types/react@19.0.14)(react@19.0.0))(react@19.0.0)
+        version: 0.2.2(patch_hash=xdj7jc7wnucitam5cuhlkyqhay)(react-art@16.13.1(react@19.0.0))(react-dom@19.0.0(react@19.0.0))(react-native-web@0.20.0(react-dom@19.0.0(react@19.0.0))(react@19.0.0))(react-native@0.79.2(@babel/core@7.27.1)(@types/react@19.0.14)(react@19.0.0))(react@19.0.0)
       react-native-reanimated:
         specifier: 3.17.5
         version: 3.17.5(@babel/core@7.27.1)(react-native@0.79.2(@babel/core@7.27.1)(@types/react@19.0.14)(react@19.0.0))(react@19.0.0)
@@ -14954,7 +14959,7 @@ snapshots:
       react: 19.0.0
       react-native: 0.79.2(@babel/core@7.27.1)(@types/react@19.0.14)(react@19.0.0)
 
-  react-native-phone-entry@0.2.2(react-art@16.13.1(react@19.0.0))(react-dom@19.0.0(react@19.0.0))(react-native-web@0.20.0(react-dom@19.0.0(react@19.0.0))(react@19.0.0))(react-native@0.79.2(@babel/core@7.27.1)(@types/react@19.0.14)(react@19.0.0))(react@19.0.0):
+  react-native-phone-entry@0.2.2(patch_hash=xdj7jc7wnucitam5cuhlkyqhay)(react-art@16.13.1(react@19.0.0))(react-dom@19.0.0(react@19.0.0))(react-native-web@0.20.0(react-dom@19.0.0(react@19.0.0))(react@19.0.0))(react-native@0.79.2(@babel/core@7.27.1)(@types/react@19.0.14)(react@19.0.0))(react@19.0.0):
     dependencies:
       google-libphonenumber: 3.2.40
       react: 19.0.0

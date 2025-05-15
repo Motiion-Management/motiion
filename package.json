@@ -32,5 +32,10 @@
   "workspaces": [
     "apps/*",
     "packages/*"
-  ]
+  ],
+  "pnpm": {
+    "patchedDependencies": {
+      "react-native-phone-entry@0.2.2": "patches/react-native-phone-entry@0.2.2.patch"
+    }
+  }
 }
