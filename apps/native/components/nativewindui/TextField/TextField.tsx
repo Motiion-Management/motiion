@@ -53,7 +53,7 @@ const TextField = React.forwardRef<TextFieldRef, TextFieldProps>(
 
     return (
       <Pressable
-        className={cn(editable === false && 'opacity-50', containerClassName)}
+        className={cn(editable === false && 'opacity-50 ', containerClassName)}
         disabled={editable === false || readOnly}
         onPress={focus}>
         {!!label && (
@@ -66,7 +66,7 @@ const TextField = React.forwardRef<TextFieldRef, TextFieldProps>(
             </Text>
           </View>
         )}
-        <View className="flex-row border-b border-b-foreground">
+        <View className="flex-row  border-b border-b-foreground">
           {!!leftView && !label && leftView}
           <TextInput
             ref={inputRef}

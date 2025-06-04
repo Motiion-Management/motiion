@@ -1,44 +1,69 @@
 import { useSignUp } from '@clerk/clerk-expo';
+import { useStore } from '@tanstack/react-store';
 import { router } from 'expo-router';
-import React from 'react';
+import React, { useState } from 'react';
 import { ActivityIndicator, View } from 'react-native';
 import z from 'zod';
 
 import { useAppForm } from '~/components/form/appForm';
 import { BaseOnboardingScreen } from '~/components/layouts/BaseOnboardingScreen';
+import { Text } from '~/components/nativewindui/Text';
 
 export default function InfoScreen() {
   const { isLoaded, signUp } = useSignUp();
-  // zod validator for form including 1 field of phone
-  const phoneSchema = z.object({
-    phone: z
-      .string()
-      .min(10, { message: 'Phone number must be at least 10 digits' })
-      .max(15, { message: 'Phone number must be at most 15 digits' }),
+  const [isVerifying, setIsVerifying] = useState(false);
+  const [verificationError, setVerificationError] = useState<string | null>(null);
+
+  // Simple synchronous validation for OTP format
+  const otpSchema = z.object({
+    otp: z.string().regex(/^\d{6}$/, { message: 'OTP must be exactly 6 digits' }),
   });
+
   const form = useAppForm({
     defaultValues: {
-      phone: '+1',
+      otp: '',
     },
     validators: {
-      onChange: phoneSchema,
+      onChange: otpSchema,
     },
     onSubmit: async ({ value }) => {
       if (!isLoaded || !signUp) {
-        console.error('SignUp is not available');
+        setVerificationError('Authentication service not ready. Please try again.');
         return;
       }
+
+      setIsVerifying(true);
+      setVerificationError(null);
+
       try {
-        await signUp.create({
-          phoneNumber: value.phone,
+        // Attempt to verify the phone number with the provided OTP
+        const result = await signUp.attemptPhoneNumberVerification({
+          code: value.otp,
         });
-        signUp.preparePhoneNumberVerification();
-        router.push('/auth/(create-account)/verify-phone');
-      } catch (error) {
-        console.error('Error creating sign up:', error);
+
+        // Check if verification was successful
+        if (result.verifications.phoneNumber.status === 'verified') {
+          router.push('/auth/(create-account)/name');
+        } else {
+          setVerificationError('Verification failed. Please try again.');
+        }
+      } catch (error: any) {
+        // Handle Clerk-specific errors
+        const errorMessage =
+          error.errors?.[0]?.message || 'Invalid verification code. Please try again.';
+        setVerificationError(errorMessage);
+      } finally {
+        setIsVerifying(false);
       }
     },
   });
+
+  const isFormReady = useStore(
+    form.store,
+    (state) => state.canSubmit && state.values.otp.length === 6 && !isVerifying
+  );
+
+  const phoneNumber = signUp?.phoneNumber || '+X (XXX) XXX - XXXX';
 
   if (!isLoaded) {
     return (
@@ -50,9 +75,9 @@ export default function InfoScreen() {
 
   return (
     <BaseOnboardingScreen
-      title="What's your phone number?"
-      helpText="We will send you a verification code to this number."
-      canProgress={!form.state.isValid}
+      title="Enter your verification code"
+      helpText={`Code sent to ${phoneNumber}.`}
+      canProgress={isFormReady}
       primaryAction={{
         onPress: () => {
           form.handleSubmit();
@@ -64,8 +89,15 @@ export default function InfoScreen() {
         },
         text: 'Already have an account?',
       }}>
-      <View className="min-h-12 flex-1 flex-row gap-6">
-        <form.AppField name="phone" children={(field) => <field.PhoneNumber />} />
+      <View className="min-h-12 flex-1 flex-col gap-6">
+        <form.AppField name="otp" children={(field) => <field.PhoneOTP />} />
+        {verificationError && <Text className="text-sm text-destructive">{verificationError}</Text>}
+        {isVerifying && (
+          <View className="flex-row items-center gap-2">
+            <ActivityIndicator size="small" />
+            <Text className="text-sm text-muted-foreground">Verifying...</Text>
+          </View>
+        )}
       </View>
     </BaseOnboardingScreen>
   );

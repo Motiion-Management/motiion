@@ -1,7 +1,7 @@
 import { useSignUp } from '@clerk/clerk-expo';
 import { useStore } from '@tanstack/react-store';
 import { router } from 'expo-router';
-import React from 'react';
+import React, { useEffect } from 'react';
 import { ActivityIndicator, View } from 'react-native';
 import { isValidNumber } from 'react-native-phone-entry';
 import * as z from 'zod';
@@ -25,7 +25,6 @@ const formValidator = z.object({
 });
 export default function InfoScreen() {
   const { isLoaded, signUp } = useSignUp();
-  // zod validator for form including 1 field of phone
 
   const form = useAppForm({
     defaultValues: {
@@ -35,8 +34,6 @@ export default function InfoScreen() {
       },
     },
     validators: {
-      onChangeAsyncDebounceMs: 1000,
-      onChangeAsync: formValidator,
       onSubmit: formValidator,
     },
     onSubmit: async ({ value }) => {
@@ -56,11 +53,15 @@ export default function InfoScreen() {
     },
   });
 
-  const isFormReady = useStore(
-    form.store,
-    (state) => state.isValid && state.isDirty && !state.isValidating && state.isFormValid
-  );
-  console.log('isValid', isFormReady);
+  useEffect(() => {
+    if (!signUp) return;
+    const { status, id } = signUp.verifications.phoneNumber;
+    if (id && status !== 'expired') {
+      router.push('/auth/(create-account)/verify-phone');
+    }
+  }, [signUp?.verifications.phoneNumber]);
+
+  const isFormReady = useStore(form.store, (state) => state.canSubmit);
 
   if (!isLoaded) {
     return (
@@ -81,18 +82,7 @@ export default function InfoScreen() {
         },
       }}>
       <View className="min-h-12 flex-1 flex-row gap-6">
-        <form.AppField
-          // validators={{
-          //   onChangeAsyncDebounceMs: 1000,
-          //   onChangeAsync: async ({ value }) => {
-          //     return isValidNumber(value.fullNumber, value.countryCode)
-          //       ? undefined
-          //       : 'Invalid phone number';
-          //   },
-          // }}
-          name="phone"
-          children={(field) => <field.PhoneNumber />}
-        />
+        <form.AppField name="phone" children={(field) => <field.PhoneNumber />} />
       </View>
     </BaseOnboardingScreen>
   );
