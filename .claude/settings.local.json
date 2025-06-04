@@ -1,8 +1,11 @@
 {
-  "enableAllProjectMcpServers": false,
   "permissions": {
     "allow": [
-      "Bash(find:*)"
+      "Bash(find:*)",
+      "Bash(git diff:*)",
+      "Bash(rg:*)",
+      "mcp__figma-mcp__add_figma_file"
     ]
-  }
+  },
+  "enableAllProjectMcpServers": false
 }
