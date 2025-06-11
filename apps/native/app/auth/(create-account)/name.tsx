@@ -114,11 +114,11 @@ export default function NameScreen() {
             />
           )}
         />
-        {signupError && <Text className="text-sm text-destructive">{signupError}</Text>}
+        {signupError && <Text className="text-sm text-text-error">{signupError}</Text>}
         {isCreatingAccount && (
           <View className="flex-row items-center gap-2">
             <ActivityIndicator size="small" />
-            <Text className="text-sm text-muted-foreground">Saving...</Text>
+            <Text className="text-sm text-text-disabled">Saving...</Text>
           </View>
         )}
       </View>

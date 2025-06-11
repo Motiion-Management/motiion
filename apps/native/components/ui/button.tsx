@@ -10,12 +10,12 @@ const buttonVariants = cva(
   {
     variants: {
       variant: {
-        default: 'bg-primary web:hover:opacity-90 active:opacity-90',
-        destructive: 'bg-destructive web:hover:opacity-90 active:opacity-90',
+        default: 'bg-primary-500 web:hover:opacity-90 active:opacity-90',
+        destructive: 'bg-text-error web:hover:opacity-90 active:opacity-90',
         outline:
-          'border border-input bg-background web:hover:bg-primary web:hover:text-accent-foreground active:bg-primary',
-        secondary: 'bg-secondary web:hover:opacity-80 active:opacity-80',
-        ghost: 'web:hover:bg-primary web:hover:text-accent-foreground active:bg-primary',
+          'border border-border-default bg-background-default web:hover:bg-primary-500-500 web:hover:text-text-high active:bg-primary-500-500',
+        secondary: 'bg-primary-900 web:hover:opacity-80 active:opacity-80',
+        ghost: 'web:hover:bg-primary-500-500 web:hover:text-text-high active:bg-primary-500-500',
         link: 'web:underline-offset-4 web:hover:underline web:focus:underline',
       },
       size: {
@@ -33,16 +33,16 @@ const buttonVariants = cva(
 );
 
 const buttonTextVariants = cva(
-  'web:whitespace-nowrap text-sm native:text-base font-medium text-foreground web:transition-colors',
+  'web:whitespace-nowrap text-sm native:text-base font-medium text-text-default web:transition-colors',
   {
     variants: {
       variant: {
-        default: 'text-primary-foreground',
-        destructive: 'text-destructive-foreground',
-        outline: 'group-active:text-accent-foreground',
-        secondary: 'text-secondary-foreground group-active:text-secondary-foreground',
-        ghost: 'group-active:text-accent-foreground',
-        link: 'text-foreground group-active:underline',
+        default: 'text-text-high',
+        destructive: 'text-text-high',
+        outline: 'group-active:text-text-high',
+        secondary: 'text-text-high group-active:text-text-high',
+        ghost: 'group-active:text-text-high',
+        link: 'text-text-default group-active:underline',
       },
       size: {
         default: '',

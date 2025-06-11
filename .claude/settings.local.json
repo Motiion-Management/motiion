@@ -11,7 +11,8 @@
       "Bash(grep:*)",
       "Bash(npm run type-check:*)",
       "Bash(npm run migrate-tokens:*)",
-      "Bash(ls:*)"
+      "Bash(ls:*)",
+      "Bash(npm run migrate-figma-tokens:*)"
     ]
   },
   "enableAllProjectMcpServers": false

@@ -21,7 +21,7 @@ export default function LoginScreen() {
   const insets = useSafeAreaInsets();
   const [focusedTextField, setFocusedTextField] = React.useState<'email' | 'password' | null>(null);
   return (
-    <View className="ios:bg-card flex-1" style={{ paddingBottom: insets.bottom }}>
+    <View className="ios:bg-surface-default flex-1" style={{ paddingBottom: insets.bottom }}>
       <Stack.Screen
         options={{
           title: 'Log in',
@@ -30,7 +30,7 @@ export default function LoginScreen() {
             return (
               <Link asChild href="/">
                 <Button variant="plain" className="ios:px-0">
-                  <Text className="text-foreground">Cancel</Text>
+                  <Text className="text-text-default">Cancel</Text>
                 </Button>
               </Link>
             );
@@ -54,12 +54,12 @@ export default function LoginScreen() {
               {Platform.select({ ios: 'Welcome back!', default: 'Log in' })}
             </Text>
             {Platform.OS !== 'ios' && (
-              <Text className="ios:text-sm text-center text-muted-foreground">Welcome back!</Text>
+              <Text className="ios:text-sm text-center text-text-disabled">Welcome back!</Text>
             )}
           </View>
           <View className="ios:pt-4 pt-6">
             <Form className="gap-2">
-              <FormSection className="ios:bg-background">
+              <FormSection className="ios:bg-background-default-default">
                 <FormItem>
                   <TextField
                     placeholder={Platform.select({ ios: 'Email', default: '' })}
@@ -90,7 +90,7 @@ export default function LoginScreen() {
               <View className="flex-row">
                 <Link asChild href="/auth/(login)/forgot-password">
                   <Button size="sm" variant="plain" className="px-0.5">
-                    <Text className="text-sm text-foreground">Forgot password?</Text>
+                    <Text className="text-sm text-text-default">Forgot password?</Text>
                   </Button>
                 </Link>
               </View>
@@ -121,7 +121,7 @@ export default function LoginScreen() {
               onPress={() => {
                 router.replace('/auth/(create-account)');
               }}>
-              <Text className="px-0.5 text-sm text-foreground">Create Account</Text>
+              <Text className="px-0.5 text-sm text-text-default">Create Account</Text>
             </Button>
             <Button
               onPress={() => {
@@ -143,7 +143,7 @@ export default function LoginScreen() {
           onPress={() => {
             router.replace('/auth/(create-account)');
           }}>
-          <Text className="text-sm text-foreground">Create Account</Text>
+          <Text className="text-sm text-text-default">Create Account</Text>
         </Button>
       )}
     </View>

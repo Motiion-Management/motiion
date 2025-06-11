@@ -91,11 +91,11 @@ export default function InfoScreen() {
       }}>
       <View className="min-h-12 flex-1 flex-col gap-6">
         <form.AppField name="otp" children={(field) => <field.PhoneOTP />} />
-        {verificationError && <Text className="text-sm text-destructive">{verificationError}</Text>}
+        {verificationError && <Text className="text-sm text-text-error">{verificationError}</Text>}
         {isVerifying && (
           <View className="flex-row items-center gap-2">
             <ActivityIndicator size="small" />
-            <Text className="text-sm text-muted-foreground">Verifying...</Text>
+            <Text className="text-sm text-text-disabled">Verifying...</Text>
           </View>
         )}
       </View>

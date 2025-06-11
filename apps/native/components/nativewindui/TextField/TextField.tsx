@@ -61,7 +61,7 @@ const TextField = React.forwardRef<TextFieldRef, TextFieldProps>(
             {leftView}
             <Text
               variant="labelXs"
-              className={cn('text-muted-foreground', leftView && 'pl-2', labelClassName)}>
+              className={cn('text-text-disabled', leftView && 'pl-2', labelClassName)}>
               {label}
             </Text>
           </View>
@@ -73,7 +73,7 @@ const TextField = React.forwardRef<TextFieldRef, TextFieldProps>(
             editable={editable}
             readOnly={readOnly}
             className={cn(
-              ' placeholder:text-foreground/40 flex-1 py-3 text-[17px] text-foreground',
+              ' placeholder:text-text-default/40 flex-1 py-3 text-[17px] text-text-default',
               className
             )}
             onChangeText={onChangeText}

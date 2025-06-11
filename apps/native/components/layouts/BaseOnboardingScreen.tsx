@@ -47,7 +47,7 @@ export const BaseOnboardingScreen = ({
             {children}
             {helpText && (
               <View className="pt-2">
-                <Text className="text-sm text-secondary-foreground" variant="body">
+                <Text className="text-sm text-text-high" variant="body">
                   {helpText}
                 </Text>
               </View>
@@ -64,7 +64,7 @@ export const BaseOnboardingScreen = ({
           <View className="flex-1 flex-row justify-start">
             {secondaryAction && (
               <Button variant="plain" onPress={secondaryAction.onPress}>
-                <Text className="text-sm text-foreground">{secondaryAction.text}</Text>
+                <Text className="text-sm text-text-default">{secondaryAction.text}</Text>
               </Button>
             )}
           </View>

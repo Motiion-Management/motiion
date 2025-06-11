@@ -11,11 +11,11 @@ import { COLORS } from '~/theme/colors';
 const buttonVariants = cva('flex-row items-center justify-center gap-2', {
   variants: {
     variant: {
-      primary: 'active:opacity-90 bg-button-surface-default',
-      outline: 'border border-border bg-button-surface-high active:bg-muted',
-      secondary: 'active:opacity-90 bg-secondary',
-      accent: 'active:opacity-90 bg-primary',
-      tonal: 'active:opacity-90 bg-tonal',
+      primary: 'active:opacity-90 bg-button-surface',
+      outline: 'border border-border-default bg-button-surface-high active:bg-surface-default',
+      secondary: 'active:opacity-90 bg-primary-900',
+      accent: 'active:opacity-90 bg-primary-500',
+      tonal: 'active:opacity-90 bg-primary-850',
       plain: 'ios:active:opacity-70',
     },
     size: {
@@ -50,12 +50,12 @@ const androidRootVariants = cva('overflow-hidden', {
 const buttonTextVariants = cva('font-semibold text-link', {
   variants: {
     variant: {
-      primary: 'text-primary-foreground',
-      secondary: 'text-secondary-foreground',
-      outline: 'text-foreground',
-      accent: 'text-accent-foreground',
-      tonal: 'text-tonal-foreground',
-      plain: 'text-foreground',
+      primary: 'text-text-high',
+      secondary: 'text-text-high',
+      outline: 'text-text-default',
+      accent: 'text-text-high',
+      tonal: 'text-primary-500',
+      plain: 'text-text-default',
     },
     size: {
       none: '',
@@ -136,7 +136,7 @@ const Button = React.forwardRef<React.ElementRef<typeof Pressable>, ButtonProps>
     return (
       <TextClassContext.Provider value={cn(
         buttonTextVariants({ variant, size }),
-        props.disabled && 'text-muted-foreground'
+        props.disabled && 'text-text-disabled'
       )}>
         <Root
           className={Platform.select({

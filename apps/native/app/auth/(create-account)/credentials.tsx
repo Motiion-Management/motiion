@@ -23,7 +23,7 @@ export default function CredentialsScreen() {
     'email' | 'password' | 'confirm-password' | null
   >(null);
   return (
-    <View className="ios:bg-card flex-1" style={{ paddingBottom: insets.bottom }}>
+    <View className="ios:bg-surface-default flex-1" style={{ paddingBottom: insets.bottom }}>
       <KeyboardAwareScrollView
         bottomOffset={Platform.select({ ios: 8 })}
         bounces={false}
@@ -41,14 +41,14 @@ export default function CredentialsScreen() {
               {Platform.select({ ios: 'Set up your credentials', default: 'Create Account' })}
             </Text>
             {Platform.OS !== 'ios' && (
-              <Text className="ios:text-sm text-center text-muted-foreground">
+              <Text className="ios:text-sm text-center text-text-disabled">
                 Set up your credentials
               </Text>
             )}
           </View>
           <View className="ios:pt-4 pt-6">
             <Form className="gap-2">
-              <FormSection className="ios:bg-background">
+              <FormSection className="ios:bg-background-default-default">
                 <FormItem>
                   <TextField
                     placeholder={Platform.select({ ios: 'Email', default: '' })}

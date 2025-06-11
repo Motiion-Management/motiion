@@ -53,7 +53,7 @@ export default function ForgotPasswordScreen() {
   }
 
   return (
-    <View className="ios:bg-card flex-1" style={{ paddingBottom: insets.bottom }}>
+    <View className="ios:bg-surface-default flex-1" style={{ paddingBottom: insets.bottom }}>
       <Stack.Screen
         options={{
           title: 'Forgot Password',
@@ -77,14 +77,14 @@ export default function ForgotPasswordScreen() {
               {Platform.select({ ios: "What's your email?", default: 'Forgot password' })}
             </Text>
             {Platform.OS !== 'ios' && (
-              <Text className="ios:text-sm text-center text-muted-foreground">
+              <Text className="ios:text-sm text-center text-text-disabled">
                 What's your email?
               </Text>
             )}
           </View>
           <View className="ios:pt-4 pt-6">
             <Form className="gap-2">
-              <FormSection className="ios:bg-background">
+              <FormSection className="ios:bg-background-default-default">
                 <FormItem>
                   <TextField
                     placeholder={Platform.select({ ios: 'Email', default: '' })}
@@ -117,7 +117,7 @@ export default function ForgotPasswordScreen() {
               onPress={() => {
                 router.replace('/auth/(create-account)');
               }}>
-              <Text className="text-sm text-foreground">Create Account</Text>
+              <Text className="text-sm text-text-default">Create Account</Text>
             </Button>
             <Button onPress={onSubmit}>
               <Text className="text-sm">Submit</Text>

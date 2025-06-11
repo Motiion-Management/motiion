@@ -69,7 +69,7 @@ const FormSection = React.forwardRef<React.ElementRef<typeof View>, FormSectionP
         {Platform.OS === 'ios' && !!ios?.title && (
           <Text
             variant="footnote"
-            className={cn('text-muted-foreground pb-1 pl-3 uppercase', ios?.titleClassName)}>
+            className={cn('text-text-disabled pb-1 pl-3 uppercase', ios?.titleClassName)}>
             {ios.title}
           </Text>
         )}
@@ -82,7 +82,7 @@ const FormSection = React.forwardRef<React.ElementRef<typeof View>, FormSectionP
           <View
             ref={ref}
             className={cn(
-              'ios:overflow-hidden ios:rounded-lg ios:bg-card ios:gap-0 ios:pl-1 gap-4',
+              'ios:overflow-hidden ios:rounded-lg ios:bg-surface-default ios:gap-0 ios:pl-1 gap-4',
               className
             )}
             style={style}
@@ -92,7 +92,7 @@ const FormSection = React.forwardRef<React.ElementRef<typeof View>, FormSectionP
           {!!footnote && (
             <Text
               className={cn(
-                'ios:pl-3 ios:pt-1 text-muted-foreground pl-3 pt-0.5',
+                'ios:pl-3 ios:pt-1 text-text-disabled pl-3 pt-0.5',
                 footnoteClassName
               )}
               variant="footnote">

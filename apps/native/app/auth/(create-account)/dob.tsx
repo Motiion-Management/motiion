@@ -114,7 +114,7 @@ export default function DOBScreen() {
             />
           )}
         />
-        {signupError && <Text className="text-sm text-destructive">{signupError}</Text>}
+        {signupError && <Text className="text-sm text-text-error">{signupError}</Text>}
       </View>
     </BaseOnboardingScreen>
   );

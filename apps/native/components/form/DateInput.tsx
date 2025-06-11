@@ -40,9 +40,9 @@ export const DateInput = ({ label, minimumDate, maximumDate, helpText }: DateInp
           }}
         />
       )}
-      {helpText && <Text className="text-sm text-muted-foreground">{helpText}</Text>}
+      {helpText && <Text className="text-sm text-text-disabled">{helpText}</Text>}
       {field.state.meta.errors?.[0] && (
-        <Text className="text-sm text-destructive">{field.state.meta.errors[0]}</Text>
+        <Text className="text-sm text-text-error">{field.state.meta.errors[0]}</Text>
       )}
     </View>
   );

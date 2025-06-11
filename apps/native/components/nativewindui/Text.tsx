@@ -7,7 +7,7 @@ import { cn } from '~/lib/cn';
 
 cssInterop(UITextView, { className: 'style' });
 
-const textVariants = cva('text-foreground font-sans', {
+const textVariants = cva('text-text-default font-sans', {
   variants: {
     variant: {
       largeTitle: 'text-h1 ',
@@ -30,11 +30,11 @@ const textVariants = cva('text-foreground font-sans', {
       caption2: 'text-[11px] leading-4',
     },
     color: {
-      primary: 'text-foreground',
+      primary: 'text-text-default',
       primaryInverted: 'text-background',
-      secondary: 'text-secondary-foreground/90',
-      tertiary: 'text-muted-foreground/90',
-      quarternary: 'text-muted-foreground/50',
+      secondary: 'text-text-high/90',
+      tertiary: 'text-text-disabled/90',
+      quarternary: 'text-text-disabled/50',
     },
   },
   defaultVariants: {

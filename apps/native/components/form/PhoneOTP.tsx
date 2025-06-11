@@ -83,8 +83,8 @@ export const PhoneOTP = () => {
         containerClassName="flex-1 gap-4 px-0"
         pinCodeContainerClassName="flex-1 bg-transparent rounded-none gap-6 border-0 px-0 h-12 w-4 border-b border-b-foreground"
         pinCodeTextClassName={cn(
-          'placeholder:text-foreground/40  text-body-lg text-foreground ',
-          field.state.meta.isValid ? '' : 'text-destructive'
+          'placeholder:text-text-default/40  text-body-lg text-text-default ',
+          field.state.meta.isValid ? '' : 'text-text-error'
         )}
       />
     </View>

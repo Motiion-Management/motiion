@@ -42,13 +42,13 @@ export default function RootScreen() {
                 <Text variant="bodySm" className="text-center">
                   By creating an account, you agree to our{' '}
                   <Link
-                    className="text-link-sm text-tonal-foreground underline"
+                    className="text-link-sm text-primary-500 underline"
                     href="/(modals)/terms-and-conditions">
                     Terms and Conditions
                   </Link>{' '}
                   and{' '}
                   <Link
-                    className="text-link-sm text-tonal-foreground underline"
+                    className="text-link-sm text-primary-500 underline"
                     href="/(modals)/privacy-policy">
                     Privacy Policy
                   </Link>

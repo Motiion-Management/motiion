@@ -7,7 +7,7 @@ import { cn } from '~/lib/utils';
 import { Text } from '~/components/ui/text';
 
 const alertVariants = cva(
-  'relative bg-background w-full rounded-lg border border-border p-4 shadow shadow-foreground/10',
+  'relative bg-background-default w-full rounded-lg border border-border-default p-4 shadow shadow-foreground/10',
   {
     variants: {
       variant: {
@@ -52,7 +52,7 @@ const AlertTitle = React.forwardRef<
   <Text
     ref={ref}
     className={cn(
-      'pl-7 mb-1 font-medium text-base leading-none tracking-tight text-foreground',
+      'pl-7 mb-1 font-medium text-base leading-none tracking-tight text-text-default',
       className
     )}
     {...props}
@@ -66,7 +66,7 @@ const AlertDescription = React.forwardRef<
 >(({ className, ...props }, ref) => (
   <Text
     ref={ref}
-    className={cn('pl-7 text-sm leading-relaxed text-foreground', className)}
+    className={cn('pl-7 text-sm leading-relaxed text-text-default', className)}
     {...props}
   />
 ));

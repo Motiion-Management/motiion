@@ -12,10 +12,10 @@ const ProgressBar = () => {
       <Text variant="labelXs" color="primary" className="mr-4">
         Account
       </Text>
-      <View className="h-1.5 w-12 rounded border-primary bg-primary" />
-      <View className="size-1.5  rounded border border-primary bg-card" />
-      <View className="size-1.5 rounded border border-primary bg-card" />
-      <View className="size-1.5 rounded border border-primary bg-card" />
+      <View className="h-1.5 w-12 rounded border-primary bg-primary-500" />
+      <View className="size-1.5  rounded border border-primary bg-surface-default" />
+      <View className="size-1.5 rounded border border-primary bg-surface-default" />
+      <View className="size-1.5 rounded border border-primary bg-surface-default" />
     </View>
   );
 };

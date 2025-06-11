@@ -99,14 +99,14 @@ const Alert = React.forwardRef<AlertRef, AlertProps>(
               exiting={FadeOut}
               style={bottomPaddingStyle}
               className={cn(
-                'bg-popover/80 absolute bottom-0 left-0 right-0 top-0 items-center justify-center px-3'
+                'bg-surface-high/80 absolute bottom-0 left-0 right-0 top-0 items-center justify-center px-3'
               )}>
               <AlertDialogPrimitive.Content>
                 <Animated.View
                   style={typeof materialWidth === 'number' ? { width: materialWidth } : undefined}
                   entering={FadeInDown}
                   exiting={FadeOutDown}
-                  className="min-w-72 max-w-xl rounded-3xl bg-card p-6 pt-7 shadow-xl">
+                  className="min-w-72 max-w-xl rounded-3xl bg-surface-default p-6 pt-7 shadow-xl">
                   {!!materialIcon && (
                     <View className="items-center pb-4">
                       <Icon color={colors.foreground} size={27} {...materialIcon} />
@@ -146,7 +146,7 @@ const Alert = React.forwardRef<AlertRef, AlertProps>(
                     <View className="gap-4 pb-8">
                       <TextField
                         autoFocus
-                        labelClassName="bg-card"
+                        labelClassName="bg-surface-default"
                         keyboardType={
                           prompt.type === 'secure-text' ? 'default' : prompt.keyboardType
                         }
@@ -171,7 +171,7 @@ const Alert = React.forwardRef<AlertRef, AlertProps>(
                       {prompt.type === 'login-password' && (
                         <TextField
                           ref={passwordRef}
-                          labelClassName="bg-card"
+                          labelClassName="bg-surface-default"
                           keyboardType={prompt.keyboardType}
                           defaultValue={prompt.defaultValue}
                           label="Password"
@@ -215,7 +215,7 @@ const Alert = React.forwardRef<AlertRef, AlertProps>(
                                       : text
                                   );
                                 }}>
-                                <Text className="text-[14px] font-medium  text-foreground">
+                                <Text className="text-[14px] font-medium  text-text-default">
                                   {button.text}
                                 </Text>
                               </Button>
@@ -233,7 +233,7 @@ const Alert = React.forwardRef<AlertRef, AlertProps>(
                             <AlertDialogPrimitive.Action asChild>
                               <Button
                                 variant="tonal"
-                                className="bg-destructive/10 dark:bg-destructive/25"
+                                className="bg-text-error/10 dark:bg-text-error/25"
                                 onPress={() => {
                                   button.onPress?.(
                                     prompt?.type === 'login-password'
@@ -241,7 +241,7 @@ const Alert = React.forwardRef<AlertRef, AlertProps>(
                                       : text
                                   );
                                 }}>
-                                <Text className="text-[14px] font-medium  text-foreground">
+                                <Text className="text-[14px] font-medium  text-text-default">
                                   {button.text}
                                 </Text>
                               </Button>
@@ -263,7 +263,7 @@ const Alert = React.forwardRef<AlertRef, AlertProps>(
                                     : text
                                 );
                               }}>
-                              <Text className="text-[14px] font-medium  text-foreground">
+                              <Text className="text-[14px] font-medium  text-text-default">
                                 {button.text}
                               </Text>
                             </Button>
