@@ -39,6 +39,7 @@ module.exports = {
         sans: ['Montserrat', 'sans-serif'],
       },
       colors: {
+        // Legacy token support (uses CSS variable aliases)
         border: withOpacity('border'),
         input: withOpacity('input'),
         ring: withOpacity('ring'),
@@ -78,34 +79,75 @@ module.exports = {
           foreground: withOpacity('card-foreground'),
         },
         
+        // Figma semantic tokens (new naming)
+        // Background tokens
+        'background-default': withOpacity('background-default'),
+        'background-low': withOpacity('background-low'),
+        'background-accent': withOpacity('background-accent'),
+        'background-overlay': withOpacity('background-overlay'),
+        'background-utility-dark': withOpacity('background-utility-dark'),
+        'background-utility-light': withOpacity('background-utility-light'),
+        'background-utility-accent': withOpacity('background-utility-accent'),
+        
+        // Surface tokens
+        'surface-default': withOpacity('surface-default'),
+        'surface-high': withOpacity('surface-high'),
+        'surface-accent': withOpacity('surface-accent'),
+        'surface-low': withOpacity('surface-low'),
+        'surface-dark': withOpacity('surface-dark'),
+        'surface-tint': withOpacity('surface-tint'),
+        'surface-overlay': withOpacity('surface-overlay'),
+        'surface-tint-accent': withOpacity('surface-tint-accent'),
+        'surface-disabled': withOpacity('surface-disabled'),
+        'surface-error': withOpacity('surface-error'),
+        'surface-caution': withOpacity('surface-caution'),
+        
+        // Text tokens
+        'text-default': withOpacity('text-default'),
+        'text-high': withOpacity('text-high'),
+        'text-low': withOpacity('text-low'),
+        'text-accent': withOpacity('text-accent'),
+        'text-accent-low': withOpacity('text-accent-low'),
+        'text-disabled': withOpacity('text-disabled'),
+        'text-error': withOpacity('text-error'),
+        'text-utility-light': withOpacity('text-utility-light'),
+        'text-utility-dark': withOpacity('text-utility-dark'),
+        'text-error-emphasis': withOpacity('text-error-emphasis'),
+        'text-caution-emphasis': withOpacity('text-caution-emphasis'),
+        
         // Button surface tokens
         'button-surface': {
           DEFAULT: withOpacity('button-surface-default'),
+          tint: withOpacity('button-surface-tint'),
+          disabled: withOpacity('button-surface-disabled'),
+          low: withOpacity('button-surface-low'),
           high: withOpacity('button-surface-high'),
           accent: withOpacity('button-surface-accent'),
-          disabled: withOpacity('button-surface-disabled'),
+          'accent-low': withOpacity('button-surface-accent-low'),
+          'utility-dark': withOpacity('button-surface-utility-dark'),
+          'utility-light': withOpacity('button-surface-utility-light'),
         },
         
         // Icon tokens
-        icon: {
-          DEFAULT: withOpacity('icon-default'),
-          accent: withOpacity('icon-accent'),
-          disabled: withOpacity('icon-disabled'),
-        },
+        'icon-default': withOpacity('icon-default'),
+        'icon-tint': withOpacity('icon-tint'),
+        'icon-inverse': withOpacity('icon-inverse'),
+        'icon-low': withOpacity('icon-low'),
+        'icon-accent': withOpacity('icon-accent'),
+        'icon-disabled': withOpacity('icon-disabled'),
+        'icon-utility-dark': withOpacity('icon-utility-dark'),
+        'icon-error': withOpacity('icon-error'),
+        'icon-error-emphasis': withOpacity('icon-error-emphasis'),
+        'icon-caution-emphasis': withOpacity('icon-caution-emphasis'),
         
-        // Text variants
-        'text-low': withOpacity('text-low'),
-        'text-accent-low': withOpacity('text-accent-low'),
-        
-        // State colors
-        error: {
-          surface: withOpacity('error-surface'),
-          emphasis: withOpacity('error-emphasis'),
-        },
-        caution: {
-          surface: withOpacity('caution-surface'),
-          emphasis: withOpacity('caution-emphasis'),
-        },
+        // Border tokens
+        'border-default': withOpacity('border-default'),
+        'border-low': withOpacity('border-low'),
+        'border-high': withOpacity('border-high'),
+        'border-accent': withOpacity('border-accent'),
+        'border-disabled': withOpacity('border-disabled'),
+        'border-tint': withOpacity('border-tint'),
+        'border-inverse': withOpacity('border-inverse'),
         
         // Direct Figma color values for utility use
         'primary-0': 'rgb(244 255 254)', /* #f4fffe */
