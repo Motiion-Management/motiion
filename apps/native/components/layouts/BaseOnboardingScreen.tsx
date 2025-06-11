@@ -64,7 +64,7 @@ export const BaseOnboardingScreen = ({
           <View className="flex-1 flex-row justify-start">
             {secondaryAction && (
               <Button variant="plain" onPress={secondaryAction.onPress}>
-                <Text className="text-sm text-primary">{secondaryAction.text}</Text>
+                <Text className="text-sm text-foreground">{secondaryAction.text}</Text>
               </Button>
             )}
           </View>

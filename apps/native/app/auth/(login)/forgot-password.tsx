@@ -117,7 +117,7 @@ export default function ForgotPasswordScreen() {
               onPress={() => {
                 router.replace('/auth/(create-account)');
               }}>
-              <Text className="text-sm text-primary">Create Account</Text>
+              <Text className="text-sm text-foreground">Create Account</Text>
             </Button>
             <Button onPress={onSubmit}>
               <Text className="text-sm">Submit</Text>
