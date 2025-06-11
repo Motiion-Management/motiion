@@ -19,6 +19,8 @@
     "format": "eslint \"**/*.{js,jsx,ts,tsx}\" --fix && prettier \"**/*.{js,jsx,ts,tsx,json}\" --write",
     "migrate-tokens": "node scripts/migrate-tokens-simple.js",
     "migrate-tokens:dry": "node scripts/migrate-tokens-simple.js --dry-run",
+    "migrate-figma-tokens": "node scripts/migrate-to-figma-tokens.js",
+    "migrate-figma-tokens:dry": "node scripts/migrate-to-figma-tokens.js --dry-run",
     "web": "expo start --web"
   },
   "dependencies": {
