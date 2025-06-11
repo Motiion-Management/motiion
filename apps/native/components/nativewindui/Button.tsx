@@ -11,12 +11,11 @@ import { COLORS } from '~/theme/colors';
 const buttonVariants = cva('flex-row items-center justify-center gap-2', {
   variants: {
     variant: {
-      primary: 'active:opacity-90 bg-primary',
-      outline: 'border border-border bg-card active:bg-muted',
-      secondary:
-        'ios:bg-background/10 dark:ios:bg-background/40 ios:active:bg-background/50 bg-primary/15 dark:bg-primary/30',
-      accent: 'active:opacity-90 bg-accent',
-      tonal: 'active:opacity-80 bg-tonal',
+      primary: 'active:opacity-90 bg-button-surface-default',
+      outline: 'border border-border bg-button-surface-high active:bg-muted',
+      secondary: 'active:opacity-90 bg-secondary',
+      accent: 'active:opacity-90 bg-primary',
+      tonal: 'active:opacity-90 bg-tonal',
       plain: 'ios:active:opacity-70',
     },
     size: {
@@ -52,7 +51,7 @@ const buttonTextVariants = cva('font-semibold text-link', {
   variants: {
     variant: {
       primary: 'text-primary-foreground',
-      secondary: 'ios:text-primary text-foreground',
+      secondary: 'text-secondary-foreground',
       outline: 'text-foreground',
       accent: 'text-accent-foreground',
       tonal: 'text-tonal-foreground',
@@ -150,7 +149,7 @@ const Button = React.forwardRef<React.ElementRef<typeof Pressable>, ButtonProps>
           <Pressable
             className={cn(
               buttonVariants({ variant, size, className }),
-              props.disabled && 'opacity-60 bg-muted'
+              props.disabled && 'opacity-60 bg-button-surface-disabled'
             )}
             ref={ref}
             style={style}
