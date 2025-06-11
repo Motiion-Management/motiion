@@ -7,7 +7,9 @@
       "mcp__figma-mcp__add_figma_file",
       "mcp__figma-dev-mode-mcp-server__get_code",
       "mcp__figma-dev-mode-mcp-server__get_image",
-      "mcp__figma-dev-mode-mcp-server__get_variable_defs"
+      "mcp__figma-dev-mode-mcp-server__get_variable_defs",
+      "Bash(grep:*)",
+      "Bash(npm run type-check:*)"
     ]
   },
   "enableAllProjectMcpServers": false
