@@ -11,10 +11,11 @@ import { COLORS } from '~/theme/colors';
 const buttonVariants = cva('flex-row items-center justify-center gap-2', {
   variants: {
     variant: {
-      primary: 'active:opacity-80 bg-primary',
-      outline: 'ios:border-primary ios:active:bg-primary/5 border border-foreground/40',
+      primary: 'active:opacity-90 bg-primary',
+      outline: 'border border-border bg-card active:bg-muted',
       secondary:
         'ios:bg-background/10 dark:ios:bg-background/40 ios:active:bg-background/50 bg-primary/15 dark:bg-primary/30',
+      accent: 'active:opacity-90 bg-accent',
       tonal: 'active:opacity-80 bg-tonal',
       plain: 'ios:active:opacity-70',
     },
@@ -23,7 +24,7 @@ const buttonVariants = cva('flex-row items-center justify-center gap-2', {
       sm: 'py-1 px-2.5 rounded-full',
       md: 'ios:rounded-full py-2 ios:py-1.5 ios:px-3.5 px-5 rounded-full',
       lg: 'py-2.5 px-5 ios:py-2 rounded-full gap-2',
-      icon: 'ios:rounded-full h-10 w-10 rounded-full',
+      icon: 'ios:rounded-full h-12 w-12 rounded-full',
     },
   },
   defaultVariants: {
@@ -47,18 +48,19 @@ const androidRootVariants = cva('overflow-hidden', {
   },
 });
 
-const buttonTextVariants = cva('font-bold text-link', {
+const buttonTextVariants = cva('font-semibold text-link', {
   variants: {
     variant: {
       primary: 'text-primary-foreground',
       secondary: 'ios:text-primary text-foreground',
-      outline: 'ios:text-primary text-foreground',
+      outline: 'text-foreground',
+      accent: 'text-accent-foreground',
       tonal: 'text-tonal-foreground',
       plain: 'text-foreground',
     },
     size: {
       none: '',
-      icon: '',
+      icon: 'text-[20px]',
       sm: 'text-[15px] leading-5',
       md: 'text-[17px] leading-7',
       lg: 'text-[17px] leading-7',
@@ -89,13 +91,15 @@ const ANDROID_RIPPLE = {
     primary: { color: convertToRGBA(COLORS.dark.grey3, 0.4), borderless: false },
     outline: { color: convertToRGBA(COLORS.dark.grey5, 0.8), borderless: false },
     secondary: { color: convertToRGBA(COLORS.dark.grey5, 0.8), borderless: false },
+    accent: { color: convertToRGBA(COLORS.dark.grey3, 0.4), borderless: false },
     plain: { color: convertToRGBA(COLORS.dark.grey5, 0.8), borderless: false },
     tonal: { color: convertToRGBA(COLORS.dark.grey5, 0.8), borderless: false },
   },
   light: {
     primary: { color: convertToRGBA(COLORS.light.grey4, 0.4), borderless: false },
-    outline: { color: convertToRGBA(COLORS.dark.grey5, 0.8), borderless: false },
+    outline: { color: convertToRGBA(COLORS.light.grey4, 0.4), borderless: false },
     secondary: { color: convertToRGBA(COLORS.light.grey5, 0.4), borderless: false },
+    accent: { color: convertToRGBA(COLORS.light.grey4, 0.4), borderless: false },
     plain: { color: convertToRGBA(COLORS.light.grey5, 0.4), borderless: false },
     tonal: { color: convertToRGBA(COLORS.light.grey6, 0.4), borderless: false },
   },
@@ -106,8 +110,10 @@ const BORDER_CURVE: ViewStyle = {
   borderCurve: 'continuous',
 };
 
+type ButtonVariant = 'primary' | 'outline' | 'secondary' | 'accent' | 'tonal' | 'plain';
+
 type ButtonVariantProps = Omit<VariantProps<typeof buttonVariants>, 'variant'> & {
-  variant?: Exclude<VariantProps<typeof buttonVariants>['variant'], null>;
+  variant?: ButtonVariant;
 };
 
 type AndroidOnlyButtonProps = {
@@ -128,9 +134,11 @@ const Button = React.forwardRef<React.ElementRef<typeof Pressable>, ButtonProps>
   ) => {
     const { colorScheme } = useColorScheme();
 
-    console.log('disabled', props.disabled);
     return (
-      <TextClassContext.Provider value={buttonTextVariants({ variant, size })}>
+      <TextClassContext.Provider value={cn(
+        buttonTextVariants({ variant, size }),
+        props.disabled && 'text-muted-foreground'
+      )}>
         <Root
           className={Platform.select({
             ios: undefined,
@@ -141,12 +149,12 @@ const Button = React.forwardRef<React.ElementRef<typeof Pressable>, ButtonProps>
           })}>
           <Pressable
             className={cn(
-              props.disabled && 'opacity-50',
-              buttonVariants({ variant, size, className })
+              buttonVariants({ variant, size, className }),
+              props.disabled && 'opacity-60 bg-muted'
             )}
             ref={ref}
             style={style}
-            android_ripple={ANDROID_RIPPLE[colorScheme][variant]}
+            android_ripple={props.disabled ? undefined : ANDROID_RIPPLE[colorScheme][variant]}
             {...props}
           />
         </Root>
