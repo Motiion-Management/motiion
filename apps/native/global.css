@@ -5,81 +5,84 @@
 @layer base {
   :root {
     /* Background tokens - Figma semantic names */
-    --background-default: 255 255 255; /* #ffffff */
-    --background-low: 55 59 65; /* #373b41 */
-    --background-accent: 0 122 110; /* #007a6e */
-    --background-overlay: 21 25 28 / 0.4; /* #15191c66 */
-    --background-utility-dark: 21 25 28; /* #15191c */
-    --background-utility-light: 255 255 255; /* #ffffff */
-    --background-utility-accent: 0 61 55; /* #003d37 */
+    --background-default: 255 255 255;
+    --background-low: 55 59 65;
+    --background-accent: 0 122 110;
+    --background-overlay: 21 25 28 / 0.4;
+    --background-utility-dark: 21 25 28;
+    --background-utility-light: 255 255 255;
+    --background-utility-accent: 0 61 55;
+    --background-gradient-transparent: 255 255 255 / 0;
+    --background-gradient-filled: 248 249 250;
 
     /* Surface tokens - Figma semantic names */
-    --surface-default: 248 249 250; /* #f8f9fa */
-    --surface-high: 253 253 253; /* #fdfdfd */
-    --surface-accent: 248 249 250; /* #f8f9fa */
-    --surface-low: 55 59 65; /* #373b41 */
-    --surface-dark: 21 25 28; /* #15191c */
-    --surface-tint: 55 59 65 / 0.4; /* #373b4166 */
-    --surface-overlay: 21 25 28 / 0.8; /* #15191ccc */
-    --surface-tint-accent: 255 255 255; /* #ffffff */
-    --surface-onGradient: 255 255 255; /* #ffffff */
-    --surface-onBackground-accent: 255 255 255; /* #ffffff */
-    --surface-disabled: 255 255 255; /* #ffffff */
-    --surface-error: 245 197 205; /* #f5c5cd */
-    --surface-caution: 253 232 214; /* #fde8d6 */
+    --surface-default: 248 249 250;
+    --surface-high: 253 253 253;
+    --surface-accent: 248 249 250;
+    --surface-low: 55 59 65;
+    --surface-dark: 21 25 28;
+    --surface-tint: 55 59 65 / 0.4;
+    --surface-overlay: 21 25 28 / 0.8;
+    --surface-tint-accent: 255 255 255;
+    --surface-onGradient: 255 255 255;
+    --surface-onBackground-accent: 255 255 255;
+    --surface-disabled: 255 255 255;
+    --surface-error: 245 197 205;
+    --surface-caution: 253 232 214;
 
     /* Text tokens - Figma semantic names */
-    --text-default: 21 25 28; /* #15191c */
-    --text-high: 255 255 255; /* #ffffff */
-    --text-low: 55 59 65; /* #373b41 */
-    --text-accent: 0 204 183; /* #00ccb7 */
-    --text-accent-low: 0 122 110; /* #007a6e */
-    --text-disabled: 135 143 155; /* #878f9b */
-    --text-error: 204 1 36; /* #cc0124 */
-    --text-utility-light: 255 255 255; /* #ffffff */
-    --text-utility-dark: 21 25 28; /* #15191c */
-    --text-error-emphasis: 61 0 11; /* #3d000b */
-    --text-caution-emphasis: 74 43 15; /* #4a2b0f */
+    --text-default: 21 25 28;
+    --text-high: 255 255 255;
+    --text-low: 55 59 65;
+    --text-accent: 0 204 183;
+    --text-accent-low: 0 122 110;
+    --text-disabled: 135 143 155;
+    --text-error: 204 1 36;
+    --text-utility-light: 255 255 255;
+    --text-utility-dark: 21 25 28;
+    --text-error-emphasis: 61 0 11;
+    --text-caution-emphasis: 74 43 15;
 
     /* Button surface tokens - Figma semantic names */
-    --button-surface-default: 21 25 28; /* #15191c */
-    --button-surface-tint: 21 25 28 / 0.6; /* #15191c99 */
-    --button-surface-disabled: 250 250 250; /* #fafafa */
-    --button-surface-low: 210 210 210; /* #d2d2d2 */
-    --button-surface-high: 248 249 250; /* #f8f9fa */
-    --button-surface-accent: 0 41 37; /* #002925 */
-    --button-surface-accent-low: 0 41 37; /* #002925 */
-    --button-surface-utility-dark: 21 25 28; /* #15191c */
-    --button-surface-utility-light: 255 255 255; /* #ffffff */
+    --button-surface-default: 21 25 28;
+    --button-surface-tint: 21 25 28 / 0.6;
+    --button-surface-disabled: 250 250 250;
+    --button-surface-low: 210 210 210;
+    --button-surface-high: 248 249 250;
+    --button-surface-accent: 0 41 37;
+    --button-surface-accent-low: 0 41 37;
+    --button-surface-utility-dark: 21 25 28;
+    --button-surface-utility-light: 255 255 255;
 
     /* Icon tokens - Figma semantic names */
-    --icon-default: 21 25 28; /* #15191c */
-    --icon-tint: 21 25 28 / 0.2; /* #15191c33 */
-    --icon-inverse: 255 255 255; /* #ffffff */
-    --icon-low: 55 59 65; /* #373b41 */
-    --icon-accent: 0 204 183; /* #00ccb7 */
-    --icon-disabled: 135 143 155; /* #878f9b */
-    --icon-utility-dark: 21 25 28; /* #15191c */
-    --icon-error: 204 1 36; /* #cc0124 */
-    --icon-error-emphasis: 61 0 11; /* #3d000b */
-    --icon-caution-emphasis: 74 43 15; /* #4a2b0f */
+    --icon-default: 21 25 28;
+    --icon-tint: 21 25 28 / 0.2;
+    --icon-inverse: 255 255 255;
+    --icon-low: 55 59 65;
+    --icon-accent: 0 204 183;
+    --icon-disabled: 135 143 155;
+    --icon-utility-light: 255 255 255;
+    --icon-utility-dark: 21 25 28;
+    --icon-error: 204 1 36;
+    --icon-error-emphasis: 61 0 11;
+    --icon-caution-emphasis: 74 43 15;
 
     /* Border tokens - Figma semantic names */
-    --border-default: 198 205 215; /* #c6cdd7 */
-    --border-low: 224 228 233; /* #e0e4e9 */
-    --border-high: 21 25 28; /* #15191c */
-    --border-accent: 0 82 73; /* #005249 */
-    --border-disabled: 210 210 210; /* #d2d2d2 */
-    --border-tint: 21 25 28 / 0.4; /* #15191c66 */
-    --border-inverse: 255 255 255; /* #ffffff */
+    --border-default: 198 205 215;
+    --border-low: 224 228 233;
+    --border-high: 0 122 110;
+    --border-accent: 0 82 73;
+    --border-disabled: 210 210 210;
+    --border-tint: 21 25 28 / 0.4;
+    --border-inverse: 255 255 255;
 
     /* Primary color scale - Figma foundational tokens */
-    --primary-0: 244 255 254; /* #f4fffe */
-    --primary-50: 221 250 247; /* #ddfaf7 */
-    --primary-100: 196 245 240; /* #c4f5f0 */
-    --primary-500: 0 204 183; /* #00ccb7 */
-    --primary-850: 0 61 55; /* #003d37 */
-    --primary-900: 0 41 37; /* #002925 */
+    --primary-0: 244 255 254;
+    --primary-50: 221 250 247;
+    --primary-100: 196 245 240;
+    --primary-500: 0 204 183;
+    --primary-850: 0 61 55;
+    --primary-900: 0 41 37;
 
     /* Legacy mappings for backward compatibility */
     --background: var(--background-default);
@@ -101,7 +104,7 @@
     --border: var(--border-default);
     --input: var(--border-default);
     --ring: var(--border-accent);
-    
+
     /* Utility/system values */
     --radius: 0.5rem;
     --tonal: var(--primary-850);
@@ -111,81 +114,76 @@
   @media (prefers-color-scheme: dark) {
     :root {
       /* Background tokens - Dark mode */
-      --background-default: 21 25 28; /* #15191c */
-      --background-low: 255 255 255; /* #ffffff */
-      --background-accent: 0 122 110; /* #007a6e */
-      --background-overlay: 255 255 255 / 0.4; /* #ffffff66 */
-      --background-utility-dark: 21 25 28; /* #15191c */
-      --background-utility-light: 255 255 255; /* #ffffff */
-      --background-utility-accent: 0 61 55; /* #003d37 */
+      --background-default: 0 61 55;
+      --background-low: 83 88 96;
+      --background-accent: 0 163 146;
+      --background-overlay: 35 36 37 / 0.8;
+      --background-utility-dark: 0 0 0;
+      --background-utility-light: 255 255 255;
+      --background-utility-accent: 0 61 55;
+      --background-gradient-transparent: 21 25 28 / 0;
+      --background-gradient-filled: 21 25 28;
 
       /* Surface tokens - Dark mode */
-      --surface-default: 55 59 65; /* #373b41 */
-      --surface-high: 21 25 28; /* #15191c */
-      --surface-accent: 0 204 183; /* #00ccb7 */
-      --surface-low: 21 25 28; /* #15191c */
-      --surface-dark: 255 255 255; /* #ffffff */
-      --surface-tint: 255 255 255 / 0.1; /* #ffffff1a */
-      --surface-overlay: 255 255 255 / 0.8; /* #ffffffcc */
-      --surface-tint-accent: 0 204 183; /* #00ccb7 */
-      --surface-onGradient: 255 255 255; /* #ffffff */
-      --surface-onBackground-accent: 255 255 255; /* #ffffff */
-      --surface-disabled: 21 25 28; /* #15191c */
-      --surface-error: 245 197 205; /* #f5c5cd */
-      --surface-caution: 253 232 214; /* #fde8d6 */
+      --surface-default: 21 25 28;
+      --surface-high: 17 17 17;
+      --surface-accent: 0 41 37;
+      --surface-low: 210 210 210;
+      --surface-dark: 255 255 255;
+      --surface-tint: 55 59 65 / 0.4;
+      --surface-overlay: 21 25 28 / 0.8;
+      --surface-tint-accent: 38 42 41 / 0.5;
+      --surface-onGradient: 255 255 255;
+      --surface-onBackground-accent: 255 255 255;
+      --surface-disabled: 255 255 255;
+      --surface-error: 214 50 78;
+      --surface-caution: 247 165 90;
 
       /* Text tokens - Dark mode */
-      --text-default: 255 255 255; /* #ffffff */
-      --text-high: 21 25 28; /* #15191c */
-      --text-low: 255 255 255; /* #ffffff */
-      --text-accent: 0 204 183; /* #00ccb7 */
-      --text-accent-low: 0 122 110; /* #007a6e */
-      --text-disabled: 135 143 155; /* #878f9b */
-      --text-error: 204 1 36; /* #cc0124 */
-      --text-utility-light: 255 255 255; /* #ffffff */
-      --text-utility-dark: 21 25 28; /* #15191c */
-      --text-error-emphasis: 61 0 11; /* #3d000b */
-      --text-caution-emphasis: 74 43 15; /* #4a2b0f */
+      --text-default: 255 255 255;
+      --text-high: 21 25 28;
+      --text-low: 210 210 210;
+      --text-accent: 0 204 183;
+      --text-accent-low: 0 122 110;
+      --text-disabled: 83 88 96;
+      --text-error: 224 99 120;
+      --text-utility-light: 255 255 255;
+      --text-utility-dark: 21 25 28;
+      --text-error-emphasis: 250 221 226;
+      --text-caution-emphasis: 254 244 234;
 
       /* Button surface tokens - Dark mode */
-      --button-surface-default: 255 255 255; /* #ffffff */
-      --button-surface-tint: 255 255 255 / 0.6; /* #ffffff99 */
-      --button-surface-disabled: 21 25 28; /* #15191c */
-      --button-surface-low: 83 88 96; /* #535860 */
-      --button-surface-high: 21 25 28; /* #15191c */
-      --button-surface-accent: 0 204 183; /* #00ccb7 */
-      --button-surface-accent-low: 0 204 183; /* #00ccb7 */
-      --button-surface-utility-dark: 21 25 28; /* #15191c */
-      --button-surface-utility-light: 255 255 255; /* #ffffff */
+      --button-surface-default: 255 255 255;
+      --button-surface-tint: 21 25 28 / 0.6;
+      --button-surface-disabled: 25 29 30;
+      --button-surface-low: 55 59 65;
+      --button-surface-high: 21 25 28;
+      --button-surface-accent: 0 61 55;
+      --button-surface-accent-low: 0 41 37;
+      --button-surface-utility-dark: 21 25 28;
+      --button-surface-utility-light: 255 255 255;
 
       /* Icon tokens - Dark mode */
-      --icon-default: 255 255 255; /* #ffffff */
-      --icon-tint: 255 255 255 / 0.2; /* #ffffff33 */
-      --icon-inverse: 21 25 28; /* #15191c */
-      --icon-low: 255 255 255; /* #ffffff */
-      --icon-accent: 0 204 183; /* #00ccb7 */
-      --icon-disabled: 135 143 155; /* #878f9b */
-      --icon-utility-dark: 21 25 28; /* #15191c */
-      --icon-error: 204 1 36; /* #cc0124 */
-      --icon-error-emphasis: 61 0 11; /* #3d000b */
-      --icon-caution-emphasis: 74 43 15; /* #4a2b0f */
+      --icon-default: 255 255 255;
+      --icon-tint: 21 25 28 / 0.2;
+      --icon-inverse: 21 25 28;
+      --icon-low: 250 250 250;
+      --icon-accent: 0 204 183;
+      --icon-disabled: 83 88 96;
+      --icon-utility-light: 255 255 255;
+      --icon-utility-dark: 21 25 28;
+      --icon-error: 214 50 78;
+      --icon-error-emphasis: 245 197 205;
+      --icon-caution-emphasis: 253 232 214;
 
       /* Border tokens - Dark mode */
-      --border-default: 83 88 96; /* #535860 */
-      --border-low: 55 59 65; /* #373b41 */
-      --border-high: 255 255 255; /* #ffffff */
-      --border-accent: 0 204 183; /* #00ccb7 */
-      --border-disabled: 83 88 96; /* #535860 */
-      --border-tint: 255 255 255 / 0.2; /* #ffffff33 */
-      --border-inverse: 21 25 28; /* #15191c */
-
-      /* Primary color scale remains the same */
-      --primary-0: 244 255 254; /* #f4fffe */
-      --primary-50: 221 250 247; /* #ddfaf7 */
-      --primary-100: 196 245 240; /* #c4f5f0 */
-      --primary-500: 0 204 183; /* #00ccb7 */
-      --primary-850: 0 61 55; /* #003d37 */
-      --primary-900: 0 41 37; /* #002925 */
+      --border-default: 83 88 96;
+      --border-low: 55 59 65;
+      --border-high: 0 163 146;
+      --border-accent: 0 122 110;
+      --border-disabled: 83 88 96;
+      --border-tint: 55 59 65 / 0.4;
+      --border-inverse: 21 25 28;
 
       /* Legacy mappings for backward compatibility - Dark mode */
       --background: var(--background-default);
@@ -207,7 +205,7 @@
       --border: var(--border-default);
       --input: var(--border-default);
       --ring: var(--border-accent);
-      
+
       /* Utility/system values */
       --tonal: var(--primary-500);
       --tonal-foreground: var(--primary-900);
