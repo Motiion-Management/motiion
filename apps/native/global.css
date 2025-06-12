@@ -213,4 +213,11 @@
       --tonal-foreground: var(--primary-900);
     }
   }
+
+  /* Ensure dark class is applied based on color scheme */
+  @media (prefers-color-scheme: dark) {
+    :root {
+      color-scheme: dark;
+    }
+  }
 }

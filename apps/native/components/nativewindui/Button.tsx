@@ -6,17 +6,19 @@ import { TextClassContext } from '~/components/nativewindui/Text';
 import { Slot } from '~/components/primitives/slot';
 import { cn } from '~/lib/cn';
 import { useColorScheme } from '~/lib/useColorScheme';
-import { COLORS } from '~/theme/colors';
 
 const buttonVariants = cva('flex-row items-center justify-center gap-2', {
   variants: {
     variant: {
-      primary: 'active:opacity-90 bg-button-surface',
-      outline: 'border border-border-default bg-button-surface-high active:bg-surface-default',
-      secondary: 'active:opacity-90 bg-primary-900',
-      accent: 'active:opacity-90 bg-primary-500',
-      tonal: 'active:opacity-90 bg-primary-850',
+      primary: 'active:opacity-90 bg-button-surface-default',
+      outline: 'border border-border-default bg-button-surface-high active:bg-button-surface-high',
+      secondary: 'active:opacity-90 bg-button-surface-high',
+      accent: 'active:opacity-90 bg-button-surface-accent',
+      tonal: 'active:opacity-90 bg-button-surface-high',
       plain: 'ios:active:opacity-70',
+      'utility-light': 'bg-button-surface-utility-light',
+      'utility-dark': 'bg-button-surface-utility-dark',
+      'plain-utility-light': 'ios:active:opacity-70',
     },
     size: {
       none: '',
@@ -47,22 +49,25 @@ const androidRootVariants = cva('overflow-hidden', {
   },
 });
 
-const buttonTextVariants = cva('font-semibold text-link', {
+const buttonTextVariants = cva('font-semibold', {
   variants: {
     variant: {
       primary: 'text-text-high',
-      secondary: 'text-text-high',
+      secondary: 'text-text-default',
       outline: 'text-text-default',
       accent: 'text-text-high',
-      tonal: 'text-primary-500',
+      tonal: 'text-text-default',
       plain: 'text-text-default',
+      'utility-light': 'text-text-utility-dark',
+      'utility-dark': 'text-text-utility-light',
+      'plain-utility-light': 'text-text-utility-light',
     },
     size: {
       none: '',
       icon: 'text-[20px]',
-      sm: 'text-[15px] leading-5',
-      md: 'text-[17px] leading-7',
-      lg: 'text-[17px] leading-7',
+      sm: 'text-[12px] leading-[16.8px]',
+      md: 'text-[16px] leading-[22.4px]',
+      lg: 'text-[16px] leading-[22.4px]',
     },
   },
   defaultVariants: {
@@ -71,49 +76,23 @@ const buttonTextVariants = cva('font-semibold text-link', {
   },
 });
 
-function convertToRGBA(rgb: string, opacity: number): string {
-  const rgbValues = rgb.match(/\d+/g);
-  if (!rgbValues || rgbValues.length !== 3) {
-    throw new Error('Invalid RGB color format');
-  }
-  const red = parseInt(rgbValues[0], 10);
-  const green = parseInt(rgbValues[1], 10);
-  const blue = parseInt(rgbValues[2], 10);
-  if (opacity < 0 || opacity > 1) {
-    throw new Error('Opacity must be a number between 0 and 1');
-  }
-  return `rgba(${red},${green},${blue},${opacity})`;
+// Android ripple colors that adapt to color scheme
+function getAndroidRipple(colorScheme: 'light' | 'dark', variant: ButtonVariant) {
+  const baseColor = colorScheme === 'dark' ? '255, 255, 255' : '0, 0, 0';
+  const opacity = variant === 'outline' || variant === 'plain' || variant === 'tonal' ? 0.1 : 0.2;
+  return {
+    color: `rgba(${baseColor}, ${opacity})`,
+    borderless: false,
+  };
 }
-
-const ANDROID_RIPPLE = {
-  dark: {
-    primary: { color: convertToRGBA(COLORS.dark.grey3, 0.4), borderless: false },
-    outline: { color: convertToRGBA(COLORS.dark.grey5, 0.8), borderless: false },
-    secondary: { color: convertToRGBA(COLORS.dark.grey5, 0.8), borderless: false },
-    accent: { color: convertToRGBA(COLORS.dark.grey3, 0.4), borderless: false },
-    plain: { color: convertToRGBA(COLORS.dark.grey5, 0.8), borderless: false },
-    tonal: { color: convertToRGBA(COLORS.dark.grey5, 0.8), borderless: false },
-  },
-  light: {
-    primary: { color: convertToRGBA(COLORS.light.grey4, 0.4), borderless: false },
-    outline: { color: convertToRGBA(COLORS.light.grey4, 0.4), borderless: false },
-    secondary: { color: convertToRGBA(COLORS.light.grey5, 0.4), borderless: false },
-    accent: { color: convertToRGBA(COLORS.light.grey4, 0.4), borderless: false },
-    plain: { color: convertToRGBA(COLORS.light.grey5, 0.4), borderless: false },
-    tonal: { color: convertToRGBA(COLORS.light.grey6, 0.4), borderless: false },
-  },
-};
 
 // Add as class when possible: https://github.com/marklawlor/nativewind/issues/522
 const BORDER_CURVE: ViewStyle = {
   borderCurve: 'continuous',
 };
 
-type ButtonVariant = 'primary' | 'outline' | 'secondary' | 'accent' | 'tonal' | 'plain';
-
-type ButtonVariantProps = Omit<VariantProps<typeof buttonVariants>, 'variant'> & {
-  variant?: ButtonVariant;
-};
+type ButtonVariantProps = VariantProps<typeof buttonVariants>;
+type ButtonVariant = ButtonVariantProps['variant'];
 
 type AndroidOnlyButtonProps = {
   /**
@@ -134,10 +113,8 @@ const Button = React.forwardRef<React.ElementRef<typeof Pressable>, ButtonProps>
     const { colorScheme } = useColorScheme();
 
     return (
-      <TextClassContext.Provider value={cn(
-        buttonTextVariants({ variant, size }),
-        props.disabled && 'text-text-disabled'
-      )}>
+      <TextClassContext.Provider
+        value={cn(buttonTextVariants({ variant, size }), props.disabled && 'text-text-disabled')}>
         <Root
           className={Platform.select({
             ios: undefined,
@@ -149,11 +126,11 @@ const Button = React.forwardRef<React.ElementRef<typeof Pressable>, ButtonProps>
           <Pressable
             className={cn(
               buttonVariants({ variant, size, className }),
-              props.disabled && 'opacity-60 bg-button-surface-disabled'
+              props.disabled && 'bg-button-surface-disabled opacity-60'
             )}
             ref={ref}
             style={style}
-            android_ripple={props.disabled ? undefined : ANDROID_RIPPLE[colorScheme][variant]}
+            android_ripple={props.disabled ? undefined : getAndroidRipple(colorScheme, variant)}
             {...props}
           />
         </Root>

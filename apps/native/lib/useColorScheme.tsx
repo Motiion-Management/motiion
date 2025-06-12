@@ -8,9 +8,6 @@ import { Platform } from 'react-native';
 
 import { COLORS } from '~/theme/colors';
 
-// Set initial color scheme
-nativewindColorScheme.set('dark');
-
 async function setNavigationBar(colorScheme: 'light' | 'dark') {
   if (Platform.OS !== 'android') return;
   await NavigationBar.setBackgroundColorAsync(COLORS[colorScheme].background);

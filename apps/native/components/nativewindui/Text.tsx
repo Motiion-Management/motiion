@@ -35,6 +35,8 @@ const textVariants = cva('text-text-default font-sans', {
       secondary: 'text-text-high/90',
       tertiary: 'text-text-disabled/90',
       quarternary: 'text-text-disabled/50',
+      utilityLight: 'text-text-utility-light',
+      utilityDark: 'text-text-utility-dark',
     },
   },
   defaultVariants: {

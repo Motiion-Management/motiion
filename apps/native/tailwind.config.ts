@@ -6,9 +6,9 @@ module.exports = {
   // NOTE: Update this to include the paths to all of your component files.
   content: ['./app/**/*.{js,jsx,ts,tsx}', './components/**/*.{js,jsx,ts,tsx}'],
   presets: [require('nativewind/preset')],
+  darkMode: 'media',
   theme: {
     extend: {
-      darkMode: 'class',
       letterSpacing: {
         'very-tight': '-0.04em',
         tight: '-0.025em',
@@ -45,7 +45,7 @@ module.exports = {
         ring: withOpacity('ring'),
         background: withOpacity('background'),
         foreground: withOpacity('foreground'),
-        
+
         primary: {
           DEFAULT: withOpacity('primary'),
           foreground: withOpacity('primary-foreground'),
@@ -78,7 +78,7 @@ module.exports = {
           DEFAULT: withOpacity('card'),
           foreground: withOpacity('card-foreground'),
         },
-        
+
         // Figma semantic tokens (new naming)
         // Background tokens
         'background-default': withOpacity('background-default'),
@@ -88,7 +88,7 @@ module.exports = {
         'background-utility-dark': withOpacity('background-utility-dark'),
         'background-utility-light': withOpacity('background-utility-light'),
         'background-utility-accent': withOpacity('background-utility-accent'),
-        
+
         // Surface tokens
         'surface-default': withOpacity('surface-default'),
         'surface-high': withOpacity('surface-high'),
@@ -101,7 +101,7 @@ module.exports = {
         'surface-disabled': withOpacity('surface-disabled'),
         'surface-error': withOpacity('surface-error'),
         'surface-caution': withOpacity('surface-caution'),
-        
+
         // Text tokens
         'text-default': withOpacity('text-default'),
         'text-high': withOpacity('text-high'),
@@ -114,10 +114,11 @@ module.exports = {
         'text-utility-dark': withOpacity('text-utility-dark'),
         'text-error-emphasis': withOpacity('text-error-emphasis'),
         'text-caution-emphasis': withOpacity('text-caution-emphasis'),
-        
+
         // Button surface tokens
         'button-surface': {
           DEFAULT: withOpacity('button-surface-default'),
+          default: withOpacity('button-surface-default'),
           tint: withOpacity('button-surface-tint'),
           disabled: withOpacity('button-surface-disabled'),
           low: withOpacity('button-surface-low'),
@@ -127,7 +128,7 @@ module.exports = {
           'utility-dark': withOpacity('button-surface-utility-dark'),
           'utility-light': withOpacity('button-surface-utility-light'),
         },
-        
+
         // Icon tokens
         'icon-default': withOpacity('icon-default'),
         'icon-tint': withOpacity('icon-tint'),
@@ -139,7 +140,7 @@ module.exports = {
         'icon-error': withOpacity('icon-error'),
         'icon-error-emphasis': withOpacity('icon-error-emphasis'),
         'icon-caution-emphasis': withOpacity('icon-caution-emphasis'),
-        
+
         // Border tokens
         'border-default': withOpacity('border-default'),
         'border-low': withOpacity('border-low'),
@@ -148,25 +149,25 @@ module.exports = {
         'border-disabled': withOpacity('border-disabled'),
         'border-tint': withOpacity('border-tint'),
         'border-inverse': withOpacity('border-inverse'),
-        
+
         // Direct Figma color values for utility use
-        'primary-0': 'rgb(244 255 254)', /* #f4fffe */
-        'primary-50': 'rgb(221 250 247)', /* #ddfaf7 */
-        'primary-100': 'rgb(196 245 240)', /* #c4f5f0 */
-        'primary-500': 'rgb(0 204 183)', /* #00ccb7 */
-        'primary-850': 'rgb(0 61 55)', /* #003d37 */
-        'primary-900': 'rgb(0 41 37)', /* #002925 */
-        
-        'utility-0': 'rgb(255 255 255)', /* #ffffff */
-        'utility-50': 'rgb(250 250 250)', /* #fafafa */
-        'utility-60': 'rgb(248 249 250)', /* #f8f9fa */
-        'utility-200': 'rgb(135 143 155)', /* #878f9b */
-        'utility-300': 'rgb(83 88 96)', /* #535860 */
-        'utility-500': 'rgb(21 25 28)', /* #15191c */
-        
-        'error-500': 'rgb(204 1 36)', /* #cc0124 */
-        'caution-500': 'rgb(245 142 49)', /* #f58e31 */
-        'success-500': 'rgb(100 173 40)', /* #64ad28 */
+        'primary-0': 'rgb(244 255 254)' /* #f4fffe */,
+        'primary-50': 'rgb(221 250 247)' /* #ddfaf7 */,
+        'primary-100': 'rgb(196 245 240)' /* #c4f5f0 */,
+        'primary-500': 'rgb(0 204 183)' /* #00ccb7 */,
+        'primary-850': 'rgb(0 61 55)' /* #003d37 */,
+        'primary-900': 'rgb(0 41 37)' /* #002925 */,
+
+        'utility-0': 'rgb(255 255 255)' /* #ffffff */,
+        'utility-50': 'rgb(250 250 250)' /* #fafafa */,
+        'utility-60': 'rgb(248 249 250)' /* #f8f9fa */,
+        'utility-200': 'rgb(135 143 155)' /* #878f9b */,
+        'utility-300': 'rgb(83 88 96)' /* #535860 */,
+        'utility-500': 'rgb(21 25 28)' /* #15191c */,
+
+        'error-500': 'rgb(204 1 36)' /* #cc0124 */,
+        'caution-500': 'rgb(245 142 49)' /* #f58e31 */,
+        'success-500': 'rgb(100 173 40)' /* #64ad28 */,
       },
       borderRadius: {
         lg: 'var(--radius)',

@@ -13,7 +13,8 @@
       "Bash(npm run migrate-tokens:*)",
       "Bash(ls:*)",
       "Bash(npm run migrate-figma-tokens:*)",
-      "mcp__figma-dev-mode-mcp-server__get_code_connect_map"
+      "mcp__figma-dev-mode-mcp-server__get_code_connect_map",
+      "WebFetch(domain:www.nativewind.dev)"
     ]
   },
   "enableAllProjectMcpServers": false
