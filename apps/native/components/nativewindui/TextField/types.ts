@@ -10,6 +10,10 @@ type TextFieldProps = TextInputProps & {
   invalid?: boolean;
   displayOnly?: boolean;
   /**
+   * Helper text displayed below the input
+   */
+  helperText?: string;
+  /**
    * For accessibility, can be overridden by accessibilityHint
    * @Material - shows error state with destructive color and icon
    * @iOS - No visual change

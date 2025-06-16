@@ -2,9 +2,13 @@ import { Icon } from '@roninoss/icons';
 import { cssInterop } from 'nativewind';
 import { View } from 'react-native';
 import { Flag, CountryCode } from 'react-native-country-picker-modal';
+import { getCountryCallingCodeAsync } from 'react-native-country-picker-modal/lib/CountryService';
 import { PhoneInput as BasePhoneInput, PhoneInputProps } from 'react-native-phone-entry';
 
 import { useFieldContext } from './context';
+import { ErrorText } from '../nativewindui/ErrorText';
+import { HelpText } from '../nativewindui/HelpText';
+import { InputLabel } from '../nativewindui/Label';
 
 import { Text } from '~/components/nativewindui/Text';
 import { cn } from '~/lib/cn';
@@ -59,15 +63,12 @@ const PhoneInput = cssInterop(MappedPhoneInput, {
 
 export const PhoneNumber = () => {
   const field = useFieldContext<{ fullNumber: string; countryCode: CountryCode }>();
+
   return (
-    <View className="flex-1">
-      <View className={cn('flex-row gap-16 pt-2')}>
-        <Text variant="labelXs" className="">
-          Country
-        </Text>
-        <Text variant="labelXs" className="">
-          Phone Number
-        </Text>
+    <View className="flex-1 gap-4">
+      <View className={cn('flex-row gap-4')}>
+        <InputLabel>Area Code</InputLabel>
+        <InputLabel error={!field.state.meta.isValid}>Phone Number</InputLabel>
       </View>
       <PhoneInput
         defaultValues={{
@@ -75,32 +76,45 @@ export const PhoneNumber = () => {
           callingCode: '+1',
           phoneNumber: '+1',
         }}
+        isCallingCodeEditable={false}
         value={field.state.value.fullNumber}
         onChangeText={(text) => {
           field.handleChange({ ...field.state.value, fullNumber: text });
         }}
         autoFocus
-        containerClassName="flex-1 bg-transparent rounded-none gap-6 border-0 px-0 h-12"
-        textInputClassName={cn(
-          'placeholder:text-text-default/40 flex-1 py-2 text-[17px] text-text-default border-b border-b-foreground',
-          field.state.meta.isValid ? '' : 'text-text-error'
-        )}
-        onChangeCountry={(country) => {
-          field.handleChange({ ...field.state.value, countryCode: country.cca2 as CountryCode });
+        containerClassName="bg-surface-high items-center rounded-full border-border-default py-0 h-[48px]"
+        textInputClassName={cn('placeholder:text-text-default/40 text-[16px] text-text-default   ')}
+        onChangeCountry={async (country) => {
+          const oldCountryCode = field.state.value.countryCode;
+          const oldCallingCode = await getCountryCallingCodeAsync(oldCountryCode);
+          const newCallingCode = await getCountryCallingCodeAsync(country.cca2);
+
+          const newNumber = field.state.value.fullNumber.replace(oldCallingCode, newCallingCode);
+
+          field.handleChange({
+            ...field.state.value,
+            fullNumber: newNumber,
+            countryCode: country.cca2 as CountryCode,
+          });
         }}
-        flagButtonClassName="border-r-0 px-0 color-white"
+        flagButtonClassName="border-r-border-default px-0 color-white  basis-[30%]"
         renderCustomDropdown={
-          <View className="h-full flex-1 flex-row items-center gap-2 border-b border-b-foreground">
-            <View className="flex-1 ">
-              <Flag withFlagButton countryCode={field.state.value.countryCode} flagSize={16} />
-            </View>
-            <Text variant="bodySm" className="text-text-default">
+          <View className={cn('h-[48px] flex-row items-center')}>
+            <Flag
+              withFlagButton
+              withEmoji
+              countryCode={field.state.value.countryCode}
+              flagSize={16}
+            />
+            <Text variant="bodySm" className="-ml-2 mr-1 text-text-default">
               {field.state.value.countryCode}
             </Text>
-            <Icon name="chevron-down" size={16} color="foreground" />
+            <Icon name="chevron-down" size={16} color="text-icon-default" />
           </View>
         }
       />
+      <ErrorText>{field.state.meta.errors?.[0]?.message}</ErrorText>
+      <HelpText message="We will send you a text with a verification code.\nMessage and data rates may apply." />
     </View>
   );
 };

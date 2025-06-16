@@ -76,7 +76,6 @@ export default function InfoScreen() {
   return (
     <BaseOnboardingScreen
       title="Enter your verification code"
-      helpText={`Code sent to ${phoneNumber}.`}
       canProgress={isFormReady}
       primaryAction={{
         onPress: () => {
@@ -90,7 +89,22 @@ export default function InfoScreen() {
         text: 'Already have an account?',
       }}>
       <View className="min-h-12 flex-1 flex-col gap-6">
-        <form.AppField name="otp" children={(field) => <field.PhoneOTP />} />
+        <form.AppField
+          name="otp"
+          children={(field) => (
+            <field.PhoneOTP
+              helpTextOpts={{
+                message: `Code sent to ${phoneNumber}.`,
+                action: {
+                  label: 'Change',
+                  onPress: () => {
+                    router.back();
+                  },
+                },
+              }}
+            />
+          )}
+        />
         {verificationError && <Text className="text-sm text-text-error">{verificationError}</Text>}
         {isVerifying && (
           <View className="flex-row items-center gap-2">

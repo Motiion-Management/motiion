@@ -1,13 +1,17 @@
 import { LinearGradient } from 'expo-linear-gradient';
-import { StyleSheet, View } from 'react-native';
+import { StyleSheet, useColorScheme, View } from 'react-native';
 
 export default function BackgroundGradientView({ children }: { children: React.ReactNode }) {
+  const colorScheme = useColorScheme();
+
+  const gradientColor = colorScheme === 'dark' ? '#15191C' : '#F8F9FA';
+
   return (
-    <View className="relative h-full flex-1 bg-[#003D37]">
+    <View className="relative h-full flex-1 bg-background-default">
       <LinearGradient
-        colors={['transparent', '#000', '#000']}
+        colors={['transparent', gradientColor, gradientColor]}
         style={styles.background}
-        start={{ x: 1.3, y: 0.2 }}
+        start={{ x: 1.5, y: 0.1 }}
       />
       {children}
     </View>

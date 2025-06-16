@@ -3,10 +3,11 @@ import { View } from 'react-native';
 import { OtpInput as BaseOtpInput, OtpInputProps } from 'react-native-otp-entry';
 
 import { useFieldContext } from './context';
+import { ErrorText } from '../nativewindui/ErrorText';
+import { HelpText, HelpTextProps } from '../nativewindui/HelpText';
+import { InputLabel } from '../nativewindui/Label';
 
-import { Text } from '~/components/nativewindui/Text';
 import { cn } from '~/lib/cn';
-import { useColorScheme } from '~/lib/useColorScheme';
 
 const MappedOtpInput = ({
   containerStyle,
@@ -65,28 +66,30 @@ const OtpInput = cssInterop(MappedOtpInput, {
     }
 >;
 
-export const PhoneOTP = () => {
+interface PhoneOTPProps {
+  helpTextOpts?: HelpTextProps;
+}
+
+export const PhoneOTP = ({ helpTextOpts }: PhoneOTPProps) => {
   const field = useFieldContext<string>();
   return (
-    <View className="flex-1">
-      <View className={cn('flex-row pt-2')}>
-        <Text variant="labelXs" className="">
-          6-Digit Code
-        </Text>
-      </View>
+    <View className="flex-1 gap-4">
+      <InputLabel>5-Digit Code</InputLabel>
       <OtpInput
         onFilled={(otp) => {
           field.handleChange(otp);
           field.handleBlur();
         }}
         autoFocus
-        containerClassName="flex-1 gap-4 px-0"
-        pinCodeContainerClassName="flex-1 bg-transparent rounded-none gap-6 border-0 px-0 h-12 w-4 border-b border-b-foreground"
-        pinCodeTextClassName={cn(
-          'placeholder:text-text-default/40  text-body-lg text-text-default ',
-          field.state.meta.isValid ? '' : 'text-text-error'
+        numberOfDigits={6}
+        containerClassName="flex-1 gap-2 px-0"
+        pinCodeContainerClassName={cn(
+          'bg-surface-high border border-border-default rounded-2xl h-14 w-14 rounded-full'
         )}
+        pinCodeTextClassName={cn('text-[16px] text-text-default')}
       />
+      <ErrorText>{field.state.meta.errors?.[0]?.message}</ErrorText>
+      {helpTextOpts && <HelpText {...helpTextOpts} />}
     </View>
   );
 };

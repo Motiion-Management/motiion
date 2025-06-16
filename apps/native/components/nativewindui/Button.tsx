@@ -57,7 +57,7 @@ const buttonTextVariants = cva('font-semibold', {
       outline: 'text-text-default',
       accent: 'text-text-high',
       tonal: 'text-text-default',
-      plain: 'text-text-default',
+      plain: 'text-accent',
       'utility-light': 'text-text-utility-dark',
       'utility-dark': 'text-text-utility-light',
       'plain-utility-light': 'text-text-utility-light',

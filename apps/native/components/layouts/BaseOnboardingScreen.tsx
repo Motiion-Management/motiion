@@ -1,5 +1,4 @@
 import { Icon } from '@roninoss/icons';
-import { router, Href } from 'expo-router';
 import { Platform, View } from 'react-native';
 import { KeyboardAwareScrollView, KeyboardStickyView } from 'react-native-keyboard-controller';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -30,7 +29,7 @@ export const BaseOnboardingScreen = ({
   const insets = useSafeAreaInsets();
 
   return (
-    <View className="flex-1 bg-transparent" style={{ paddingBottom: insets.bottom }}>
+    <View className="flex-1" style={{ paddingBottom: insets.bottom }}>
       <KeyboardAwareScrollView
         bottomOffset={Platform.select({ ios: 8 })}
         bounces={false}
@@ -47,7 +46,7 @@ export const BaseOnboardingScreen = ({
             {children}
             {helpText && (
               <View className="pt-2">
-                <Text className="text-sm text-text-high" variant="body">
+                <Text className="text-sm text-text-low" variant="body">
                   {helpText}
                 </Text>
               </View>
@@ -71,14 +70,14 @@ export const BaseOnboardingScreen = ({
           <Button
             disabled={!canProgress}
             size="icon"
-            variant="tonal"
+            variant="accent"
             onPress={() => {
               if (!canProgress) {
                 return;
               }
               primaryAction.onPress();
             }}>
-            <Icon name="chevron-right" size={16} color="#00CCB7" />
+            <Icon name="chevron-right" size={16} color="text-icon-accent" />
           </Button>
         </View>
       </KeyboardStickyView>

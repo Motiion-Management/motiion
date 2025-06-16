@@ -74,7 +74,6 @@ export default function InfoScreen() {
   return (
     <BaseOnboardingScreen
       title="What's your phone number?"
-      helpText="We will send you a verification code to this number."
       canProgress={isFormReady}
       primaryAction={{
         onPress: () => {

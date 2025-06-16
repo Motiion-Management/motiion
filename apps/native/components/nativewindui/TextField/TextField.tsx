@@ -23,6 +23,7 @@ const TextField = React.forwardRef<TextFieldRef, TextFieldProps>(
       containerClassName,
       invalid,
       accessibilityHint,
+      helperText,
       errorMessage,
       materialVariant: _materialVariant,
       materialRingColor: _materialRingColor,
@@ -53,27 +54,31 @@ const TextField = React.forwardRef<TextFieldRef, TextFieldProps>(
 
     return (
       <Pressable
-        className={cn(editable === false && 'opacity-50 ', containerClassName)}
+        className={cn(editable === false && 'opacity-50 ', 'gap-4', containerClassName)}
         disabled={editable === false || readOnly}
         onPress={focus}>
         {!!label && (
-          <View className={cn('flex-row pt-2', leftView && 'pl-2')}>
-            {leftView}
-            <Text
-              variant="labelXs"
-              className={cn('text-text-disabled', leftView && 'pl-2', labelClassName)}>
+          <View className={cn('mb-2')}>
+            <Text variant="labelXs" className={cn('uppercase text-text-disabled', labelClassName)}>
               {label}
             </Text>
           </View>
         )}
-        <View className="flex-row  border-b border-b-foreground">
-          {!!leftView && !label && leftView}
+        <View
+          className={cn(
+            'flex-row items-center rounded-full border border-border-default bg-surface-high px-4',
+            errorMessage && 'bg-surface-error'
+          )}>
+          {!!leftView && leftView}
           <TextInput
             ref={inputRef}
             editable={editable}
             readOnly={readOnly}
             className={cn(
-              ' placeholder:text-text-default/40 flex-1 py-3 text-[17px] text-text-default',
+              'flex-1 bg-transparent py-4 text-[16px] text-text-default placeholder:text-text-default/40',
+              errorMessage && 'text-text-error',
+              leftView && 'pl-2',
+              rightView && 'pr-2',
               className
             )}
             onChangeText={onChangeText}
@@ -84,6 +89,15 @@ const TextField = React.forwardRef<TextFieldRef, TextFieldProps>(
           />
           {rightView}
         </View>
+        {(helperText || errorMessage) && (
+          <View className="mt-1 px-4">
+            <Text
+              variant="bodyXs"
+              className={cn('text-text-disabled', errorMessage && 'text-text-error')}>
+              {errorMessage || helperText}
+            </Text>
+          </View>
+        )}
       </Pressable>
     );
   }
