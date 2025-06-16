@@ -2,8 +2,8 @@ import { cva, type VariantProps } from 'class-variance-authority';
 import * as React from 'react';
 import { Platform, Pressable, PressableProps, View, ViewStyle } from 'react-native';
 
-import { TextClassContext } from '~/components/ui/text';
 import { Slot } from '~/components/primitives/slot';
+import { TextClassContext } from '~/components/ui/text';
 import { cn } from '~/lib/cn';
 import { useColorScheme } from '~/lib/useColorScheme';
 

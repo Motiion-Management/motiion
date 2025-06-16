@@ -1,8 +1,9 @@
 import type { TextRef, ViewRef } from '@rn-primitives/types';
 import * as React from 'react';
 import { Text, type TextProps, View, type ViewProps } from 'react-native';
-import { cn } from '~/lib/utils';
+
 import { TextClassContext } from '~/components/ui/text';
+import { cn } from '~/lib/utils';
 
 const Card = React.forwardRef<ViewRef, ViewProps>(({ className, ...props }, ref) => (
   <View
@@ -23,11 +24,11 @@ CardHeader.displayName = 'CardHeader';
 
 const CardTitle = React.forwardRef<TextRef, TextProps>(({ className, ...props }, ref) => (
   <Text
-    role='heading'
+    role="heading"
     aria-level={3}
     ref={ref}
     className={cn(
-      'text-2xl text-text-default font-semibold leading-none tracking-tight',
+      'text-2xl font-semibold leading-none tracking-tight text-text-default',
       className
     )}
     {...props}
@@ -41,7 +42,7 @@ const CardDescription = React.forwardRef<TextRef, TextProps>(({ className, ...pr
 CardDescription.displayName = 'CardDescription';
 
 const CardContent = React.forwardRef<ViewRef, ViewProps>(({ className, ...props }, ref) => (
-  <TextClassContext.Provider value='text-text-default'>
+  <TextClassContext.Provider value="text-text-default">
     <View ref={ref} className={cn('p-6 pt-0', className)} {...props} />
   </TextClassContext.Provider>
 ));

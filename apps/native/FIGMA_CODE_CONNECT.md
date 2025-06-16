@@ -11,6 +11,7 @@ This project is configured for Figma Code Connect integration, which allows dire
 ## Current Setup
 
 ### 1. Design Token Migration ✅
+
 We've successfully migrated all design tokens to match Figma's exact naming convention:
 
 ```css
@@ -25,26 +26,33 @@ We've successfully migrated all design tokens to match Figma's exact naming conv
 This ensures seamless mapping between Figma tokens and CSS variables.
 
 ### 2. Component Structure ✅
+
 Created Code Connect specification files:
+
 - `Button.figma.tsx` - Maps Figma Button variants to React Native Button component
 - `figma.config.js` - Main configuration for Code Connect
 
 ### 3. Package Installation ✅
+
 - Installed `@figma/code-connect` package
 - Added npm scripts for Code Connect operations
 
 ## Usage (When Code Connect is Available)
 
 ### Initial Setup
+
 1. **Authenticate with Figma**:
+
    ```bash
    npx figma connect auth
    ```
 
 2. **Connect your first component**:
+
    ```bash
    pnpm figma:connect
    ```
+
    This will scan for `.figma.tsx` files and connect them to Figma components.
 
 3. **Publish component mappings**:
@@ -53,16 +61,20 @@ Created Code Connect specification files:
    ```
 
 ### Component Mapping Example
+
 Our Button component mapping handles:
 
 **Figma Properties → React Native Props**
+
 - `Variant: Primary` → `variant="primary"`
 - `Size: Large` → `size="lg"`
 - `State: Disabled` → `disabled={true}`
 - `Label: "Click me"` → `children="Click me"`
 
 ### Automated Code Generation
+
 Once connected, Figma Code Connect will:
+
 1. Generate React Native code snippets directly in Figma
 2. Maintain consistency between design and code
 3. Auto-update when design tokens change
@@ -100,11 +112,13 @@ apps/native/
 ## Component Coverage
 
 ### Ready for Code Connect
+
 - ✅ Button - All variants and sizes mapped
 - 🚧 Text - Typography components ready for mapping
 - 🚧 Input - Form components ready for mapping
 
 ### Needs Code Connect Specs
+
 - ⏳ Card - Surface components
 - ⏳ Avatar - User interface elements
 - ⏳ Badge - Status indicators
@@ -112,11 +126,14 @@ apps/native/
 ## Troubleshooting
 
 ### Common Issues
+
 1. **"Code Connect is only available on Organization plans"**
+
    - This is expected until plan upgrade
    - All setup work is complete and ready to activate
 
 2. **Token Mismatch Errors**
+
    - Verify Figma token names match CSS variable names exactly
    - Check `global.css` and `tailwind.config.ts` consistency
 
@@ -126,4 +143,4 @@ apps/native/
 
 ---
 
-*This setup prepares the project for immediate Code Connect activation when the Figma plan allows it.*
+_This setup prepares the project for immediate Code Connect activation when the Figma plan allows it._

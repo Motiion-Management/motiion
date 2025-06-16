@@ -10,8 +10,8 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { Button } from '~/components/ui/button';
 import { Form, FormItem, FormSection } from '~/components/ui/form';
-import { Text } from '~/components/ui/text';
 import { Input as TextField } from '~/components/ui/input';
+import { Text } from '~/components/ui/text';
 
 const LOGO_SOURCE = {
   uri: 'https://nativewindui.com/_next/image?url=/_next/static/media/logo.28276aeb.png&w=2048&q=75',

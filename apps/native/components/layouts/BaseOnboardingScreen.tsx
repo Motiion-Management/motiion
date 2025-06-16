@@ -39,10 +39,10 @@ export const BaseOnboardingScreen = ({
         keyboardShouldPersistTaps="handled"
         contentContainerClassName="px-4 ">
         <View className="flex-1 justify-center">
-          <Text variant="title1" className="">
+          <Text variant="title1" className=" mb-8">
             {title}
           </Text>
-          <View className="ios:pt-4 gap-4 pt-6">
+          <View className=" gap-4 ">
             {children}
             {helpText && (
               <View className="pt-2">

@@ -6,7 +6,7 @@ export const SocialLinkField: FC<{
   platform: SocialPlatform
 }> = ({ platform }) => {
   return (
-    <div className="grid-cols-social-input grid-rows-social-input grid-areas-social-input grid gap-4 ">
+    <div className="grid-cols-social-input grid-rows-social-input grid-areas-social-input grid gap-4">
       <SocialIcon platform={platform} className="grid-in-icon" />
       <div className="grid-in-input [&_h6]:capitalize">
         <InputField name={`socials.${platform}`} label={platform} />

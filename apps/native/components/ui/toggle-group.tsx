@@ -1,9 +1,10 @@
+import * as ToggleGroupPrimitive from '@rn-primitives/toggle-group';
 import type { VariantProps } from 'class-variance-authority';
 import type { LucideIcon } from 'lucide-react-native';
 import * as React from 'react';
-import { toggleTextVariants, toggleVariants } from '~/components/ui/toggle';
+
 import { TextClassContext } from '~/components/ui/text';
-import * as ToggleGroupPrimitive from '@rn-primitives/toggle-group';
+import { toggleTextVariants, toggleVariants } from '~/components/ui/toggle';
 import { cn } from '~/lib/utils';
 
 const ToggleGroupContext = React.createContext<VariantProps<typeof toggleVariants> | null>(null);
@@ -15,8 +16,7 @@ const ToggleGroup = React.forwardRef<
   <ToggleGroupPrimitive.Root
     ref={ref}
     className={cn('flex flex-row items-center justify-center gap-1', className)}
-    {...props}
-  >
+    {...props}>
     <ToggleGroupContext.Provider value={{ variant, size }}>{children}</ToggleGroupContext.Provider>
   </ToggleGroupPrimitive.Root>
 ));
@@ -47,8 +47,7 @@ const ToggleGroupItem = React.forwardRef<
         ToggleGroupPrimitive.utils.getIsSelected(value, props.value)
           ? 'text-text-high'
           : 'web:group-hover:text-text-disabled'
-      )}
-    >
+      )}>
       <ToggleGroupPrimitive.Item
         ref={ref}
         className={cn(
@@ -56,12 +55,11 @@ const ToggleGroupItem = React.forwardRef<
             variant: context.variant || variant,
             size: context.size || size,
           }),
-          props.disabled && 'web:pointer-events-none opacity-50',
+          props.disabled && 'opacity-50 web:pointer-events-none',
           ToggleGroupPrimitive.utils.getIsSelected(value, props.value) && 'bg-primary-500',
           className
         )}
-        {...props}
-      >
+        {...props}>
         {children}
       </ToggleGroupPrimitive.Item>
     </TextClassContext.Provider>

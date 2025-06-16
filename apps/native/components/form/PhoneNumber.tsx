@@ -64,11 +64,13 @@ const PhoneInput = cssInterop(MappedPhoneInput, {
 export const PhoneNumber = () => {
   const field = useFieldContext<{ fullNumber: string; countryCode: CountryCode }>();
 
+  const isError = field.state.meta.isDirty && !field.state.meta.isValid;
+
   return (
     <View className="flex-1 gap-4">
       <View className={cn('flex-row gap-4')}>
         <InputLabel>Area Code</InputLabel>
-        <InputLabel error={!field.state.meta.isValid}>Phone Number</InputLabel>
+        <InputLabel error={isError}>Phone Number</InputLabel>
       </View>
       <PhoneInput
         defaultValues={{
@@ -113,8 +115,14 @@ export const PhoneNumber = () => {
           </View>
         }
       />
-      <ErrorText>{field.state.meta.errors?.[0]?.message}</ErrorText>
-      <HelpText message="We will send you a text with a verification code.\nMessage and data rates may apply." />
+      {isError && (
+        <ErrorText>
+          {field.state.meta.errors?.[0]?.message || 'Please enter a valid phone number.'}
+        </ErrorText>
+      )}
+      <HelpText
+        message={`We will send you a text with a verification code.\nMessage and data rates may apply.`}
+      />
     </View>
   );
 };

@@ -9,7 +9,7 @@ type UserProfileRouteProps = {
 }
 
 export async function generateMetadata(props: UserProfileRouteProps) {
-  const params = await props.params;
+  const params = await props.params
   const user = await fetchPublicUser(params.userId)
   const title = user.fullName || 'Dancer Profile'
   const description = `See my full dancer profile on Motiion, and join the dance community with the best connections in the world!`
@@ -43,10 +43,10 @@ export async function generateMetadata(props: UserProfileRouteProps) {
 }
 
 export default async function UserProfilePage(props: UserProfileRouteProps) {
-  const params = await props.params;
+  const params = await props.params
   const user = await fetchPublicUser(params.userId)
   return (
-    <div className="flex flex-col gap-2 ">
+    <div className="flex flex-col gap-2">
       <ScrollCollapse collapsedTitle={`${user.fullName}`}>
         <ProfileCard user={user} />
       </ScrollCollapse>

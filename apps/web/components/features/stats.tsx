@@ -24,7 +24,7 @@ export const StatGroup: FC<{
   return (
     <>
       {title ? (
-        <h6 className="text-h6 mb-2 mt-4 self-end uppercase ">{title}</h6>
+        <h6 className="text-h6 mb-2 mt-4 self-end uppercase">{title}</h6>
       ) : (
         <div className="-mb-1 w-full bg-inherit" />
       )}

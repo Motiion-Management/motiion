@@ -31,7 +31,7 @@ export default function ResumeUploadStep() {
 
   return (
     <section className="mt-4 grid h-full w-full grid-cols-1 grid-rows-[1fr_min-content] gap-8">
-      <div className="flex flex-col items-start gap-5 ">
+      <div className="flex flex-col items-start gap-5">
         <p className="">
           We recommend using an existing resume to import your information. If
           your resume isn’t nearby, you can enter it manually later.
@@ -64,7 +64,7 @@ export default function ResumeUploadStep() {
         ) : (
           <Image
             src={placeholder}
-            className="mt-6 h-auto w-[200px] self-center  object-contain"
+            className="mt-6 h-auto w-[200px] self-center object-contain"
             alt="Upload Image Placeholder"
           />
         )}

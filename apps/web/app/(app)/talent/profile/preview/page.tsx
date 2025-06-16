@@ -7,7 +7,7 @@ import { TabSection } from '@/components/features/profile/tab-section'
 export default async function ProfilePage() {
   const user = await meX()
   return (
-    <div className="flex flex-col gap-2 ">
+    <div className="flex flex-col gap-2">
       <ScrollCollapse collapsedTitle={`${user.fullName}`}>
         <ProfileCard user={user} />
       </ScrollCollapse>

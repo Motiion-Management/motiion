@@ -13,7 +13,6 @@ export const { create, update, destroy } = crud(
   authMutation
 )
 
-
 export const getFeaturedChoreographers = query({
   args: {},
   handler: async (ctx) => {
@@ -37,7 +36,6 @@ export const getFeaturedChoreographers = query({
     )
   }
 })
-
 
 export const getFeaturedTalent = query({
   async handler(ctx) {

@@ -97,7 +97,7 @@ export default function Vision() {
     }
   ]
   return (
-    <div className="relative -left-4 -mr-4 grid h-full grid-cols-1 grid-rows-[1fr_min-content] ">
+    <div className="relative -left-4 -mr-4 grid h-full grid-cols-1 grid-rows-[1fr_min-content]">
       <Carousel
         setApi={setCarousel}
         className="grid h-full w-screen max-w-[calc(100%+16px)] cursor-grab auto-cols-auto active:cursor-grabbing"

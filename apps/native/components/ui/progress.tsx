@@ -61,7 +61,11 @@ const ProgressIndicator = React.forwardRef<
         className={cn('relative h-1 w-full overflow-hidden rounded-full', className)}
         {...props}>
         <View className="absolute bottom-0 left-0 right-0 top-0 bg-surface-default opacity-20" />
-        <Animated.View role="presentation" style={indicator} className={cn('h-full bg-primary-500')} />
+        <Animated.View
+          role="presentation"
+          style={indicator}
+          className={cn('h-full bg-primary-500')}
+        />
       </View>
     );
   }

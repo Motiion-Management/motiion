@@ -56,15 +56,15 @@ export function BigHeadshotCarousel({
         <div className="flex w-full justify-center gap-5 pt-3">
           {headshots && headshots.length > 0
             ? headshots.map((_, index) => (
-              <Progress
-                className={
-                  current === index
-                    ? 'bg-accent z-10 h-2 w-16'
-                    : 'bg-background z-10 h-2 w-16'
-                }
-                key={index}
-              />
-            ))
+                <Progress
+                  className={
+                    current === index
+                      ? 'bg-accent z-10 h-2 w-16'
+                      : 'bg-background z-10 h-2 w-16'
+                  }
+                  key={index}
+                />
+              ))
             : null}
         </div>
         <div className="text-primary-foreground z-10 flex flex-col self-start">
@@ -75,7 +75,10 @@ export function BigHeadshotCarousel({
         </div>
       </div>
 
-      <Carousel setApi={setCarousel} className="absolute h-full left-0 top-0 w-full">
+      <Carousel
+        setApi={setCarousel}
+        className="absolute left-0 top-0 h-full w-full"
+      >
         <CarouselContent>
           {headshots && headshots.length > 0 ? (
             headshots.map((headshot, index) => (
@@ -111,12 +114,12 @@ export function BigHeadshotCarousel({
         </Button>
 
         <button
-          className="absolute left-0 top-0 z-50 h-full w-1/4 "
+          className="absolute left-0 top-0 z-50 h-full w-1/4"
           onClick={scrollPrevious}
         />
 
         <button
-          className="absolute right-0 top-0 z-50 h-full w-1/4 "
+          className="absolute right-0 top-0 z-50 h-full w-1/4"
           onClick={scrollNext}
         />
       </Carousel>

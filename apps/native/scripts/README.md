@@ -15,26 +15,27 @@ npm run migrate-tokens
 ## What Gets Migrated
 
 ### Key Color Changes
+
 - **Primary color**: Changed from black/white to teal (#00ccb7)
 - **Button surfaces**: Now use dedicated `button-surface-*` tokens
 - **Accent color**: Now maps to primary teal
 
 ### Specific Migrations
 
-| Old Token | New Token | Context |
-|-----------|-----------|---------|
-| `bg-primary` | `bg-button-surface-default` | Button variants |
-| `bg-accent` | `bg-primary` | Accent elements |
-| `text-primary` | `text-primary-foreground` | Button text |
-| `bg-primary/15` | `bg-secondary` | Secondary buttons |
-| `bg-muted` | `bg-button-surface-disabled` | Disabled buttons |
+| Old Token       | New Token                    | Context           |
+| --------------- | ---------------------------- | ----------------- |
+| `bg-primary`    | `bg-button-surface-default`  | Button variants   |
+| `bg-accent`     | `bg-primary`                 | Accent elements   |
+| `text-primary`  | `text-primary-foreground`    | Button text       |
+| `bg-primary/15` | `bg-secondary`               | Secondary buttons |
+| `bg-muted`      | `bg-button-surface-disabled` | Disabled buttons  |
 
 ### Pattern-Based Changes
 
 The script also handles context-aware replacements:
 
 - **Button primary variants**: `bg-primary` → `bg-button-surface-default`
-- **Button accent variants**: `bg-accent` → `bg-primary` 
+- **Button accent variants**: `bg-accent` → `bg-primary`
 - **Button text**: `text-primary` → `text-primary-foreground`
 - **iOS button text**: `ios:text-primary` → `ios:text-primary-foreground`
 - **Disabled states**: Updates disabled button backgrounds
@@ -42,11 +43,13 @@ The script also handles context-aware replacements:
 ## Files Processed
 
 The script processes all `.ts` and `.tsx` files in:
+
 - `app/`
 - `components/`
 - `lib/`
 
 It skips:
+
 - `node_modules/`
 - Build directories (`build/`, `dist/`, `.next/`, `.expo/`)
 - Type definition files (`.d.ts`)
@@ -98,11 +101,13 @@ After running the migration, review these areas:
 ## Rollback
 
 Since the script modifies files directly, make sure to:
+
 1. **Commit your changes** before running the migration
 2. **Review the diff** after migration
 3. **Test thoroughly** before final commit
 
 If you need to rollback:
+
 ```bash
 git checkout -- .
 ```

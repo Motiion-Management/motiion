@@ -27,26 +27,23 @@ const toggleVariants = cva(
   }
 );
 
-const toggleTextVariants = cva(
-  'text-sm font-medium text-foreground web:transition-colors',
-  {
-    variants: {
-      variant: {
-        default: '',
-        outline: '',
-      },
-      size: {
-        default: '',
-        sm: 'text-xs',
-        lg: 'text-base',
-      },
+const toggleTextVariants = cva('text-sm font-medium text-foreground web:transition-colors', {
+  variants: {
+    variant: {
+      default: '',
+      outline: '',
     },
-    defaultVariants: {
-      variant: 'default',
-      size: 'default',
+    size: {
+      default: '',
+      sm: 'text-xs',
+      lg: 'text-base',
     },
-  }
-);
+  },
+  defaultVariants: {
+    variant: 'default',
+    size: 'default',
+  },
+});
 
 type ToggleProps = React.ComponentPropsWithoutRef<typeof Pressable> &
   VariantProps<typeof toggleVariants>;

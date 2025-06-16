@@ -269,7 +269,8 @@ const config: Config = {
       gridTemplateRows: {
         'social-input': '1rem 1fr',
         drawer: 'min-content max-content minmax(0, 1fr) max-content',
-        'user-screen': 'minmax(min-content, 5dvh) minmax(0, 1fr) minmax(min-content, 5dvh)',
+        'user-screen':
+          'minmax(min-content, 5dvh) minmax(0, 1fr) minmax(min-content, 5dvh)',
         'user-screen-md': 'max-content max-content minmax(0, 1fr)'
       },
       gridTemplateAreas: {
@@ -284,7 +285,7 @@ const config: Config = {
     // require('@tailwindcss/forms'),
     require('tailwindcss-animate'),
     require('tailwindcss-displaymodes'),
-    require('@savvywombat/tailwindcss-grid-areas'),
+    require('@savvywombat/tailwindcss-grid-areas')
   ]
 } as const
 

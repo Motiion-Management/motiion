@@ -22,7 +22,7 @@ function Stat({ label, value }: { label: string; value: React.ReactNode }) {
 export function UserStats({ user }: { user: UserDoc }) {
   return (
     <div className="text-primary-foreground/80 grid grid-cols-1 gap-4">
-      <div className=" grid grid-cols-5 grid-rows-2 gap-5 border-y border-y-gray-500 p-5">
+      <div className="grid grid-cols-5 grid-rows-2 gap-5 border-y border-y-gray-500 p-5">
         <Stat label="Age" value={calculateAge(user?.dateOfBirth)} />
         <Stat label="Yrs Exp" value={user.attributes?.yearsOfExperience} />
         <Stat label="Gender" value={user?.gender?.[0]} />

@@ -12,7 +12,12 @@ import { authMutation, authQuery, notEmpty } from './util'
 
 import { getAll, getOneFrom } from 'convex-helpers/server/relationships'
 import { crud } from 'convex-helpers/server'
-import { UserDoc, Users, clerkCreateUserFields, ONBOARDING_STEPS } from './validators/users'
+import {
+  UserDoc,
+  Users,
+  clerkCreateUserFields,
+  ONBOARDING_STEPS
+} from './validators/users'
 import { internal } from './_generated/api'
 import { literals, partial } from 'convex-helpers/validators'
 import { NEW_USER_DEFAULTS, formatFullName } from './users/helpers'
@@ -237,21 +242,22 @@ export const paginateProfiles = query({
     const results = await filter(
       ctx.db.query('users'),
       async (user) => user.onboardingStep === ONBOARDING_STEPS.COMPLETE
-    )
-      .paginate(args.paginationOpts)
+    ).paginate(args.paginationOpts)
 
     return {
       ...results,
-      page: await Promise.all(results.page.map(async (user) => {
-        const headshots = user.headshots?.filter(notEmpty) || []
-        return {
-          userId: user._id,
-          label: user.displayName || user.fullName || '',
-          headshotUrl: headshots[0]
-            ? (await ctx.storage.getUrl(headshots[0].storageId)) || ''
-            : ''
-        }
-      }))
+      page: await Promise.all(
+        results.page.map(async (user) => {
+          const headshots = user.headshots?.filter(notEmpty) || []
+          return {
+            userId: user._id,
+            label: user.displayName || user.fullName || '',
+            headshotUrl: headshots[0]
+              ? (await ctx.storage.getUrl(headshots[0].storageId)) || ''
+              : ''
+          }
+        })
+      )
     }
   }
 })

@@ -55,7 +55,7 @@ export function EditDrawer<T extends FieldValues>({
         </div>
       </div>
       <DrawerContent forceMount>
-        <DrawerHeader className="flex items-center justify-between gap-2 p-6 ">
+        <DrawerHeader className="flex items-center justify-between gap-2 p-6">
           <DrawerTitle>{label}</DrawerTitle>
           <DrawerClose ref={drawerCloseRef}>
             <X size={24} strokeWidth={1.5} className="" />

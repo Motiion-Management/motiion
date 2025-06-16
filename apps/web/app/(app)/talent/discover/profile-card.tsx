@@ -5,18 +5,23 @@ import { AspectRatio } from '@/components/ui/aspect-ratio'
 import Image from 'next/image'
 import { FC } from 'react'
 
-export type Profile = { headshotUrl: string; label: string; userId: Id<'users'> }
+export type Profile = {
+  headshotUrl: string
+  label: string
+  userId: Id<'users'>
+}
 
-
-export const DiscoverProfileCard: FC<Profile> = ({ headshotUrl, label, userId }) => {
+export const DiscoverProfileCard: FC<Profile> = ({
+  headshotUrl,
+  label,
+  userId
+}) => {
   return (
     <Link href={`/talent/${userId}`} className="">
       <AspectRatio ratio={123 / 180} className="relative">
-        <Skeleton
-          className="h-full w-full absolute top-0 left-0 z-0"
-        />
+        <Skeleton className="absolute left-0 top-0 z-0 h-full w-full" />
         <Image
-          className="rounded-lg object-cover relative z-10"
+          className="relative z-10 rounded-lg object-cover"
           src={headshotUrl}
           layout="fill"
           alt={label}
@@ -26,4 +31,3 @@ export const DiscoverProfileCard: FC<Profile> = ({ headshotUrl, label, userId })
     </Link>
   )
 }
-

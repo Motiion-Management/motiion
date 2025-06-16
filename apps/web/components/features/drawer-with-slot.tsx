@@ -36,7 +36,7 @@ export function DrawerWithSlots<T extends FieldValues>({
     <Drawer shouldScaleBackground handleOnly>
       <div className="">{triggerSlot}</div>
       <DrawerContent forceMount>
-        <DrawerHeader className="flex items-center justify-between gap-2 p-6 ">
+        <DrawerHeader className="flex items-center justify-between gap-2 p-6">
           {titleSlot}
           <DrawerClose ref={drawerCloseRef}>
             <X size={24} strokeWidth={1.5} className="" />

@@ -58,7 +58,7 @@ export const YearPickerField: FC<YearPickerFieldProps> = ({
           </DrawerTrigger>
         </div>
         <DrawerContent forceMount className="h-fit">
-          <DrawerHeader className="flex items-center justify-between gap-2 p-6 ">
+          <DrawerHeader className="flex items-center justify-between gap-2 p-6">
             Select Year
             <DrawerClose>
               <X size={24} strokeWidth={1.5} className="" />

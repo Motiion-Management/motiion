@@ -11,7 +11,7 @@ export default async function Headshot() {
         placeholderImage={placeholder}
         onboarding
       />
-      <div className="sticky bottom-0 w-full ">
+      <div className="sticky bottom-0 w-full">
         <BottomButton />
       </div>
     </section>

@@ -33,7 +33,7 @@ export function DatePicker(
         <View className={cn('relative pt-1.5', props.materialDateClassName)}>
           <Pressable
             onPress={show('date')}
-            className="border-foreground/30 rounded border py-3 pl-2.5 active:opacity-80">
+            className="rounded border border-foreground/30 py-3 pl-2.5 active:opacity-80">
             <Text className="py-px">
               {new Intl.DateTimeFormat('en-US', {
                 dateStyle: 'medium',
@@ -41,7 +41,10 @@ export function DatePicker(
             </Text>
           </Pressable>
           <View
-            className={cn('absolute left-2 top-0 bg-surface-default px-1', props.materialDateLabelClassName)}>
+            className={cn(
+              'absolute left-2 top-0 bg-surface-default px-1',
+              props.materialDateLabelClassName
+            )}>
             <Text variant="caption2" className="text-[10px] opacity-60">
               {props.materialDateLabel ?? 'Date'}
             </Text>
@@ -52,7 +55,7 @@ export function DatePicker(
         <View className={cn('relative pt-1.5', props.materialTimeClassName)}>
           <Pressable
             onPress={show('time')}
-            className="border-foreground/30 rounded border py-3 pl-2.5 active:opacity-80">
+            className="rounded border border-foreground/30 py-3 pl-2.5 active:opacity-80">
             <Text className="py-px">
               {new Intl.DateTimeFormat('en-US', {
                 timeStyle: 'short',
@@ -60,7 +63,10 @@ export function DatePicker(
             </Text>
           </Pressable>
           <View
-            className={cn('absolute left-2 top-0 bg-surface-default px-1', props.materialTimeLabelClassName)}>
+            className={cn(
+              'absolute left-2 top-0 bg-surface-default px-1',
+              props.materialTimeLabelClassName
+            )}>
             <Text variant="caption2" className="text-[10px] opacity-60">
               {props.materialTimeLabel ?? 'Time'}
             </Text>

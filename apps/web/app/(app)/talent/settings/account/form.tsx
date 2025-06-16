@@ -84,7 +84,7 @@ export function AccountDetailsFormProvider({ user }: { user: UserDoc }) {
         onSubmit={form.handleSubmit(onSubmit)}
         className="mt-4 grid h-full w-full grid-cols-1 grid-rows-[1fr_min-content] gap-4"
       >
-        <div className="grid h-fit w-full grid-cols-2 gap-6 ">
+        <div className="grid h-fit w-full grid-cols-2 gap-6">
           <InputField required name="firstName" placeholder="First Name" />
           <InputField required name="lastName" placeholder="Last Name" />
           <AccordionPlus label="Add Display Name" className="col-span-2 pl-4">

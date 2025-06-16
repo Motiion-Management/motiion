@@ -51,8 +51,8 @@ export const ResumeLinksTab: React.FC<{
               <Image width={20} height={20} alt="Icon" src={item.icon} />
               <h5 className="text-h5">{item.text}</h5>
             </div>
-            <div className='flex items-center gap-4'>
-              <span className='text-xs font-semibold'>{item.preview}</span>
+            <div className="flex items-center gap-4">
+              <span className="text-xs font-semibold">{item.preview}</span>
               <ChevronRight size={16} />
             </div>
           </Card>

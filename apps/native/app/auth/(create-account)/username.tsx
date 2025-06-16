@@ -16,7 +16,8 @@ const formValidator = z.object({
     .min(2, { message: 'Preferred name must be at least 2 characters' })
     .max(100, { message: 'Preferred name must be less than 100 characters' })
     .regex(/^[a-zA-Z0-9\s'-_.]+$/, {
-      message: 'Preferred name can only contain letters, numbers, spaces, hyphens, apostrophes, underscores, and periods',
+      message:
+        'Preferred name can only contain letters, numbers, spaces, hyphens, apostrophes, underscores, and periods',
     }),
 });
 

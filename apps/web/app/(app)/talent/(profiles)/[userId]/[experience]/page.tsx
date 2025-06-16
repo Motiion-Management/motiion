@@ -26,17 +26,12 @@ const ExperienceField = ({
     </>
   )
 
-export default async function ResumeExperienceEditPage(
-  props: {
-    params: Promise<{ userId: Id<'users'>; experience: ExperienceType }>
-  }
-) {
-  const params = await props.params;
+export default async function ResumeExperienceEditPage(props: {
+  params: Promise<{ userId: Id<'users'>; experience: ExperienceType }>
+}) {
+  const params = await props.params
 
-  const {
-    userId,
-    experience: experienceType
-  } = params;
+  const { userId, experience: experienceType } = params
 
   const user = await fetchPublicUser(userId)
   const experiences = await fetchUserPublicExperiencesByType({
@@ -48,7 +43,7 @@ export default async function ResumeExperienceEditPage(
     <div className="flex flex-col gap-4 px-2">
       <ProfileHeaderBody user={user} />
       <Separator />
-      <Timeline className="flex-1 ">
+      <Timeline className="flex-1">
         {experiences.map((experience) => (
           <ResumeTimelineEvent
             key={experience._id}

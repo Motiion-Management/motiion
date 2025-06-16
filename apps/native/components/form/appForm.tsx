@@ -1,9 +1,9 @@
 import { createFormHook } from '@tanstack/react-form';
 
+import { DateInput } from './DateInput';
 import { PhoneNumber } from './PhoneNumber';
 import { PhoneOTP } from './PhoneOTP';
 import { TextInput } from './TextInput';
-import { DateInput } from './DateInput';
 import { fieldContext, formContext } from './context';
 
 const { useAppForm } = createFormHook({

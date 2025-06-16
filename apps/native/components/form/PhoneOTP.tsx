@@ -74,17 +74,18 @@ export const PhoneOTP = ({ helpTextOpts }: PhoneOTPProps) => {
   const field = useFieldContext<string>();
   return (
     <View className="flex-1 gap-4">
-      <InputLabel>5-Digit Code</InputLabel>
+      <InputLabel>6-Digit Code</InputLabel>
       <OtpInput
         onFilled={(otp) => {
           field.handleChange(otp);
           field.handleBlur();
         }}
         autoFocus
+        focusStickClassName="h-6"
         numberOfDigits={6}
-        containerClassName="flex-1 gap-2 px-0"
+        containerClassName="flex-1"
         pinCodeContainerClassName={cn(
-          'bg-surface-high border border-border-default rounded-2xl h-14 w-14 rounded-full'
+          'bg-surface-high border border-border-default h-12 w-12 m-0 rounded-full'
         )}
         pinCodeTextClassName={cn('text-[16px] text-text-default')}
       />

@@ -18,7 +18,7 @@ export default function ErrorBoundary({
   reset: () => void
 }) {
   return (
-    <div className="grid h-dvh w-full grid-cols-1 place-items-center ">
+    <div className="grid h-dvh w-full grid-cols-1 place-items-center">
       <Card>
         <CardHeader>
           <h4>Something went wrong.</h4>

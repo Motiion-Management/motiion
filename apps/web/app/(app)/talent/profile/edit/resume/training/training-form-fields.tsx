@@ -21,7 +21,7 @@ export const TrainingFormFields: FC = () => {
       <Separator />
       <InputField name="role[0]" label="Role" required tabIndex={3} />
       <Separator />
-      <div className="flex items-center justify-between gap-2 ">
+      <div className="flex items-center justify-between gap-2">
         <YearPickerField
           name="startYear"
           label="Start Year"

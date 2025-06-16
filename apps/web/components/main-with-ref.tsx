@@ -1,9 +1,9 @@
 'use client'
 import { RefObject, createContext, useContext, useRef } from 'react'
 
-export const MainRefContext = createContext<RefObject<HTMLElement | null> | undefined>(
-  undefined
-)
+export const MainRefContext = createContext<
+  RefObject<HTMLElement | null> | undefined
+>(undefined)
 
 export function useMainRef() {
   return useContext(MainRefContext)

@@ -12,8 +12,8 @@ import { AlertAnchor } from '~/components/ui/alert';
 import { AlertRef } from '~/components/ui/alert/types';
 import { Button } from '~/components/ui/button';
 import { Form, FormItem, FormSection } from '~/components/ui/form';
-import { Text } from '~/components/ui/text';
 import { Input as TextField } from '~/components/ui/input';
+import { Text } from '~/components/ui/text';
 
 const LOGO_SOURCE = {
   uri: 'https://nativewindui.com/_next/image?url=/_next/static/media/logo.28276aeb.png&w=2048&q=75',
@@ -77,9 +77,7 @@ export default function ForgotPasswordScreen() {
               {Platform.select({ ios: "What's your email?", default: 'Forgot password' })}
             </Text>
             {Platform.OS !== 'ios' && (
-              <Text className="ios:text-sm text-center text-text-disabled">
-                What's your email?
-              </Text>
+              <Text className="ios:text-sm text-center text-text-disabled">What's your email?</Text>
             )}
           </View>
           <View className="ios:pt-4 pt-6">

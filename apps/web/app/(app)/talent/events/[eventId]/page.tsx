@@ -22,16 +22,12 @@ function toTime(timestamp: string) {
   return format(toDate(timestamp), 'h:mm a')
 }
 
-export default async function EventPage(
-  props: {
-    params: Promise<{ eventId: Id<'events'> }>
-  }
-) {
-  const params = await props.params;
+export default async function EventPage(props: {
+  params: Promise<{ eventId: Id<'events'> }>
+}) {
+  const params = await props.params
 
-  const {
-    eventId
-  } = params;
+  const { eventId } = params
 
   const event = await fetchQuery(api.events.read, { id: eventId })
   if (!event) redirect('/talent/home')
@@ -47,18 +43,23 @@ export default async function EventPage(
           <CardTitle className="text-h4">Event Details</CardTitle>
         </CardHeader>
         <CardContent className="grid gap-4">
-          <ReadOnlyField value={format(toDate(event.startDate), 'MMMM dd, yyyy')} label="date" />
+          <ReadOnlyField
+            value={format(toDate(event.startDate), 'MMMM dd, yyyy')}
+            label="date"
+          />
           <div className="grid grid-cols-2 gap-2">
             <ReadOnlyField value={toTime(event.startDate)} label="starts" />
-            {event.endDate && event.startDate !== event.endDate && <ReadOnlyField value={toTime(event.endDate)} label="ends" />}
+            {event.endDate && event.startDate !== event.endDate && (
+              <ReadOnlyField value={toTime(event.endDate)} label="ends" />
+            )}
           </div>
           {event.location && (
-            <div className="grid grid-cols-[1fr_min-content] gap-2 items-center">
+            <div className="grid grid-cols-[1fr_min-content] items-center gap-2">
               <ReadOnlyField
                 value={event.location.name || event.location.address || ''}
                 label="location"
               />
-              <Button asChild variant='outline' size='sm' className='mt-2' >
+              <Button asChild variant="outline" size="sm" className="mt-2">
                 <a
                   className="text-body-sm flex items-center gap-2 hover:underline"
                   target="_blank"
@@ -84,7 +85,7 @@ export default async function EventPage(
               <span className="text-label-xs text-secondary uppercase">
                 website
               </span>
-              <Button asChild variant='secondary' >
+              <Button asChild variant="secondary">
                 <a
                   className="text-body-sm flex items-center gap-2 hover:underline"
                   target="_blank"

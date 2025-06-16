@@ -34,7 +34,7 @@ export function HeadshotsCarouselContent({
         {headshots.map((headshot, index) => (
           <ItemComponent
             key={index}
-            className="relative h-[148px] w-[100px] basis-auto p-0 "
+            className="relative h-[148px] w-[100px] basis-auto p-0"
           >
             <AspectRatio ratio={100 / 148} className="relative h-full w-full">
               <div className="bg-primary/50 absolute left-0 top-0 z-0 h-full w-full animate-pulse rounded-lg" />
@@ -100,7 +100,7 @@ export function HeadshotPlaceholder({
       {!headshotsExist && placeholderImage && (
         <Image
           src={placeholderImage}
-          className="h-auto w-[256px] self-center  object-contain"
+          className="h-auto w-[256px] self-center object-contain"
           alt="Upload Image Placeholder"
         />
       )}
@@ -110,6 +110,6 @@ export function HeadshotPlaceholder({
 
 export function HeadshotSkeleton({ count = 1 }: { count?: number }) {
   return [...Array(count)].map((_, i) => (
-    <Skeleton key={`headshot-skeleton-${i}`} className=" h-[148px] w-[100px]" />
+    <Skeleton key={`headshot-skeleton-${i}`} className="h-[148px] w-[100px]" />
   ))
 }

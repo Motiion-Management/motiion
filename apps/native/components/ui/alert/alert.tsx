@@ -15,9 +15,9 @@ import Animated, {
 import { AlertProps, AlertRef } from './types';
 
 import { Button } from '~/components/ui/button';
-import { Text } from '~/components/ui/text';
 import { Input } from '~/components/ui/input';
 import type { InputRef } from '~/components/ui/input';
+import { Text } from '~/components/ui/text';
 import { cn } from '~/lib/cn';
 import { useColorScheme } from '~/lib/useColorScheme';
 
@@ -99,7 +99,7 @@ const Alert = React.forwardRef<AlertRef, AlertProps>(
               exiting={FadeOut}
               style={bottomPaddingStyle}
               className={cn(
-                'bg-surface-high/80 absolute bottom-0 left-0 right-0 top-0 items-center justify-center px-3'
+                'absolute bottom-0 left-0 right-0 top-0 items-center justify-center bg-surface-high/80 px-3'
               )}>
               <AlertDialogPrimitive.Content>
                 <Animated.View

@@ -1,13 +1,14 @@
 import { useSignUp } from '@clerk/clerk-expo';
 import { useStore } from '@tanstack/react-store';
-import { router } from 'expo-router';
-import React, { useEffect } from 'react';
+import { router, usePathname } from 'expo-router';
+import React, { useEffect, useRef } from 'react';
 import { ActivityIndicator, View } from 'react-native';
 import { isValidNumber } from 'react-native-phone-entry';
 import * as z from 'zod';
 
 import { useAppForm } from '~/components/form/appForm';
 import { BaseOnboardingScreen } from '~/components/layouts/BaseOnboardingScreen';
+import { determineSignupStep } from '~/utils/signupNavigation';
 
 const formValidator = z.object({
   phone: z
@@ -25,6 +26,8 @@ const formValidator = z.object({
 });
 export default function InfoScreen() {
   const { isLoaded, signUp } = useSignUp();
+  const pathname = usePathname();
+  const hasNavigatedRef = useRef(false);
 
   const form = useAppForm({
     defaultValues: {
@@ -54,12 +57,25 @@ export default function InfoScreen() {
   });
 
   useEffect(() => {
-    if (!signUp) return;
+    if (!isLoaded || !signUp || hasNavigatedRef.current) return;
+
+    // Check if there's an existing signup in progress and navigate to the appropriate step
+    const targetRoute = determineSignupStep(signUp);
+
+    // Only navigate if we're not already on the target route and it's different from current route
+    if (targetRoute && targetRoute !== pathname && targetRoute !== '/auth/(create-account)') {
+      hasNavigatedRef.current = true;
+      router.replace(targetRoute as any);
+      return;
+    }
+
+    // Legacy check for phone verification (kept for backwards compatibility)
     const { status, id } = signUp.verifications.phoneNumber;
-    if (id && status !== 'expired') {
+    if (id && status !== 'expired' && !hasNavigatedRef.current) {
+      hasNavigatedRef.current = true;
       router.push('/auth/(create-account)/verify-phone');
     }
-  }, [signUp?.verifications.phoneNumber]);
+  }, [isLoaded, signUp, pathname]);
 
   const isFormReady = useStore(form.store, (state) => state.canSubmit);
 

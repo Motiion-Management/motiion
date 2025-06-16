@@ -6,16 +6,12 @@ import { NewExperienceForm } from './new-experience-form'
 import { meX } from '@/lib/server/users'
 import { EditableTimeline } from './editable-timeline'
 
-export default async function ResumeExperienceEditPage(
-  props: {
-    params: Promise<{ experience: ExperienceType }>
-  }
-) {
-  const params = await props.params;
+export default async function ResumeExperienceEditPage(props: {
+  params: Promise<{ experience: ExperienceType }>
+}) {
+  const params = await props.params
 
-  const {
-    experience: experienceType
-  } = params;
+  const { experience: experienceType } = params
 
   const user = await meX()
   const { preloadedExperiences } = await preloadMyExperiencesByType({

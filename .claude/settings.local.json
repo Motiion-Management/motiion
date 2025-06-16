@@ -16,7 +16,8 @@
       "mcp__figma-dev-mode-mcp-server__get_code_connect_map",
       "WebFetch(domain:www.nativewind.dev)",
       "Bash(mv:*)",
-      "Bash(npx tsc:*)"
+      "Bash(npx tsc:*)",
+      "Bash(pnpm list:*)"
     ]
   },
   "enableAllProjectMcpServers": false

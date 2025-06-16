@@ -33,7 +33,6 @@ export default function NameScreen() {
   const [isCreatingAccount, setIsCreatingAccount] = useState(false);
   const [signupError, setSignupError] = useState<string | null>(null);
 
-
   const form = useAppForm({
     defaultValues: {
       firstName: '',

@@ -1,6 +1,6 @@
+import { Icon } from '@roninoss/icons';
 import React, { useState } from 'react';
 import { View, Platform, Pressable } from 'react-native';
-import { Icon } from '@roninoss/icons';
 
 import { useFieldContext } from './context';
 

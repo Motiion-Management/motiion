@@ -33,7 +33,7 @@ const RadioGroupItem = React.forwardRef<
       )}
       {...props}
     >
-      <div className="border-secondary text-secondary focus-visible:ring-ring flex aspect-square h-4 w-4 items-center justify-center rounded-full border-2 focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-1  disabled:cursor-not-allowed disabled:opacity-50">
+      <div className="border-secondary text-secondary focus-visible:ring-ring flex aspect-square h-4 w-4 items-center justify-center rounded-full border-2 focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-1 disabled:cursor-not-allowed disabled:opacity-50">
         <RadioGroupPrimitive.Indicator className="flexitems-center justify-center">
           <Circle size={8} className="fill-current text-current" />
         </RadioGroupPrimitive.Indicator>
