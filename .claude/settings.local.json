@@ -14,7 +14,9 @@
       "Bash(ls:*)",
       "Bash(npm run migrate-figma-tokens:*)",
       "mcp__figma-dev-mode-mcp-server__get_code_connect_map",
-      "WebFetch(domain:www.nativewind.dev)"
+      "WebFetch(domain:www.nativewind.dev)",
+      "Bash(mv:*)",
+      "Bash(npx tsc:*)"
     ]
   },
   "enableAllProjectMcpServers": false

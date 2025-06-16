@@ -3,8 +3,8 @@ import { Platform, View } from 'react-native';
 import { KeyboardAwareScrollView, KeyboardStickyView } from 'react-native-keyboard-controller';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
-import { Button } from '~/components/nativewindui/Button';
-import { Text } from '~/components/nativewindui/Text';
+import { Button } from '~/components/ui/button';
+import { Text } from '~/components/ui/text';
 
 export const BaseOnboardingScreen = ({
   title,

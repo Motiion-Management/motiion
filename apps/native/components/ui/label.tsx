@@ -1,27 +1,20 @@
-import * as LabelPrimitive from '@rn-primitives/label';
-import * as React from 'react';
-import { cn } from '~/lib/utils';
+import { View } from 'react-native';
 
-const Label = React.forwardRef<LabelPrimitive.TextRef, LabelPrimitive.TextProps>(
-  ({ className, onPress, onLongPress, onPressIn, onPressOut, ...props }, ref) => (
-    <LabelPrimitive.Root
-      className='web:cursor-default'
-      onPress={onPress}
-      onLongPress={onLongPress}
-      onPressIn={onPressIn}
-      onPressOut={onPressOut}
-    >
-      <LabelPrimitive.Text
-        ref={ref}
-        className={cn(
-          'text-sm text-text-default native:text-base font-medium leading-none web:peer-disabled:cursor-not-allowed web:peer-disabled:opacity-70',
-          className
-        )}
-        {...props}
-      />
-    </LabelPrimitive.Root>
-  )
-);
-Label.displayName = LabelPrimitive.Root.displayName;
+import { Text, TextProps } from './text';
 
-export { Label };
+import CircleAlert from '~/lib/icons/CircleAlert';
+
+type InputLabelProps = {
+  children: TextProps['children'];
+  error?: boolean;
+};
+export const InputLabel = ({ children, error }: InputLabelProps) => {
+  return (
+    <View className="flex-row gap-[5px] ">
+      <Text variant="labelXs" className="ml-6 uppercase text-text-low">
+        {children}
+      </Text>
+      {error && <CircleAlert className="color-text-error" size={12} strokeWidth={2} />}
+    </View>
+  );
+};

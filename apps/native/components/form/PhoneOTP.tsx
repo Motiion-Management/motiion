@@ -3,9 +3,9 @@ import { View } from 'react-native';
 import { OtpInput as BaseOtpInput, OtpInputProps } from 'react-native-otp-entry';
 
 import { useFieldContext } from './context';
-import { ErrorText } from '../nativewindui/ErrorText';
-import { HelpText, HelpTextProps } from '../nativewindui/HelpText';
-import { InputLabel } from '../nativewindui/Label';
+import { ErrorText } from '../ui/error-text';
+import { HelpText, HelpTextProps } from '../ui/help-text';
+import { InputLabel } from '../ui/label';
 
 import { cn } from '~/lib/cn';
 

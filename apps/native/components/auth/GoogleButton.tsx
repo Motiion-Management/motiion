@@ -4,8 +4,8 @@ import * as WebBrowser from 'expo-web-browser';
 import React from 'react';
 import { Alert, Image, Platform } from 'react-native';
 
-import { Button } from '~/components/nativewindui/Button';
-import { Text } from '~/components/nativewindui/Text';
+import { Button } from '~/components/ui/button';
+import { Text } from '~/components/ui/text';
 
 const GOOGLE_SOURCE = {
   uri: 'https://www.pngall.com/wp-content/uploads/13/Google-Logo.png',

@@ -3,8 +3,8 @@ import * as Linking from 'expo-linking';
 import React from 'react';
 import { Alert, Platform } from 'react-native';
 
-import { Button } from '~/components/nativewindui/Button';
-import { Text } from '~/components/nativewindui/Text';
+import { Button } from '~/components/ui/button';
+import { Text } from '~/components/ui/text';
 
 export const AppleButton = () => {
   const { startOAuthFlow } = useOAuth({ strategy: 'oauth_apple' });

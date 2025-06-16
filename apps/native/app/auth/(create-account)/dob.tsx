@@ -7,7 +7,7 @@ import * as z from 'zod';
 
 import { useAppForm } from '~/components/form/appForm';
 import { BaseOnboardingScreen } from '~/components/layouts/BaseOnboardingScreen';
-import { Text } from '~/components/nativewindui/Text';
+import { Text } from '~/components/ui/text';
 
 const calculateAge = (dob: Date): number => {
   const today = new Date();

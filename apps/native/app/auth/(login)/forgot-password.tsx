@@ -8,12 +8,12 @@ import {
 } from 'react-native-keyboard-controller';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
-import { AlertAnchor } from '~/components/nativewindui/Alert';
-import { AlertRef } from '~/components/nativewindui/Alert/types';
-import { Button } from '~/components/nativewindui/Button';
-import { Form, FormItem, FormSection } from '~/components/nativewindui/Form';
-import { Text } from '~/components/nativewindui/Text';
-import { TextField } from '~/components/nativewindui/TextField';
+import { AlertAnchor } from '~/components/ui/alert';
+import { AlertRef } from '~/components/ui/alert/types';
+import { Button } from '~/components/ui/button';
+import { Form, FormItem, FormSection } from '~/components/ui/form';
+import { Text } from '~/components/ui/text';
+import { Input as TextField } from '~/components/ui/input';
 
 const LOGO_SOURCE = {
   uri: 'https://nativewindui.com/_next/image?url=/_next/static/media/logo.28276aeb.png&w=2048&q=75',

@@ -1,11 +1,11 @@
-import { TextField } from '~/components/nativewindui/TextField';
+import { Input as TextField } from '~/components/ui/input';
 import { useFieldContext } from './context';
 
 interface TextInputProps {
   label: string;
   placeholder?: string;
   autoCapitalize?: 'none' | 'sentences' | 'words' | 'characters';
-  autoComplete?: string;
+  autoComplete?: 'name' | 'email' | 'off' | 'username' | 'password' | 'url' | 'tel' | 'sms-otp' | 'current-password' | 'new-password' | 'given-name' | 'family-name';
   autoFocus?: boolean;
   keyboardType?: 'default' | 'numeric' | 'email-address' | 'phone-pad';
 }

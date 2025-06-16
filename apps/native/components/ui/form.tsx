@@ -2,7 +2,7 @@ import { Icon, type IconProps } from '@roninoss/icons';
 import * as React from 'react';
 import { Platform, View, ViewProps, ViewStyle } from 'react-native';
 
-import { Text } from '~/components/nativewindui/Text';
+import { Text } from '~/components/ui/text';
 import { cn } from '~/lib/cn';
 import { useColorScheme } from '~/lib/useColorScheme';
 

@@ -1,7 +1,7 @@
 import { View } from 'react-native';
 
-import { Button } from './Button';
-import { Text, TextProps } from './Text';
+import { Button } from './button';
+import { Text, TextProps } from './text';
 
 export type HelpTextProps = {
   message: TextProps['children'];

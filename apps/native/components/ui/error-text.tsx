@@ -1,4 +1,4 @@
-import { Text, TextProps } from './Text';
+import { Text, TextProps } from './text';
 
 type ErrorTextProps = {
   children?: TextProps['children'];

@@ -2,7 +2,7 @@ import DateTimePicker, { DateTimePickerAndroid } from '@react-native-community/d
 import * as React from 'react';
 import { Pressable, View } from 'react-native';
 
-import { Text } from '~/components/nativewindui/Text';
+import { Text } from '~/components/ui/text';
 import { cn } from '~/lib/cn';
 
 export function DatePicker(

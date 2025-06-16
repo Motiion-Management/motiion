@@ -7,7 +7,7 @@ import z from 'zod';
 
 import { useAppForm } from '~/components/form/appForm';
 import { BaseOnboardingScreen } from '~/components/layouts/BaseOnboardingScreen';
-import { Text } from '~/components/nativewindui/Text';
+import { Text } from '~/components/ui/text';
 
 export default function InfoScreen() {
   const { isLoaded, signUp } = useSignUp();

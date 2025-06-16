@@ -3,10 +3,10 @@ import * as React from 'react';
 import { Image, Platform, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
-import { AlertAnchor } from '~/components/nativewindui/Alert';
-import { AlertRef } from '~/components/nativewindui/Alert/types';
-import { Button } from '~/components/nativewindui/Button';
-import { Text } from '~/components/nativewindui/Text';
+import { AlertAnchor } from '~/components/ui/alert';
+import { AlertRef } from '~/components/ui/alert/types';
+import { Button } from '~/components/ui/button';
+import { Text } from '~/components/ui/text';
 
 const LOGO_SOURCE = {
   uri: 'https://nativewindui.com/_next/image?url=/_next/static/media/logo.28276aeb.png&w=2048&q=75',

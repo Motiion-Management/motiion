@@ -14,10 +14,10 @@ import Animated, {
 
 import { AlertProps, AlertRef } from './types';
 
-import { Button } from '~/components/nativewindui/Button';
-import { Text } from '~/components/nativewindui/Text';
-import { TextField } from '~/components/nativewindui/TextField';
-import { TextFieldRef } from '~/components/nativewindui/TextField/types';
+import { Button } from '~/components/ui/button';
+import { Text } from '~/components/ui/text';
+import { Input } from '~/components/ui/input';
+import type { InputRef } from '~/components/ui/input';
 import { cn } from '~/lib/cn';
 import { useColorScheme } from '~/lib/useColorScheme';
 
@@ -49,7 +49,7 @@ const Alert = React.forwardRef<AlertRef, AlertProps>(
     const [text, setText] = React.useState(promptProp?.defaultValue ?? '');
     const [password, setPassword] = React.useState('');
     const { colors } = useColorScheme();
-    const passwordRef = React.useRef<TextFieldRef>(null);
+    const passwordRef = React.useRef<InputRef>(null);
     const augmentedRef = useAugmentedRef({
       ref,
       methods: {
@@ -144,7 +144,7 @@ const Alert = React.forwardRef<AlertRef, AlertProps>(
                   )}
                   {prompt ? (
                     <View className="gap-4 pb-8">
-                      <TextField
+                      <Input
                         autoFocus
                         labelClassName="bg-surface-default"
                         keyboardType={
@@ -169,7 +169,7 @@ const Alert = React.forwardRef<AlertRef, AlertProps>(
                         blurOnSubmit={prompt.type !== 'login-password'}
                       />
                       {prompt.type === 'login-password' && (
-                        <TextField
+                        <Input
                           ref={passwordRef}
                           labelClassName="bg-surface-default"
                           keyboardType={prompt.keyboardType}

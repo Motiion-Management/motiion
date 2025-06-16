@@ -8,7 +8,7 @@
  */
 
 import { figma } from '@figma/code-connect'
-import { Button } from './Button'
+import { Button } from './button'
 
 // Main Button component mapping
 figma.connect(Button, 'https://www.figma.com/design/[FILE_ID]/[FILE_NAME]?node-id=[NODE_ID]', {

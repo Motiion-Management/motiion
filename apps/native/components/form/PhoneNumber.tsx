@@ -6,11 +6,11 @@ import { getCountryCallingCodeAsync } from 'react-native-country-picker-modal/li
 import { PhoneInput as BasePhoneInput, PhoneInputProps } from 'react-native-phone-entry';
 
 import { useFieldContext } from './context';
-import { ErrorText } from '../nativewindui/ErrorText';
-import { HelpText } from '../nativewindui/HelpText';
-import { InputLabel } from '../nativewindui/Label';
+import { ErrorText } from '../ui/error-text';
+import { HelpText } from '../ui/help-text';
+import { InputLabel } from '../ui/label';
 
-import { Text } from '~/components/nativewindui/Text';
+import { Text } from '~/components/ui/text';
 import { cn } from '~/lib/cn';
 import { useColorScheme } from '~/lib/useColorScheme';
 

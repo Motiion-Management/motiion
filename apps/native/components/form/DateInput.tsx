@@ -4,9 +4,9 @@ import { Icon } from '@roninoss/icons';
 
 import { useFieldContext } from './context';
 
-import { Button } from '~/components/nativewindui/Button';
-import { DatePicker } from '~/components/nativewindui/DatePicker';
-import { Text } from '~/components/nativewindui/Text';
+import { Button } from '~/components/ui/button';
+import { DatePicker } from '~/components/ui/date-picker';
+import { Text } from '~/components/ui/text';
 import { cn } from '~/lib/cn';
 
 interface DateInputProps {
@@ -44,7 +44,7 @@ export const DateInput = ({ label, minimumDate, maximumDate, helpText }: DateInp
           field.state.meta.errors?.[0] && 'bg-surface-error'
         )}>
         <Text
-          variant="bodyMd"
+          variant="body"
           className={cn(
             'text-text-default',
             field.state.meta.errors?.[0] && 'text-text-error',
@@ -52,7 +52,7 @@ export const DateInput = ({ label, minimumDate, maximumDate, helpText }: DateInp
           )}>
           {field.state.value ? formatDate(field.state.value) : 'MM / DD / YYYY'}
         </Text>
-        <Icon name="chevron-down" size={20} className="text-icon-default" />
+        <Icon name="chevron-down" size={20} />
       </Pressable>
       {showDatePicker && (
         <DatePicker

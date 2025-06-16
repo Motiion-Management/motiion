@@ -1,21 +1,133 @@
+import { useAugmentedRef, useControllableState } from '@rn-primitives/hooks';
 import * as React from 'react';
-import { TextInput, type TextInputProps } from 'react-native';
+import { Pressable, TextInput, View, type TextInputProps } from 'react-native';
 
-import { cn } from '../../lib/utils';
+import { Text } from '~/components/ui/text';
+import { cn } from '~/lib/cn';
 
-const Input = React.forwardRef<React.ElementRef<typeof TextInput>, TextInputProps>(
-  ({ className, placeholderClassName, ...props }, ref) => {
+type InputProps = TextInputProps & {
+  children?: React.ReactNode;
+  leftView?: React.ReactNode;
+  rightView?: React.ReactNode;
+  label?: string;
+  labelClassName?: string;
+  containerClassName?: string;
+  invalid?: boolean;
+  displayOnly?: boolean;
+  /**
+   * Helper text displayed below the input
+   */
+  helperText?: string;
+  /**
+   * For accessibility, can be overridden by accessibilityHint
+   * @Material - shows error state with destructive color and icon
+   * @iOS - No visual change
+   */
+  errorMessage?: string;
+  /**
+   * @MaterialOnly
+   * @default outlined
+   * Material variant for the input.
+   */
+  materialVariant?: 'outlined' | 'filled';
+  materialRingColor?: string;
+  materialHideActionIcons?: boolean;
+};
+
+type InputRef = TextInput;
+
+const Input = React.forwardRef<InputRef, InputProps>(
+  (
+    {
+      value: valueProp,
+      onChangeText: onChangeTextProp,
+      editable,
+      readOnly,
+      className,
+      children,
+      leftView,
+      rightView,
+      label,
+      labelClassName,
+      containerClassName,
+      invalid,
+      accessibilityHint,
+      helperText,
+      errorMessage,
+      materialVariant: _materialVariant,
+      materialRingColor: _materialRingColor,
+      materialHideActionIcons: _materialHideActionIcons,
+      ...props
+    },
+    ref
+  ) => {
+    const inputRef = useAugmentedRef({ ref, methods: { focus, blur, clear } });
+
+    const [value = '', onChangeText] = useControllableState({
+      prop: valueProp,
+      defaultProp: valueProp ?? '',
+      onChange: onChangeTextProp,
+    });
+
+    function focus() {
+      inputRef.current?.focus();
+    }
+
+    function blur() {
+      inputRef.current?.blur();
+    }
+
+    function clear() {
+      onChangeText('');
+    }
+
     return (
-      <TextInput
-        ref={ref}
-        className={cn(
-          'native:h-12 native:text-lg native:leading-[1.25] h-10  border-b border-b-foreground bg-transparent text-base text-text-default file:border-0 file:bg-transparent file:font-medium placeholder:text-text-disabled web:flex web:w-full web:py-2 web:ring-offset-background web:focus-visible:outline-none web:focus-visible:ring-2 web:focus-visible:ring-ring web:focus-visible:ring-offset-2 lg:text-sm',
-          props.editable === false && 'opacity-50 web:cursor-not-allowed',
-          className
+      <Pressable
+        className={cn(editable === false && 'opacity-50 ', 'gap-4', containerClassName)}
+        disabled={editable === false || readOnly}
+        onPress={focus}>
+        {!!label && (
+          <View className={cn('mb-2')}>
+            <Text variant="labelXs" className={cn('uppercase text-text-disabled', labelClassName)}>
+              {label}
+            </Text>
+          </View>
         )}
-        placeholderClassName={cn('text-text-disabled', placeholderClassName)}
-        {...props}
-      />
+        <View
+          className={cn(
+            'flex-row items-center rounded-full border border-border-default bg-surface-high px-4',
+            errorMessage && 'bg-surface-error'
+          )}>
+          {!!leftView && leftView}
+          <TextInput
+            ref={inputRef}
+            editable={editable}
+            readOnly={readOnly}
+            className={cn(
+              'flex-1 bg-transparent py-4 text-[16px] text-text-default placeholder:text-text-default/40',
+              errorMessage && 'text-text-error',
+              leftView && 'pl-2',
+              rightView && 'pr-2',
+              className
+            )}
+            onChangeText={onChangeText}
+            value={value}
+            clearButtonMode="while-editing"
+            accessibilityHint={accessibilityHint ?? errorMessage}
+            {...props}
+          />
+          {rightView}
+        </View>
+        {(helperText || errorMessage) && (
+          <View className="mt-1 px-4">
+            <Text
+              variant="bodyXs"
+              className={cn('text-text-disabled', errorMessage && 'text-text-error')}>
+              {errorMessage || helperText}
+            </Text>
+          </View>
+        )}
+      </Pressable>
     );
   }
 );
@@ -23,3 +135,4 @@ const Input = React.forwardRef<React.ElementRef<typeof TextInput>, TextInputProp
 Input.displayName = 'Input';
 
 export { Input };
+export type { InputProps, InputRef };

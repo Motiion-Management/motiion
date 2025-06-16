@@ -4,10 +4,10 @@ import React from 'react';
 import { ImageBackground, Platform, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
-import { AlertAnchor } from '~/components/nativewindui/Alert';
-import { AlertRef } from '~/components/nativewindui/Alert/types';
-import { Button } from '~/components/nativewindui/Button';
-import { Text } from '~/components/nativewindui/Text';
+import { AlertAnchor } from '~/components/ui/alert';
+import { AlertRef } from '~/components/ui/alert/types';
+import { Button } from '~/components/ui/button';
+import { Text } from '~/components/ui/text';
 
 export default function RootScreen() {
   const alertRef = React.useRef<AlertRef>(null);

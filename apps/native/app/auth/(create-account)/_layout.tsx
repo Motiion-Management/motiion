@@ -3,8 +3,8 @@ import { Stack } from 'expo-router';
 import { View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
-import { Button } from '~/components/nativewindui/Button';
-import { Text } from '~/components/nativewindui/Text';
+import { Button } from '~/components/ui/button';
+import { Text } from '~/components/ui/text';
 
 const ProgressBar = () => {
   return (
