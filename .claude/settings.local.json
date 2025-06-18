@@ -19,7 +19,9 @@
       "Bash(npx tsc:*)",
       "Bash(pnpm list:*)",
       "Bash(mkdir:*)",
-      "WebFetch(domain:github.com)"
+      "WebFetch(domain:github.com)",
+      "Bash(pnpm format:*)",
+      "WebFetch(domain:tanstack.com)"
     ]
   },
   "enableAllProjectMcpServers": false

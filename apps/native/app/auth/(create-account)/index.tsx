@@ -97,7 +97,7 @@ export default function InfoScreen() {
         },
       }}>
       <View className="min-h-12 flex-1 flex-row gap-6">
-        <form.AppField name="phone" children={(field) => <field.PhoneNumber />} />
+        <form.AppField name="phone" children={(field) => <field.PhoneNumber autoFocus />} />
       </View>
     </BaseOnboardingScreen>
   );
