@@ -1,7 +1,7 @@
 import { LinearGradient } from 'expo-linear-gradient';
 import { StyleSheet, useColorScheme, View } from 'react-native';
 
-export default function BackgroundGradientView({ children }: { children: React.ReactNode }) {
+export function BackgroundGradientView({ children }: { children: React.ReactNode }) {
   const colorScheme = useColorScheme();
 
   const gradientColor = colorScheme === 'dark' ? '#15191C' : '#F8F9FA';

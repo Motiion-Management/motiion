@@ -1,4 +1,4 @@
-import { Text, TextProps } from './text';
+import { Text, TextProps } from '~/components/ui/text';
 
 type ErrorTextProps = {
   children?: TextProps['children'];

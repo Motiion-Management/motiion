@@ -1,6 +1,6 @@
 import { Stack } from 'expo-router';
 
-import BackgroundGradientView from '~/components/ui/background-gradient-view';
+import { BackgroundGradientView } from '~/components/ui/background-gradient-view';
 
 export default function AuthLayout() {
   return (

@@ -2,6 +2,7 @@ import { useAugmentedRef, useControllableState } from '@rn-primitives/hooks';
 import * as React from 'react';
 import { Pressable, TextInput, View, type TextInputProps } from 'react-native';
 
+import { InputLabel } from '~/components/ui/label';
 import { Text } from '~/components/ui/text';
 import { cn } from '~/lib/cn';
 
@@ -88,9 +89,7 @@ const Input = React.forwardRef<InputRef, InputProps>(
         onPress={focus}>
         {!!label && (
           <View className={cn('mb-2')}>
-            <Text variant="labelXs" className={cn('uppercase text-text-disabled', labelClassName)}>
-              {label}
-            </Text>
+            <InputLabel>{label}</InputLabel>
           </View>
         )}
         <View

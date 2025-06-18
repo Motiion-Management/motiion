@@ -1,7 +1,6 @@
 import { View } from 'react-native';
 
-import { Text, TextProps } from './text';
-
+import { Text, TextProps } from '~/components/ui/text';
 import CircleAlert from '~/lib/icons/CircleAlert';
 
 type InputLabelProps = {

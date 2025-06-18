@@ -17,7 +17,8 @@
       "WebFetch(domain:www.nativewind.dev)",
       "Bash(mv:*)",
       "Bash(npx tsc:*)",
-      "Bash(pnpm list:*)"
+      "Bash(pnpm list:*)",
+      "Bash(mkdir:*)"
     ]
   },
   "enableAllProjectMcpServers": false
