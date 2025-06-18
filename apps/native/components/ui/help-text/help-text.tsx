@@ -4,7 +4,7 @@ import { Button } from '~/components/ui/button';
 import { Text, TextProps } from '~/components/ui/text';
 
 export type HelpTextProps = {
-  message: TextProps['children'];
+  message: string;
   action?: {
     label: string;
     onPress: () => void;

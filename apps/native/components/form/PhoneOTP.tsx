@@ -1,70 +1,9 @@
-import { cssInterop } from 'nativewind';
 import { View } from 'react-native';
-import { OtpInput as BaseOtpInput, OtpInputProps } from 'react-native-otp-entry';
+import { useOtpInput } from 'react-native-otp-entry/dist/OtpInput/useOtpInput';
 
 import { useFieldContext } from './context';
-import { ErrorText } from '../ui/error-text';
-import { HelpText, HelpTextProps } from '../ui/help-text';
-import { InputLabel } from '../ui/label';
-
-import { cn } from '~/lib/cn';
-
-const MappedOtpInput = ({
-  containerStyle,
-  pinCodeContainerStyle,
-  pinCodeTextStyle,
-  focusStickStyle,
-  focusedPinCodeContainerStyle,
-  placeholderTextStyle,
-  filledPinCodeContainerStyle,
-  disabledPinCodeContainerStyle,
-  ...rest
-}: OtpInputProps & OtpInputProps['theme']) => {
-  // const { isDarkColorScheme } = useColorScheme();
-  return (
-    <BaseOtpInput
-      {...rest}
-      // maskInputProps={{
-      //   ...rest.maskInputProps,
-      //   selectionColor: isDarkColorScheme ? 'white' : 'black',
-      // }}
-      theme={{
-        ...rest.theme,
-        containerStyle,
-        pinCodeContainerStyle,
-        pinCodeTextStyle,
-        focusStickStyle,
-        focusedPinCodeContainerStyle,
-        placeholderTextStyle,
-        filledPinCodeContainerStyle,
-        disabledPinCodeContainerStyle,
-      }}
-    />
-  );
-};
-
-const OtpInput = cssInterop(MappedOtpInput, {
-  containerClassName: 'containerStyle',
-  pinCodeContainerClassName: 'pinCodeContainerStyle',
-  pinCodeTextClassName: 'pinCodeTextStyle',
-  focusStickClassName: 'focusStickStyle',
-  focusedPinCodeContainerClassName: 'focusedPinCodeContainerStyle',
-  placeholderTextClassName: 'placeholderTextStyle',
-  filledPinCodeContainerClassName: 'filledPinCodeContainerStyle',
-  disabledPinCodeContainerClassName: 'disabledPinCodeContainerStyle',
-}) as React.ComponentType<
-  OtpInputProps &
-    OtpInputProps['theme'] & {
-      containerClassName?: string;
-      pinCodeContainerClassName?: string;
-      pinCodeTextClassName?: string;
-      focusStickClassName?: string;
-      focusedPinCodeContainerClassName?: string;
-      placeholderTextClassName?: string;
-      filledPinCodeContainerClassName?: string;
-      disabledPinCodeContainerClassName?: string;
-    }
->;
+import { HelpTextProps } from '../ui/help-text';
+import { Input } from '../ui/input';
 
 interface PhoneOTPProps {
   helpTextOpts?: HelpTextProps;
@@ -72,25 +11,65 @@ interface PhoneOTPProps {
 
 export const PhoneOTP = ({ helpTextOpts }: PhoneOTPProps) => {
   const field = useFieldContext<string>();
+
+  const { models, actions } = useOtpInput({
+    numberOfDigits: 6,
+    autoFocus: true,
+    type: 'numeric',
+    onTextChange: (text) => {
+      field.handleChange(text);
+    },
+    onFilled: (otp) => {
+      field.handleChange(otp);
+      field.handleBlur();
+    },
+    blurOnFilled: true,
+  });
+
+  // Handle text input with proper OTP formatting
+  const handleTextChange = (text: string) => {
+    // Remove all non-numeric characters and spaces
+    const cleanedText = text.replace(/[^0-9]/g, '');
+
+    // Limit to 6 digits
+    const limitedText = cleanedText.slice(0, 6);
+
+    // Call the OTP input handler
+    actions.handleTextChange(limitedText);
+  };
+
+  // Format the OTP text for display with spaces between digits
+  const formatOtpDisplay = (text: string) => {
+    if (!text) return '';
+
+    // Add spaces between each digit for display
+    const formatted = text.split('').join(' ');
+
+    // Add placeholder dots for remaining digits
+    const remaining = 6 - text.length;
+    const placeholderDots = Array(remaining).fill('•').join(' ');
+
+    return formatted + (remaining > 0 ? (text.length > 0 ? ' ' : '') + placeholderDots : '');
+  };
+
   return (
     <View className="flex-1 gap-4">
-      <InputLabel>6-Digit Code</InputLabel>
-      <OtpInput
-        onFilled={(otp) => {
-          field.handleChange(otp);
-          field.handleBlur();
-        }}
+      <Input
+        ref={models.inputRef}
+        label="6-Digit Code"
+        value={formatOtpDisplay(models.text)}
+        onChangeText={handleTextChange}
+        onFocus={actions.handleFocus}
+        onBlur={actions.handleBlur}
+        keyboardType="numeric"
+        maxLength={11} // 6 digits + 5 spaces
         autoFocus
-        focusStickClassName="h-6"
-        numberOfDigits={6}
-        containerClassName="flex-1"
-        pinCodeContainerClassName={cn(
-          'bg-surface-high border border-border-default h-12 w-12 m-0 rounded-full'
-        )}
-        pinCodeTextClassName={cn('text-[16px] text-text-default')}
+        errorMessage={field.state.meta.errors?.[0]?.message}
+        helperText={helpTextOpts?.message}
+        className="text-center text-lg font-semibold tracking-[0.25em]"
+        autoComplete="one-time-code"
+        textContentType="oneTimeCode"
       />
-      <ErrorText>{field.state.meta.errors?.[0]?.message}</ErrorText>
-      {helpTextOpts && <HelpText {...helpTextOpts} />}
     </View>
   );
 };

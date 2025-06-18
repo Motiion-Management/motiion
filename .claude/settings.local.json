@@ -18,7 +18,8 @@
       "Bash(mv:*)",
       "Bash(npx tsc:*)",
       "Bash(pnpm list:*)",
-      "Bash(mkdir:*)"
+      "Bash(mkdir:*)",
+      "WebFetch(domain:github.com)"
     ]
   },
   "enableAllProjectMcpServers": false
