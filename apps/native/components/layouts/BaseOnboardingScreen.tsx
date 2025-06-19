@@ -5,6 +5,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { Button } from '~/components/ui/button';
 import { Text } from '~/components/ui/text';
+import ChevronRight from '~/lib/icons/ChevronRight';
 
 export const BaseOnboardingScreen = ({
   title,
@@ -45,7 +46,7 @@ export const BaseOnboardingScreen = ({
           <View className=" gap-4 ">
             {children}
             {helpText && (
-              <View className="pt-2">
+              <View className="items-center pt-2">
                 <Text className="text-sm text-text-low" variant="body">
                   {helpText}
                 </Text>
@@ -77,7 +78,7 @@ export const BaseOnboardingScreen = ({
               }
               primaryAction.onPress();
             }}>
-            <Icon name="chevron-right" size={16} color="text-icon-accent" />
+            <ChevronRight size={24} className="color-icon-accent" />
           </Button>
         </View>
       </KeyboardStickyView>

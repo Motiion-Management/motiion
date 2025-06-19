@@ -93,7 +93,7 @@ export default function InfoScreen() {
           name="otp"
           children={(field) => (
             <field.PhoneOTP
-              helpTextOpts={{
+              helperTextOpts={{
                 message: `Code sent to ${phoneNumber}.`,
                 action: {
                   label: 'Change',

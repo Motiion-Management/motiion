@@ -2,14 +2,15 @@ import { View } from 'react-native';
 import { useOtpInput } from 'react-native-otp-entry/dist/OtpInput/useOtpInput';
 
 import { useFieldContext } from './context';
-import { HelpTextProps } from '../ui/help-text';
-import { Input } from '../ui/input';
+
+import { HelperTextProps } from '~/components/ui/helper-text';
+import { Input } from '~/components/ui/input';
 
 interface PhoneOTPProps {
-  helpTextOpts?: HelpTextProps;
+  helperTextOpts?: HelperTextProps;
 }
 
-export const PhoneOTP = ({ helpTextOpts }: PhoneOTPProps) => {
+export const PhoneOTP = ({ helperTextOpts }: PhoneOTPProps) => {
   const field = useFieldContext<string>();
 
   const { models, actions } = useOtpInput({
@@ -51,11 +52,10 @@ export const PhoneOTP = ({ helpTextOpts }: PhoneOTPProps) => {
         onFocus={actions.handleFocus}
         onBlur={actions.handleBlur}
         keyboardType="numeric"
-        // maxLength={11} // 6 digits + 5 spaces
+        maxLength={11} // 6 digits + 5 spaces
         autoFocus
         errorMessage={field.state.meta.isTouched && field.state.meta.errors?.[0]?.message}
-        helperText={helpTextOpts?.message}
-        // className=" text-lg font-semibold tracking-[0.25em]"
+        helperTextProps={helperTextOpts}
         autoComplete="one-time-code"
         textContentType="oneTimeCode"
       />

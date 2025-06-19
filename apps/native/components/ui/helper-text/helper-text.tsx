@@ -1,19 +1,19 @@
 import { View } from 'react-native';
 
 import { Button } from '~/components/ui/button';
-import { Text, TextProps } from '~/components/ui/text';
+import { Text } from '~/components/ui/text';
 
-export type HelpTextProps = {
+export type HelperTextProps = {
   message: string;
   action?: {
     label: string;
     onPress: () => void;
   };
 };
-export const HelpText = ({ message, action }: HelpTextProps) => {
+export const HelperText = ({ message, action }: HelperTextProps) => {
   return (
-    <View className="ml-6 flex-row items-center gap-4">
-      <Text variant="bodySm" className="  text-text-low">
+    <View className="mx-6 flex-row items-center gap-4">
+      <Text variant="bodyXs" className="text-text-low">
         {message}
       </Text>
       {action && (

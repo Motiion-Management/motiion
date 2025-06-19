@@ -48,7 +48,7 @@ export const PhoneNumber = ({ autoFocus = false, helpText }: PhoneNumberProps) =
 
   return (
     <View className="flex-1 gap-4">
-      <View className="flex-row gap-5">
+      <View className="flex-row gap-7">
         <InputLabel>Area Code</InputLabel>
         <InputLabel error={isError}>Phone Number</InputLabel>
       </View>
@@ -80,9 +80,9 @@ export const PhoneNumber = ({ autoFocus = false, helpText }: PhoneNumberProps) =
               renderFlagButton={() => (
                 <Pressable
                   onPress={() => setCountryPickerVisible(true)}
-                  className="mr-3 h-full flex-row items-center border-r border-border-default pr-5">
-                  <Flag withFlagButton withEmoji countryCode={models.countryCode} flagSize={20} />
-                  <Text variant="bodySm" className=" mr-1 text-text-default">
+                  className="-ml-1 mr-3 h-full flex-row items-center border-r border-border-default pr-5">
+                  <Flag withFlagButton withEmoji countryCode={models.countryCode} flagSize={24} />
+                  <Text variant="bodySm" className=" mr-2 text-text-default">
                     {models.callingCode}
                   </Text>
                   <ChevronDown className="color-icon-default" size={14} />
@@ -90,6 +90,11 @@ export const PhoneNumber = ({ autoFocus = false, helpText }: PhoneNumberProps) =
               )}
             />
           }
+          helperTextProps={{
+            message:
+              helpText ||
+              `We will send you a text with a verification code.\nMessage and data rates may apply.`,
+          }}
           errorMessage={
             isError
               ? field.state.meta.errors?.[0]?.message || 'Please enter a valid phone number.'
@@ -97,13 +102,6 @@ export const PhoneNumber = ({ autoFocus = false, helpText }: PhoneNumberProps) =
           }
         />
       </View>
-
-      <HelpText
-        message={
-          helpText ||
-          `We will send you a text with a verification code.\nMessage and data rates may apply.`
-        }
-      />
     </View>
   );
 };

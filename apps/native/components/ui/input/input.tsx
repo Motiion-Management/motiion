@@ -2,8 +2,9 @@ import { useAugmentedRef, useControllableState } from '@rn-primitives/hooks';
 import * as React from 'react';
 import { Pressable, TextInput, View, type TextInputProps } from 'react-native';
 
+import { ErrorText } from '~/components/ui/error-text';
+import { HelperText, HelperTextProps } from '~/components/ui/helper-text';
 import { InputLabel } from '~/components/ui/label';
-import { Text } from '~/components/ui/text';
 import { cn } from '~/lib/cn';
 
 type InputProps = TextInputProps & {
@@ -18,7 +19,7 @@ type InputProps = TextInputProps & {
   /**
    * Helper text displayed below the input
    */
-  helperText?: string;
+  helperTextProps?: HelperTextProps;
   /**
    * For accessibility, can be overridden by accessibilityHint
    * @Material - shows error state with destructive color and icon
@@ -53,7 +54,7 @@ const Input = React.forwardRef<InputRef, InputProps>(
       containerClassName,
       invalid,
       accessibilityHint,
-      helperText,
+      helperTextProps,
       errorMessage,
       materialVariant: _materialVariant,
       materialRingColor: _materialRingColor,
@@ -87,11 +88,7 @@ const Input = React.forwardRef<InputRef, InputProps>(
         className={cn(editable === false && 'opacity-50 ', 'gap-4', containerClassName)}
         disabled={editable === false || readOnly}
         onPress={focus}>
-        {!!label && (
-          <View className={cn('mb-2')}>
-            <InputLabel>{label}</InputLabel>
-          </View>
-        )}
+        {!!label && <InputLabel>{label}</InputLabel>}
         <View
           className={cn(
             'flex-row items-center rounded-full border border-border-default bg-surface-high px-6'
@@ -116,15 +113,8 @@ const Input = React.forwardRef<InputRef, InputProps>(
           />
           {rightView}
         </View>
-        {(helperText || errorMessage) && (
-          <View className="mt-1 px-4">
-            <Text
-              variant="bodyXs"
-              className={cn('text-text-disabled', errorMessage && 'text-text-error')}>
-              {errorMessage || helperText}
-            </Text>
-          </View>
-        )}
+        {errorMessage && <ErrorText>{errorMessage}</ErrorText>}
+        {helperTextProps && <HelperText {...helperTextProps} />}
       </Pressable>
     );
   }

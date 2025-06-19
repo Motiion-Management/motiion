@@ -7,6 +7,7 @@ import * as z from 'zod';
 
 import { useAppForm } from '~/components/form/appForm';
 import { BaseOnboardingScreen } from '~/components/layouts/BaseOnboardingScreen';
+import { ErrorText } from '~/components/ui/error-text';
 import { Text } from '~/components/ui/text';
 
 const formValidator = z.object({
@@ -82,7 +83,7 @@ export default function NameScreen() {
   return (
     <BaseOnboardingScreen
       title="What's your name?"
-      helpText="This will be displayed on your profile."
+      helpText="Please use your legal name for your account. You can provide a stage name or a preferred name to display on your profile later."
       canProgress={isFormReady}
       primaryAction={{
         onPress: () => {
@@ -94,8 +95,8 @@ export default function NameScreen() {
           name="firstName"
           children={(field) => (
             <field.TextInput
-              label="First Name"
-              placeholder="Enter your first name"
+              label="First"
+              placeholder="Enter first name"
               autoCapitalize="words"
               autoComplete="given-name"
               autoFocus
@@ -106,14 +107,14 @@ export default function NameScreen() {
           name="lastName"
           children={(field) => (
             <field.TextInput
-              label="Last Name"
-              placeholder="Enter your last name"
+              label="Last"
+              placeholder="Enter last name"
               autoCapitalize="words"
               autoComplete="family-name"
             />
           )}
         />
-        {signupError && <Text className="text-sm text-text-error">{signupError}</Text>}
+        {signupError && <ErrorText>{signupError}</ErrorText>}
         {isCreatingAccount && (
           <View className="flex-row items-center gap-2">
             <ActivityIndicator size="small" />
