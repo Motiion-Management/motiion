@@ -1,7 +1,8 @@
 import { useState, useRef, useCallback } from 'react';
 import { TextInput } from 'react-native';
-import { type CountryCode } from 'react-native-country-picker-modal';
+import { Country, type CountryCode } from 'react-native-country-picker-modal';
 import { getCountryCallingCodeAsync } from 'react-native-country-picker-modal/lib/CountryService';
+import { formatWithMask } from 'react-native-mask-input';
 import { MASK_PER_COUNTRY } from 'react-native-phone-entry';
 
 interface PhoneInputProps {
@@ -11,17 +12,17 @@ interface PhoneInputProps {
     phoneNumber?: string;
   };
   value?: string;
-  onChangeCountry?: (country: any) => void;
+  onChangeCountryCode?: (newCountryCode: CountryCode) => void;
+  onChangeCountry?: (newCountry: Country) => void;
   onChangeText?: (text: string) => void;
-  isCallingCodeEditable?: boolean;
 }
 
 export const usePhoneInput = ({
   defaultValues,
   value,
+  onChangeCountryCode,
   onChangeCountry,
   onChangeText,
-  isCallingCodeEditable = true,
 }: PhoneInputProps) => {
   const inputRef = useRef<TextInput | null>(null);
   const [countryCode, setCountryCode] = useState<CountryCode>(defaultValues?.countryCode || 'US');
@@ -34,38 +35,42 @@ export const usePhoneInput = ({
   const mask = MASK_PER_COUNTRY[countryCode] || [];
 
   const handleCountrySelect = useCallback(
-    async (country: any) => {
+    async (country: Country, oldCountryCode?: CountryCode) => {
       const newCallingCode = await getCountryCallingCodeAsync(country.cca2);
+      let newPhoneNumber: string;
+
+      // If we have an old country code, replace the old calling code with the new one
+      if (oldCountryCode) {
+        const oldCallingCode = await getCountryCallingCodeAsync(oldCountryCode);
+        newPhoneNumber = phoneNumber.replace(oldCallingCode, newCallingCode);
+      } else {
+        // Otherwise, update phone number with new calling code
+        const currentNumberWithoutCode = phoneNumber.replace(/^\+\d+\s?/, '');
+        newPhoneNumber = `${newCallingCode} ${currentNumberWithoutCode}`;
+      }
 
       setCountryCode(country.cca2);
       setCallingCode(newCallingCode);
-
-      // Update phone number with new calling code
-      const currentNumberWithoutCode = phoneNumber.replace(/^\+\d+\s?/, '');
-      const newPhoneNumber = `${newCallingCode} ${currentNumberWithoutCode}`;
       setPhoneNumber(newPhoneNumber);
 
       onChangeCountry?.(country);
+      onChangeCountryCode?.(country.cca2);
       onChangeText?.(newPhoneNumber);
     },
-    [phoneNumber, onChangeCountry, onChangeText]
+    [phoneNumber, onChangeCountry, onChangeCountryCode, onChangeText]
   );
 
   const handleTextChange = useCallback(
-    (masked: string, unmasked: string, obfuscated: string) => {
+    (text: string) => {
+      const { masked, unmasked } = formatWithMask({
+        text,
+        mask,
+      });
       // For our simplified use case, we'll just handle the masked text
       setPhoneNumber(masked);
-      onChangeText?.(masked);
+      onChangeText?.(unmasked);
     },
-    [onChangeText]
-  );
-
-  const handleSimpleTextChange = useCallback(
-    (text: string) => {
-      setPhoneNumber(text);
-      onChangeText?.(text);
-    },
-    [onChangeText]
+    [onChangeText, mask]
   );
 
   return {
@@ -77,16 +82,9 @@ export const usePhoneInput = ({
       inputRef,
     },
     actions: {
-      onSelect: handleCountrySelect,
+      handleCountrySelect,
       handleChangeText: handleTextChange,
-      handleSimpleTextChange,
       setPhoneNumber,
-    },
-    forms: {
-      // These would be used for modal management if needed
-      modalVisible: false,
-      showModal: () => {},
-      hideModal: () => {},
     },
   };
 };
