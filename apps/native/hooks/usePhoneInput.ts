@@ -1,7 +1,6 @@
-import { useState, useRef, useCallback } from 'react';
+import { useState, useRef, useCallback, useEffect } from 'react';
 import { TextInput } from 'react-native';
 import { Country, type CountryCode } from 'react-native-country-picker-modal';
-import { getCountryCallingCodeAsync } from 'react-native-country-picker-modal/lib/CountryService';
 import { formatWithMask } from 'react-native-mask-input';
 import { MASK_PER_COUNTRY } from 'react-native-phone-entry';
 
@@ -25,39 +24,85 @@ export const usePhoneInput = ({
   onChangeText,
 }: PhoneInputProps) => {
   const inputRef = useRef<TextInput | null>(null);
-  const [countryCode, setCountryCode] = useState<CountryCode>(defaultValues?.countryCode || 'US');
-  const [callingCode, setCallingCode] = useState(defaultValues?.callingCode || '+1');
-  const [phoneNumber, setPhoneNumber] = useState(
-    value || defaultValues?.phoneNumber || callingCode
+
+  // Store full country object as single source of truth
+  const [country, setCountry] = useState<Country>({
+    cca2: (defaultValues?.countryCode || 'US') as CountryCode,
+    name: { common: 'United States' },
+    callingCode: ['1'], // Default for US
+  } as Country);
+
+  // Derive values from country object
+  const countryCode = country.cca2;
+  const callingCode = `+${country.callingCode?.[0] || '1'}`;
+
+  // Extract national number from the full phone number (removing calling code)
+  const extractNationalNumber = (fullNumber: string, currentCallingCode?: string) => {
+    if (!fullNumber) return '';
+    if (currentCallingCode && fullNumber.startsWith(currentCallingCode)) {
+      return fullNumber.slice(currentCallingCode.length);
+    }
+    // Fallback: remove any leading calling code pattern
+    return fullNumber.replace(/^\+\d+/, '');
+  };
+
+  // For display, we only show the national number part
+  const [nationalNumber, setNationalNumber] = useState(
+    extractNationalNumber(value || defaultValues?.phoneNumber || '', callingCode)
   );
 
-  // Get the mask for the current country
+  // Derive mask from current country
   const mask = MASK_PER_COUNTRY[countryCode] || [];
 
-  const handleCountrySelect = useCallback(
-    async (country: Country, oldCountryCode?: CountryCode) => {
-      const newCallingCode = await getCountryCallingCodeAsync(country.cca2);
-      let newPhoneNumber: string;
+  // Sync national number when value changes externally
+  useEffect(() => {
+    if (value) {
+      const extractedNumber = extractNationalNumber(value, callingCode);
+      if (extractedNumber) {
+        const { masked } = formatWithMask({
+          text: extractedNumber,
+          mask,
+        });
+        setNationalNumber(masked);
+      }
+    }
+  }, [value, mask, callingCode]);
 
-      // If we have an old country code, replace the old calling code with the new one
-      if (oldCountryCode) {
-        const oldCallingCode = await getCountryCallingCodeAsync(oldCountryCode);
-        newPhoneNumber = phoneNumber.replace(oldCallingCode, newCallingCode);
-      } else {
-        // Otherwise, update phone number with new calling code
-        const currentNumberWithoutCode = phoneNumber.replace(/^\+\d+\s?/, '');
-        newPhoneNumber = `${newCallingCode} ${currentNumberWithoutCode}`;
+  const handleCountrySelect = useCallback(
+    (newCountry: Country) => {
+      const newCallingCode = `+${newCountry.callingCode?.[0] || '1'}`;
+      const newMask = MASK_PER_COUNTRY[newCountry.cca2] || [];
+
+      // Extract the national number from the current E.164 value using current country
+      let nationalDigits = '';
+      if (value) {
+        const currentCallingCode = `+${country.callingCode?.[0] || '1'}`;
+        // Safely remove the current calling code from the beginning only
+        nationalDigits = value.startsWith(currentCallingCode)
+          ? value.slice(currentCallingCode.length)
+          : value.replace(/^\+\d+/, '');
       }
 
-      setCountryCode(country.cca2);
-      setCallingCode(newCallingCode);
-      setPhoneNumber(newPhoneNumber);
+      // Update state - single source of truth
+      setCountry(newCountry);
 
-      onChangeCountry?.(country);
-      onChangeCountryCode?.(country.cca2);
-      onChangeText?.(newPhoneNumber);
+      // Update display with new formatting
+      if (nationalDigits) {
+        const { masked } = formatWithMask({
+          text: nationalDigits,
+          mask: newMask,
+        });
+        setNationalNumber(masked);
+      }
+
+      // Combine new calling code with existing national digits
+      const fullE164Number = nationalDigits ? `${newCallingCode}${nationalDigits}` : newCallingCode;
+
+      onChangeCountry?.(newCountry);
+      onChangeCountryCode?.(newCountry.cca2);
+      onChangeText?.(fullE164Number);
     },
-    [phoneNumber, onChangeCountry, onChangeCountryCode, onChangeText]
+    [value, country.callingCode, onChangeCountry, onChangeCountryCode, onChangeText]
   );
 
   const handleTextChange = useCallback(
@@ -66,25 +111,29 @@ export const usePhoneInput = ({
         text,
         mask,
       });
-      // For our simplified use case, we'll just handle the masked text
-      setPhoneNumber(masked);
-      onChangeText?.(unmasked);
+
+      // Update the national number display
+      setNationalNumber(masked);
+
+      // Create full E.164 format by combining calling code with unmasked number
+      const fullE164Number = `${callingCode}${unmasked}`;
+      onChangeText?.(fullE164Number);
     },
-    [onChangeText, mask]
+    [onChangeText, mask, callingCode]
   );
 
   return {
     models: {
       countryCode,
       callingCode,
-      phoneNumber,
+      phoneNumber: nationalNumber,
       mask,
       inputRef,
     },
     actions: {
       handleCountrySelect,
       handleChangeText: handleTextChange,
-      setPhoneNumber,
+      setPhoneNumber: setNationalNumber,
     },
   };
 };

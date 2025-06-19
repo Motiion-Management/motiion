@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { View, Pressable } from 'react-native';
 import CountryPicker, {
   Flag,
@@ -6,7 +6,6 @@ import CountryPicker, {
   CountryCode,
   type Country,
 } from 'react-native-country-picker-modal';
-import { getCountryCallingCodeAsync } from 'react-native-country-picker-modal/lib/CountryService';
 
 import { useFieldContext } from './context';
 
@@ -25,22 +24,17 @@ interface PhoneNumberProps {
 export const PhoneNumber = ({ autoFocus = false, helpText }: PhoneNumberProps) => {
   const field = useFieldContext<{ fullNumber: string; countryCode: CountryCode }>();
   const [countryPickerVisible, setCountryPickerVisible] = useState(false);
-  const [defaultCallingCode, setDefaultCallingCode] = useState('+1');
 
   const defaultCountryCode = field.state.value.countryCode || 'US';
-
-  useEffect(() => {
-    getCountryCallingCodeAsync(defaultCountryCode).then(setDefaultCallingCode);
-  }, [defaultCountryCode]);
 
   const { models, actions } = usePhoneInput({
     defaultValues: {
       countryCode: defaultCountryCode,
-      callingCode: defaultCallingCode,
       phoneNumber: field.state.value.fullNumber || '',
     },
     value: field.state.value.fullNumber,
     onChangeText: (text) => {
+      console.log('PhoneNumber onChangeText', text);
       field.handleChange({ ...field.state.value, fullNumber: text });
     },
     onChangeCountryCode: (newCountryCode: CountryCode) => {
@@ -55,7 +49,7 @@ export const PhoneNumber = ({ autoFocus = false, helpText }: PhoneNumberProps) =
 
   return (
     <View className="flex-1 gap-4">
-      <View className="flex-row gap-4">
+      <View className="flex-row gap-5">
         <InputLabel>Area Code</InputLabel>
         <InputLabel error={isError}>Phone Number</InputLabel>
       </View>
@@ -68,30 +62,29 @@ export const PhoneNumber = ({ autoFocus = false, helpText }: PhoneNumberProps) =
           ref={models.inputRef}
           value={models.phoneNumber}
           onChangeText={actions.handleChangeText}
-          placeholder={`${models.callingCode} (123) 456-7890`}
+          placeholder="(123) 456-7890"
           autoFocus={autoFocus}
           invalid={isError}
           leftView={
             <CountryPicker
               withFlag
-              withCallingCode
               withEmoji
               withFilter
               visible={countryPickerVisible}
               theme={DARK_THEME}
               countryCode={models.countryCode}
               onSelect={(country: Country) => {
-                actions.handleCountrySelect(country, field.state.value.countryCode);
+                actions.handleCountrySelect(country);
                 setCountryPickerVisible(false);
               }}
               onClose={() => setCountryPickerVisible(false)}
               renderFlagButton={() => (
                 <Pressable
                   onPress={() => setCountryPickerVisible(true)}
-                  className="mr-1 h-full flex-row items-center border-r border-border-default pr-4">
+                  className="mr-3 h-full flex-row items-center border-r border-border-default pr-5">
                   <Flag withFlagButton withEmoji countryCode={models.countryCode} flagSize={20} />
                   <Text variant="bodySm" className=" mr-1 text-text-default">
-                    {models.countryCode}
+                    {models.callingCode}
                   </Text>
                   <ChevronDown className="color-icon-default" size={14} />
                 </Pressable>
