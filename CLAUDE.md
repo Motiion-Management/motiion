@@ -118,6 +118,98 @@ Required variables:
 - 2-space indentation
 - Prettier is configured and should be run before commits
 
+## Code Style Guide
+
+### Core Principles
+
+1. **Clarity Over Cleverness**: Write code that is immediately understandable. Avoid complex one-liners or clever tricks that sacrifice readability.
+
+2. **Single Responsibility**: Each function, component, and module should have one clear purpose. If you can't describe what it does in one sentence, it's doing too much.
+
+3. **Explicit Over Implicit**: Make types, imports, and data flow explicit. Avoid magic or hidden behavior.
+
+### Component Design
+
+1. **Minimal Component Logic**: Components should be as simple as possible, focusing on:
+
+   - Managing UI state
+   - Rendering UI elements
+   - Passing data between hooks and context
+
+2. **Extract Complex Logic to Hooks**: Business logic, data transformations, and side effects belong in custom hooks, not components.
+
+3. **Granular Callbacks**: Prefer multiple single-purpose callbacks over one callback that handles multiple cases:
+
+   ```typescript
+   // Good
+   onChangeCountryCode?: (code: CountryCode) => void
+   onChangeCountry?: (country: Country) => void
+
+   // Avoid
+   onCountryUpdate?: (data: { code?: CountryCode; country?: Country }) => void
+   ```
+
+### TypeScript Patterns
+
+1. **Explicit Type Imports**: Import types explicitly to improve code documentation:
+
+   ```typescript
+   import { Country, type CountryCode } from 'react-native-country-picker-modal'
+   ```
+
+2. **Interface Over Type for Objects**: Use interfaces for object shapes and types for unions/primitives:
+
+   ```typescript
+   interface UserProps {
+     name: string
+     age: number
+   }
+
+   type Status = 'active' | 'inactive' | 'pending'
+   ```
+
+3. **Avoid Any**: Never use `any`. Use `unknown` if type is truly unknown and narrow it down.
+
+### Data Flow
+
+1. **Unidirectional**: Data should flow in one direction - from parent to child, from hook to component.
+
+2. **Predictable Updates**: Each piece of state should have one clear update path.
+
+3. **No Hidden Side Effects**: State updates should be explicit and traceable.
+
+### Hook Design
+
+1. **Consistent Return Pattern**: Return an object with categorized exports:
+
+   ```typescript
+   return {
+     models: {
+       /* state values */
+     },
+     actions: {
+       /* functions */
+     },
+     forms: {
+       /* form-specific utilities */
+     }
+   }
+   ```
+
+2. **Memoize Callbacks**: Use useCallback for functions passed to child components.
+
+3. **Self-Contained**: Hooks should encapsulate all related logic and not leak implementation details.
+
+### General Guidelines
+
+1. **Remove Unused Code**: Delete unused props, imports, and variables immediately.
+
+2. **Descriptive Names**: Use full words, not abbreviations. `phoneNumber` not `phoneNum`.
+
+3. **Early Returns**: Handle edge cases and errors at the top of functions.
+
+4. **Consistent Patterns**: Follow existing patterns in the codebase rather than introducing new ones.
+
 ## Development Notes
 
 ### Mobile App Specifics
