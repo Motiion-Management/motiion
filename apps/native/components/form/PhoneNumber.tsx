@@ -34,7 +34,6 @@ export const PhoneNumber = ({ autoFocus = false, helpText }: PhoneNumberProps) =
     },
     value: field.state.value.fullNumber,
     onChangeText: (text) => {
-      console.log('PhoneNumber onChangeText', text);
       field.handleChange({ ...field.state.value, fullNumber: text });
     },
     onChangeCountryCode: (newCountryCode: CountryCode) => {

@@ -17,6 +17,7 @@ export const PhoneOTP = ({ helpTextOpts }: PhoneOTPProps) => {
     autoFocus: true,
     type: 'numeric',
     onTextChange: (text) => {
+      console.log('OTP text changed:', text);
       field.handleChange(text);
     },
     onFilled: (otp) => {
@@ -26,30 +27,18 @@ export const PhoneOTP = ({ helpTextOpts }: PhoneOTPProps) => {
     blurOnFilled: true,
   });
 
-  // Handle text input with proper OTP formatting
-  const handleTextChange = (text: string) => {
-    // Remove all non-numeric characters and spaces
-    const cleanedText = text.replace(/[^0-9]/g, '');
-
-    // Limit to 6 digits
-    const limitedText = cleanedText.slice(0, 6);
-
-    // Call the OTP input handler
-    actions.handleTextChange(limitedText);
-  };
-
   // Format the OTP text for display with spaces between digits
   const formatOtpDisplay = (text: string) => {
     if (!text) return '';
 
     // Add spaces between each digit for display
-    const formatted = text.split('').join(' ');
+    return text.split('').join(' ');
+  };
 
-    // Add placeholder dots for remaining digits
-    const remaining = 6 - text.length;
-    const placeholderDots = Array(remaining).fill('•').join(' ');
-
-    return formatted + (remaining > 0 ? (text.length > 0 ? ' ' : '') + placeholderDots : '');
+  const handleTextChange = (text: string) => {
+    // Remove any spaces before updating the field
+    const cleanedText = text.replace(/\s/g, '');
+    actions.handleTextChange(cleanedText);
   };
 
   return (
@@ -62,11 +51,11 @@ export const PhoneOTP = ({ helpTextOpts }: PhoneOTPProps) => {
         onFocus={actions.handleFocus}
         onBlur={actions.handleBlur}
         keyboardType="numeric"
-        maxLength={11} // 6 digits + 5 spaces
+        // maxLength={11} // 6 digits + 5 spaces
         autoFocus
-        errorMessage={field.state.meta.errors?.[0]?.message}
+        errorMessage={field.state.meta.isTouched && field.state.meta.errors?.[0]?.message}
         helperText={helpTextOpts?.message}
-        className="text-center text-lg font-semibold tracking-[0.25em]"
+        // className=" text-lg font-semibold tracking-[0.25em]"
         autoComplete="one-time-code"
         textContentType="oneTimeCode"
       />

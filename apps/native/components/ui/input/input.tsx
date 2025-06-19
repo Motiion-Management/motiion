@@ -94,8 +94,7 @@ const Input = React.forwardRef<InputRef, InputProps>(
         )}
         <View
           className={cn(
-            'flex-row items-center rounded-full border border-border-default bg-surface-high px-4',
-            errorMessage && 'bg-surface-error'
+            'flex-row items-center rounded-full border border-border-default bg-surface-high px-6'
           )}>
           {!!leftView && leftView}
           <TextInput
@@ -103,8 +102,8 @@ const Input = React.forwardRef<InputRef, InputProps>(
             editable={editable}
             readOnly={readOnly}
             className={cn(
-              'flex-1 bg-transparent py-4 text-[16px] text-text-default placeholder:text-text-default/40',
-              errorMessage && 'text-text-error',
+              'flex-1 bg-transparent py-3 text-[16px] text-text-default placeholder:text-text-default/40',
+              invalid && 'text-text-error',
               leftView && 'pl-2',
               rightView && 'pr-2',
               className
