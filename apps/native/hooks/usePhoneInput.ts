@@ -16,6 +16,13 @@ interface PhoneInputProps {
   onChangeText?: (text: string) => void;
 }
 
+export const formatPhoneNumber = (phoneNumber: string, countryCode: CountryCode) => {
+  return formatWithMask({
+    text: phoneNumber,
+    mask: MASK_PER_COUNTRY[countryCode] || [],
+  });
+};
+
 export const usePhoneInput = ({
   defaultValues,
   value,

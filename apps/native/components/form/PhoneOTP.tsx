@@ -10,6 +10,19 @@ interface PhoneOTPProps {
   helperTextOpts?: HelperTextProps;
 }
 
+// Format the OTP text for display with spaces between digits
+export const formatOtpText = (text: string) => {
+  if (!text) return '';
+
+  // Add spaces between each digit for display
+  return text.split('').join(' ').concat(' ');
+};
+
+export const cleanOtpText = (text: string) => {
+  // Remove all spaces from the text
+  return text.replace(/\s/g, '');
+};
+
 export const PhoneOTP = ({ helperTextOpts }: PhoneOTPProps) => {
   const field = useFieldContext<string>();
 
@@ -28,18 +41,8 @@ export const PhoneOTP = ({ helperTextOpts }: PhoneOTPProps) => {
     blurOnFilled: true,
   });
 
-  // Format the OTP text for display with spaces between digits
-  const formatOtpDisplay = (text: string) => {
-    if (!text) return '';
-
-    // Add spaces between each digit for display
-    return text.split('').join(' ');
-  };
-
   const handleTextChange = (text: string) => {
-    // Remove any spaces before updating the field
-    const cleanedText = text.replace(/\s/g, '');
-    actions.handleTextChange(cleanedText);
+    actions.handleTextChange(cleanOtpText(text));
   };
 
   return (
@@ -47,12 +50,12 @@ export const PhoneOTP = ({ helperTextOpts }: PhoneOTPProps) => {
       <Input
         ref={models.inputRef}
         label="6-Digit Code"
-        value={formatOtpDisplay(models.text)}
+        value={formatOtpText(models.text)}
         onChangeText={handleTextChange}
         onFocus={actions.handleFocus}
         onBlur={actions.handleBlur}
         keyboardType="numeric"
-        maxLength={11} // 6 digits + 5 spaces
+        maxLength={12} // 6 digits + 6 spaces
         autoFocus
         errorMessage={field.state.meta.isTouched && field.state.meta.errors?.[0]?.message}
         helperTextProps={helperTextOpts}

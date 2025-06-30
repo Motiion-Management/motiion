@@ -9,7 +9,6 @@ import CountryPicker, {
 
 import { useFieldContext } from './context';
 
-import { HelpText } from '~/components/ui/help-text';
 import { Input } from '~/components/ui/input';
 import { InputLabel } from '~/components/ui/label';
 import { Text } from '~/components/ui/text';
