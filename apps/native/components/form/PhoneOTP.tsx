@@ -5,6 +5,7 @@ import { useFieldContext } from './context';
 
 import { HelperTextProps } from '~/components/ui/helper-text';
 import { Input } from '~/components/ui/input';
+import { useFieldError } from '~/hooks/useFieldError';
 
 interface PhoneOTPProps {
   helperTextOpts?: HelperTextProps;
@@ -25,6 +26,10 @@ export const cleanOtpText = (text: string) => {
 
 export const PhoneOTP = ({ helperTextOpts }: PhoneOTPProps) => {
   const field = useFieldContext<string>();
+  const { errorMessage } = useFieldError(field, { 
+    showWhen: 'touched', 
+    fieldName: field.name 
+  });
 
   const { models, actions } = useOtpInput({
     numberOfDigits: 6,
@@ -57,7 +62,7 @@ export const PhoneOTP = ({ helperTextOpts }: PhoneOTPProps) => {
         keyboardType="numeric"
         maxLength={12} // 6 digits + 6 spaces
         autoFocus
-        errorMessage={field.state.meta.isTouched && field.state.meta.errors?.[0]?.message}
+        errorMessage={errorMessage}
         helperTextProps={helperTextOpts}
         autoComplete="one-time-code"
         textContentType="oneTimeCode"

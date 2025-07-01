@@ -1,6 +1,7 @@
 import { useFieldContext } from './context';
 
 import { Input as TextField } from '~/components/ui/input';
+import { useFieldError } from '~/hooks/useFieldError';
 
 interface TextInputProps {
   label: string;
@@ -25,6 +26,7 @@ interface TextInputProps {
 
 export const TextInput = ({ label, placeholder, ...props }: TextInputProps) => {
   const field = useFieldContext<string>();
+  const { errorMessage } = useFieldError(field, { fieldName: field.name });
 
   return (
     <TextField
@@ -33,7 +35,7 @@ export const TextInput = ({ label, placeholder, ...props }: TextInputProps) => {
       value={field.state.value}
       onChangeText={field.handleChange}
       onBlur={field.handleBlur}
-      errorMessage={field.state.meta.errors?.[0]}
+      errorMessage={errorMessage}
       {...props}
     />
   );

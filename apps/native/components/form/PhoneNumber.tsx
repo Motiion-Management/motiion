@@ -12,6 +12,7 @@ import { useFieldContext } from './context';
 import { Input } from '~/components/ui/input';
 import { InputLabel } from '~/components/ui/label';
 import { Text } from '~/components/ui/text';
+import { useFieldError } from '~/hooks/useFieldError';
 import { usePhoneInput } from '~/hooks/usePhoneInput';
 import ChevronDown from '~/lib/icons/ChevronDown';
 
@@ -22,6 +23,11 @@ interface PhoneNumberProps {
 
 export const PhoneNumber = ({ autoFocus = false, helpText }: PhoneNumberProps) => {
   const field = useFieldContext<{ fullNumber: string; countryCode: CountryCode }>();
+  const { errorMessage } = useFieldError(field, { 
+    showWhen: 'dirty', 
+    fallbackMessage: 'Please enter a valid phone number.',
+    fieldName: field.name
+  });
   const [countryPickerVisible, setCountryPickerVisible] = useState(false);
 
   const defaultCountryCode = field.state.value.countryCode || 'US';
@@ -43,13 +49,12 @@ export const PhoneNumber = ({ autoFocus = false, helpText }: PhoneNumberProps) =
     },
   });
 
-  const isError = field.state.meta.isDirty && !field.state.meta.isValid;
 
   return (
     <View className="flex-1 gap-4">
       <View className="flex-row gap-7">
         <InputLabel>Area Code</InputLabel>
-        <InputLabel error={isError}>Phone Number</InputLabel>
+        <InputLabel error={!!errorMessage}>Phone Number</InputLabel>
       </View>
 
       <View>
@@ -62,7 +67,7 @@ export const PhoneNumber = ({ autoFocus = false, helpText }: PhoneNumberProps) =
           onChangeText={actions.handleChangeText}
           placeholder="(123) 456-7890"
           autoFocus={autoFocus}
-          invalid={isError}
+          invalid={!!errorMessage}
           leftView={
             <CountryPicker
               withFlag
@@ -94,11 +99,7 @@ export const PhoneNumber = ({ autoFocus = false, helpText }: PhoneNumberProps) =
               helpText ||
               `We will send you a text with a verification code.\nMessage and data rates may apply.`,
           }}
-          errorMessage={
-            isError
-              ? field.state.meta.errors?.[0]?.message || 'Please enter a valid phone number.'
-              : undefined
-          }
+          errorMessage={errorMessage}
         />
       </View>
     </View>
