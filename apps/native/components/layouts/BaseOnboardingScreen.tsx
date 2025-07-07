@@ -47,7 +47,7 @@ export const BaseOnboardingScreen = ({
             {children}
             {helpText && (
               <View className="items-center pt-2">
-                <Text className="text-sm text-text-low" variant="body">
+                <Text className="text-text-low" variant="bodySm">
                   {helpText}
                 </Text>
               </View>
