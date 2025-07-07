@@ -1,151 +1,116 @@
-import { Link, Stack, router } from 'expo-router';
-import * as React from 'react';
-import { Image, Platform, View } from 'react-native';
-import {
-  KeyboardAwareScrollView,
-  KeyboardController,
-  KeyboardStickyView,
-} from 'react-native-keyboard-controller';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { useSignIn } from '@clerk/clerk-expo';
+import { useStore } from '@tanstack/react-store';
+import { router } from 'expo-router';
+import React, { useState } from 'react';
+import { ActivityIndicator, View } from 'react-native';
+import { isValidNumber } from 'react-native-phone-entry';
+import * as z from 'zod';
 
-import { Button } from '~/components/ui/button';
-import { Form, FormItem, FormSection } from '~/components/ui/form';
-import { Input as TextField } from '~/components/ui/input';
+import { useAppForm } from '~/components/form/appForm';
+import { BaseOnboardingScreen } from '~/components/layouts/BaseOnboardingScreen';
 import { Text } from '~/components/ui/text';
 
-const LOGO_SOURCE = {
-  uri: 'https://nativewindui.com/_next/image?url=/_next/static/media/logo.28276aeb.png&w=2048&q=75',
-};
+const formValidator = z.object({
+  phone: z
+    .object({
+      fullNumber: z.string().min(7, {
+        message:
+          'International phone numbers must be at least 7 digits, including the country prefix',
+      }),
+      countryCode: z.string().length(2),
+    })
+    .refine(
+      ({ fullNumber, countryCode }) => isValidNumber(fullNumber, countryCode),
+      ({ countryCode }) => ({ message: `Please provide a valid ${countryCode} phone number.` })
+    ),
+});
 
 export default function LoginScreen() {
-  const insets = useSafeAreaInsets();
-  const [focusedTextField, setFocusedTextField] = React.useState<'email' | 'password' | null>(null);
+  const { isLoaded, signIn, setActive } = useSignIn();
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [signInError, setSignInError] = useState<string | null>(null);
+
+  const form = useAppForm({
+    defaultValues: {
+      phone: {
+        fullNumber: '+1',
+        countryCode: 'US',
+      },
+    },
+    validators: {
+      onSubmit: formValidator,
+    },
+    onSubmit: async ({ value }) => {
+      if (!isLoaded || !signIn) {
+        setSignInError('Authentication service not ready. Please try again.');
+        return;
+      }
+
+      setIsSubmitting(true);
+      setSignInError(null);
+
+      try {
+        // Create a new sign-in attempt
+        const result = await signIn.create({
+          identifier: value.phone.fullNumber,
+        });
+
+        // Prepare the first factor verification (phone code)
+        await result.prepareFirstFactor({
+          strategy: 'phone_code',
+          phoneNumberId: result.supportedFirstFactors.find(
+            (factor) => factor.strategy === 'phone_code'
+          )?.phoneNumberId!,
+        });
+
+        // Navigate to verification page
+        router.push('/auth/(login)/verify-phone');
+      } catch (error: any) {
+        const errorMessage =
+          error.errors?.[0]?.message || 'Failed to sign in. Please try again.';
+        setSignInError(errorMessage);
+      } finally {
+        setIsSubmitting(false);
+      }
+    },
+  });
+
+  const isFormReady = useStore(form.store, (state) => state.canSubmit && !isSubmitting);
+
+  if (!isLoaded) {
+    return (
+      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+        <ActivityIndicator size="large" />
+      </View>
+    );
+  }
+
   return (
-    <View className="ios:bg-surface-default flex-1" style={{ paddingBottom: insets.bottom }}>
-      <Stack.Screen
-        options={{
-          title: 'Log in',
-          headerShadowVisible: false,
-          headerLeft() {
-            return (
-              <Link asChild href="/">
-                <Button variant="plain" className="ios:px-0">
-                  <Text className="text-text-default">Cancel</Text>
-                </Button>
-              </Link>
-            );
-          },
-        }}
-      />
-      <KeyboardAwareScrollView
-        bottomOffset={Platform.select({ ios: 175 })}
-        bounces={false}
-        keyboardDismissMode="interactive"
-        keyboardShouldPersistTaps="handled"
-        contentContainerClassName="ios:pt-12 pt-20">
-        <View className="ios:px-12 flex-1 px-8">
-          <View className="items-center pb-1">
-            <Image
-              source={LOGO_SOURCE}
-              className="ios:h-12 ios:w-12 h-8 w-8"
-              resizeMode="contain"
-            />
-            <Text variant="title1" className="ios:font-bold pb-1 pt-4 text-center">
-              {Platform.select({ ios: 'Welcome back!', default: 'Log in' })}
-            </Text>
-            {Platform.OS !== 'ios' && (
-              <Text className="ios:text-sm text-center text-text-disabled">Welcome back!</Text>
-            )}
-          </View>
-          <View className="ios:pt-4 pt-6">
-            <Form className="gap-2">
-              <FormSection className="ios:bg-background-default-default">
-                <FormItem>
-                  <TextField
-                    placeholder={Platform.select({ ios: 'Email', default: '' })}
-                    label={Platform.select({ ios: undefined, default: 'Email' })}
-                    onSubmitEditing={() => KeyboardController.setFocusTo('next')}
-                    blurOnSubmit={false}
-                    autoFocus
-                    onFocus={() => setFocusedTextField('email')}
-                    onBlur={() => setFocusedTextField(null)}
-                    keyboardType="email-address"
-                    textContentType="emailAddress"
-                    returnKeyType="next"
-                  />
-                </FormItem>
-                <FormItem>
-                  <TextField
-                    placeholder={Platform.select({ ios: 'Password', default: '' })}
-                    label={Platform.select({ ios: undefined, default: 'Password' })}
-                    onFocus={() => setFocusedTextField('password')}
-                    onBlur={() => setFocusedTextField(null)}
-                    secureTextEntry
-                    returnKeyType="done"
-                    textContentType="password"
-                    onSubmitEditing={() => router.replace('/')}
-                  />
-                </FormItem>
-              </FormSection>
-              <View className="flex-row">
-                <Link asChild href="/auth/(login)/forgot-password">
-                  <Button size="sm" variant="plain" className="px-0.5">
-                    <Text className="text-sm text-text-default">Forgot password?</Text>
-                  </Button>
-                </Link>
-              </View>
-            </Form>
-          </View>
-        </View>
-      </KeyboardAwareScrollView>
-      <KeyboardStickyView
-        offset={{
-          closed: 0,
-          opened: Platform.select({ ios: insets.bottom + 30, default: insets.bottom }),
-        }}>
-        {Platform.OS === 'ios' ? (
-          <View className=" px-12 py-4">
-            <Button
-              size="lg"
-              onPress={() => {
-                router.replace('/');
-              }}>
-              <Text>Continue</Text>
-            </Button>
-          </View>
-        ) : (
-          <View className="flex-row justify-between py-4 pl-6 pr-8">
-            <Button
-              variant="plain"
-              className="px-2"
-              onPress={() => {
-                router.replace('/auth/(create-account)');
-              }}>
-              <Text className="px-0.5 text-sm text-text-default">Create Account</Text>
-            </Button>
-            <Button
-              onPress={() => {
-                if (focusedTextField === 'email') {
-                  KeyboardController.setFocusTo('next');
-                  return;
-                }
-                KeyboardController.dismiss();
-                router.replace('/');
-              }}>
-              <Text className="text-sm">{focusedTextField === 'email' ? 'Next' : 'Submit'}</Text>
-            </Button>
+    <BaseOnboardingScreen
+      title="Welcome back!"
+      helpText="Enter your phone number to sign in to your account."
+      canProgress={isFormReady}
+      primaryAction={{
+        onPress: () => {
+          form.handleSubmit();
+        },
+      }}
+      secondaryAction={{
+        onPress: () => {
+          router.replace('/auth/(create-account)');
+        },
+        text: "Don't have an account?",
+      }}>
+      <View className="min-h-12 flex-1 flex-col gap-6">
+        <form.AppField name="phone" children={(field) => <field.PhoneNumber autoFocus />} />
+        {signInError && <Text className="text-sm text-text-error">{signInError}</Text>}
+        {isSubmitting && (
+          <View className="flex-row items-center gap-2">
+            <ActivityIndicator size="small" />
+            <Text className="text-sm text-text-disabled">Signing in...</Text>
           </View>
         )}
-      </KeyboardStickyView>
-      {Platform.OS === 'ios' && (
-        <Button
-          variant="plain"
-          onPress={() => {
-            router.replace('/auth/(create-account)');
-          }}>
-          <Text className="text-sm text-text-default">Create Account</Text>
-        </Button>
-      )}
-    </View>
+      </View>
+    </BaseOnboardingScreen>
   );
 }
