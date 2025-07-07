@@ -1,5 +1,5 @@
 import { Icon } from '@roninoss/icons';
-import { Stack } from 'expo-router';
+import { Stack, router } from 'expo-router';
 import { View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
@@ -38,7 +38,14 @@ const SCREEN_OPTIONS = {
       <SafeAreaView>
         <View className="h-8 flex-row items-center bg-transparent px-4">
           <ProgressBar />
-          <Button variant="plain" size="icon" className="ios:px-0">
+          <Button
+            variant="plain"
+            size="icon"
+            className="ios:px-0"
+            onPress={() => {
+              // Navigate back to the root with a dismiss animation
+              router.dismissAll();
+            }}>
             <Icon name="close" size={24} color="currentColor" />
           </Button>
         </View>
