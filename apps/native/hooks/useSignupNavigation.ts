@@ -66,7 +66,7 @@ export function useSignupProgress() {
   const { signUp, isLoaded } = useSignUp();
   const pathname = usePathname();
   const previousPathnameRef = useRef<string>();
-  
+
   // Only refresh when pathname actually changes
   useEffect(() => {
     if (isLoaded && signUp && pathname !== previousPathnameRef.current) {
@@ -74,7 +74,7 @@ export function useSignupProgress() {
       signUp.reload();
     }
   }, [isLoaded, signUp, pathname]);
-  
+
   const stepInfo = analyzeSignupProgress(signUp);
 
   return {

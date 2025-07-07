@@ -1,8 +1,8 @@
-import { useMemo, useEffect } from 'react';
 import type { FieldApi } from '@tanstack/react-form';
+import { useMemo, useEffect } from 'react';
 
-import { useExternalFieldError } from './useFormError';
 import { useFormConfig } from './useFormConfig';
+import { useExternalFieldError } from './useFormError';
 import { useValidationModeContext } from './useValidationMode';
 
 interface UseFieldErrorOptions {
@@ -11,17 +11,10 @@ interface UseFieldErrorOptions {
   fieldName?: string;
 }
 
-export const useFieldError = (
-  field: FieldApi<any, any>,
-  options: UseFieldErrorOptions = {}
-) => {
+export const useFieldError = (field: FieldApi<any, any>, options: UseFieldErrorOptions = {}) => {
   const formConfig = useFormConfig();
-  const { 
-    showWhen = formConfig.errorDisplay.timing, 
-    fallbackMessage, 
-    fieldName 
-  } = options;
-  
+  const { showWhen = formConfig.errorDisplay.timing, fallbackMessage, fieldName } = options;
+
   // Try to use validation mode context if available
   let validationModeContext: ReturnType<typeof useValidationModeContext> | undefined;
   try {
@@ -29,11 +22,11 @@ export const useFieldError = (
   } catch {
     // Not in ValidationModeProvider, continue without it
   }
-  
+
   // Try to get external error, but don't throw if not in provider
   let externalError: string | undefined;
   let clearExternalError: (() => void) | undefined;
-  
+
   try {
     if (formConfig.errorDisplay.mergeExternalErrors && fieldName) {
       const external = useExternalFieldError(fieldName);
@@ -87,12 +80,12 @@ export const useFieldError = (
   const errorMessage = useMemo(() => {
     // External errors take priority and always show
     if (externalError) return externalError;
-    
+
     if (!shouldShowError) return undefined;
-    
+
     const validationError = field.state.meta.errors?.[0]?.message;
     const shouldUseFallback = formConfig.errorDisplay.showFallbackMessages && !validationError;
-    
+
     return validationError || (shouldUseFallback ? fallbackMessage : undefined);
   }, [
     externalError,

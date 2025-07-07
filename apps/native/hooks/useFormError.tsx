@@ -13,7 +13,7 @@ export const FormErrorProvider = ({ children }: { children: React.ReactNode }) =
   const [externalErrors, setExternalErrors] = useState<Record<string, string>>({});
 
   const setExternalError = useCallback((field: string, error: string | null) => {
-    setExternalErrors(prev => {
+    setExternalErrors((prev) => {
       if (error === null) {
         const { [field]: removed, ...rest } = prev;
         return rest;
@@ -23,7 +23,7 @@ export const FormErrorProvider = ({ children }: { children: React.ReactNode }) =
   }, []);
 
   const clearExternalError = useCallback((field: string) => {
-    setExternalErrors(prev => {
+    setExternalErrors((prev) => {
       const { [field]: removed, ...rest } = prev;
       return rest;
     });
@@ -34,14 +34,13 @@ export const FormErrorProvider = ({ children }: { children: React.ReactNode }) =
   }, []);
 
   return (
-    <FormErrorContext.Provider 
-      value={{ 
-        externalErrors, 
-        setExternalError, 
+    <FormErrorContext.Provider
+      value={{
+        externalErrors,
+        setExternalError,
         clearExternalErrors,
-        clearExternalError 
-      }}
-    >
+        clearExternalError,
+      }}>
       {children}
     </FormErrorContext.Provider>
   );
@@ -57,9 +56,9 @@ export const useFormError = () => {
 
 export const useExternalFieldError = (fieldName: string) => {
   const { externalErrors, clearExternalError } = useFormError();
-  
+
   const externalError = externalErrors[fieldName];
-  
+
   const clearError = useCallback(() => {
     clearExternalError(fieldName);
   }, [clearExternalError, fieldName]);

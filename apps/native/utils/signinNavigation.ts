@@ -61,7 +61,10 @@ export function analyzeSigninProgress(signIn: SignInResource | null | undefined)
   }
 
   // If phone verification is needed
-  if (!isPhoneVerified && signIn.supportedFirstFactors?.some(factor => factor.strategy === 'phone_code')) {
+  if (
+    !isPhoneVerified &&
+    signIn.supportedFirstFactors?.some((factor) => factor.strategy === 'phone_code')
+  ) {
     return {
       step: 'verify-phone',
       route: '/auth/(login)/verify-phone',

@@ -27,7 +27,7 @@ interface TextInputProps {
 
 export const TextInput = ({ label, placeholder, ...props }: TextInputProps) => {
   const field = useFieldContext<string>();
-  
+
   // Try to use validation mode context if available
   let validationModeContext: ReturnType<typeof useValidationModeContext> | undefined;
   try {
@@ -35,9 +35,9 @@ export const TextInput = ({ label, placeholder, ...props }: TextInputProps) => {
   } catch {
     // Not in ValidationModeProvider, use default behavior
   }
-  
-  const { errorMessage } = useFieldError(field, { 
-    fieldName: field.name
+
+  const { errorMessage } = useFieldError(field, {
+    fieldName: field.name,
   });
 
   const handleBlur = () => {

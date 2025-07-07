@@ -20,7 +20,7 @@ const GOOGLE_SOURCE = {
 export default function AuthIndexScreen() {
   const { signOut } = useAuth();
   const alertRef = React.useRef<AlertRef>(null);
-  
+
   return (
     <>
       <SafeAreaView style={{ flex: 1 }}>
@@ -40,11 +40,7 @@ export default function AuthIndexScreen() {
               for What's Next
             </Text>
           </View>
-          <Button
-            variant="destructive"
-            onPress={() => signOut()}
-            className="mx-8"
-          >
+          <Button variant="destructive" onPress={() => signOut()} className="mx-8">
             <Text>Sign Out</Text>
           </Button>
         </View>

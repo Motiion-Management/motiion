@@ -6,8 +6,8 @@ import { ActivityIndicator, View } from 'react-native';
 import { isValidNumber } from 'react-native-phone-entry';
 import * as z from 'zod';
 
-import { useAppForm } from '~/components/form/appForm';
 import { ValidationModeForm } from '~/components/form/ValidationModeForm';
+import { useAppForm } from '~/components/form/appForm';
 import { BaseOnboardingScreen } from '~/components/layouts/BaseOnboardingScreen';
 import { Text } from '~/components/ui/text';
 import { determineSigninStep } from '~/utils/signinNavigation';

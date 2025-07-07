@@ -6,8 +6,8 @@ import { ActivityIndicator, View } from 'react-native';
 import { isValidNumber } from 'react-native-phone-entry';
 import * as z from 'zod';
 
-import { useAppForm } from '~/components/form/appForm';
 import { ValidationModeForm } from '~/components/form/ValidationModeForm';
+import { useAppForm } from '~/components/form/appForm';
 import { BaseOnboardingScreen } from '~/components/layouts/BaseOnboardingScreen';
 import { determineSignupStep } from '~/utils/signupNavigation';
 
@@ -66,7 +66,7 @@ export default function InfoScreen() {
           // Phone number already exists, redirect to login with the phone number
           router.replace({
             pathname: '/auth/(login)',
-            params: { phoneNumber: value.phone.fullNumber }
+            params: { phoneNumber: value.phone.fullNumber },
           });
           return;
         }

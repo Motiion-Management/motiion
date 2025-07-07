@@ -5,8 +5,8 @@ import React, { useState } from 'react';
 import { ActivityIndicator, View } from 'react-native';
 import z from 'zod';
 
-import { useAppForm } from '~/components/form/appForm';
 import { ValidationModeForm } from '~/components/form/ValidationModeForm';
+import { useAppForm } from '~/components/form/appForm';
 import { BaseOnboardingScreen } from '~/components/layouts/BaseOnboardingScreen';
 import { Text } from '~/components/ui/text';
 
@@ -122,7 +122,9 @@ export default function VerifyPhoneScreen() {
               />
             )}
           />
-          {verificationError && <Text className="text-sm text-text-error">{verificationError}</Text>}
+          {verificationError && (
+            <Text className="text-sm text-text-error">{verificationError}</Text>
+          )}
           {isVerifying && (
             <View className="flex-row items-center gap-2">
               <ActivityIndicator size="small" />

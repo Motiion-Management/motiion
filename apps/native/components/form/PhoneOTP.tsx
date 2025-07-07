@@ -27,7 +27,7 @@ export const cleanOtpText = (text: string) => {
 
 export const PhoneOTP = ({ helperTextOpts }: PhoneOTPProps) => {
   const field = useFieldContext<string>();
-  
+
   // Try to use validation mode context if available
   let validationModeContext: ReturnType<typeof useValidationModeContext> | undefined;
   try {
@@ -35,9 +35,9 @@ export const PhoneOTP = ({ helperTextOpts }: PhoneOTPProps) => {
   } catch {
     // Not in ValidationModeProvider, use default behavior
   }
-  
-  const { errorMessage } = useFieldError(field, { 
-    fieldName: field.name 
+
+  const { errorMessage } = useFieldError(field, {
+    fieldName: field.name,
   });
 
   const { models, actions } = useOtpInput({

@@ -52,7 +52,6 @@ export function analyzeSignupProgress(signUp: SignUpResource | null | undefined)
   if (isPhoneVerified) {
     completedData.push('phone-verification');
   }
-  
 
   // Check name
   if (signUp.firstName) completedData.push('firstName');
@@ -67,7 +66,6 @@ export function analyzeSignupProgress(signUp: SignUpResource | null | undefined)
 
   const preferredName = signUp.unsafeMetadata?.preferredName;
   if (preferredName) completedData.push('preferredName');
-  
 
   // Determine current step
   if (signUp.status === 'complete') {
@@ -80,7 +78,6 @@ export function analyzeSignupProgress(signUp: SignUpResource | null | undefined)
     };
   }
 
-  
   // Stay on phone step only if:
   // 1. No phone number, OR
   // 2. Phone verification is expired

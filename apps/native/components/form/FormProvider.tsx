@@ -11,9 +11,7 @@ interface FormProviderProps {
 export const FormProvider = ({ children, config }: FormProviderProps) => {
   return (
     <FormConfigProvider config={config}>
-      <FormErrorProvider>
-        {children}
-      </FormErrorProvider>
+      <FormErrorProvider>{children}</FormErrorProvider>
     </FormConfigProvider>
   );
 };

@@ -39,11 +39,7 @@ export const FormConfigProvider = ({ children, config }: FormConfigProviderProps
     },
   };
 
-  return (
-    <FormConfigContext.Provider value={mergedConfig}>
-      {children}
-    </FormConfigContext.Provider>
-  );
+  return <FormConfigContext.Provider value={mergedConfig}>{children}</FormConfigContext.Provider>;
 };
 
 export const useFormConfig = () => {

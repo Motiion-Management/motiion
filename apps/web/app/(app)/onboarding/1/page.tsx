@@ -65,11 +65,11 @@ export default function Vision() {
   const nextStep = async () => {
     router.prefetch('/onboarding/2')
     setLoading(true)
-    if (user?.onboardingStep === ONBOARDING_STEPS.VISION) {
-      await updateMyUser({
-        id: user!._id,
-        patch: { onboardingStep: ONBOARDING_STEPS.PERSONAL_INFO }
-      })
+    if (user?.onboardingStep === ONBOARDING_STEPS.PROFILE_TYPE) {
+      // User will advance to profile type selection step
+      // The actual profile type selection should happen on the next page
+      router.push('/onboarding/2')
+      return
     }
     router.push('/onboarding/2')
   }

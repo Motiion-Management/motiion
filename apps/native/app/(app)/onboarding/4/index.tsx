@@ -1,27 +1,27 @@
-import { useMutation } from 'convex/react'
-import { useRouter } from 'expo-router'
-import React from 'react'
-import { View, ScrollView } from 'react-native'
+import { api } from '@packages/backend/convex/_generated/api';
+import { ONBOARDING_STEPS } from '@packages/backend/convex/validators/users';
+import { useMutation } from 'convex/react';
+import { useRouter } from 'expo-router';
+import React from 'react';
+import { View, ScrollView } from 'react-native';
 
-import { api } from '@packages/backend/convex/_generated/api'
-import { ONBOARDING_STEPS } from '@packages/backend/convex/validators/users'
-import { Button } from '~/components/ui/button'
-import { Text } from '~/components/ui/text'
+import { Button } from '~/components/ui/button';
+import { Text } from '~/components/ui/text';
 
 export default function OnboardingResumeScreen() {
-  const router = useRouter()
-  const updateUser = useMutation(api.users.updateMyUser)
+  const router = useRouter();
+  const updateUser = useMutation(api.users.updateMyUser);
 
   const handleComplete = async () => {
     await updateUser({
-      onboardingStep: ONBOARDING_STEPS.COMPLETE
-    })
-    router.replace('/(app)/home')
-  }
+      onboardingStep: ONBOARDING_STEPS.COMPLETE,
+    });
+    router.replace('/(app)/home');
+  };
 
   const handleBack = () => {
-    router.back()
-  }
+    router.back();
+  };
 
   return (
     <ScrollView className="flex-1 px-6">
@@ -29,7 +29,7 @@ export default function OnboardingResumeScreen() {
         <Text variant="largeTitle" className="mb-4">
           Build Your Resume
         </Text>
-        <Text variant="body" className="mb-8 text-text-secondary">
+        <Text variant="body" className="text-text-secondary mb-8">
           Add your experience and skills to complete your profile.
         </Text>
 
@@ -49,5 +49,5 @@ export default function OnboardingResumeScreen() {
         </View>
       </View>
     </ScrollView>
-  )
+  );
 }

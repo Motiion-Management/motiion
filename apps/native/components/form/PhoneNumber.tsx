@@ -24,7 +24,7 @@ interface PhoneNumberProps {
 
 export const PhoneNumber = ({ autoFocus = false, helpText }: PhoneNumberProps) => {
   const field = useFieldContext<{ fullNumber: string; countryCode: CountryCode }>();
-  
+
   // Try to use validation mode context if available
   let validationModeContext: ReturnType<typeof useValidationModeContext> | undefined;
   try {
@@ -32,10 +32,10 @@ export const PhoneNumber = ({ autoFocus = false, helpText }: PhoneNumberProps) =
   } catch {
     // Not in ValidationModeProvider, use default behavior
   }
-  
-  const { errorMessage } = useFieldError(field, { 
+
+  const { errorMessage } = useFieldError(field, {
     fallbackMessage: 'Please enter a valid phone number.',
-    fieldName: field.name
+    fieldName: field.name,
   });
   const [countryPickerVisible, setCountryPickerVisible] = useState(false);
 
@@ -57,7 +57,6 @@ export const PhoneNumber = ({ autoFocus = false, helpText }: PhoneNumberProps) =
       });
     },
   });
-
 
   return (
     <View className="flex-1 gap-4">

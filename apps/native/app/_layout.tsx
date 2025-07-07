@@ -39,17 +39,18 @@ export default function RootLayout() {
                   <Stack
                     screenOptions={{
                       animation: 'ios_from_right', // for android
+                      headerShown: false,
                     }}>
                     <Stack.Screen
                       name="index"
-                      options={{
-                        headerShown: false,
-                      }}
+                      // options={{
+                      //   headerShown: false,
+                      // }}
                     />
                     <Stack.Screen
                       name="auth"
                       options={{
-                        headerShown: false,
+                        // headerShown: false,
                         title: 'auth',
                       }}
                     />
@@ -57,7 +58,7 @@ export default function RootLayout() {
                     <Stack.Screen
                       name="(modals)"
                       options={{
-                        headerShown: false,
+                        // headerShown: false,
                         presentation: 'modal',
                       }}
                     />

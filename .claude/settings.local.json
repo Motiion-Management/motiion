@@ -22,7 +22,8 @@
       "WebFetch(domain:github.com)",
       "Bash(pnpm format:*)",
       "WebFetch(domain:tanstack.com)",
-      "WebFetch(domain:clerk.com)"
+      "WebFetch(domain:clerk.com)",
+      "Bash(cat:*)"
     ]
   },
   "enableAllProjectMcpServers": false

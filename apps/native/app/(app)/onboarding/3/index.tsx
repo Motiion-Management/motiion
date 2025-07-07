@@ -1,27 +1,27 @@
-import { useMutation } from 'convex/react'
-import { useRouter } from 'expo-router'
-import React from 'react'
-import { View, ScrollView } from 'react-native'
+import { api } from '@packages/backend/convex/_generated/api';
+import { ONBOARDING_STEPS } from '@packages/backend/convex/validators/users';
+import { useMutation } from 'convex/react';
+import { useRouter } from 'expo-router';
+import React from 'react';
+import { View, ScrollView } from 'react-native';
 
-import { api } from '@packages/backend/convex/_generated/api'
-import { ONBOARDING_STEPS } from '@packages/backend/convex/validators/users'
-import { Button } from '~/components/ui/button'
-import { Text } from '~/components/ui/text'
+import { Button } from '~/components/ui/button';
+import { Text } from '~/components/ui/text';
 
 export default function OnboardingHeadshotsScreen() {
-  const router = useRouter()
-  const updateUser = useMutation(api.users.updateMyUser)
+  const router = useRouter();
+  const updateUser = useMutation(api.users.updateMyUser);
 
   const handleContinue = async () => {
     await updateUser({
-      onboardingStep: ONBOARDING_STEPS.RESUME
-    })
-    router.push('/(app)/onboarding/4')
-  }
+      onboardingStep: ONBOARDING_STEPS.RESUME,
+    });
+    router.push('/(app)/onboarding/4');
+  };
 
   const handleBack = () => {
-    router.back()
-  }
+    router.back();
+  };
 
   return (
     <ScrollView className="flex-1 px-6">
@@ -29,7 +29,7 @@ export default function OnboardingHeadshotsScreen() {
         <Text variant="largeTitle" className="mb-4">
           Add Your Headshots
         </Text>
-        <Text variant="body" className="mb-8 text-text-secondary">
+        <Text variant="body" className="text-text-secondary mb-8">
           Upload professional photos that showcase your talent.
         </Text>
 
@@ -49,5 +49,5 @@ export default function OnboardingHeadshotsScreen() {
         </View>
       </View>
     </ScrollView>
-  )
+  );
 }

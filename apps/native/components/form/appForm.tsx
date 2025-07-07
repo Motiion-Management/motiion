@@ -3,6 +3,7 @@ import { createFormHook } from '@tanstack/react-form';
 import { DateInput } from './DateInput';
 import { PhoneNumber } from './PhoneNumber';
 import { PhoneOTP } from './PhoneOTP';
+import { RadioGroupField } from './RadioGroupField';
 import { TextInput } from './TextInput';
 import { fieldContext, formContext } from './context';
 
@@ -13,6 +14,7 @@ const { useAppForm } = createFormHook({
   fieldComponents: {
     PhoneNumber,
     PhoneOTP,
+    RadioGroupField,
     TextInput,
     DateInput,
   },

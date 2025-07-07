@@ -1,16 +1,45 @@
-import { Stack } from 'expo-router'
-import { View } from 'react-native'
-import { SafeAreaView } from 'react-native-safe-area-context'
+import { Stack, useNavigation } from 'expo-router';
+import { useEffect } from 'react';
+import { View } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
+
+import { ProgressBar } from '~/components/ui/progress-bar';
+import { useOnboardingProgress } from '~/hooks/useOnboardingProgress';
 
 export default function OnboardingLayout() {
+  const navigation = useNavigation();
+  const { currentStepIndex, totalSteps, stepLabel, isLoading } = useOnboardingProgress();
+
+  // Update header when progress changes
+  useEffect(() => {
+    if (isLoading) return;
+
+    navigation.setOptions({
+      headerShown: true,
+      title: 'Profile Setup',
+      header: () => {
+        return (
+          <SafeAreaView style={{ position: 'absolute', top: 0, left: 0, right: 0, zIndex: 10 }}>
+            <View className="h-8 flex-row items-center bg-transparent pl-4 pr-0">
+              <ProgressBar
+                currentStep={currentStepIndex}
+                totalSteps={totalSteps}
+                label={stepLabel}
+              />
+            </View>
+          </SafeAreaView>
+        );
+      },
+    });
+  }, [navigation, currentStepIndex, totalSteps, stepLabel, isLoading]);
+
   return (
-    <SafeAreaView style={{ flex: 1 }} className="bg-background">
-      <Stack
-        screenOptions={{
-          headerShown: false,
-          animation: 'slide_from_right'
-        }}
-      />
-    </SafeAreaView>
-  )
+    <Stack
+      screenOptions={{
+        headerShown: false,
+        contentStyle: { backgroundColor: 'transparent' },
+        animation: 'slide_from_right',
+      }}
+    />
+  );
 }

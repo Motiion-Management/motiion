@@ -21,9 +21,15 @@ export default function LoginLayout() {
     }
 
     // Only handle transfer when we're on the login index page, not on verify-phone
-    if (isLoaded && signIn && paramPhoneNumber && !hasHandledTransferRef.current && pathname === '/auth/(login)') {
+    if (
+      isLoaded &&
+      signIn &&
+      paramPhoneNumber &&
+      !hasHandledTransferRef.current &&
+      pathname === '/auth/(login)'
+    ) {
       hasHandledTransferRef.current = true;
-      
+
       const handleTransfer = async () => {
         try {
           // Create signin attempt with the transferred phone number
@@ -55,8 +61,8 @@ export default function LoginLayout() {
     <>
       <Stack.Screen options={{ ...SCREEN_OPTIONS, title: 'Sign In' }} />
       <Stack
-        screenOptions={{ 
-          headerShown: false, 
+        screenOptions={{
+          headerShown: false,
           contentStyle: { backgroundColor: 'transparent' },
           animation: 'slide_from_right',
         }}
