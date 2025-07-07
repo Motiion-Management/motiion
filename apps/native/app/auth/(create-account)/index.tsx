@@ -62,8 +62,11 @@ export default function InfoScreen() {
               err.message?.toLowerCase().includes('already exists')
           )
         ) {
-          // Phone number already exists, redirect to login
-          router.replace('/auth/(login)');
+          // Phone number already exists, redirect to login with the phone number
+          router.replace({
+            pathname: '/auth/(login)',
+            params: { phoneNumber: value.phone.fullNumber }
+          });
           return;
         }
 

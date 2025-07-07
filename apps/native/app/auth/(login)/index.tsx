@@ -1,6 +1,6 @@
 import { useSignIn } from '@clerk/clerk-expo';
 import { useStore } from '@tanstack/react-store';
-import { router, usePathname } from 'expo-router';
+import { router, usePathname, useLocalSearchParams } from 'expo-router';
 import React, { useState, useEffect, useRef } from 'react';
 import { ActivityIndicator, View } from 'react-native';
 import { isValidNumber } from 'react-native-phone-entry';
@@ -27,11 +27,12 @@ const formValidator = z.object({
 });
 
 export default function LoginScreen() {
-  const { isLoaded, signIn, setActive } = useSignIn();
+  const { isLoaded, signIn } = useSignIn();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [signInError, setSignInError] = useState<string | null>(null);
   const pathname = usePathname();
   const hasNavigatedRef = useRef(false);
+  const { phoneNumber: paramPhoneNumber } = useLocalSearchParams<{ phoneNumber?: string }>();
 
   const form = useAppForm({
     defaultValues: {
@@ -61,7 +62,7 @@ export default function LoginScreen() {
         // Prepare the first factor verification (phone code)
         await result.prepareFirstFactor({
           strategy: 'phone_code',
-          phoneNumberId: result.supportedFirstFactors.find(
+          phoneNumberId: result.supportedFirstFactors?.find(
             (factor) => factor.strategy === 'phone_code'
           )?.phoneNumberId!,
         });
@@ -69,8 +70,7 @@ export default function LoginScreen() {
         // Navigate to verification page
         router.push('/auth/(login)/verify-phone');
       } catch (error: any) {
-        const errorMessage =
-          error.errors?.[0]?.message || 'Failed to sign in. Please try again.';
+        const errorMessage = error.errors?.[0]?.message || 'Failed to sign in. Please try again.';
         setSignInError(errorMessage);
       } finally {
         setIsSubmitting(false);
@@ -88,13 +88,13 @@ export default function LoginScreen() {
     if (targetRoute && targetRoute !== pathname && targetRoute !== '/auth/(login)') {
       hasNavigatedRef.current = true;
       router.replace(targetRoute as any);
-      return;
     }
   }, [isLoaded, signIn, pathname]);
 
   const isFormReady = useStore(form.store, (state) => state.canSubmit && !isSubmitting);
 
-  if (!isLoaded) {
+  // Show loading if we're in transfer mode or still loading
+  if (!isLoaded || paramPhoneNumber) {
     return (
       <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
         <ActivityIndicator size="large" />

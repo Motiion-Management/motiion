@@ -1,4 +1,3 @@
-import { Icon } from '@roninoss/icons';
 import { Stack, router, useNavigation } from 'expo-router';
 import { useEffect } from 'react';
 import { View } from 'react-native';
@@ -7,6 +6,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { Button } from '~/components/ui/button';
 import { ProgressBar } from '~/components/ui/progress-bar';
 import { useSignupProgress } from '~/hooks/useSignupNavigation';
+import X from '~/lib/icons/X';
 
 export default function CreateAccountLayout() {
   const navigation = useNavigation();
@@ -36,17 +36,17 @@ export default function CreateAccountLayout() {
       header: () => {
         return (
           <SafeAreaView>
-            <View className="h-8 flex-row items-center bg-transparent px-4">
+            <View className="h-8 flex-row items-center bg-transparent pl-4 pr-0">
               <ProgressBar currentStep={currentStepIndex} totalSteps={6} label="ACCOUNT" />
               <Button
                 variant="plain"
                 size="icon"
-                className="ios:px-0"
+                className="px-0"
                 onPress={() => {
                   // Navigate back to the root with a dismiss animation
                   router.dismissAll();
                 }}>
-                <Icon name="close" size={24} color="currentColor" />
+                <X size={24} className="color-icon-default" strokeWidth={1.5} />
               </Button>
             </View>
           </SafeAreaView>

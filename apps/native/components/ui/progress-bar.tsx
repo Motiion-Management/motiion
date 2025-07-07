@@ -25,23 +25,23 @@ interface ProgressBarProps {
   label: string;
 }
 
-const AnimatedStep = ({ 
-  stepIndex, 
-  currentStep, 
-  delay = 0 
-}: { 
-  stepIndex: number; 
-  currentStep: number; 
+const AnimatedStep = ({
+  stepIndex,
+  currentStep,
+  delay = 0,
+}: {
+  stepIndex: number;
+  currentStep: number;
   delay?: number;
 }) => {
   const isCurrentStep = stepIndex === currentStep;
   const isCompletedStep = stepIndex < currentStep;
-  
+
   // Initialize with correct starting values based on current state
   const initialWidth = isCurrentStep ? 48 : 6;
   const width = useSharedValue(initialWidth);
   const scale = useSharedValue(1);
-  
+
   // Animation configuration for bouncy but professional feel
   const springConfig = {
     damping: 15,
@@ -68,7 +68,7 @@ const AnimatedStep = ({
     } else {
       // Completed or future step: animate to dot size
       width.value = withDelay(delay, withSpring(6, widthSpringConfig));
-      
+
       if (isCompletedStep) {
         // Completed steps get a satisfying bounce
         scale.value = withSequence(
@@ -97,10 +97,7 @@ const AnimatedStep = ({
   };
 
   return (
-    <Animated.View
-      style={animatedStyle}
-      className={`rounded border ${getBackgroundClass()}`}
-    />
+    <Animated.View style={animatedStyle} className={`rounded border ${getBackgroundClass()}`} />
   );
 };
 
@@ -108,8 +105,8 @@ export const ProgressBar = ({ currentStep, totalSteps, label }: ProgressBarProps
   const steps = Array.from({ length: totalSteps }, (_, index) => index);
 
   return (
-    <View className="flex-1 flex-row items-center gap-2">
-      <Text variant="labelXs" color="primary" className="mr-4">
+    <View className="h-full flex-1 flex-row items-center gap-2 ">
+      <Text variant="labelXs" color="primary" className="mr-2">
         {label}
       </Text>
       {steps.map((stepIndex) => {
@@ -117,7 +114,7 @@ export const ProgressBar = ({ currentStep, totalSteps, label }: ProgressBarProps
         const distanceFromCurrent = Math.abs(stepIndex - currentStep);
         const baseDelay = 30;
         const staggerDelay = distanceFromCurrent * baseDelay;
-        
+
         return (
           <AnimatedStep
             key={stepIndex}
