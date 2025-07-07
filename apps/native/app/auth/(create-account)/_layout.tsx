@@ -13,8 +13,6 @@ const DynamicProgressBar = ({ currentStepIndex }: { currentStepIndex: number }) 
   const totalSteps = 6; // phone, verify-phone, name, email, dob, username
   const steps = Array.from({ length: totalSteps }, (_, index) => index);
 
-  console.log('🟢 DynamicProgressBar render - currentStepIndex:', currentStepIndex);
-
   return (
     <View className=" flex-1 flex-row items-center gap-2">
       <Text variant="labelXs" color="primary" className="mr-4">
@@ -23,8 +21,6 @@ const DynamicProgressBar = ({ currentStepIndex }: { currentStepIndex: number }) 
       {steps.map((stepIndex) => {
         const isCurrentStep = stepIndex === currentStepIndex;
         const isCompletedStep = stepIndex < currentStepIndex;
-
-        console.log(`Step ${stepIndex}: current=${isCurrentStep}, completed=${isCompletedStep}`);
 
         if (isCurrentStep) {
           // Current step: stretched bar
@@ -57,12 +53,6 @@ export default function CreateAccountLayout() {
   const navigation = useNavigation();
   const progressData = useSignupProgress();
 
-  // Debug: Log what step we're detecting
-  console.log('🎯 Layout component - step detection:', {
-    detectedStep: progressData.step,
-    completedData: progressData.completedData,
-  });
-
   // Map the signup steps to progress indices
   const getStepIndex = (step: string) => {
     const stepMapping = {
@@ -79,21 +69,13 @@ export default function CreateAccountLayout() {
 
   const currentStepIndex = getStepIndex(progressData.step);
 
-  console.log('📊 Layout component - progress mapping:', {
-    step: progressData.step,
-    mappedIndex: currentStepIndex,
-  });
-
   const { signUp } = useSignUp();
   // Update header when progress changes
   useEffect(() => {
-    console.log('⚡ Layout useEffect - updating header with step index:', currentStepIndex);
-
     navigation.setOptions({
       headerShown: true,
       title: 'Create Account',
       header: () => {
-        console.log('🎯 Header render - currentStepIndex:', currentStepIndex);
         return (
           <SafeAreaView>
             <View className="h-8 flex-row items-center bg-transparent px-4">
@@ -104,7 +86,6 @@ export default function CreateAccountLayout() {
                 className="ios:px-0"
                 onPress={() => {
                   // Navigate back to the root with a dismiss animation
-
                   router.dismissAll();
                 }}>
                 <Icon name="close" size={24} color="currentColor" />

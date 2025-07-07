@@ -36,29 +36,18 @@ export default function InfoScreen() {
       setVerificationError(null);
 
       try {
-        console.log('🔐 Attempting phone verification with OTP:', value.otp);
-        
         // Attempt to verify the phone number with the provided OTP
         const result = await signUp.attemptPhoneNumberVerification({
           code: value.otp,
         });
 
-        console.log('✅ Phone verification result:', {
-          status: result.verifications.phoneNumber.status,
-          signUpStatus: result.status,
-          fullResult: result
-        });
-
         // Check if verification was successful
         if (result.verifications.phoneNumber.status === 'verified') {
-          console.log('🎉 Phone verification successful, navigating to name screen');
           router.push('/auth/(create-account)/name');
         } else {
-          console.log('❌ Phone verification failed - status not verified');
           setVerificationError('Verification failed. Please try again.');
         }
       } catch (error: any) {
-        console.log('💥 Phone verification error:', error);
         // Handle Clerk-specific errors
         const errorMessage =
           error.errors?.[0]?.message || 'Invalid verification code. Please try again.';

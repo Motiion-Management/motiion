@@ -68,16 +68,6 @@ export function analyzeSignupProgress(signUp: SignUpResource | null | undefined)
   const preferredName = signUp.unsafeMetadata?.preferredName;
   if (preferredName) completedData.push('preferredName');
   
-  // Debug what data we have
-  console.log('🔍 SignUp object state check:', {
-    emailAddress: signUp.emailAddress,
-    firstName: signUp.firstName,
-    lastName: signUp.lastName,
-    dateOfBirth,
-    preferredName,
-    completedData,
-    signUpStatus: signUp.status
-  });
 
   // Determine current step
   if (signUp.status === 'complete') {

@@ -70,7 +70,6 @@ export function useSignupProgress() {
   // Only refresh when pathname actually changes
   useEffect(() => {
     if (isLoaded && signUp && pathname !== previousPathnameRef.current) {
-      console.log('🔄 Refreshing signUp object due to route change:', pathname);
       previousPathnameRef.current = pathname;
       signUp.reload();
     }
