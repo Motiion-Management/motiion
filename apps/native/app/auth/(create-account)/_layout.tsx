@@ -1,4 +1,3 @@
-import { useSignUp } from '@clerk/clerk-expo';
 import { Icon } from '@roninoss/icons';
 import { Stack, router, useNavigation } from 'expo-router';
 import { useEffect } from 'react';
@@ -6,48 +5,8 @@ import { View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { Button } from '~/components/ui/button';
-import { Text } from '~/components/ui/text';
+import { ProgressBar } from '~/components/ui/progress-bar';
 import { useSignupProgress } from '~/hooks/useSignupNavigation';
-
-const DynamicProgressBar = ({ currentStepIndex }: { currentStepIndex: number }) => {
-  const totalSteps = 6; // phone, verify-phone, name, email, dob, username
-  const steps = Array.from({ length: totalSteps }, (_, index) => index);
-
-  return (
-    <View className=" flex-1 flex-row items-center gap-2">
-      <Text variant="labelXs" color="primary" className="mr-4">
-        ACCOUNT
-      </Text>
-      {steps.map((stepIndex) => {
-        const isCurrentStep = stepIndex === currentStepIndex;
-        const isCompletedStep = stepIndex < currentStepIndex;
-
-        if (isCurrentStep) {
-          // Current step: stretched bar
-          return (
-            <View key={stepIndex} className="h-1.5 w-12 rounded border-primary bg-primary-500" />
-          );
-        } else if (isCompletedStep) {
-          // Completed step: filled dot
-          return (
-            <View
-              key={stepIndex}
-              className="size-1.5 rounded border border-primary bg-primary-500"
-            />
-          );
-        } else {
-          // Future step: empty dot
-          return (
-            <View
-              key={stepIndex}
-              className="size-1.5 rounded border border-primary bg-surface-default"
-            />
-          );
-        }
-      })}
-    </View>
-  );
-};
 
 export default function CreateAccountLayout() {
   const navigation = useNavigation();
@@ -69,7 +28,6 @@ export default function CreateAccountLayout() {
 
   const currentStepIndex = getStepIndex(progressData.step);
 
-  const { signUp } = useSignUp();
   // Update header when progress changes
   useEffect(() => {
     navigation.setOptions({
@@ -79,7 +37,7 @@ export default function CreateAccountLayout() {
         return (
           <SafeAreaView>
             <View className="h-8 flex-row items-center bg-transparent px-4">
-              <DynamicProgressBar currentStepIndex={currentStepIndex} />
+              <ProgressBar currentStep={currentStepIndex} totalSteps={6} label="ACCOUNT" />
               <Button
                 variant="plain"
                 size="icon"
