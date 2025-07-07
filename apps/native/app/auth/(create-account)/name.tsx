@@ -59,7 +59,7 @@ export default function NameScreen() {
         });
 
         // Navigate to the next screen
-        router.push('/auth/email');
+        router.push('/auth/(create-account)/email');
       } catch (error: any) {
         const errorMessage =
           error.errors?.[0]?.message || 'Failed to update name. Please try again.';

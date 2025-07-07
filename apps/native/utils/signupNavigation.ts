@@ -48,10 +48,11 @@ export function analyzeSignupProgress(signUp: SignUpResource | null | undefined)
 
   // Check phone verification
   const phoneVerification = signUp.verifications.phoneNumber;
-  const isPhoneVerified = phoneVerification.status === 'verified';
+  const isPhoneVerified = phoneVerification?.status === 'verified';
   if (isPhoneVerified) {
     completedData.push('phone-verification');
   }
+  
 
   // Check name
   if (signUp.firstName) completedData.push('firstName');
@@ -66,6 +67,17 @@ export function analyzeSignupProgress(signUp: SignUpResource | null | undefined)
 
   const preferredName = signUp.unsafeMetadata?.preferredName;
   if (preferredName) completedData.push('preferredName');
+  
+  // Debug what data we have
+  console.log('🔍 SignUp object state check:', {
+    emailAddress: signUp.emailAddress,
+    firstName: signUp.firstName,
+    lastName: signUp.lastName,
+    dateOfBirth,
+    preferredName,
+    completedData,
+    signUpStatus: signUp.status
+  });
 
   // Determine current step
   if (signUp.status === 'complete') {
@@ -78,7 +90,11 @@ export function analyzeSignupProgress(signUp: SignUpResource | null | undefined)
     };
   }
 
-  if (!signUp.phoneNumber || !phoneVerification.id || phoneVerification.status === 'expired') {
+  
+  // Stay on phone step only if:
+  // 1. No phone number, OR
+  // 2. Phone verification is expired
+  if (!signUp.phoneNumber || phoneVerification?.status === 'expired') {
     return {
       step: 'phone',
       route: '/auth/(create-account)',

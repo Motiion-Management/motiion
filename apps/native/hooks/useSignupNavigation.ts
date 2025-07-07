@@ -1,5 +1,5 @@
 import { useSignUp } from '@clerk/clerk-expo';
-import { router } from 'expo-router';
+import { router, usePathname } from 'expo-router';
 import { useEffect, useRef, useState } from 'react';
 
 import {
@@ -64,6 +64,18 @@ export function useSignupNavigation(options?: {
  */
 export function useSignupProgress() {
   const { signUp, isLoaded } = useSignUp();
+  const pathname = usePathname();
+  const previousPathnameRef = useRef<string>();
+  
+  // Only refresh when pathname actually changes
+  useEffect(() => {
+    if (isLoaded && signUp && pathname !== previousPathnameRef.current) {
+      console.log('🔄 Refreshing signUp object due to route change:', pathname);
+      previousPathnameRef.current = pathname;
+      signUp.reload();
+    }
+  }, [isLoaded, signUp, pathname]);
+  
   const stepInfo = analyzeSignupProgress(signUp);
 
   return {

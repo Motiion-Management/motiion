@@ -50,8 +50,25 @@ export default function InfoScreen() {
         });
         signUp.preparePhoneNumberVerification();
         router.push('/auth/(create-account)/verify-phone');
-      } catch (error) {
-        console.error('Error creating sign up:', error);
+      } catch (error: any) {
+        console.warn('Error creating sign up:', error);
+
+        // Check if the error is due to phone number already existing
+        if (
+          error.errors &&
+          error.errors.some(
+            (err: any) =>
+              err.code === 'form_identifier_exists' ||
+              err.message?.toLowerCase().includes('already exists')
+          )
+        ) {
+          // Phone number already exists, redirect to login
+          router.replace('/auth/(login)');
+          return;
+        }
+
+        // Handle other errors as needed
+        console.error('Signup error:', error);
       }
     },
   });

@@ -70,7 +70,7 @@ export default function DOBScreen() {
         });
 
         // Navigate to the next screen
-        router.push('/auth/username');
+        router.push('/auth/(create-account)/username');
       } catch (error: any) {
         const errorMessage =
           error.errors?.[0]?.message || 'Failed to update date of birth. Please try again.';

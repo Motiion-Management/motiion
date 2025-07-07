@@ -37,14 +37,19 @@ export default function EmailScreen() {
       setSignupError(null);
 
       try {
+        console.log('📧 Updating signUp with email:', value.email.trim().toLowerCase());
+        
         // Update the sign up with the user's email
         await signUp.update({
           emailAddress: value.email.trim().toLowerCase(),
         });
 
+        console.log('✅ Email updated successfully, navigating to dob screen');
+        
         // Navigate to the next screen
-        router.push('/auth/dob');
+        router.push('/auth/(create-account)/dob');
       } catch (error: any) {
+        console.log('💥 Email update error:', error);
         const errorMessage =
           error.errors?.[0]?.message || 'Failed to update email. Please try again.';
         setSignupError(errorMessage);

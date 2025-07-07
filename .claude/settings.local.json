@@ -21,7 +21,8 @@
       "Bash(mkdir:*)",
       "WebFetch(domain:github.com)",
       "Bash(pnpm format:*)",
-      "WebFetch(domain:tanstack.com)"
+      "WebFetch(domain:tanstack.com)",
+      "WebFetch(domain:clerk.com)"
     ]
   },
   "enableAllProjectMcpServers": false

@@ -1,7 +1,7 @@
 import { useSignIn } from '@clerk/clerk-expo';
 import { useStore } from '@tanstack/react-store';
-import { router } from 'expo-router';
-import React, { useState } from 'react';
+import { router, usePathname } from 'expo-router';
+import React, { useState, useEffect, useRef } from 'react';
 import { ActivityIndicator, View } from 'react-native';
 import { isValidNumber } from 'react-native-phone-entry';
 import * as z from 'zod';
@@ -9,6 +9,7 @@ import * as z from 'zod';
 import { useAppForm } from '~/components/form/appForm';
 import { BaseOnboardingScreen } from '~/components/layouts/BaseOnboardingScreen';
 import { Text } from '~/components/ui/text';
+import { determineSigninStep } from '~/utils/signinNavigation';
 
 const formValidator = z.object({
   phone: z
@@ -29,6 +30,8 @@ export default function LoginScreen() {
   const { isLoaded, signIn, setActive } = useSignIn();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [signInError, setSignInError] = useState<string | null>(null);
+  const pathname = usePathname();
+  const hasNavigatedRef = useRef(false);
 
   const form = useAppForm({
     defaultValues: {
@@ -74,6 +77,20 @@ export default function LoginScreen() {
       }
     },
   });
+
+  useEffect(() => {
+    if (!isLoaded || !signIn || hasNavigatedRef.current) return;
+
+    // Check if there's an existing signin in progress and navigate to the appropriate step
+    const targetRoute = determineSigninStep(signIn);
+
+    // Only navigate if we're not already on the target route and it's different from current route
+    if (targetRoute && targetRoute !== pathname && targetRoute !== '/auth/(login)') {
+      hasNavigatedRef.current = true;
+      router.replace(targetRoute as any);
+      return;
+    }
+  }, [isLoaded, signIn, pathname]);
 
   const isFormReady = useStore(form.store, (state) => state.canSubmit && !isSubmitting);
 

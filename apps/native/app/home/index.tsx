@@ -1,3 +1,4 @@
+import { useAuth } from '@clerk/clerk-expo';
 import { Link } from 'expo-router';
 import * as React from 'react';
 import { Image, Platform, View } from 'react-native';
@@ -17,7 +18,9 @@ const GOOGLE_SOURCE = {
 };
 
 export default function AuthIndexScreen() {
+  const { signOut } = useAuth();
   const alertRef = React.useRef<AlertRef>(null);
+  
   return (
     <>
       <SafeAreaView style={{ flex: 1 }}>
@@ -37,6 +40,13 @@ export default function AuthIndexScreen() {
               for What's Next
             </Text>
           </View>
+          <Button
+            variant="destructive"
+            onPress={() => signOut()}
+            className="mx-8"
+          >
+            <Text>Sign Out</Text>
+          </Button>
         </View>
       </SafeAreaView>
       <AlertAnchor ref={alertRef} />
