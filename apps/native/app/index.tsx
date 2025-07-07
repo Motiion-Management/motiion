@@ -14,7 +14,7 @@ export default function RootScreen() {
   return (
     <>
       <SignedIn>
-        <Redirect href="/home" />
+        <Redirect href="/(app)" />
       </SignedIn>
       <SignedOut>
         <ImageBackground source={require('./background.png')} className="h-full ">
