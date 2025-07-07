@@ -7,6 +7,7 @@ import { isValidNumber } from 'react-native-phone-entry';
 import * as z from 'zod';
 
 import { useAppForm } from '~/components/form/appForm';
+import { ValidationModeForm } from '~/components/form/ValidationModeForm';
 import { BaseOnboardingScreen } from '~/components/layouts/BaseOnboardingScreen';
 import { Text } from '~/components/ui/text';
 import { determineSigninStep } from '~/utils/signinNavigation';
@@ -118,16 +119,18 @@ export default function LoginScreen() {
         },
         text: "Don't have an account?",
       }}>
-      <View className="min-h-12 flex-1 flex-col gap-6">
-        <form.AppField name="phone" children={(field) => <field.PhoneNumber autoFocus />} />
-        {signInError && <Text className="text-sm text-text-error">{signInError}</Text>}
-        {isSubmitting && (
-          <View className="flex-row items-center gap-2">
-            <ActivityIndicator size="small" />
-            <Text className="text-sm text-text-disabled">Signing in...</Text>
-          </View>
-        )}
-      </View>
+      <ValidationModeForm form={form}>
+        <View className="min-h-12 flex-1 flex-col gap-6">
+          <form.AppField name="phone" children={(field) => <field.PhoneNumber autoFocus />} />
+          {signInError && <Text className="text-sm text-text-error">{signInError}</Text>}
+          {isSubmitting && (
+            <View className="flex-row items-center gap-2">
+              <ActivityIndicator size="small" />
+              <Text className="text-sm text-text-disabled">Signing in...</Text>
+            </View>
+          )}
+        </View>
+      </ValidationModeForm>
     </BaseOnboardingScreen>
   );
 }

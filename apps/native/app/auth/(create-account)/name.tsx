@@ -6,6 +6,7 @@ import { ActivityIndicator, View } from 'react-native';
 import * as z from 'zod';
 
 import { useAppForm } from '~/components/form/appForm';
+import { ValidationModeForm } from '~/components/form/ValidationModeForm';
 import { BaseOnboardingScreen } from '~/components/layouts/BaseOnboardingScreen';
 import { ErrorText } from '~/components/ui/error-text';
 import { Text } from '~/components/ui/text';
@@ -90,38 +91,40 @@ export default function NameScreen() {
           form.handleSubmit();
         },
       }}>
-      <View className="min-h-12 flex-1 flex-col gap-6">
-        <form.AppField
-          name="firstName"
-          children={(field) => (
-            <field.TextInput
-              label="First"
-              placeholder="Enter first name"
-              autoCapitalize="words"
-              autoComplete="given-name"
-              autoFocus
-            />
+      <ValidationModeForm form={form}>
+        <View className="min-h-12 flex-1 flex-col gap-6">
+          <form.AppField
+            name="firstName"
+            children={(field) => (
+              <field.TextInput
+                label="First"
+                placeholder="Enter first name"
+                autoCapitalize="words"
+                autoComplete="given-name"
+                autoFocus
+              />
+            )}
+          />
+          <form.AppField
+            name="lastName"
+            children={(field) => (
+              <field.TextInput
+                label="Last"
+                placeholder="Enter last name"
+                autoCapitalize="words"
+                autoComplete="family-name"
+              />
+            )}
+          />
+          {signupError && <ErrorText>{signupError}</ErrorText>}
+          {isCreatingAccount && (
+            <View className="flex-row items-center gap-2">
+              <ActivityIndicator size="small" />
+              <Text className="text-sm text-text-disabled">Saving...</Text>
+            </View>
           )}
-        />
-        <form.AppField
-          name="lastName"
-          children={(field) => (
-            <field.TextInput
-              label="Last"
-              placeholder="Enter last name"
-              autoCapitalize="words"
-              autoComplete="family-name"
-            />
-          )}
-        />
-        {signupError && <ErrorText>{signupError}</ErrorText>}
-        {isCreatingAccount && (
-          <View className="flex-row items-center gap-2">
-            <ActivityIndicator size="small" />
-            <Text className="text-sm text-text-disabled">Saving...</Text>
-          </View>
-        )}
-      </View>
+        </View>
+      </ValidationModeForm>
     </BaseOnboardingScreen>
   );
 }

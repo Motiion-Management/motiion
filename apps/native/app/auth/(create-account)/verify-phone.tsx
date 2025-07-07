@@ -6,6 +6,7 @@ import { ActivityIndicator, View } from 'react-native';
 import z from 'zod';
 
 import { useAppForm } from '~/components/form/appForm';
+import { ValidationModeForm } from '~/components/form/ValidationModeForm';
 import { BaseOnboardingScreen } from '~/components/layouts/BaseOnboardingScreen';
 import { Text } from '~/components/ui/text';
 
@@ -88,31 +89,33 @@ export default function InfoScreen() {
         },
         text: 'Already have an account?',
       }}>
-      <View className="min-h-12 flex-1 flex-col gap-6">
-        <form.AppField
-          name="otp"
-          children={(field) => (
-            <field.PhoneOTP
-              helperTextOpts={{
-                message: `Code sent to ${phoneNumber}.`,
-                action: {
-                  label: 'Change',
-                  onPress: () => {
-                    router.back();
+      <ValidationModeForm form={form}>
+        <View className="min-h-12 flex-1 flex-col gap-6">
+          <form.AppField
+            name="otp"
+            children={(field) => (
+              <field.PhoneOTP
+                helperTextOpts={{
+                  message: `Code sent to ${phoneNumber}.`,
+                  action: {
+                    label: 'Change',
+                    onPress: () => {
+                      router.back();
+                    },
                   },
-                },
-              }}
-            />
+                }}
+              />
+            )}
+          />
+          {verificationError && <Text className="text-sm text-text-error">{verificationError}</Text>}
+          {isVerifying && (
+            <View className="flex-row items-center gap-2">
+              <ActivityIndicator size="small" />
+              <Text className="text-sm text-text-disabled">Verifying...</Text>
+            </View>
           )}
-        />
-        {verificationError && <Text className="text-sm text-text-error">{verificationError}</Text>}
-        {isVerifying && (
-          <View className="flex-row items-center gap-2">
-            <ActivityIndicator size="small" />
-            <Text className="text-sm text-text-disabled">Verifying...</Text>
-          </View>
-        )}
-      </View>
+        </View>
+      </ValidationModeForm>
     </BaseOnboardingScreen>
   );
 }

@@ -6,6 +6,7 @@ import { ActivityIndicator, View } from 'react-native';
 import * as z from 'zod';
 
 import { useAppForm } from '~/components/form/appForm';
+import { ValidationModeForm } from '~/components/form/ValidationModeForm';
 import { BaseOnboardingScreen } from '~/components/layouts/BaseOnboardingScreen';
 import { Text } from '~/components/ui/text';
 
@@ -103,19 +104,21 @@ export default function DOBScreen() {
           form.handleSubmit();
         },
       }}>
-      <View className="min-h-12 flex-1 flex-col gap-6">
-        <form.AppField
-          name="dob"
-          children={(field) => (
-            <field.DateInput
-              label="Date of Birth"
-              minimumDate={new Date(1900, 0, 1)}
-              maximumDate={new Date()}
-            />
-          )}
-        />
-        {signupError && <Text className="text-sm text-text-error">{signupError}</Text>}
-      </View>
+      <ValidationModeForm form={form}>
+        <View className="min-h-12 flex-1 flex-col gap-6">
+          <form.AppField
+            name="dob"
+            children={(field) => (
+              <field.DateInput
+                label="Date of Birth"
+                minimumDate={new Date(1900, 0, 1)}
+                maximumDate={new Date()}
+              />
+            )}
+          />
+          {signupError && <Text className="text-sm text-text-error">{signupError}</Text>}
+        </View>
+      </ValidationModeForm>
     </BaseOnboardingScreen>
   );
 }

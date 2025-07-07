@@ -2,6 +2,7 @@ import { useFieldContext } from './context';
 
 import { Input as TextField } from '~/components/ui/input';
 import { useFieldError } from '~/hooks/useFieldError';
+import { useValidationModeContext } from '~/hooks/useValidationMode';
 
 interface TextInputProps {
   label: string;
@@ -26,7 +27,26 @@ interface TextInputProps {
 
 export const TextInput = ({ label, placeholder, ...props }: TextInputProps) => {
   const field = useFieldContext<string>();
-  const { errorMessage } = useFieldError(field, { fieldName: field.name });
+  
+  // Try to use validation mode context if available
+  let validationModeContext: ReturnType<typeof useValidationModeContext> | undefined;
+  try {
+    validationModeContext = useValidationModeContext();
+  } catch {
+    // Not in ValidationModeProvider, use default behavior
+  }
+  
+  const { errorMessage } = useFieldError(field, { 
+    fieldName: field.name
+  });
+
+  const handleBlur = () => {
+    field.handleBlur();
+    // Mark field as blurred in validation mode
+    if (validationModeContext) {
+      validationModeContext.markFieldBlurred(field.name);
+    }
+  };
 
   return (
     <TextField
@@ -34,7 +54,7 @@ export const TextInput = ({ label, placeholder, ...props }: TextInputProps) => {
       placeholder={placeholder}
       value={field.state.value}
       onChangeText={field.handleChange}
-      onBlur={field.handleBlur}
+      onBlur={handleBlur}
       errorMessage={errorMessage}
       {...props}
     />

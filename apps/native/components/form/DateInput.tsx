@@ -8,6 +8,8 @@ import { Button } from '~/components/ui/button';
 import { DatePicker } from '~/components/ui/date-picker';
 import { Text } from '~/components/ui/text';
 import { cn } from '~/lib/cn';
+import { useFieldError } from '~/hooks/useFieldError';
+import { useValidationModeContext } from '~/hooks/useValidationMode';
 
 interface DateInputProps {
   label: string;
@@ -18,15 +20,18 @@ interface DateInputProps {
 
 export const DateInput = ({ label, minimumDate, maximumDate, helpText }: DateInputProps) => {
   const field = useFieldContext<Date>();
-  // const [showDatePicker, setShowDatePicker] = useState(false);
-
-  // const formatDate = (date: Date) => {
-  //   return date.toLocaleDateString('en-US', {
-  //     month: '2-digit',
-  //     day: '2-digit',
-  //     year: 'numeric',
-  //   });
-  // };
+  
+  // Try to use validation mode context if available
+  let validationModeContext: ReturnType<typeof useValidationModeContext> | undefined;
+  try {
+    validationModeContext = useValidationModeContext();
+  } catch {
+    // Not in ValidationModeProvider, use default behavior
+  }
+  
+  const { errorMessage } = useFieldError(field, { 
+    fieldName: field.name
+  });
 
   return (
     <View className="flex-1">
@@ -50,15 +55,19 @@ export const DateInput = ({ label, minimumDate, maximumDate, helpText }: DateInp
           if (selectedDate) {
             field.handleChange(selectedDate);
             field.handleBlur();
+            // Mark field as blurred in validation mode
+            if (validationModeContext) {
+              validationModeContext.markFieldBlurred(field.name);
+            }
           }
         }}
       />
-      {(helpText || field.state.meta.errors?.[0]) && (
+      {(helpText || errorMessage) && (
         <View className="mt-1 px-4">
           <Text
             variant="bodyXs"
-            className={cn('text-text-disabled', field.state.meta.errors?.[0] && 'text-text-error')}>
-            {field.state.meta.errors?.[0] || helpText}
+            className={cn('text-text-disabled', errorMessage && 'text-text-error')}>
+            {errorMessage || helpText}
           </Text>
         </View>
       )}

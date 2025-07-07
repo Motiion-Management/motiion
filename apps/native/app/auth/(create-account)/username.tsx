@@ -6,6 +6,7 @@ import { ActivityIndicator, View } from 'react-native';
 import * as z from 'zod';
 
 import { useAppForm } from '~/components/form/appForm';
+import { ValidationModeForm } from '~/components/form/ValidationModeForm';
 import { BaseOnboardingScreen } from '~/components/layouts/BaseOnboardingScreen';
 import { Text } from '~/components/ui/text';
 
@@ -104,26 +105,28 @@ export default function UsernameScreen() {
           form.handleSubmit();
         },
       }}>
-      <View className="min-h-12 flex-1 flex-col gap-6">
-        <form.AppField
-          name="username"
-          children={(field) => (
-            <field.TextInput
-              label="Preferred Name"
-              placeholder="Enter your preferred name"
-              autoCapitalize="words"
-              autoFocus
-            />
+      <ValidationModeForm form={form}>
+        <View className="min-h-12 flex-1 flex-col gap-6">
+          <form.AppField
+            name="username"
+            children={(field) => (
+              <field.TextInput
+                label="Preferred Name"
+                placeholder="Enter your preferred name"
+                autoCapitalize="words"
+                autoFocus
+              />
+            )}
+          />
+          {signupError && <Text className="text-sm text-text-error">{signupError}</Text>}
+          {isCreatingAccount && (
+            <View className="flex-row items-center gap-2">
+              <ActivityIndicator size="small" />
+              <Text className="text-sm text-text-disabled">Creating your account...</Text>
+            </View>
           )}
-        />
-        {signupError && <Text className="text-sm text-text-error">{signupError}</Text>}
-        {isCreatingAccount && (
-          <View className="flex-row items-center gap-2">
-            <ActivityIndicator size="small" />
-            <Text className="text-sm text-text-disabled">Creating your account...</Text>
-          </View>
-        )}
-      </View>
+        </View>
+      </ValidationModeForm>
     </BaseOnboardingScreen>
   );
 }

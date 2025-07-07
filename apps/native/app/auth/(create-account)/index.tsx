@@ -7,6 +7,7 @@ import { isValidNumber } from 'react-native-phone-entry';
 import * as z from 'zod';
 
 import { useAppForm } from '~/components/form/appForm';
+import { ValidationModeForm } from '~/components/form/ValidationModeForm';
 import { BaseOnboardingScreen } from '~/components/layouts/BaseOnboardingScreen';
 import { determineSignupStep } from '~/utils/signupNavigation';
 
@@ -116,9 +117,11 @@ export default function InfoScreen() {
           form.handleSubmit();
         },
       }}>
-      <View className="min-h-12 flex-1 flex-row gap-6">
-        <form.AppField name="phone" children={(field) => <field.PhoneNumber autoFocus />} />
-      </View>
+      <ValidationModeForm form={form}>
+        <View className="min-h-12 flex-1 flex-row gap-6">
+          <form.AppField name="phone" children={(field) => <field.PhoneNumber autoFocus />} />
+        </View>
+      </ValidationModeForm>
     </BaseOnboardingScreen>
   );
 }

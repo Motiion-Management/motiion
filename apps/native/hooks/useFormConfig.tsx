@@ -2,7 +2,7 @@ import React, { createContext, useContext } from 'react';
 
 export interface FormErrorConfig {
   /** When to show validation errors */
-  timing: 'touched' | 'dirty' | 'immediate';
+  timing: 'touched' | 'dirty' | 'immediate' | 'validation-mode';
   /** Show fallback messages for validation errors */
   showFallbackMessages: boolean;
   /** Merge external errors with validation errors */
@@ -17,7 +17,7 @@ export interface FormConfig {
 
 const defaultFormConfig: FormConfig = {
   errorDisplay: {
-    timing: 'dirty',
+    timing: 'validation-mode',
     showFallbackMessages: true,
     mergeExternalErrors: true,
     autoClearExternalErrors: true,

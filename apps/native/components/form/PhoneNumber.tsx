@@ -14,6 +14,7 @@ import { InputLabel } from '~/components/ui/label';
 import { Text } from '~/components/ui/text';
 import { useFieldError } from '~/hooks/useFieldError';
 import { usePhoneInput } from '~/hooks/usePhoneInput';
+import { useValidationModeContext } from '~/hooks/useValidationMode';
 import ChevronDown from '~/lib/icons/ChevronDown';
 
 interface PhoneNumberProps {
@@ -23,8 +24,16 @@ interface PhoneNumberProps {
 
 export const PhoneNumber = ({ autoFocus = false, helpText }: PhoneNumberProps) => {
   const field = useFieldContext<{ fullNumber: string; countryCode: CountryCode }>();
+  
+  // Try to use validation mode context if available
+  let validationModeContext: ReturnType<typeof useValidationModeContext> | undefined;
+  try {
+    validationModeContext = useValidationModeContext();
+  } catch {
+    // Not in ValidationModeProvider, use default behavior
+  }
+  
   const { errorMessage } = useFieldError(field, { 
-    showWhen: 'dirty', 
     fallbackMessage: 'Please enter a valid phone number.',
     fieldName: field.name
   });
@@ -65,6 +74,13 @@ export const PhoneNumber = ({ autoFocus = false, helpText }: PhoneNumberProps) =
           ref={models.inputRef}
           value={models.phoneNumber}
           onChangeText={actions.handleChangeText}
+          onBlur={() => {
+            field.handleBlur();
+            // Mark field as blurred in validation mode
+            if (validationModeContext) {
+              validationModeContext.markFieldBlurred(field.name);
+            }
+          }}
           placeholder="(123) 456-7890"
           autoFocus={autoFocus}
           invalid={!!errorMessage}

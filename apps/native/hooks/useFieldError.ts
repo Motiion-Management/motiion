@@ -3,9 +3,10 @@ import type { FieldApi } from '@tanstack/react-form';
 
 import { useExternalFieldError } from './useFormError';
 import { useFormConfig } from './useFormConfig';
+import { useValidationModeContext } from './useValidationMode';
 
 interface UseFieldErrorOptions {
-  showWhen?: 'touched' | 'dirty' | 'immediate';
+  showWhen?: 'touched' | 'dirty' | 'immediate' | 'validation-mode';
   fallbackMessage?: string;
   fieldName?: string;
 }
@@ -20,6 +21,14 @@ export const useFieldError = (
     fallbackMessage, 
     fieldName 
   } = options;
+  
+  // Try to use validation mode context if available
+  let validationModeContext: ReturnType<typeof useValidationModeContext> | undefined;
+  try {
+    validationModeContext = useValidationModeContext();
+  } catch {
+    // Not in ValidationModeProvider, continue without it
+  }
   
   // Try to get external error, but don't throw if not in provider
   let externalError: string | undefined;
@@ -63,10 +72,17 @@ export const useFieldError = (
         return field.state.meta.isDirty;
       case 'immediate':
         return true;
+      case 'validation-mode':
+        // Use validation mode context if available
+        if (validationModeContext && fieldName) {
+          return validationModeContext.shouldShowValidation(fieldName);
+        }
+        // Fallback to touched if no context
+        return field.state.meta.isTouched;
       default:
         return field.state.meta.isDirty;
     }
-  }, [field.state.meta, showWhen]);
+  }, [field.state.meta, showWhen, validationModeContext, fieldName]);
 
   const errorMessage = useMemo(() => {
     // External errors take priority and always show
