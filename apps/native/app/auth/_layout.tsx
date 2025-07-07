@@ -1,15 +1,23 @@
 import { Stack } from 'expo-router';
 
-import { BackgroundGradientView } from '~/components/ui/background-gradient-view';
-
 export default function AuthLayout() {
   return (
-    <BackgroundGradientView>
-      <Stack screenOptions={{ ...SCREEN_OPTIONS }}>
-        <Stack.Screen name="(login)" options={LOGIN_SCREEN_OPTIONS} />
-        <Stack.Screen name="(create-account)" options={CREATE_ACCOUNT_SCREEN_OPTIONS} />
-      </Stack>
-    </BackgroundGradientView>
+    <Stack screenOptions={{ ...SCREEN_OPTIONS }}>
+      <Stack.Screen 
+        name="(login)" 
+        options={{
+          ...LOGIN_SCREEN_OPTIONS,
+          animation: 'slide_from_right',
+        }} 
+      />
+      <Stack.Screen 
+        name="(create-account)" 
+        options={{
+          ...CREATE_ACCOUNT_SCREEN_OPTIONS,
+          animation: 'slide_from_right',
+        }} 
+      />
+    </Stack>
   );
 }
 

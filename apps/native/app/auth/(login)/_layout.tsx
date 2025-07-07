@@ -55,7 +55,11 @@ export default function LoginLayout() {
     <>
       <Stack.Screen options={{ ...SCREEN_OPTIONS, title: 'Sign In' }} />
       <Stack
-        screenOptions={{ headerShown: false, contentStyle: { backgroundColor: 'transparent' } }}
+        screenOptions={{ 
+          headerShown: false, 
+          contentStyle: { backgroundColor: 'transparent' },
+          animation: 'slide_from_right',
+        }}
       />
     </>
   );
@@ -65,7 +69,7 @@ const SCREEN_OPTIONS = {
   headerShown: true,
   header: () => {
     return (
-      <SafeAreaView>
+      <SafeAreaView style={{ position: 'absolute', top: 0, left: 0, right: 0, zIndex: 10 }}>
         <View className="h-8 flex-row items-center bg-transparent px-4">
           <View className="flex-1 flex-row items-center">
             <Text variant="labelXs" color="primary" className="mr-4">

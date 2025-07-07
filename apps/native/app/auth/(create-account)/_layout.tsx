@@ -35,7 +35,7 @@ export default function CreateAccountLayout() {
       title: 'Create Account',
       header: () => {
         return (
-          <SafeAreaView>
+          <SafeAreaView style={{ position: 'absolute', top: 0, left: 0, right: 0, zIndex: 10 }}>
             <View className="h-8 flex-row items-center bg-transparent pl-4 pr-0">
               <ProgressBar currentStep={currentStepIndex} totalSteps={6} label="ACCOUNT" />
               <Button
@@ -58,7 +58,11 @@ export default function CreateAccountLayout() {
   return (
     <>
       <Stack
-        screenOptions={{ headerShown: false, contentStyle: { backgroundColor: 'transparent' } }}
+        screenOptions={{
+          headerShown: false,
+          contentStyle: { backgroundColor: 'transparent' },
+          animation: 'slide_from_right',
+        }}
       />
     </>
   );

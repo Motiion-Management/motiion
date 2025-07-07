@@ -6,6 +6,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Button } from '~/components/ui/button';
 import { Text } from '~/components/ui/text';
 import ChevronRight from '~/lib/icons/ChevronRight';
+import { BackgroundGradientView } from '~/components/ui/background-gradient-view';
 
 export const BaseOnboardingScreen = ({
   title,
@@ -30,8 +31,9 @@ export const BaseOnboardingScreen = ({
   const insets = useSafeAreaInsets();
 
   return (
-    <View className="flex-1" style={{ paddingBottom: insets.bottom }}>
-      <KeyboardAwareScrollView
+    <BackgroundGradientView>
+      <View className="flex-1" style={{ paddingBottom: insets.bottom, paddingTop: insets.top + 48 }}>
+        <KeyboardAwareScrollView
         bottomOffset={Platform.select({ ios: 8 })}
         bounces={false}
         disableScrollOnKeyboardHide
@@ -82,6 +84,7 @@ export const BaseOnboardingScreen = ({
           </Button>
         </View>
       </KeyboardStickyView>
-    </View>
+      </View>
+    </BackgroundGradientView>
   );
 };
