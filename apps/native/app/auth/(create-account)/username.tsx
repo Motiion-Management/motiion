@@ -58,8 +58,6 @@ export default function UsernameScreen() {
           // Navigate to the main app
           router.replace('/home');
         } else if (status === 'missing_requirements') {
-          console.log('signUp', JSON.stringify(signUp, null, 2));
-          
           const issues = [];
           if (missingFields.length > 0) {
             issues.push(`Missing fields: ${missingFields.join(', ')}`);
@@ -67,7 +65,7 @@ export default function UsernameScreen() {
           if (unverifiedFields.length > 0) {
             issues.push(`Unverified fields: ${unverifiedFields.join(', ')}`);
           }
-          
+
           if (issues.length > 0) {
             setSignupError(issues.join('. '));
           } else {
