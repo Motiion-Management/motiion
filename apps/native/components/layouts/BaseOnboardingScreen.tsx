@@ -69,7 +69,7 @@ export const BaseOnboardingScreen = ({
             closed: 0,
             opened: Platform.select({ ios: insets.bottom + 30, default: insets.bottom }),
           }}>
-          <View className="flex-row items-center justify-end px-4 py-10">
+          <View className="flex-row items-center justify-end  px-4 py-2">
             <View className="flex-1 flex-row justify-start">
               {secondaryAction && (
                 <Button variant="plain" onPress={secondaryAction.onPress}>
