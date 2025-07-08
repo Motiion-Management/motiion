@@ -4,6 +4,7 @@ import * as React from 'react';
 import { Image, Platform, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
+import { OnboardingCompleteGuard } from '~/components/onboarding/OnboardingGuard';
 import { AlertAnchor } from '~/components/ui/alert';
 import { AlertRef } from '~/components/ui/alert/types';
 import { Button } from '~/components/ui/button';
@@ -22,7 +23,7 @@ export default function AuthIndexScreen() {
   const alertRef = React.useRef<AlertRef>(null);
 
   return (
-    <>
+    <OnboardingCompleteGuard>
       <SafeAreaView style={{ flex: 1 }}>
         <View className="ios:justify-end flex-1 justify-center gap-4 px-8 py-4">
           <View className="items-center">
@@ -46,6 +47,6 @@ export default function AuthIndexScreen() {
         </View>
       </SafeAreaView>
       <AlertAnchor ref={alertRef} />
-    </>
+    </OnboardingCompleteGuard>
   );
 }

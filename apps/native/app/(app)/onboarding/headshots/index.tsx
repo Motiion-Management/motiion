@@ -1,3 +1,5 @@
+import { api } from '@packages/backend/convex/_generated/api';
+import { useQuery } from 'convex/react';
 import { useRouter } from 'expo-router';
 import React from 'react';
 import { View } from 'react-native';
@@ -5,13 +7,13 @@ import { View } from 'react-native';
 import { BaseOnboardingScreen } from '~/components/layouts/BaseOnboardingScreen';
 import { OnboardingStepGuard } from '~/components/onboarding/OnboardingGuard';
 import { MultiImageUpload } from '~/components/upload';
-import { useImageUpload } from '~/hooks/useImageUpload';
 import { useOnboardingStatus } from '~/hooks/useOnboardingStatus';
 
 export default function HeadshotsScreen() {
   const router = useRouter();
   const { getStepTitle } = useOnboardingStatus();
-  const { hasImages } = useImageUpload();
+  const existingHeadshots = useQuery(api.users.headshots.getMyHeadshots);
+  const hasImages = (existingHeadshots?.length ?? 0) > 0;
 
   const handleContinue = async () => {
     try {

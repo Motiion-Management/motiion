@@ -25,7 +25,14 @@
       ],
       "expo-secure-store",
       "expo-video",
-      "expo-web-browser"
+      "expo-web-browser",
+      [
+        "expo-image-picker",
+        {
+          "photosPermission": "Allow Motiion to access your photos to upload and share.",
+          "cameraPermission": "Allow Motiion to access your camera to take photos and videos."
+        }
+      ]
     ],
     "experiments": {
       "typedRoutes": true,
@@ -40,17 +47,25 @@
       "backgroundColor": "#003D37"
     },
     "updates": {
-      "assetPatternsToBeBundled": ["**/*"]
+      "assetPatternsToBeBundled": [
+        "**/*"
+      ]
     },
     "ios": {
       "bundleIdentifier": "io.motiion.motiion",
       "supportsTablet": true,
       "entitlements": {
-        "com.apple.developer.associated-domains": ["applinks:motiion.io", "applinks:motiion.io"],
+        "com.apple.developer.associated-domains": [
+          "applinks:motiion.io",
+          "applinks:motiion.io"
+        ],
         "com.apple.developer.authentication-services.autofill-credential-provider": true,
         "com.apple.developer.usernotifications.communication": true,
         "aps-environment": "production",
-        "com.apple.developer.applesignin": ["Default", "Default"],
+        "com.apple.developer.applesignin": [
+          "Default",
+          "Default"
+        ],
         "com.apple.developer.usernotifications.time-sensitive": true
       },
       "infoPlist": {
