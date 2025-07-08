@@ -41,13 +41,21 @@ export function useOnboardingStatus() {
         case 'profile-type':
           return 'PROFILE';
         case 'headshots':
-        case 'physical':
+        case 'height':
+        case 'ethnicity':
+        case 'hair-color':
+        case 'eye-color':
+        case 'gender':
         case 'sizing':
         case 'location':
+        case 'work-location':
         case 'representation':
-        case 'resume':
+        case 'experiences':
+        case 'training':
+        case 'skills':
         case 'union':
           return 'DANCER';
+        case 'database-use':
         case 'company':
           return 'GUEST';
         default:
@@ -63,18 +71,34 @@ export function useOnboardingStatus() {
           return 'Profile Type';
         case 'headshots':
           return 'Upload Headshots';
-        case 'physical':
-          return 'Physical Details';
+        case 'height':
+          return 'Height';
+        case 'ethnicity':
+          return 'Ethnicity';
+        case 'hair-color':
+          return 'Hair Color';
+        case 'eye-color':
+          return 'Eye Color';
+        case 'gender':
+          return 'Gender';
         case 'sizing':
           return 'Sizing Information';
         case 'location':
           return 'Location';
+        case 'work-location':
+          return 'Work Location';
         case 'representation':
           return 'Representation';
-        case 'resume':
-          return 'Resume & Experience';
+        case 'experiences':
+          return 'Experience';
+        case 'training':
+          return 'Training';
+        case 'skills':
+          return 'Skills';
         case 'union':
           return 'Union Status';
+        case 'database-use':
+          return 'Database Use';
         case 'company':
           return 'Company Information';
         default:

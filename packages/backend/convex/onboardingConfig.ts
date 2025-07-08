@@ -36,9 +36,29 @@ export const ONBOARDING_FLOWS: OnboardingFlows = {
         description: 'Upload professional headshots'
       },
       {
-        step: 'physical',
-        required: ['gender', 'location'],
-        description: 'Physical characteristics and location'
+        step: 'height',
+        required: ['height'],
+        description: 'Your height information'
+      },
+      {
+        step: 'ethnicity',
+        required: ['ethnicity'],
+        description: 'Your ethnicity'
+      },
+      {
+        step: 'hair-color',
+        required: ['hairColor'],
+        description: 'Your hair color'
+      },
+      {
+        step: 'eye-color',
+        required: ['eyeColor'],
+        description: 'Your eye color'
+      },
+      {
+        step: 'gender',
+        required: ['gender'],
+        description: 'Your gender'
       },
       {
         step: 'sizing',
@@ -46,15 +66,35 @@ export const ONBOARDING_FLOWS: OnboardingFlows = {
         description: 'Clothing and measurement details'
       },
       {
+        step: 'location',
+        required: ['location'],
+        description: 'Your location'
+      },
+      {
+        step: 'work-location',
+        required: ['workLocation'],
+        description: 'Your work location preferences'
+      },
+      {
         step: 'representation',
         required: ['representation'],
         description: 'Agency and representation information'
       },
       {
-        step: 'resume',
+        step: 'experiences',
         required: ['experiences'],
         minItems: 1,
-        description: 'Professional experience and training'
+        description: 'Professional experience'
+      },
+      {
+        step: 'training',
+        required: ['training'],
+        description: 'Training and education'
+      },
+      {
+        step: 'skills',
+        required: ['skills'],
+        description: 'Skills and abilities'
       },
       {
         step: 'union',
@@ -77,7 +117,7 @@ export const ONBOARDING_FLOWS: OnboardingFlows = {
       {
         step: 'location',
         required: ['location'],
-        description: 'Your location and work areas'
+        description: 'Your location'
       },
       {
         step: 'representation',
@@ -85,10 +125,10 @@ export const ONBOARDING_FLOWS: OnboardingFlows = {
         description: 'Agency and representation information'
       },
       {
-        step: 'resume',
+        step: 'experiences',
         required: ['experiences'],
         minItems: 1,
-        description: 'Professional experience and credits'
+        description: 'Professional experience'
       }
     ],
     guest: [
@@ -96,6 +136,11 @@ export const ONBOARDING_FLOWS: OnboardingFlows = {
         step: 'profile-type',
         required: ['profileType'],
         description: 'Select your profile type'
+      },
+      {
+        step: 'database-use',
+        required: ['databaseUse'],
+        description: 'How will you use the database'
       },
       {
         step: 'company',
@@ -109,12 +154,20 @@ export const ONBOARDING_FLOWS: OnboardingFlows = {
 export const STEP_ROUTES = {
   'profile-type': '/(app)/onboarding/profile-type',
   headshots: '/(app)/onboarding/headshots',
-  physical: '/(app)/onboarding/physical',
+  height: '/(app)/onboarding/height',
+  ethnicity: '/(app)/onboarding/ethnicity',
+  'hair-color': '/(app)/onboarding/hair-color',
+  'eye-color': '/(app)/onboarding/eye-color',
+  gender: '/(app)/onboarding/gender',
   sizing: '/(app)/onboarding/sizing',
   location: '/(app)/onboarding/location',
+  'work-location': '/(app)/onboarding/work-location',
   representation: '/(app)/onboarding/representation',
-  resume: '/(app)/onboarding/resume',
+  experiences: '/(app)/onboarding/experiences',
+  training: '/(app)/onboarding/training',
+  skills: '/(app)/onboarding/skills',
   union: '/(app)/onboarding/union',
+  'database-use': '/(app)/onboarding/database-use',
   company: '/(app)/onboarding/company'
 } as const
 
