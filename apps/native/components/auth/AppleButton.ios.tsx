@@ -12,7 +12,7 @@ export const AppleButton = () => {
   const onPress = React.useCallback(async () => {
     try {
       const { createdSessionId, setActive } = await startOAuthFlow({
-        redirectUrl: Linking.createURL('/onboarding/1', { scheme: 'motiion' }),
+        redirectUrl: Linking.createURL('/(app)', { scheme: 'motiion' }),
       });
 
       if (createdSessionId) {

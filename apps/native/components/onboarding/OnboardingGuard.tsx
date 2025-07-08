@@ -2,7 +2,7 @@ import { Redirect } from 'expo-router';
 import React from 'react';
 import { View, ActivityIndicator } from 'react-native';
 
-import { useOnboardingStatus } from '~/hooks/useOnboardingStatusNew';
+import { useOnboardingStatus } from '~/hooks/useOnboardingStatus';
 
 interface OnboardingGuardProps {
   children: React.ReactNode;

@@ -15,8 +15,7 @@ import { crud } from 'convex-helpers/server'
 import {
   UserDoc,
   Users,
-  clerkCreateUserFields,
-  ONBOARDING_STEPS
+  clerkCreateUserFields
 } from './validators/users'
 import { internal } from './_generated/api'
 import { literals, partial } from 'convex-helpers/validators'
@@ -241,7 +240,7 @@ export const paginateProfiles = query({
   async handler(ctx, args) {
     const results = await filter(
       ctx.db.query('users'),
-      async (user) => user.onboardingStep === ONBOARDING_STEPS.COMPLETE
+      async (user) => user.onboardingCompleted === true
     ).paginate(args.paginationOpts)
 
     return {

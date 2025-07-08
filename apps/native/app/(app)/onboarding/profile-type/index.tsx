@@ -5,7 +5,7 @@ import React from 'react';
 import * as z from 'zod';
 
 import { OnboardingStepGuard } from '~/components/onboarding/OnboardingGuard';
-import { useOnboardingStatus } from '~/hooks/useOnboardingStatusNew';
+import { useOnboardingStatus } from '~/hooks/useOnboardingStatus';
 
 import { ValidationModeForm } from '~/components/form/ValidationModeForm';
 import { useAppForm } from '~/components/form/appForm';

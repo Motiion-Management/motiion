@@ -4,7 +4,7 @@ import { View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { ProgressBar } from '~/components/ui/progress-bar';
-import { useOnboardingStatus } from '~/hooks/useOnboardingStatusNew';
+import { useOnboardingStatus } from '~/hooks/useOnboardingStatus';
 
 export default function OnboardingLayout() {
   const navigation = useNavigation();
