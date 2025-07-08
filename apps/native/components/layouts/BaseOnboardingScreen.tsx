@@ -10,6 +10,7 @@ import ChevronRight from '~/lib/icons/ChevronRight';
 
 export const BaseOnboardingScreen = ({
   title,
+  description,
   children,
   helpText,
   canProgress = false,
@@ -17,6 +18,7 @@ export const BaseOnboardingScreen = ({
   secondaryAction,
 }: {
   title: string;
+  description?: string;
   children: React.ReactNode;
   helpText?: string;
   canProgress?: boolean;
@@ -44,10 +46,13 @@ export const BaseOnboardingScreen = ({
           keyboardShouldPersistTaps="handled"
           contentContainerClassName="px-4 ">
           <View className="flex-1 justify-center">
-            <Text variant="title1" className=" mb-8">
-              {title}
-            </Text>
-            <View className=" gap-4 ">
+            <Text variant="title1">{title}</Text>
+            {description && (
+              <Text variant="body" className="mt-6 text-text-low">
+                {description}
+              </Text>
+            )}
+            <View className="mt-8 gap-4 ">
               {children}
               {helpText && (
                 <View className="items-center pt-2">

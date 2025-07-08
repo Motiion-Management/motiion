@@ -85,7 +85,7 @@ export default function ProfileTypeScreen() {
   return (
     <BaseOnboardingScreen
       title="Your journey is unique. Your profile should be too."
-      helpText="Select your main account type."
+      description="Select your main account type."
       canProgress={form.state.canSubmit && !form.state.isSubmitting}
       primaryAction={{
         onPress: () => form.handleSubmit(),
