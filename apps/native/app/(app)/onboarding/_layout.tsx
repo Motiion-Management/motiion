@@ -4,11 +4,12 @@ import { View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { ProgressBar } from '~/components/ui/progress-bar';
-import { useOnboardingProgress } from '~/hooks/useOnboardingProgress';
+import { useOnboardingStatus } from '~/hooks/useOnboardingStatusNew';
 
 export default function OnboardingLayout() {
   const navigation = useNavigation();
-  const { currentStepIndex, totalSteps, stepLabel, isLoading } = useOnboardingProgress();
+  const { currentStepIndex, totalSteps, getStepLabel, isLoading } = useOnboardingStatus();
+  const stepLabel = getStepLabel();
 
   // Update header when progress changes
   useEffect(() => {

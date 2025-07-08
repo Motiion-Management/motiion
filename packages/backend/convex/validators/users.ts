@@ -189,9 +189,14 @@ export const users = {
   isAdmin: z.boolean(),
   searchPattern: z.string().optional(),
   pointsEarned: z.number(),
-  onboardingStep: z.number(),
+  onboardingStep: z.number(), // Keep for backward compatibility
   profileType: z.enum(['dancer', 'choreographer', 'guest']).optional(),
   favoriteUsers: z.array(zid('users')).optional(),
+
+  // New onboarding tracking
+  onboardingCompleted: z.boolean().optional(),
+  onboardingCompletedAt: z.string().optional(), // ISO date string
+  onboardingVersion: z.string().optional(),
 
   // user info
   email: z.string(),
@@ -211,7 +216,11 @@ export const users = {
   attributes: z.object(attributesPlainObject).optional(),
   sizing: z.object(sizingPlainObject).optional(),
   resume: zResume.optional(),
-  links: zLinks.optional()
+  links: zLinks.optional(),
+
+  // onboarding-specific fields
+  unionStatus: z.enum(['union', 'non-union', 'pending']).optional(),
+  companyName: z.string().optional()
 }
 export const zUsers = z.object(users)
 

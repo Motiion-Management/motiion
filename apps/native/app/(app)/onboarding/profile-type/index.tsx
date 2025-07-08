@@ -1,13 +1,11 @@
 import { api } from '@packages/backend/convex/_generated/api';
-import {
-  ONBOARDING_STEPS,
-  getNextOnboardingStep,
-  type ProfileType,
-} from '@packages/backend/convex/validators/users';
 import { useMutation } from 'convex/react';
 import { useRouter } from 'expo-router';
 import React from 'react';
 import * as z from 'zod';
+
+import { OnboardingStepGuard } from '~/components/onboarding/OnboardingGuard';
+import { useOnboardingStatus } from '~/hooks/useOnboardingStatusNew';
 
 import { ValidationModeForm } from '~/components/form/ValidationModeForm';
 import { useAppForm } from '~/components/form/appForm';
@@ -19,9 +17,12 @@ const profileTypeValidator = z.object({
   }),
 });
 
+type ProfileType = 'dancer' | 'choreographer' | 'guest';
+
 export default function ProfileTypeScreen() {
   const router = useRouter();
   const updateUser = useMutation(api.users.updateMyUser);
+  const { redirectPath } = useOnboardingStatus();
 
   const form = useAppForm({
     defaultValues: {
@@ -34,22 +35,13 @@ export default function ProfileTypeScreen() {
       if (!value.profileType) return;
 
       try {
-        const nextStep = getNextOnboardingStep(ONBOARDING_STEPS.PROFILE_TYPE, value.profileType);
-
+        // Just update the profile type - the system will determine the next step
         await updateUser({
           profileType: value.profileType,
-          onboardingStep: nextStep,
         });
 
-        // Navigate to the next step based on profile type
-        switch (value.profileType) {
-          case 'dancer':
-            router.push('/(app)/onboarding/2'); // Will be dancer headshots
-            break;
-          case 'choreographer':
-            router.push('/(app)/onboarding/10'); // Will be choreographer headshots
-            break;
-        }
+        // Let the system determine where to go next by refreshing
+        router.replace('/(app)');
       } catch (error) {
         console.error('Error updating profile type:', error);
       }
@@ -58,14 +50,13 @@ export default function ProfileTypeScreen() {
 
   const handleGuestContinue = async () => {
     try {
-      const nextStep = getNextOnboardingStep(ONBOARDING_STEPS.PROFILE_TYPE, 'guest');
-
+      // Just update the profile type - the system will determine the next step
       await updateUser({
         profileType: 'guest',
-        onboardingStep: nextStep,
       });
 
-      router.push('/(app)/onboarding/20'); // Will be guest database
+      // Let the system determine where to go next by refreshing
+      router.replace('/(app)');
     } catch (error) {
       console.error('Error setting guest profile:', error);
     }
@@ -83,23 +74,25 @@ export default function ProfileTypeScreen() {
   ];
 
   return (
-    <BaseOnboardingScreen
-      title="Your journey is unique. Your profile should be too."
-      description="Select your main account type."
-      canProgress={form.state.canSubmit && !form.state.isSubmitting}
-      primaryAction={{
-        onPress: () => form.handleSubmit(),
-      }}
-      secondaryAction={{
-        text: 'Continue as guest',
-        onPress: handleGuestContinue,
-      }}>
-      <ValidationModeForm form={form}>
-        <form.AppField
-          name="profileType"
-          children={(field) => <field.RadioGroupField options={radioOptions} />}
-        />
-      </ValidationModeForm>
-    </BaseOnboardingScreen>
+    <OnboardingStepGuard requiredStep="profile-type">
+      <BaseOnboardingScreen
+        title="Your journey is unique. Your profile should be too."
+        description="Select your main account type."
+        canProgress={form.state.canSubmit && !form.state.isSubmitting}
+        primaryAction={{
+          onPress: () => form.handleSubmit(),
+        }}
+        secondaryAction={{
+          text: 'Continue as guest',
+          onPress: handleGuestContinue,
+        }}>
+        <ValidationModeForm form={form}>
+          <form.AppField
+            name="profileType"
+            children={(field) => <field.RadioGroupField options={radioOptions} />}
+          />
+        </ValidationModeForm>
+      </BaseOnboardingScreen>
+    </OnboardingStepGuard>
   );
 }
