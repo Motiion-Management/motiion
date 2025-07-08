@@ -4,12 +4,10 @@ import { useRouter } from 'expo-router';
 import React from 'react';
 import * as z from 'zod';
 
-import { OnboardingStepGuard } from '~/components/onboarding/OnboardingGuard';
-import { useOnboardingStatus } from '~/hooks/useOnboardingStatus';
-
 import { ValidationModeForm } from '~/components/form/ValidationModeForm';
 import { useAppForm } from '~/components/form/appForm';
 import { BaseOnboardingScreen } from '~/components/layouts/BaseOnboardingScreen';
+import { OnboardingStepGuard } from '~/components/onboarding/OnboardingGuard';
 
 const profileTypeValidator = z.object({
   profileType: z.enum(['dancer', 'choreographer'], {
@@ -22,7 +20,6 @@ type ProfileType = 'dancer' | 'choreographer' | 'guest';
 export default function ProfileTypeScreen() {
   const router = useRouter();
   const updateUser = useMutation(api.users.updateMyUser);
-  const { redirectPath } = useOnboardingStatus();
 
   const form = useAppForm({
     defaultValues: {

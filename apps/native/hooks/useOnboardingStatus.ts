@@ -1,5 +1,6 @@
 import { api } from '@packages/backend/convex/_generated/api';
 import { useQuery, useMutation } from 'convex/react';
+import { Href } from 'expo-router';
 
 export function useOnboardingStatus() {
   const status = useQuery(api.onboarding.getOnboardingStatus);
@@ -21,7 +22,7 @@ export function useOnboardingStatus() {
 
     // Routing helpers
     shouldRedirect: !status?.isComplete && !!status?.currentStep,
-    redirectPath: status?.redirectPath ?? '/(app)/onboarding/profile-type',
+    redirectPath: (status?.redirectPath ?? '/(app)/onboarding/profile-type') as Href,
 
     // Version and metadata
     version: status?.version ?? 'v2',

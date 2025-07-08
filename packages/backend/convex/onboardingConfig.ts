@@ -1,5 +1,3 @@
-import { Doc } from './_generated/dataModel'
-
 export type ProfileType = 'dancer' | 'choreographer' | 'guest'
 
 export interface OnboardingStep {
@@ -110,38 +108,49 @@ export const ONBOARDING_FLOWS: OnboardingFlows = {
 
 export const STEP_ROUTES = {
   'profile-type': '/(app)/onboarding/profile-type',
-  'headshots': '/(app)/onboarding/headshots',
-  'physical': '/(app)/onboarding/physical',
-  'sizing': '/(app)/onboarding/sizing',
-  'location': '/(app)/onboarding/location',
-  'representation': '/(app)/onboarding/representation',
-  'resume': '/(app)/onboarding/resume',
-  'union': '/(app)/onboarding/union',
-  'company': '/(app)/onboarding/company'
+  headshots: '/(app)/onboarding/headshots',
+  physical: '/(app)/onboarding/physical',
+  sizing: '/(app)/onboarding/sizing',
+  location: '/(app)/onboarding/location',
+  representation: '/(app)/onboarding/representation',
+  resume: '/(app)/onboarding/resume',
+  union: '/(app)/onboarding/union',
+  company: '/(app)/onboarding/company'
 } as const
 
-export function getOnboardingFlow(profileType: ProfileType, version: string = CURRENT_ONBOARDING_VERSION): OnboardingStep[] {
+export function getOnboardingFlow(
+  profileType: ProfileType,
+  version: string = CURRENT_ONBOARDING_VERSION
+): OnboardingStep[] {
   const flows = ONBOARDING_FLOWS[version]
   if (!flows) {
     // Default to v2 if version not found
     console.warn(`Onboarding version ${version} not found, using v2`)
     return ONBOARDING_FLOWS.v2[profileType] || ONBOARDING_FLOWS.v2.dancer
   }
-  
+
   const flow = flows[profileType]
   if (!flow) {
     // Default to dancer flow if profile type not found
-    console.warn(`Onboarding flow for ${profileType} not found in version ${version}, using dancer flow`)
+    console.warn(
+      `Onboarding flow for ${profileType} not found in version ${version}, using dancer flow`
+    )
     return flows.dancer || []
   }
-  
+
   return flow
 }
 
 export function getStepRoute(step: string): string {
-  return STEP_ROUTES[step as keyof typeof STEP_ROUTES] || '/(app)/onboarding/profile-type'
+  return (
+    STEP_ROUTES[step as keyof typeof STEP_ROUTES] ||
+    '/(app)/onboarding/profile-type'
+  )
 }
 
-export function getTotalSteps(profileType: ProfileType, version: string = CURRENT_ONBOARDING_VERSION): number {
+export function getTotalSteps(
+  profileType: ProfileType,
+  version: string = CURRENT_ONBOARDING_VERSION
+): number {
   return getOnboardingFlow(profileType, version).length
 }
