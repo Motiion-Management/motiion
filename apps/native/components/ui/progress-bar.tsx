@@ -91,9 +91,9 @@ const AnimatedStep = ({
   // Determine background color classes
   const getBackgroundClass = () => {
     if (isCurrentStep || isCompletedStep) {
-      return 'bg-primary-500 border-primary';
+      return 'bg-icon-default border-icon-default';
     }
-    return 'bg-surface-default border-primary';
+    return 'bg-transparent border-border-default';
   };
 
   return (
