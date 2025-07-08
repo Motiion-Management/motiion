@@ -8,7 +8,7 @@ import { Button } from '~/components/ui/button';
 import { DatePicker } from '~/components/ui/date-picker';
 import { Text } from '~/components/ui/text';
 import { useFieldError } from '~/hooks/useFieldError';
-import { useValidationModeContext } from '~/hooks/useValidationMode';
+import { useValidationModeContextSafe } from '~/hooks/useValidationMode';
 import { cn } from '~/lib/cn';
 
 interface DateInputProps {
@@ -20,15 +20,7 @@ interface DateInputProps {
 
 export const DateInput = ({ label, minimumDate, maximumDate, helpText }: DateInputProps) => {
   const field = useFieldContext<Date>();
-
-  // Try to use validation mode context if available
-  let validationModeContext: ReturnType<typeof useValidationModeContext> | undefined;
-  try {
-    validationModeContext = useValidationModeContext();
-  } catch {
-    // Not in ValidationModeProvider, use default behavior
-  }
-
+  const validationModeContext = useValidationModeContextSafe();
   const { errorMessage } = useFieldError(field, {
     fieldName: field.name,
   });

@@ -70,7 +70,7 @@
     /* Border tokens - Figma semantic names */
     --border-default: 198 205 215;
     --border-low: 224 228 233;
-    --border-high: 0 122 110;
+    --border-high: 21 25 28;
     --border-accent: 0 82 73;
     --border-disabled: 210 210 210;
     --border-tint: 21 25 28 / 0.4;
@@ -179,7 +179,7 @@
       /* Border tokens - Dark mode */
       --border-default: 83 88 96;
       --border-low: 55 59 65;
-      --border-high: 0 163 146;
+      --border-high: 255 255 255;
       --border-accent: 0 122 110;
       --border-disabled: 83 88 96;
       --border-tint: 55 59 65 / 0.4;

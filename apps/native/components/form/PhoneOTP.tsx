@@ -6,7 +6,7 @@ import { useFieldContext } from './context';
 import { HelperTextProps } from '~/components/ui/helper-text';
 import { Input } from '~/components/ui/input';
 import { useFieldError } from '~/hooks/useFieldError';
-import { useValidationModeContext } from '~/hooks/useValidationMode';
+import { useValidationModeContextSafe } from '~/hooks/useValidationMode';
 
 interface PhoneOTPProps {
   helperTextOpts?: HelperTextProps;
@@ -27,15 +27,7 @@ export const cleanOtpText = (text: string) => {
 
 export const PhoneOTP = ({ helperTextOpts }: PhoneOTPProps) => {
   const field = useFieldContext<string>();
-
-  // Try to use validation mode context if available
-  let validationModeContext: ReturnType<typeof useValidationModeContext> | undefined;
-  try {
-    validationModeContext = useValidationModeContext();
-  } catch {
-    // Not in ValidationModeProvider, use default behavior
-  }
-
+  const validationModeContext = useValidationModeContextSafe();
   const { errorMessage } = useFieldError(field, {
     fieldName: field.name,
   });

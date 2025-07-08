@@ -76,3 +76,8 @@ export const useValidationModeContext = () => {
   }
   return context;
 };
+
+// Safe version that returns null when not in provider
+export const useValidationModeContextSafe = () => {
+  return useContext(ValidationModeContext);
+};

@@ -2,7 +2,7 @@ import { useFieldContext } from './context';
 
 import { Input as TextField } from '~/components/ui/input';
 import { useFieldError } from '~/hooks/useFieldError';
-import { useValidationModeContext } from '~/hooks/useValidationMode';
+import { useValidationModeContextSafe } from '~/hooks/useValidationMode';
 
 interface TextInputProps {
   label: string;
@@ -27,15 +27,7 @@ interface TextInputProps {
 
 export const TextInput = ({ label, placeholder, ...props }: TextInputProps) => {
   const field = useFieldContext<string>();
-
-  // Try to use validation mode context if available
-  let validationModeContext: ReturnType<typeof useValidationModeContext> | undefined;
-  try {
-    validationModeContext = useValidationModeContext();
-  } catch {
-    // Not in ValidationModeProvider, use default behavior
-  }
-
+  const validationModeContext = useValidationModeContextSafe();
   const { errorMessage } = useFieldError(field, {
     fieldName: field.name,
   });

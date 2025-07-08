@@ -2,8 +2,8 @@ import type { FieldApi } from '@tanstack/react-form';
 import { useMemo, useEffect } from 'react';
 
 import { useFormConfig } from './useFormConfig';
-import { useExternalFieldError } from './useFormError';
-import { useValidationModeContext } from './useValidationMode';
+import { useExternalFieldErrorSafe } from './useFormError';
+import { useValidationModeContextSafe } from './useValidationMode';
 
 interface UseFieldErrorOptions {
   showWhen?: 'touched' | 'dirty' | 'immediate' | 'validation-mode';
@@ -15,27 +15,20 @@ export const useFieldError = (field: FieldApi<any, any>, options: UseFieldErrorO
   const formConfig = useFormConfig();
   const { showWhen = formConfig.errorDisplay.timing, fallbackMessage, fieldName } = options;
 
-  // Try to use validation mode context if available
-  let validationModeContext: ReturnType<typeof useValidationModeContext> | undefined;
-  try {
-    validationModeContext = useValidationModeContext();
-  } catch {
-    // Not in ValidationModeProvider, continue without it
-  }
+  const validationModeContext = useValidationModeContextSafe();
 
-  // Try to get external error, but don't throw if not in provider
-  let externalError: string | undefined;
-  let clearExternalError: (() => void) | undefined;
+  // Always call the hook, but it will return undefined when not needed
+  const externalFieldError = useExternalFieldErrorSafe(fieldName || '');
 
-  try {
-    if (formConfig.errorDisplay.mergeExternalErrors && fieldName) {
-      const external = useExternalFieldError(fieldName);
-      externalError = external.externalError;
-      clearExternalError = external.clearError;
-    }
-  } catch {
-    // Not in FormErrorProvider, continue without external errors
-  }
+  // Only use external error if mergeExternalErrors is enabled and fieldName exists
+  const externalError =
+    formConfig.errorDisplay.mergeExternalErrors && fieldName
+      ? externalFieldError.externalError
+      : undefined;
+  const clearExternalError =
+    formConfig.errorDisplay.mergeExternalErrors && fieldName
+      ? externalFieldError.clearError
+      : undefined;
 
   // Auto-clear external errors when user starts typing
   useEffect(() => {

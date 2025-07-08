@@ -54,6 +54,11 @@ export const useFormError = () => {
   return context;
 };
 
+// Safe version that returns null when not in provider
+export const useFormErrorSafe = () => {
+  return useContext(FormErrorContext);
+};
+
 export const useExternalFieldError = (fieldName: string) => {
   const { externalErrors, clearExternalError } = useFormError();
 
@@ -62,6 +67,23 @@ export const useExternalFieldError = (fieldName: string) => {
   const clearError = useCallback(() => {
     clearExternalError(fieldName);
   }, [clearExternalError, fieldName]);
+
+  return {
+    externalError,
+    clearError,
+    hasExternalError: !!externalError,
+  };
+};
+
+// Safe version that works without provider
+export const useExternalFieldErrorSafe = (fieldName: string) => {
+  const context = useFormErrorSafe();
+
+  const externalError = context?.externalErrors[fieldName];
+
+  const clearError = useCallback(() => {
+    context?.clearExternalError(fieldName);
+  }, [context, fieldName]);
 
   return {
     externalError,
