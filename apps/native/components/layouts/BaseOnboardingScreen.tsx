@@ -1,4 +1,3 @@
-import { Icon } from '@roninoss/icons';
 import { Platform, View } from 'react-native';
 import { KeyboardAwareScrollView, KeyboardStickyView } from 'react-native-keyboard-controller';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -67,9 +66,9 @@ export const BaseOnboardingScreen = ({
         <KeyboardStickyView
           offset={{
             closed: 0,
-            opened: Platform.select({ ios: insets.bottom + 30, default: insets.bottom }),
+            opened: Platform.select({ ios: insets.bottom, default: insets.bottom }),
           }}>
-          <View className="flex-row items-center justify-end  px-4 py-2">
+          <View className="flex-row items-center justify-end  px-4 pb-2">
             <View className="flex-1 flex-row justify-start">
               {secondaryAction && (
                 <Button variant="plain" onPress={secondaryAction.onPress}>

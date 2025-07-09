@@ -70,15 +70,18 @@ importers:
       '@packages/web-ui':
         specifier: workspace:*
         version: link:../../packages/web-ui
+      '@quidone/react-native-wheel-picker':
+        specifier: ^1.4.1
+        version: 1.4.1(react-native@0.79.3(@babel/core@7.27.4)(@types/react@19.0.14)(react@19.0.0))(react@19.0.0)
+      '@quidone/react-native-wheel-picker-feedback':
+        specifier: ^2.0.0
+        version: 2.0.0(react-native@0.79.3(@babel/core@7.27.4)(@types/react@19.0.14)(react@19.0.0))(react@19.0.0)
       '@react-native-community/datetimepicker':
         specifier: 8.3.0
         version: 8.3.0(expo@53.0.11(@babel/core@7.27.4)(@expo/metro-runtime@5.0.4(react-native@0.79.3(@babel/core@7.27.4)(@types/react@19.0.14)(react@19.0.0)))(react-native-webview@13.13.5(react-native@0.79.3(@babel/core@7.27.4)(@types/react@19.0.14)(react@19.0.0))(react@19.0.0))(react-native@0.79.3(@babel/core@7.27.4)(@types/react@19.0.14)(react@19.0.0))(react@19.0.0))(react-native@0.79.3(@babel/core@7.27.4)(@types/react@19.0.14)(react@19.0.0))(react@19.0.0)
       '@react-native-community/slider':
         specifier: 4.5.6
         version: 4.5.6
-      '@react-native-picker/picker':
-        specifier: 2.11.0
-        version: 2.11.0(react-native@0.79.3(@babel/core@7.27.4)(@types/react@19.0.14)(react@19.0.0))(react@19.0.0)
       '@react-navigation/native':
         specifier: ^7.1.6
         version: 7.1.11(react-native@0.79.3(@babel/core@7.27.4)(@types/react@19.0.14)(react@19.0.0))(react@19.0.0)
@@ -2284,6 +2287,19 @@ packages:
   '@popperjs/core@2.11.8':
     resolution: {integrity: sha512-P1st0aksCrn9sGZhp8GMYwBnQsbvAWsZAX44oXNNvLHGqAOcoVxmjZiohstwQ7SqKnbR47akdNi+uleWD8+g6A==}
 
+  '@quidone/react-native-wheel-picker-feedback@2.0.0':
+    resolution: {integrity: sha512-Nb+uwmKtlC9lea1oQp0DDJEE9tOVe3iiFH6IxmoBj+aaGnyHWhNZ0J0VjVcb4+Qp7WtHNQt08JWzEEIAL9zF1g==}
+    peerDependencies:
+      react: '*'
+      react-native: '*'
+
+  '@quidone/react-native-wheel-picker@1.4.1':
+    resolution: {integrity: sha512-y0Kf3ToC01HcQ2BfNQlBuOO0i0quFfik1HO5DoCZpSlwMhFJt8UYqIc2TryRvsRxbgahBST7W17qXnVj9LDTMw==}
+    engines: {node: '>= 16.0.0'}
+    peerDependencies:
+      react: '>=16.8'
+      react-native: '>=0.71.6'
+
   '@radix-ui/number@1.1.1':
     resolution: {integrity: sha512-MkKCwxlXTgz6CFoJx3pCwn07GKp36+aZyu/u2Ln2VrA5DcdyCZkASEDBTd8x5whTQQL5CiYf4prXKLcgQdv29g==}
 
@@ -2882,12 +2898,6 @@ packages:
   '@react-native-community/slider@4.5.6':
     resolution: {integrity: sha512-UhLPFeqx0YfPLrEz8ffT3uqAyXWu6iqFjohNsbp4cOU7hnJwg2RXtDnYHoHMr7MOkZDVdlLMdrSrAuzY6KGqrg==}
 
-  '@react-native-picker/picker@2.11.0':
-    resolution: {integrity: sha512-QuZU6gbxmOID5zZgd/H90NgBnbJ3VV6qVzp6c7/dDrmWdX8S0X5YFYgDcQFjE3dRen9wB9FWnj2VVdPU64adSg==}
-    peerDependencies:
-      react: '*'
-      react-native: '*'
-
   '@react-native/assets-registry@0.79.3':
     resolution: {integrity: sha512-Vy8DQXCJ21YSAiHxrNBz35VqVlZPpRYm50xRTWRf660JwHuJkFQG8cUkrLzm7AUriqUXxwpkQHcY+b0ibw9ejQ==}
     engines: {node: '>=18'}
@@ -3234,6 +3244,11 @@ packages:
     peerDependencies:
       react: '*'
       react-native: '*'
+
+  '@rozhkov/react-useful-hooks@1.0.10':
+    resolution: {integrity: sha512-aEDZDiqkpPJX8WqLqcnPGjXzRpCFiZmbtdr5RVUOciNbbANhdNu+oIxJv3g7ezMcgsYhgWp2/XGxU+g/ClsBew==}
+    peerDependencies:
+      react: ^16.8 || ^17 || ^18 || ^19
 
   '@rtsao/scc@1.1.0':
     resolution: {integrity: sha512-zt6OdqaDoOnJ1ZYsCYGt9YmWzDXl4vQdKTyJev62gFhRGKdx7mcT54V9KIjg+d2wi9EXsPvAPKe7i7WjfVWB8g==}
@@ -4584,6 +4599,9 @@ packages:
   deepmerge@4.3.1:
     resolution: {integrity: sha512-3sUqbMEc77XqpdNO7FRyRog+eW3ph+GYCbj+rK+uYyRMuwsVy0rMiVtPn+QJlKFvWP/1PYpapqYn0Me2knFn+A==}
     engines: {node: '>=0.10.0'}
+
+  default-values@1.0.2:
+    resolution: {integrity: sha512-OaZEvojjexigvv1IT6N0rKUD5Af7fG11a0jg87jySv5xzjc2+IEW9oWNvqxWLHGhShRRZ0QopCGzGjJv/aY+mw==}
 
   defaults@1.0.4:
     resolution: {integrity: sha512-eFuaLoy/Rxalv2kr+lqMlUnrDWV+3j4pljOIJgLIhI058IQfWJ7vXhyEIHu+HtC738klGALYxOKDO0bQP3tg8A==}
@@ -9862,6 +9880,17 @@ snapshots:
 
   '@popperjs/core@2.11.8': {}
 
+  '@quidone/react-native-wheel-picker-feedback@2.0.0(react-native@0.79.3(@babel/core@7.27.4)(@types/react@19.0.14)(react@19.0.0))(react@19.0.0)':
+    dependencies:
+      react: 19.0.0
+      react-native: 0.79.3(@babel/core@7.27.4)(@types/react@19.0.14)(react@19.0.0)
+
+  '@quidone/react-native-wheel-picker@1.4.1(react-native@0.79.3(@babel/core@7.27.4)(@types/react@19.0.14)(react@19.0.0))(react@19.0.0)':
+    dependencies:
+      '@rozhkov/react-useful-hooks': 1.0.10(react@19.0.0)
+      react: 19.0.0
+      react-native: 0.79.3(@babel/core@7.27.4)(@types/react@19.0.14)(react@19.0.0)
+
   '@radix-ui/number@1.1.1': {}
 
   '@radix-ui/primitive@1.1.2': {}
@@ -10902,11 +10931,6 @@ snapshots:
 
   '@react-native-community/slider@4.5.6': {}
 
-  '@react-native-picker/picker@2.11.0(react-native@0.79.3(@babel/core@7.27.4)(@types/react@19.0.14)(react@19.0.0))(react@19.0.0)':
-    dependencies:
-      react: 19.0.0
-      react-native: 0.79.3(@babel/core@7.27.4)(@types/react@19.0.14)(react@19.0.0)
-
   '@react-native/assets-registry@0.79.3': {}
 
   '@react-native/babel-plugin-codegen@0.79.3(@babel/core@7.27.4)':
@@ -11336,6 +11360,11 @@ snapshots:
       sweet-sfsymbols: 0.7.2(expo@53.0.11(@babel/core@7.27.4)(@expo/metro-runtime@5.0.4(react-native@0.79.3(@babel/core@7.27.4)(@types/react@19.0.14)(react@19.0.0)))(react-native-webview@13.13.5(react-native@0.79.3(@babel/core@7.27.4)(@types/react@19.0.14)(react@19.0.0))(react@19.0.0))(react-native@0.79.3(@babel/core@7.27.4)(@types/react@19.0.14)(react@19.0.0))(react@19.0.0))(react-native@0.79.3(@babel/core@7.27.4)(@types/react@19.0.14)(react@19.0.0))(react@19.0.0)
     transitivePeerDependencies:
       - expo
+
+  '@rozhkov/react-useful-hooks@1.0.10(react@19.0.0)':
+    dependencies:
+      default-values: 1.0.2
+      react: 19.0.0
 
   '@rtsao/scc@1.1.0': {}
 
@@ -12825,6 +12854,8 @@ snapshots:
   deepmerge@3.3.0: {}
 
   deepmerge@4.3.1: {}
+
+  default-values@1.0.2: {}
 
   defaults@1.0.4:
     dependencies:
