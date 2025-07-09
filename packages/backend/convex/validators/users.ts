@@ -6,7 +6,6 @@ import { attributesPlainObject } from './attributes'
 import { sizingPlainObject } from './sizing'
 import { Doc } from '../_generated/dataModel'
 
-
 export const zSkillsPlainObject = {
   expert: z.array(z.string()),
   proficient: z.array(z.string()),
@@ -47,7 +46,6 @@ export const zLinks = z.object(links)
 
 // Profile type definitions
 export type ProfileType = 'dancer' | 'choreographer' | 'guest'
-
 
 export const users = {
   // meta

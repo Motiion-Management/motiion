@@ -1,10 +1,10 @@
 import { Doc } from './_generated/dataModel'
-import { 
-  getOnboardingFlow, 
-  OnboardingStep, 
-  ProfileType, 
+import {
+  getOnboardingFlow,
+  OnboardingStep,
+  ProfileType,
   CURRENT_ONBOARDING_VERSION,
-  getStepRoute 
+  getStepRoute
 } from './onboardingConfig'
 
 export interface OnboardingStatus {
@@ -21,7 +21,7 @@ export interface OnboardingStatus {
 }
 
 export function analyzeOnboardingProgress(
-  user: Doc<'users'>, 
+  user: Doc<'users'>,
   version: string = CURRENT_ONBOARDING_VERSION
 ): OnboardingStatus {
   // Safety check - ensure user object exists
@@ -45,7 +45,7 @@ export function analyzeOnboardingProgress(
   if (user.onboardingCompleted) {
     const profileType = user.profileType || 'dancer'
     const flow = getOnboardingFlow(profileType as ProfileType, version)
-    
+
     return {
       isComplete: true,
       currentStep: null,
@@ -62,15 +62,15 @@ export function analyzeOnboardingProgress(
   // Determine profile type flow
   const profileType = (user.profileType || 'dancer') as ProfileType
   const flow = getOnboardingFlow(profileType, version)
-  
+
   // Find the first incomplete step
   for (let i = 0; i < flow.length; i++) {
     const step = flow[i]
     const isStepComplete = checkStepCompletion(user, step)
-    
+
     if (!isStepComplete) {
       const missingFields = getMissingFields(user, step)
-      
+
       return {
         isComplete: false,
         currentStep: step.step,
@@ -100,7 +100,10 @@ export function analyzeOnboardingProgress(
   }
 }
 
-function checkStepCompletion(user: Doc<'users'>, step: OnboardingStep): boolean {
+function checkStepCompletion(
+  user: Doc<'users'>,
+  step: OnboardingStep
+): boolean {
   const missingFields = getMissingFields(user, step)
   return missingFields.length === 0
 }
@@ -117,29 +120,33 @@ function getMissingFields(user: Doc<'users'>, step: OnboardingStep): string[] {
   return missing
 }
 
-function hasRequiredField(user: Doc<'users'>, field: string, minItems?: number): boolean {
+function hasRequiredField(
+  user: Doc<'users'>,
+  field: string,
+  minItems?: number
+): boolean {
   const value = getFieldValue(user, field)
-  
+
   if (value === undefined || value === null) {
     return false
   }
-  
+
   // Check if it's an array and meets minimum items requirement
   if (Array.isArray(value)) {
     return minItems ? value.length >= minItems : value.length > 0
   }
-  
+
   // Check if it's an object and not empty
   // Note: we need to check for null again since typeof null === 'object'
   if (typeof value === 'object' && value !== null) {
     return Object.keys(value).length > 0
   }
-  
+
   // Check if it's a string and not empty
   if (typeof value === 'string') {
     return value.trim().length > 0
   }
-  
+
   // For other types (boolean, number), just check if they exist
   return true
 }
@@ -181,17 +188,26 @@ function getFieldValue(user: Doc<'users'>, field: string): any {
   }
 }
 
-export function isOnboardingComplete(user: Doc<'users'>, version: string = CURRENT_ONBOARDING_VERSION): boolean {
+export function isOnboardingComplete(
+  user: Doc<'users'>,
+  version: string = CURRENT_ONBOARDING_VERSION
+): boolean {
   const status = analyzeOnboardingProgress(user, version)
   return status.isComplete
 }
 
-export function getNextOnboardingStep(user: Doc<'users'>, version: string = CURRENT_ONBOARDING_VERSION): string | null {
+export function getNextOnboardingStep(
+  user: Doc<'users'>,
+  version: string = CURRENT_ONBOARDING_VERSION
+): string | null {
   const status = analyzeOnboardingProgress(user, version)
   return status.currentStep
 }
 
-export function getOnboardingProgress(user: Doc<'users'>, version: string = CURRENT_ONBOARDING_VERSION): number {
+export function getOnboardingProgress(
+  user: Doc<'users'>,
+  version: string = CURRENT_ONBOARDING_VERSION
+): number {
   const status = analyzeOnboardingProgress(user, version)
   return status.progress
 }

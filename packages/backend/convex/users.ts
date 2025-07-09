@@ -12,11 +12,7 @@ import { authMutation, authQuery, notEmpty } from './util'
 
 import { getAll, getOneFrom } from 'convex-helpers/server/relationships'
 import { crud } from 'convex-helpers/server'
-import {
-  UserDoc,
-  Users,
-  clerkCreateUserFields
-} from './validators/users'
+import { UserDoc, Users, clerkCreateUserFields } from './validators/users'
 import { internal } from './_generated/api'
 import { literals, partial } from 'convex-helpers/validators'
 import { NEW_USER_DEFAULTS, formatFullName } from './users/helpers'

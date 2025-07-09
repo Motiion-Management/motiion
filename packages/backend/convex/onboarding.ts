@@ -1,6 +1,9 @@
 import { query, mutation } from './_generated/server'
 import { ConvexError } from 'convex/values'
-import { analyzeOnboardingProgress, isOnboardingComplete } from './onboardingAnalysis'
+import {
+  analyzeOnboardingProgress,
+  isOnboardingComplete
+} from './onboardingAnalysis'
 import { CURRENT_ONBOARDING_VERSION } from './onboardingConfig'
 
 export const getOnboardingStatus = query({
@@ -107,7 +110,7 @@ export const getOnboardingProgress = query({
     }
 
     const status = analyzeOnboardingProgress(user, CURRENT_ONBOARDING_VERSION)
-    
+
     return {
       progress: status.progress,
       currentStep: status.currentStep,
@@ -136,7 +139,7 @@ export const debugOnboardingStatus = query({
     }
 
     const status = analyzeOnboardingProgress(user, CURRENT_ONBOARDING_VERSION)
-    
+
     // Return detailed debug information
     return {
       ...status,
