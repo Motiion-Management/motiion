@@ -10,6 +10,12 @@ cssInterop(UITextView, { className: 'style' });
 const textVariants = cva('text-text-default font-sans', {
   variants: {
     variant: {
+      header1: 'text-h1',
+      header2: 'text-h2',
+      header3: 'text-h3',
+      header4: 'text-h4',
+      header5: 'text-h5',
+      header6: 'text-h6',
       largeTitle: 'text-h1 ',
       title1: 'text-h2 ',
       title2: 'text-h3 ',

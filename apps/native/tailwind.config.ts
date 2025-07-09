@@ -1,6 +1,6 @@
 import { customFontSizes } from './lib/theme/fontSizes';
 
-const { hairlineWidth, platformSelect } = require('nativewind/theme');
+const { hairlineWidth } = require('nativewind/theme');
 
 module.exports = {
   // NOTE: Update this to include the paths to all of your component files.
@@ -18,15 +18,6 @@ module.exports = {
       },
       fontSize: {
         ...JSON.parse(JSON.stringify(customFontSizes)),
-        // Add Figma typography scale
-        'heading-1': ['40px', { lineHeight: '1.2', fontWeight: '600' }],
-        'heading-2': ['32px', { lineHeight: '1.2', fontWeight: '600' }],
-        'heading-3': ['24px', { lineHeight: '1.2', fontWeight: '600' }],
-        'heading-4': ['20px', { lineHeight: '1.4', fontWeight: '600' }],
-        'heading-5': ['16px', { lineHeight: '1.4', fontWeight: '600' }],
-        'heading-6': ['12px', { lineHeight: '1.4', fontWeight: '600' }],
-        'body-large': ['18px', { lineHeight: '1.5', fontWeight: '400' }],
-        'body-medium': ['16px', { lineHeight: '1.5', fontWeight: '400' }],
       },
       fontWeight: {
         light: '300',

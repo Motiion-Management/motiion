@@ -1,9 +1,7 @@
-import WheelPicker from '@quidone/react-native-wheel-picker';
-import WheelPickerFeedback from '@quidone/react-native-wheel-picker-feedback';
 import React, { useState, useEffect, useCallback } from 'react';
 import { View } from 'react-native';
 
-import { Text } from '~/components/ui/text';
+import { WheelPicker } from '~/components/ui/wheel-picker';
 
 export interface HeightValue {
   feet: number;
@@ -27,46 +25,6 @@ const inchesData = Array.from({ length: 12 }, (_, i) => ({
   value: i,
   label: i.toString(),
 }));
-
-interface CustomWheelPickerProps {
-  data: { value: number; label: string }[];
-  selectedValue: number;
-  onValueChange: (value: number) => void;
-  label: string;
-  width?: number;
-}
-
-function CustomWheelPicker({
-  data,
-  selectedValue,
-  onValueChange,
-  label,
-  width = 100,
-}: CustomWheelPickerProps) {
-  return (
-    <View className="items-center">
-      <WheelPicker
-        data={data}
-        value={selectedValue}
-        onValueChanged={({ item: { value } }) => onValueChange(value)}
-        onValueChanging={() => {
-          WheelPickerFeedback.triggerSoundAndImpact();
-        }}
-        width={width}
-        itemTextStyle={{
-          fontSize: 24,
-          fontWeight: 600,
-          color: 'white',
-        }}
-      />
-
-      {/* Label positioned to the right of the selected value */}
-      <View className="absolute left-2/3 top-1/2  -translate-y-1/2">
-        <Text className="text-lg font-normal text-text-default">{label}</Text>
-      </View>
-    </View>
-  );
-}
 
 export function HeightPicker({
   value,
@@ -107,25 +65,21 @@ export function HeightPicker({
 
         {/* Picker columns */}
         <View className="mr-10 h-full flex-row items-center justify-center">
-          <View className="items-center">
-            <CustomWheelPicker
-              width={116}
-              data={feetData}
-              selectedValue={currentValue.feet}
-              onValueChange={handleFeetChange}
-              label="feet"
-            />
-          </View>
+          <WheelPicker
+            width={116}
+            data={feetData}
+            value={currentValue.feet}
+            onValueChange={handleFeetChange}
+            label="feet"
+          />
 
-          <View className="items-center ">
-            <CustomWheelPicker
-              width={124}
-              data={inchesData}
-              selectedValue={currentValue.inches}
-              onValueChange={handleInchesChange}
-              label="inches"
-            />
-          </View>
+          <WheelPicker
+            width={124}
+            data={inchesData}
+            value={currentValue.inches}
+            onValueChange={handleInchesChange}
+            label="inches"
+          />
         </View>
       </View>
     </View>
