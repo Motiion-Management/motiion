@@ -4,7 +4,7 @@ import { StyleSheet, useColorScheme, View } from 'react-native';
 export function BackgroundGradientView({ children }: { children: React.ReactNode }) {
   const colorScheme = useColorScheme();
 
-  const gradientColor = colorScheme === 'dark' ? '#15191C' : '#F8F9FA';
+  const gradientColor = colorScheme === 'dark' ? '#15191C' : 'transparent';
 
   return (
     <View className="relative h-full flex-1 bg-background-default">
