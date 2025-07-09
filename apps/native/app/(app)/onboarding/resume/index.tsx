@@ -11,15 +11,20 @@ import { useOnboardingStatus } from '~/hooks/useOnboardingStatus';
 export default function ResumeScreen() {
   const router = useRouter();
   const updateUser = useMutation(api.users.updateMyUser);
-  const { getStepTitle } = useOnboardingStatus();
+  const { getStepTitle, getNextStepRoute } = useOnboardingStatus();
 
   const handleContinue = async () => {
     try {
       // TODO: Implement resume form logic
       console.log('Resume step - implement form logic');
 
-      // For now, just redirect to let the system determine next step
-      router.replace('/(app)');
+      // Navigate to the next step
+      const nextRoute = getNextStepRoute();
+      if (nextRoute) {
+        router.push(nextRoute);
+      } else {
+        router.push('/(app)');
+      }
     } catch (error) {
       console.error('Error in resume step:', error);
     }

@@ -1,7 +1,7 @@
 import { api } from '@packages/backend/convex/_generated/api';
 import { useQuery } from 'convex/react';
 import { useRouter } from 'expo-router';
-import React from 'react';
+import React, { useState } from 'react';
 import { View } from 'react-native';
 
 import { BaseOnboardingScreen } from '~/components/layouts/BaseOnboardingScreen';
@@ -11,16 +11,29 @@ import { useOnboardingStatus } from '~/hooks/useOnboardingStatus';
 
 export default function HeadshotsScreen() {
   const router = useRouter();
-  const { getStepTitle } = useOnboardingStatus();
+  const { getStepTitle, getNextStepRoute } = useOnboardingStatus();
   const existingHeadshots = useQuery(api.users.headshots.getMyHeadshots);
   const hasImages = (existingHeadshots?.length ?? 0) > 0;
+  const [hasInteracted, setHasInteracted] = useState(false);
 
   const handleContinue = async () => {
     try {
-      // Navigate to next step since images are already saved to backend
-      router.replace('/(app)');
+      // Get the next step route from the onboarding system
+      const nextRoute = getNextStepRoute();
+      if (nextRoute) {
+        router.push(nextRoute);
+      } else {
+        // If no next step, onboarding is complete
+        router.push('/(app)/home');
+      }
     } catch (error) {
       console.error('Error in headshots step:', error);
+    }
+  };
+
+  const handleImageCountChange = (count: number) => {
+    if (count > 0) {
+      setHasInteracted(true);
     }
   };
 
@@ -29,12 +42,12 @@ export default function HeadshotsScreen() {
       <BaseOnboardingScreen
         title={getStepTitle()}
         description="Upload your professional headshots to showcase your look."
-        canProgress={hasImages}
+        canProgress={hasImages && hasInteracted}
         primaryAction={{
           onPress: handleContinue,
         }}>
         <View className="mt-4 flex-1">
-          <MultiImageUpload />
+          <MultiImageUpload onImageCountChange={handleImageCountChange} />
         </View>
       </BaseOnboardingScreen>
     </OnboardingStepGuard>

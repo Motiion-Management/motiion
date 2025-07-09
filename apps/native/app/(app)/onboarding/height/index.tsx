@@ -7,16 +7,24 @@ import { BaseOnboardingScreen } from '~/components/layouts/BaseOnboardingScreen'
 import { OnboardingStepGuard } from '~/components/onboarding/OnboardingGuard';
 import { Text } from '~/components/ui/text';
 import { useHeightForm } from '~/hooks/useHeightForm';
+import { useOnboardingStatus } from '~/hooks/useOnboardingStatus';
 
 export default function HeightScreen() {
   const router = useRouter();
   const heightForm = useHeightForm();
+  const { getNextStepRoute } = useOnboardingStatus();
 
   const handleContinue = async () => {
     try {
       const success = await heightForm.actions.submitHeight();
       if (success) {
-        router.replace('/(app)');
+        // Navigate to the next step
+        const nextRoute = getNextStepRoute();
+        if (nextRoute) {
+          router.push(nextRoute);
+        } else {
+          router.push('/(app)');
+        }
       }
     } catch (error) {
       console.error('Error in height step:', error);

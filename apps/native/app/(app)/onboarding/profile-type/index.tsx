@@ -8,6 +8,7 @@ import { ValidationModeForm } from '~/components/form/ValidationModeForm';
 import { useAppForm } from '~/components/form/appForm';
 import { BaseOnboardingScreen } from '~/components/layouts/BaseOnboardingScreen';
 import { OnboardingStepGuard } from '~/components/onboarding/OnboardingGuard';
+import { useOnboardingStatus } from '~/hooks/useOnboardingStatus';
 
 const profileTypeValidator = z.object({
   profileType: z.enum(['dancer', 'choreographer'], {
@@ -20,6 +21,7 @@ type ProfileType = 'dancer' | 'choreographer' | 'guest';
 export default function ProfileTypeScreen() {
   const router = useRouter();
   const updateUser = useMutation(api.users.updateMyUser);
+  const { getNextStepRoute } = useOnboardingStatus();
 
   const form = useAppForm({
     defaultValues: {
@@ -37,8 +39,13 @@ export default function ProfileTypeScreen() {
           profileType: value.profileType,
         });
 
-        // Let the system determine where to go next by refreshing
-        router.replace('/(app)');
+        // Navigate to the next step
+        const nextRoute = getNextStepRoute();
+        if (nextRoute) {
+          router.push(nextRoute);
+        } else {
+          router.push('/(app)');
+        }
       } catch (error) {
         console.error('Error updating profile type:', error);
       }
@@ -52,8 +59,13 @@ export default function ProfileTypeScreen() {
         profileType: 'guest',
       });
 
-      // Let the system determine where to go next by refreshing
-      router.replace('/(app)');
+      // Navigate to the next step
+      const nextRoute = getNextStepRoute();
+      if (nextRoute) {
+        router.push(nextRoute);
+      } else {
+        router.push('/(app)');
+      }
     } catch (error) {
       console.error('Error setting guest profile:', error);
     }
@@ -76,6 +88,7 @@ export default function ProfileTypeScreen() {
         title="Your journey is unique. Your profile should be too."
         description="Select your main account type."
         canProgress={form.state.canSubmit && !form.state.isSubmitting}
+        showBackButton={false}
         primaryAction={{
           onPress: () => form.handleSubmit(),
         }}

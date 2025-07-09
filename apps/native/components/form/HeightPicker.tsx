@@ -58,7 +58,7 @@ export function HeightPicker({
   );
 
   return (
-    <View className="overflow-hidden rounded-lg border border-border-default ">
+    <View className="overflow-hidden rounded-lg border border-border-low ">
       <View className="relative h-[178px]">
         {/* Highlight region - this provides the background for selected items */}
         <View className="absolute left-0 right-0 top-1/2 h-14 -translate-y-1/2 border-b border-t border-border-accent bg-surface-high" />

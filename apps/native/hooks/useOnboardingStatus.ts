@@ -105,6 +105,17 @@ export function useOnboardingStatus() {
           return 'Profile Setup';
       }
     },
+
+    getNextStepRoute: () => {
+      if (!status || status.isComplete) return null;
+
+      // If there's a redirect path from the backend analysis, use that
+      if (status.redirectPath && status.redirectPath !== '/(app)') {
+        return status.redirectPath;
+      }
+
+      return null;
+    },
   };
 }
 
