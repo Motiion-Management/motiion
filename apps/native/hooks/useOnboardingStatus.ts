@@ -1,10 +1,12 @@
 import { api } from '@packages/backend/convex/_generated/api';
-import { useQuery, useMutation, useConvexAuth } from 'convex/react';
+import { useQuery, useMutation } from 'convex/react';
 import { Href } from 'expo-router';
 import { useCallback } from 'react';
 
+import { useAuthenticated } from './useAuthenticated';
+
 export function useOnboardingStatus(overrideStep?: string) {
-  const { isLoading: authLoading } = useConvexAuth();
+  const { isLoading: authLoading } = useAuthenticated();
   const status = useQuery(api.onboarding.getOnboardingStatus);
   const user = useQuery(api.users.getMyUser);
 
@@ -168,7 +170,7 @@ export function useOnboardingStatus(overrideStep?: string) {
 
       // If there's a redirect path from the backend analysis, use that
       if (status.redirectPath && status.redirectPath !== '/app') {
-        return status.redirectPath;
+        return status.redirectPath as Href;
       }
 
       return null;

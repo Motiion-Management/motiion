@@ -57,7 +57,7 @@ export default function UsernameScreen() {
         if (status === 'complete') {
           console.log('🎯 USERNAME: Signup complete, activating session and redirecting');
           await clerk.setActive({ session: createdSessionId });
-          router.replace('/app');
+          router.replace('/');
         } else if (status === 'missing_requirements') {
           const issues = [];
           if (missingFields.length > 0) {

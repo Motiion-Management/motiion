@@ -1,4 +1,4 @@
-import { useConvexAuth } from 'convex/react';
+// import { useConvexAuth } from 'convex/react';
 import { Href, Redirect } from 'expo-router';
 import React from 'react';
 import { View, ActivityIndicator } from 'react-native';
@@ -9,7 +9,7 @@ import { useOnboardingStatus } from '~/hooks/useOnboardingStatus';
 
 export default function AppRouter() {
   const { isLoading, isComplete, redirectPath } = useOnboardingStatus();
-  const { isAuthenticated } = useConvexAuth();
+  // const { isAuthenticated } = useConvexAuth();
 
   console.log('🔄 APP_ROUTER: Onboarding status check', {
     isLoading,
@@ -28,11 +28,11 @@ export default function AppRouter() {
     );
   }
 
-  // If user is not found in Convex or requires auth, redirect to root
-  if (!isAuthenticated) {
-    console.log('🚫 APP_INDEX: Unauthenticated');
-    return <Redirect href="/" />;
-  }
+  // // If user is not found in Convex or requires auth, redirect to root
+  // if (!isAuthenticated) {
+  //   console.log('🚫 APP_INDEX: Unauthenticated');
+  //   return <Redirect href="/" />;
+  // }
 
   // Determine where to redirect based on onboarding status
   const destination: Href = isComplete

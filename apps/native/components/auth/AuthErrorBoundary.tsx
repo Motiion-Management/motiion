@@ -26,7 +26,7 @@ export class AuthErrorBoundary extends React.Component<
   }
 
   static getDerivedStateFromError(error: Error): AuthErrorBoundaryState {
-    // Check if this is an authentication-related error
+    // Only catch actual authentication errors, not render loops
     const isAuthError =
       error.message.includes('must be logged in') ||
       error.message.includes('user not found') ||
@@ -34,36 +34,20 @@ export class AuthErrorBoundary extends React.Component<
       error.message.includes('Authentication') ||
       error.message.includes('Unauthorized');
 
-    // Catch infinite render loops and treat them as auth errors to redirect to safety
-    const isRenderLoopError =
-      error.message.includes('Maximum update depth exceeded') ||
-      error.message.includes('Too many re-renders');
-
     return {
       hasError: true,
       error,
-      isAuthError: isAuthError || isRenderLoopError,
+      isAuthError,
     };
   }
 
   componentDidCatch(error: Error, errorInfo: React.ErrorInfo) {
     console.error('AuthErrorBoundary caught an error:', error, errorInfo);
-    
-    // For render loop errors, provide additional debugging info
-    if (error.message.includes('Maximum update depth exceeded')) {
-      console.error('🔄 RENDER LOOP DETECTED: This usually indicates a component is calling setState during render or useEffect has unstable dependencies');
-      console.error('Component stack:', errorInfo.componentStack);
-    }
   }
 
   render() {
     if (this.state.hasError) {
-      // If it's an authentication error, redirect to login
-      if (this.state.isAuthError) {
-        return <Redirect href="/" />;
-      }
-
-      // For non-auth errors, show fallback or generic error UI
+      // Show fallback or generic error UI (no redirects)
       if (this.props.fallback) {
         return this.props.fallback;
       }

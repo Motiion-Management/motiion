@@ -23,7 +23,7 @@ export default function HeightScreen() {
         if (nextRoute) {
           router.push(nextRoute);
         } else {
-          router.push('/app');
+          router.push('/app/home');
         }
       }
     } catch (error) {

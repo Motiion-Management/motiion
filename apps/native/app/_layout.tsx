@@ -14,6 +14,7 @@ import { KeyboardProvider } from 'react-native-keyboard-controller';
 import ConvexClientProvider from '~/components/providers/ConvexClientProvider';
 import { AlertAnchor } from '~/components/ui/alert';
 import { AlertRef } from '~/components/ui/alert/types';
+import { useAuthenticated } from '~/hooks/useAuthenticated';
 import { useColorScheme, useInitialAndroidBarSync } from '~/lib/useColorScheme';
 import { NAV_THEME } from '~/theme';
 
@@ -39,29 +40,7 @@ export default function RootLayout() {
             <ActionSheetProvider>
               <NavThemeProvider value={NAV_THEME[colorScheme]}>
                 <ConvexClientProvider>
-                  <Stack
-                    screenOptions={{
-                      animation: 'ios_from_right', // for android
-                      headerShown: false,
-                    }}>
-                    <Stack.Screen name="index" />
-                    <Stack.Screen
-                      name="auth"
-                      options={{
-                        // headerShown: false,
-                        title: 'auth',
-                      }}
-                    />
-                    <Stack.Screen name="app" />
-
-                    <Stack.Screen
-                      name="(modals)"
-                      options={{
-                        // headerShown: false,
-                        presentation: 'modal',
-                      }}
-                    />
-                  </Stack>
+                  <RootStack />
                   <AlertAnchor ref={alertRef} />
                 </ConvexClientProvider>
               </NavThemeProvider>
@@ -72,3 +51,34 @@ export default function RootLayout() {
     </>
   );
 }
+
+const RootStack = () => {
+  const { isLoading, isAuthenticated } = useAuthenticated();
+  return (
+    <Stack
+      screenOptions={{
+        animation: 'ios_from_right', // for android
+        headerShown: false,
+      }}>
+      <Stack.Screen name="index" />
+      <Stack.Screen
+        name="auth"
+        options={{
+          // headerShown: false,
+          title: 'auth',
+        }}
+      />
+      <Stack.Protected guard={!isLoading && isAuthenticated}>
+        <Stack.Screen name="app" />
+      </Stack.Protected>
+
+      <Stack.Screen
+        name="(modals)"
+        options={{
+          // headerShown: false,
+          presentation: 'modal',
+        }}
+      />
+    </Stack>
+  );
+};
