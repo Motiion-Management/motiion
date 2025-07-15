@@ -32,18 +32,28 @@ export class AuthErrorBoundary extends React.Component<
       error.message.includes('user not found') ||
       error.message.includes('User not found in database') ||
       error.message.includes('Authentication') ||
-      error.message.includes('Unauthorized') ||
-      error.message.includes('Maximum update depth exceeded'); // Catch infinite render loops
+      error.message.includes('Unauthorized');
+
+    // Catch infinite render loops and treat them as auth errors to redirect to safety
+    const isRenderLoopError =
+      error.message.includes('Maximum update depth exceeded') ||
+      error.message.includes('Too many re-renders');
 
     return {
       hasError: true,
       error,
-      isAuthError,
+      isAuthError: isAuthError || isRenderLoopError,
     };
   }
 
   componentDidCatch(error: Error, errorInfo: React.ErrorInfo) {
     console.error('AuthErrorBoundary caught an error:', error, errorInfo);
+    
+    // For render loop errors, provide additional debugging info
+    if (error.message.includes('Maximum update depth exceeded')) {
+      console.error('🔄 RENDER LOOP DETECTED: This usually indicates a component is calling setState during render or useEffect has unstable dependencies');
+      console.error('Component stack:', errorInfo.componentStack);
+    }
   }
 
   render() {

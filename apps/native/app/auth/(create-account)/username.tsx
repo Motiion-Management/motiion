@@ -1,4 +1,4 @@
-import { useSignUp, useClerk, useAuth } from '@clerk/clerk-expo';
+import { useSignUp, useClerk } from '@clerk/clerk-expo';
 import { useStore } from '@tanstack/react-store';
 import { router } from 'expo-router';
 import React, { useState } from 'react';

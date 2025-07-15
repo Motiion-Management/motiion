@@ -1,117 +1,129 @@
 import { api } from '@packages/backend/convex/_generated/api';
 import { useQuery, useMutation, useConvexAuth } from 'convex/react';
 import { Href } from 'expo-router';
-import { useRef, useEffect, useState } from 'react';
+import { useCallback } from 'react';
 
-export function useOnboardingStatus() {
-  const { isLoading: authLoading, isAuthenticated } = useConvexAuth();
+export function useOnboardingStatus(overrideStep?: string) {
+  const { isLoading: authLoading } = useConvexAuth();
   const status = useQuery(api.onboarding.getOnboardingStatus);
-  const [stableStatus, setStableStatus] = useState(status);
-  const timeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const user = useQuery(api.users.getMyUser);
 
-  // Only debounce onboarding data updates, not auth state changes
-  useEffect(() => {
-    if (timeoutRef.current) {
-      clearTimeout(timeoutRef.current);
+  // Define all possible steps in order based on profile type
+  const getAllSteps = useCallback((profileType: string) => {
+    const dancerSteps = [
+      'profile-type',
+      'headshots',
+      'height',
+      'ethnicity',
+      'hair-color',
+      'eye-color',
+      'gender',
+      'sizing',
+      'location',
+      'work-location',
+      'representation',
+      'experiences',
+      'training',
+      'skills',
+      'union',
+    ];
+    const guestSteps = ['profile-type', 'database-use', 'company'];
+    const choreographerSteps = ['profile-type']; // Add more steps as needed
+
+    switch (profileType) {
+      case 'dancer':
+        return dancerSteps;
+      case 'guest':
+        return guestSteps;
+      case 'choreographer':
+        return choreographerSteps;
+      default:
+        return dancerSteps;
     }
+  }, []);
 
-    // Don't debounce if user is not authenticated - handle immediately
-    if (!isAuthenticated) {
-      setStableStatus(null);
-      return;
-    }
+  // Calculate step index for override step if provided
+  const getStepIndex = useCallback(
+    (step: string, profileType: string) => {
+      const steps = getAllSteps(profileType);
+      const index = steps.findIndex((s) => s === step);
+      return index >= 0 ? index : (status?.currentStepIndex ?? 0);
+    },
+    [getAllSteps, status]
+  );
 
-    timeoutRef.current = setTimeout(() => {
-      setStableStatus(status);
-    }, 50);
-
-    return () => {
-      if (timeoutRef.current) {
-        clearTimeout(timeoutRef.current);
-      }
-    };
-  }, [status, isAuthenticated]);
-
-  // Determine user state based on auth and onboarding
-  // Note: auth.userNotFound now triggers automatic sign out, so we don't need to handle it here
-  const userNotFound = stableStatus === null;
+  const profileType = user?.profileType || 'dancer';
+  const currentStepIndex = overrideStep
+    ? getStepIndex(overrideStep, profileType)
+    : (status?.currentStepIndex ?? 0);
 
   return {
-    // Loading state - include auth loading state
-    isLoading: authLoading || status === undefined || stableStatus === undefined,
-
-    // User state
-    userNotFound,
-
-    // Authentication state
-    requiresAuth: !isAuthenticated,
-    hasAuthError: false, // Convex handles auth errors automatically
+    // Loading state - include auth loading state, but not when we know user doesn't exist
+    isLoading: authLoading || status === undefined,
 
     // Completion status
-    isComplete: stableStatus?.isComplete ?? false,
+    isComplete: status?.isComplete ?? false,
 
     // Current step information
-    currentStep: stableStatus?.currentStep ?? null,
-    currentStepIndex: stableStatus?.currentStepIndex ?? 0,
-    totalSteps: stableStatus?.totalSteps ?? 1,
+    currentStep: status?.currentStep ?? null,
+    currentStepIndex,
+    totalSteps: status?.totalSteps ?? 1,
 
     // Progress tracking
-    progress: stableStatus?.progress ?? 0,
+    progress: status?.progress ?? 0,
 
     // Routing helpers
-    shouldRedirect:
-      !userNotFound &&
-      isAuthenticated &&
-      !stableStatus?.isComplete &&
-      !!stableStatus?.currentStep,
-    redirectPath:
-      !isAuthenticated
-        ? '/'
-        : ((stableStatus?.redirectPath ?? '/app/onboarding/profile-type') as Href),
+    shouldRedirect: !status?.isComplete && !!status?.currentStep,
+    redirectPath: (status?.redirectPath ?? '/app/onboarding/profile-type') as Href,
 
     // Version and metadata
-    version: stableStatus?.version ?? 'v2',
+    version: status?.version ?? 'v2',
 
     // Detailed information
-    nextRequiredFields: stableStatus?.nextRequiredFields ?? [],
-    missingFields: stableStatus?.missingFields ?? [],
-    stepDescription: stableStatus?.stepDescription,
+    nextRequiredFields: status?.nextRequiredFields ?? [],
+    missingFields: status?.missingFields ?? [],
+    stepDescription: status?.stepDescription,
 
     // Helper functions
-    getStepLabel: () => {
-      if (!stableStatus?.currentStep) return 'COMPLETE';
+    //
+    getStepLabel: useCallback(
+      (stepName?: string) => {
+        const step = stepName || overrideStep || status?.currentStep;
+        if (!step) return 'COMPLETE';
 
-      // Get profile type for label
-      switch (stableStatus.currentStep) {
-        case 'profile-type':
-          return 'PROFILE';
-        case 'headshots':
-        case 'height':
-        case 'ethnicity':
-        case 'hair-color':
-        case 'eye-color':
-        case 'gender':
-        case 'sizing':
-        case 'location':
-        case 'work-location':
-        case 'representation':
-        case 'experiences':
-        case 'training':
-        case 'skills':
-        case 'union':
-          return 'DANCER';
-        case 'database-use':
-        case 'company':
-          return 'GUEST';
-        default:
-          return 'ONBOARDING';
-      }
-    },
+        // Get profile type for label
+        switch (step) {
+          case 'profile-type':
+            return 'PROFILE';
+          case 'headshots':
+          case 'height':
+          case 'ethnicity':
+          case 'hair-color':
+          case 'eye-color':
+          case 'gender':
+          case 'sizing':
+          case 'location':
+          case 'work-location':
+          case 'representation':
+          case 'experiences':
+          case 'training':
+          case 'skills':
+          case 'union':
+            return 'DANCER';
+          case 'database-use':
+          case 'company':
+            return 'GUEST';
+          default:
+            return 'ONBOARDING';
+        }
+      },
+      [overrideStep, status?.currentStep]
+    ),
 
-    getStepTitle: () => {
-      if (!stableStatus?.currentStep) return 'Complete';
+    getStepTitle: useCallback(() => {
+      if (!status?.currentStep) return 'Complete';
 
-      switch (stableStatus.currentStep) {
+      switch (status.currentStep) {
         case 'profile-type':
           return 'Profile Type';
         case 'headshots':
@@ -149,18 +161,18 @@ export function useOnboardingStatus() {
         default:
           return 'Profile Setup';
       }
-    },
+    }, [status?.currentStep]),
 
-    getNextStepRoute: () => {
-      if (!stableStatus || stableStatus.isComplete) return null;
+    getNextStepRoute: useCallback(() => {
+      if (!status || status.isComplete) return null;
 
       // If there's a redirect path from the backend analysis, use that
-      if (stableStatus.redirectPath && stableStatus.redirectPath !== '/app') {
-        return stableStatus.redirectPath;
+      if (status.redirectPath && status.redirectPath !== '/app') {
+        return status.redirectPath;
       }
 
       return null;
-    },
+    }, [status]),
   };
 }
 

@@ -1,4 +1,4 @@
-import { SignedIn, SignedOut, useAuth } from '@clerk/clerk-expo';
+import { SignedIn, SignedOut } from '@clerk/clerk-expo';
 import { Stack, Redirect } from 'expo-router';
 
 export default function AuthLayout() {

@@ -11,12 +11,7 @@ interface OnboardingGuardProps {
 }
 
 export function OnboardingGuard({ children, fallback }: OnboardingGuardProps) {
-  const { isLoading, isComplete, shouldRedirect, redirectPath, requiresAuth, hasAuthError } = useOnboardingStatus();
-
-  // Check authentication first
-  if (requiresAuth || hasAuthError) {
-    return <Redirect href="/" />;
-  }
+  const { isLoading, isComplete, shouldRedirect, redirectPath } = useOnboardingStatus();
 
   // Show loading state while checking onboarding status
   if (isLoading) {
@@ -50,12 +45,7 @@ export function OnboardingStepGuard({
   requiredStep,
   fallback,
 }: OnboardingStepGuardProps) {
-  const { isLoading, currentStep, isComplete, redirectPath, requiresAuth, hasAuthError } = useOnboardingStatus();
-
-  // Check authentication first
-  if (requiresAuth || hasAuthError) {
-    return <Redirect href="/" />;
-  }
+  const { isLoading, currentStep, isComplete, redirectPath } = useOnboardingStatus();
 
   // Show loading state
   if (isLoading) {
@@ -89,12 +79,7 @@ interface OnboardingCompleteGuardProps {
 
 // Component to protect content that should only be shown to completed users
 export function OnboardingCompleteGuard({ children, fallback }: OnboardingCompleteGuardProps) {
-  const { isLoading, isComplete, redirectPath, requiresAuth, hasAuthError } = useOnboardingStatus();
-
-  // Check authentication first
-  if (requiresAuth || hasAuthError) {
-    return <Redirect href="/" />;
-  }
+  const { isLoading, isComplete, redirectPath } = useOnboardingStatus();
 
   // Show loading state
   if (isLoading) {

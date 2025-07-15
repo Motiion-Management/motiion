@@ -1,4 +1,5 @@
-import { useAuth } from '@clerk/clerk-expo';
+import { useConvexAuth } from 'convex/react';
+import { useClerk } from '@clerk/clerk-expo';
 import { Link } from 'expo-router';
 import * as React from 'react';
 import { Image, Platform, View } from 'react-native';
@@ -19,7 +20,8 @@ const GOOGLE_SOURCE = {
 };
 
 export default function AuthIndexScreen() {
-  const { signOut } = useAuth();
+  const { isLoading, isAuthenticated } = useConvexAuth();
+  const { signOut } = useClerk();
   const alertRef = React.useRef<AlertRef>(null);
 
   return (

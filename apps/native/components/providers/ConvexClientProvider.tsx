@@ -5,6 +5,7 @@ import { tokenCache } from '@clerk/clerk-expo/token-cache';
 import { ConvexReactClient } from 'convex/react';
 import { ConvexProviderWithClerk } from 'convex/react-clerk';
 import { ActivityIndicator, View } from 'react-native';
+
 import { AuthErrorBoundary } from '~/components/auth/AuthErrorBoundary';
 
 const convex = new ConvexReactClient(process.env.EXPO_PUBLIC_CONVEX_URL!);
