@@ -1,4 +1,5 @@
-import { Stack } from 'expo-router';
+import { SignedIn, SignedOut, useAuth } from '@clerk/clerk-expo';
+import { Stack, Redirect } from 'expo-router';
 
 export default function AuthLayout() {
   return (
@@ -7,14 +8,12 @@ export default function AuthLayout() {
         name="(login)"
         options={{
           ...LOGIN_SCREEN_OPTIONS,
-          animation: 'slide_from_right',
         }}
       />
       <Stack.Screen
         name="(create-account)"
         options={{
           ...CREATE_ACCOUNT_SCREEN_OPTIONS,
-          animation: 'slide_from_right',
         }}
       />
     </Stack>
@@ -22,6 +21,7 @@ export default function AuthLayout() {
 }
 
 const SCREEN_OPTIONS = {
+  animation: 'slide_from_right',
   headerShown: false,
   contentStyle: {
     backgroundColor: 'transparent',
@@ -29,7 +29,6 @@ const SCREEN_OPTIONS = {
 } as const;
 
 const LOGIN_SCREEN_OPTIONS = {
-  headerShown: false,
   contentStyle: {
     backgroundColor: 'transparent',
   },

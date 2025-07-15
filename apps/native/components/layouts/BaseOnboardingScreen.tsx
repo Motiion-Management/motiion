@@ -1,7 +1,6 @@
 import { Platform, View } from 'react-native';
 import { KeyboardAwareScrollView, KeyboardStickyView } from 'react-native-keyboard-controller';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { useRouter } from 'expo-router';
 
 import { BackgroundGradientView } from '~/components/ui/background-gradient-view';
 import { Button } from '~/components/ui/button';
@@ -17,7 +16,6 @@ export const BaseOnboardingScreen = ({
   canProgress = false,
   primaryAction,
   secondaryAction,
-  showBackButton = true,
 }: {
   title: string;
   description?: string;
@@ -34,13 +32,6 @@ export const BaseOnboardingScreen = ({
   showBackButton?: boolean;
 }) => {
   const insets = useSafeAreaInsets();
-  const router = useRouter();
-
-  const handleBack = () => {
-    if (router.canGoBack()) {
-      router.back();
-    }
-  };
 
   return (
     <BackgroundGradientView>
@@ -80,22 +71,11 @@ export const BaseOnboardingScreen = ({
             opened: Platform.select({ ios: insets.bottom, default: insets.bottom }),
           }}>
           <View className="flex-row items-center justify-between px-4 pb-2">
-            {/* Back Button */}
             <View className="flex-1 flex-row justify-start">
-              {showBackButton && router.canGoBack() ? (
-                <Button variant="plain" size="icon" onPress={handleBack}>
-                  <ChevronRight
-                    size={24}
-                    className="color-icon-default"
-                    style={{ transform: [{ rotate: '180deg' }] }}
-                  />
+              {secondaryAction && (
+                <Button variant="plain" onPress={secondaryAction.onPress}>
+                  <Text className="text-sm text-text-default">{secondaryAction.text}</Text>
                 </Button>
-              ) : (
-                secondaryAction && (
-                  <Button variant="plain" onPress={secondaryAction.onPress}>
-                    <Text className="text-sm text-text-default">{secondaryAction.text}</Text>
-                  </Button>
-                )
               )}
             </View>
 

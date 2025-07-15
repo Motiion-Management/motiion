@@ -1,43 +1,88 @@
 import { api } from '@packages/backend/convex/_generated/api';
-import { useQuery, useMutation } from 'convex/react';
+import { useQuery, useMutation, useConvexAuth } from 'convex/react';
 import { Href } from 'expo-router';
+import { useRef, useEffect, useState } from 'react';
 
 export function useOnboardingStatus() {
+  const { isLoading: authLoading, isAuthenticated } = useConvexAuth();
   const status = useQuery(api.onboarding.getOnboardingStatus);
+  const [stableStatus, setStableStatus] = useState(status);
+  const timeoutRef = useRef<NodeJS.Timeout | null>(null);
+
+  // Only debounce onboarding data updates, not auth state changes
+  useEffect(() => {
+    if (timeoutRef.current) {
+      clearTimeout(timeoutRef.current);
+    }
+
+    // Don't debounce if user is not authenticated - handle immediately
+    if (!isAuthenticated) {
+      setStableStatus(null);
+      return;
+    }
+
+    timeoutRef.current = setTimeout(() => {
+      setStableStatus(status);
+    }, 50);
+
+    return () => {
+      if (timeoutRef.current) {
+        clearTimeout(timeoutRef.current);
+      }
+    };
+  }, [status, isAuthenticated]);
+
+  // Determine user state based on auth and onboarding
+  // Note: auth.userNotFound now triggers automatic sign out, so we don't need to handle it here
+  const userNotFound = stableStatus === null;
 
   return {
-    // Loading state
-    isLoading: status === undefined,
+    // Loading state - include auth loading state
+    isLoading: authLoading || status === undefined || stableStatus === undefined,
+
+    // User state
+    userNotFound,
+
+    // Authentication state
+    requiresAuth: !isAuthenticated,
+    hasAuthError: false, // Convex handles auth errors automatically
 
     // Completion status
-    isComplete: status?.isComplete ?? false,
+    isComplete: stableStatus?.isComplete ?? false,
 
     // Current step information
-    currentStep: status?.currentStep ?? null,
-    currentStepIndex: status?.currentStepIndex ?? 0,
-    totalSteps: status?.totalSteps ?? 1,
+    currentStep: stableStatus?.currentStep ?? null,
+    currentStepIndex: stableStatus?.currentStepIndex ?? 0,
+    totalSteps: stableStatus?.totalSteps ?? 1,
 
     // Progress tracking
-    progress: status?.progress ?? 0,
+    progress: stableStatus?.progress ?? 0,
 
     // Routing helpers
-    shouldRedirect: !status?.isComplete && !!status?.currentStep,
-    redirectPath: (status?.redirectPath ?? '/(app)/onboarding/profile-type') as Href,
+    shouldRedirect:
+      !userNotFound &&
+      isAuthenticated &&
+      !stableStatus?.isComplete &&
+      !!stableStatus?.currentStep,
+    redirectPath:
+      !isAuthenticated
+        ? '/'
+        : ((stableStatus?.redirectPath ?? '/(app)/onboarding/profile-type') as Href),
 
     // Version and metadata
-    version: status?.version ?? 'v2',
+    version: stableStatus?.version ?? 'v2',
 
     // Detailed information
-    nextRequiredFields: status?.nextRequiredFields ?? [],
-    missingFields: status?.missingFields ?? [],
-    stepDescription: status?.stepDescription,
+    nextRequiredFields: stableStatus?.nextRequiredFields ?? [],
+    missingFields: stableStatus?.missingFields ?? [],
+    stepDescription: stableStatus?.stepDescription,
 
     // Helper functions
     getStepLabel: () => {
-      if (!status?.currentStep) return 'COMPLETE';
+      if (!stableStatus?.currentStep) return 'COMPLETE';
 
       // Get profile type for label
-      switch (status.currentStep) {
+      switch (stableStatus.currentStep) {
         case 'profile-type':
           return 'PROFILE';
         case 'headshots':
@@ -64,9 +109,9 @@ export function useOnboardingStatus() {
     },
 
     getStepTitle: () => {
-      if (!status?.currentStep) return 'Complete';
+      if (!stableStatus?.currentStep) return 'Complete';
 
-      switch (status.currentStep) {
+      switch (stableStatus.currentStep) {
         case 'profile-type':
           return 'Profile Type';
         case 'headshots':
@@ -107,11 +152,11 @@ export function useOnboardingStatus() {
     },
 
     getNextStepRoute: () => {
-      if (!status || status.isComplete) return null;
+      if (!stableStatus || stableStatus.isComplete) return null;
 
       // If there's a redirect path from the backend analysis, use that
-      if (status.redirectPath && status.redirectPath !== '/(app)') {
-        return status.redirectPath;
+      if (stableStatus.redirectPath && stableStatus.redirectPath !== '/(app)') {
+        return stableStatus.redirectPath;
       }
 
       return null;

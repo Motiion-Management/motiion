@@ -1,4 +1,4 @@
-import { useSignUp, useClerk } from '@clerk/clerk-expo';
+import { useSignUp, useClerk, useAuth } from '@clerk/clerk-expo';
 import { useStore } from '@tanstack/react-store';
 import { router } from 'expo-router';
 import React, { useState } from 'react';
@@ -55,9 +55,9 @@ export default function UsernameScreen() {
         // Complete the signup process
 
         if (status === 'complete') {
-          clerk.setActive({ session: createdSessionId });
-          // Navigate to the main app
-          router.replace('/home');
+          console.log('🎯 USERNAME: Signup complete, activating session and redirecting');
+          await clerk.setActive({ session: createdSessionId });
+          router.replace('/(app)');
         } else if (status === 'missing_requirements') {
           const issues = [];
           if (missingFields.length > 0) {

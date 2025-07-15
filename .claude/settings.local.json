@@ -23,7 +23,8 @@
       "Bash(pnpm format:*)",
       "WebFetch(domain:tanstack.com)",
       "WebFetch(domain:clerk.com)",
-      "Bash(cat:*)"
+      "Bash(cat:*)",
+      "WebFetch(domain:docs.convex.dev)"
     ]
   },
   "enableAllProjectMcpServers": false

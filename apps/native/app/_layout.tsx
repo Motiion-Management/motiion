@@ -1,16 +1,19 @@
 import '../global.css';
+
 import 'expo-dev-client';
 import { ActionSheetProvider } from '@expo/react-native-action-sheet';
-import { Host } from '@expo/ui/swift-ui';
+// import { Host } from '@expo/ui/swift-ui';
 import { BottomSheetModalProvider } from '@gorhom/bottom-sheet';
 import { ThemeProvider as NavThemeProvider } from '@react-navigation/native';
 import { Stack } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
-import { Dimensions, View } from 'react-native';
+import React from 'react';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { KeyboardProvider } from 'react-native-keyboard-controller';
 
 import ConvexClientProvider from '~/components/providers/ConvexClientProvider';
+import { AlertAnchor } from '~/components/ui/alert';
+import { AlertRef } from '~/components/ui/alert/types';
 import { useColorScheme, useInitialAndroidBarSync } from '~/lib/useColorScheme';
 import { NAV_THEME } from '~/theme';
 
@@ -22,7 +25,7 @@ export {
 export default function RootLayout() {
   useInitialAndroidBarSync();
   const { colorScheme, isDarkColorScheme } = useColorScheme();
-  const { width } = Dimensions.get('window');
+  const alertRef = React.useRef<AlertRef>(null);
 
   return (
     <>
@@ -41,12 +44,7 @@ export default function RootLayout() {
                       animation: 'ios_from_right', // for android
                       headerShown: false,
                     }}>
-                    <Stack.Screen
-                      name="index"
-                      // options={{
-                      //   headerShown: false,
-                      // }}
-                    />
+                    <Stack.Screen name="index" />
                     <Stack.Screen
                       name="auth"
                       options={{
@@ -54,6 +52,7 @@ export default function RootLayout() {
                         title: 'auth',
                       }}
                     />
+                    <Stack.Screen name="(app)" />
 
                     <Stack.Screen
                       name="(modals)"
@@ -63,6 +62,7 @@ export default function RootLayout() {
                       }}
                     />
                   </Stack>
+                  <AlertAnchor ref={alertRef} />
                 </ConvexClientProvider>
               </NavThemeProvider>
             </ActionSheetProvider>

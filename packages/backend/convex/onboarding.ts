@@ -11,7 +11,7 @@ export const getOnboardingStatus = query({
     // Get user directly from the database instead of calling another query
     const identity = await ctx.auth.getUserIdentity()
     if (!identity) {
-      throw new ConvexError('Not authenticated')
+      return null
     }
 
     const user = await ctx.db
@@ -20,7 +20,7 @@ export const getOnboardingStatus = query({
       .first()
 
     if (!user) {
-      throw new ConvexError('User not found')
+      return null
     }
 
     return analyzeOnboardingProgress(user, CURRENT_ONBOARDING_VERSION)

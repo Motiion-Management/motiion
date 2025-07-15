@@ -1,34 +1,41 @@
-import { api } from '@packages/backend/convex/_generated/api';
-import { useQuery } from 'convex/react';
-import { Redirect } from 'expo-router';
-import React from 'react';
+import { Href, Redirect } from 'expo-router';
+import React, { useMemo, useRef } from 'react';
 import { View, ActivityIndicator } from 'react-native';
 
+import { AuthErrorBoundary } from '~/components/auth/AuthErrorBoundary';
+import { BackgroundGradientView } from '~/components/ui/background-gradient-view';
 import { useOnboardingStatus } from '~/hooks/useOnboardingStatus';
 
 export default function AppRouter() {
-  const user = useQuery(api.users.getMyUser);
   const { isLoading, isComplete, redirectPath } = useOnboardingStatus();
 
-  // Show loading state while fetching user and onboarding status
-  if (user === undefined || isLoading) {
+  console.log('🔄 APP_ROUTER: Onboarding status check', {
+    isLoading,
+    isComplete,
+    redirectPath,
+  });
+
+  // Show loading state while checking onboarding status
+  if (isLoading) {
     return (
-      <View className="flex-1 items-center justify-center">
-        <ActivityIndicator size="large" />
-      </View>
+      <BackgroundGradientView>
+        <View className="flex-1 items-center justify-center">
+          <ActivityIndicator size="large" />
+        </View>
+      </BackgroundGradientView>
     );
   }
 
-  // If no user, redirect to auth
-  if (user === null) {
-    return <Redirect href="/" />;
-  }
+  // Determine where to redirect based on onboarding status
+  const destination: Href = isComplete 
+    ? '/(app)/home' 
+    : (redirectPath || '/(app)/onboarding/profile-type');
 
-  // Check onboarding status and redirect appropriately
-  if (!isComplete) {
-    return <Redirect href={redirectPath} />;
-  }
+  console.log('🎯 APP_ROUTER: Redirecting to:', destination);
 
-  // User has completed onboarding, go to home
-  return <Redirect href="/(app)/home" />;
+  return (
+    <AuthErrorBoundary>
+      <Redirect href={destination} />
+    </AuthErrorBoundary>
+  );
 }

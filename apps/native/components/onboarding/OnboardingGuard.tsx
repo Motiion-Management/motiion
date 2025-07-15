@@ -2,6 +2,7 @@ import { Redirect } from 'expo-router';
 import React from 'react';
 import { View, ActivityIndicator } from 'react-native';
 
+import { AuthErrorBoundary } from '~/components/auth/AuthErrorBoundary';
 import { useOnboardingStatus } from '~/hooks/useOnboardingStatus';
 
 interface OnboardingGuardProps {
@@ -10,7 +11,12 @@ interface OnboardingGuardProps {
 }
 
 export function OnboardingGuard({ children, fallback }: OnboardingGuardProps) {
-  const { isLoading, isComplete, shouldRedirect, redirectPath } = useOnboardingStatus();
+  const { isLoading, isComplete, shouldRedirect, redirectPath, requiresAuth, hasAuthError } = useOnboardingStatus();
+
+  // Check authentication first
+  if (requiresAuth || hasAuthError) {
+    return <Redirect href="/" />;
+  }
 
   // Show loading state while checking onboarding status
   if (isLoading) {
@@ -29,7 +35,7 @@ export function OnboardingGuard({ children, fallback }: OnboardingGuardProps) {
   }
 
   // User has completed onboarding, render protected content
-  return <>{children}</>;
+  return <AuthErrorBoundary>{children}</AuthErrorBoundary>;
 }
 
 interface OnboardingStepGuardProps {
@@ -44,7 +50,12 @@ export function OnboardingStepGuard({
   requiredStep,
   fallback,
 }: OnboardingStepGuardProps) {
-  const { isLoading, currentStep, isComplete, redirectPath } = useOnboardingStatus();
+  const { isLoading, currentStep, isComplete, redirectPath, requiresAuth, hasAuthError } = useOnboardingStatus();
+
+  // Check authentication first
+  if (requiresAuth || hasAuthError) {
+    return <Redirect href="/" />;
+  }
 
   // Show loading state
   if (isLoading) {
@@ -68,7 +79,7 @@ export function OnboardingStepGuard({
   }
 
   // User is on the correct step, render the content
-  return <>{children}</>;
+  return <AuthErrorBoundary>{children}</AuthErrorBoundary>;
 }
 
 interface OnboardingCompleteGuardProps {
@@ -78,7 +89,12 @@ interface OnboardingCompleteGuardProps {
 
 // Component to protect content that should only be shown to completed users
 export function OnboardingCompleteGuard({ children, fallback }: OnboardingCompleteGuardProps) {
-  const { isLoading, isComplete, redirectPath } = useOnboardingStatus();
+  const { isLoading, isComplete, redirectPath, requiresAuth, hasAuthError } = useOnboardingStatus();
+
+  // Check authentication first
+  if (requiresAuth || hasAuthError) {
+    return <Redirect href="/" />;
+  }
 
   // Show loading state
   if (isLoading) {
@@ -97,5 +113,5 @@ export function OnboardingCompleteGuard({ children, fallback }: OnboardingComple
   }
 
   // User has completed onboarding, render protected content
-  return <>{children}</>;
+  return <AuthErrorBoundary>{children}</AuthErrorBoundary>;
 }

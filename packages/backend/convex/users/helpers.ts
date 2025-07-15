@@ -1,7 +1,8 @@
 export const NEW_USER_DEFAULTS = {
   type: 'member',
   isAdmin: false,
-  pointsEarned: 0
+  pointsEarned: 0,
+  onboardingCompleted: false
 } as const
 
 export function formatFullName(firstName?: string, lastName?: string) {

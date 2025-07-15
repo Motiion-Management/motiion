@@ -31,6 +31,11 @@ export const { update } = crud(Users, authQuery, authMutation)
 export const getMyUser = authQuery({
   args: {},
   async handler(ctx) {
+    console.log('🔍 CONVEX_GET_USER: Query called', {
+      userId: ctx.user?._id,
+      hasUser: !!ctx.user,
+      timestamp: new Date().toISOString()
+    });
     return ctx.user
   }
 })
@@ -94,6 +99,12 @@ export const updateOrCreateUserByTokenId = internalAction({
     eventType: literals('user.created', 'user.updated')
   },
   handler: async (ctx, { data, eventType }) => {
+    console.log('🔄 CONVEX_USER_SYNC: Starting user sync', { 
+      tokenId: data.tokenId, 
+      eventType,
+      timestamp: new Date().toISOString()
+    });
+
     const user = await ctx.runQuery(internal.users.getUserByTokenId, {
       tokenId: data.tokenId
     })
@@ -105,18 +116,27 @@ export const updateOrCreateUserByTokenId = internalAction({
 
     if (user) {
       if (eventType === 'user.created') {
-        console.warn('overwriting user', data.tokenId, 'with', data)
-      } else
+        console.warn('🚨 CONVEX_USER_SYNC: Overwriting existing user', data.tokenId, 'with', data)
+      } else {
+        console.log('📝 CONVEX_USER_SYNC: Updating existing user', data.tokenId);
         await ctx.runMutation(internal.users.internalUpdate, {
           id: user._id,
           patch: userData
         })
+      }
     } else {
+      console.log('✨ CONVEX_USER_SYNC: Creating new user', data.tokenId);
       await ctx.runMutation(internal.users.create, {
         ...NEW_USER_DEFAULTS,
         ...userData
       })
     }
+
+    console.log('✅ CONVEX_USER_SYNC: User sync completed', { 
+      tokenId: data.tokenId, 
+      eventType,
+      timestamp: new Date().toISOString()
+    });
   }
 })
 
