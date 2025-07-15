@@ -37,7 +37,7 @@ export function analyzeOnboardingProgress(
       version,
       missingFields: ['profileType'],
       stepDescription: 'Select your profile type',
-      redirectPath: '/(app)/onboarding/profile-type'
+      redirectPath: '/app/onboarding/profile-type'
     }
   }
 
@@ -55,7 +55,7 @@ export function analyzeOnboardingProgress(
       nextRequiredFields: [],
       version: user.onboardingVersion || version,
       missingFields: [],
-      redirectPath: '/(app)/home'
+      redirectPath: '/app/home'
     }
   }
 
@@ -96,7 +96,7 @@ export function analyzeOnboardingProgress(
     nextRequiredFields: [],
     version,
     missingFields: [],
-    redirectPath: '/(app)/home'
+    redirectPath: '/app/home'
   }
 }
 

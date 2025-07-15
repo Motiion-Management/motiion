@@ -152,23 +152,23 @@ export const ONBOARDING_FLOWS: OnboardingFlows = {
 }
 
 export const STEP_ROUTES = {
-  'profile-type': '/(app)/onboarding/profile-type',
-  headshots: '/(app)/onboarding/headshots',
-  height: '/(app)/onboarding/height',
-  ethnicity: '/(app)/onboarding/ethnicity',
-  'hair-color': '/(app)/onboarding/hair-color',
-  'eye-color': '/(app)/onboarding/eye-color',
-  gender: '/(app)/onboarding/gender',
-  sizing: '/(app)/onboarding/sizing',
-  location: '/(app)/onboarding/location',
-  'work-location': '/(app)/onboarding/work-location',
-  representation: '/(app)/onboarding/representation',
-  experiences: '/(app)/onboarding/experiences',
-  training: '/(app)/onboarding/training',
-  skills: '/(app)/onboarding/skills',
-  union: '/(app)/onboarding/union',
-  'database-use': '/(app)/onboarding/database-use',
-  company: '/(app)/onboarding/company'
+  'profile-type': '/app/onboarding/profile-type',
+  headshots: '/app/onboarding/headshots',
+  height: '/app/onboarding/height',
+  ethnicity: '/app/onboarding/ethnicity',
+  'hair-color': '/app/onboarding/hair-color',
+  'eye-color': '/app/onboarding/eye-color',
+  gender: '/app/onboarding/gender',
+  sizing: '/app/onboarding/sizing',
+  location: '/app/onboarding/location',
+  'work-location': '/app/onboarding/work-location',
+  representation: '/app/onboarding/representation',
+  experiences: '/app/onboarding/experiences',
+  training: '/app/onboarding/training',
+  skills: '/app/onboarding/skills',
+  union: '/app/onboarding/union',
+  'database-use': '/app/onboarding/database-use',
+  company: '/app/onboarding/company'
 } as const
 
 export function getOnboardingFlow(
@@ -197,7 +197,7 @@ export function getOnboardingFlow(
 export function getStepRoute(step: string): string {
   return (
     STEP_ROUTES[step as keyof typeof STEP_ROUTES] ||
-    '/(app)/onboarding/profile-type'
+    '/app/onboarding/profile-type'
   )
 }
 

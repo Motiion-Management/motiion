@@ -52,7 +52,7 @@ export default function RootLayout() {
                         title: 'auth',
                       }}
                     />
-                    <Stack.Screen name="(app)" />
+                    <Stack.Screen name="app" />
 
                     <Stack.Screen
                       name="(modals)"

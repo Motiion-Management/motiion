@@ -70,7 +70,7 @@ export function OnboardingStepGuard({
 
   // If onboarding is complete, redirect to home
   if (isComplete) {
-    return <Redirect href="/(app)/home" />;
+    return <Redirect href="/app/home" />;
   }
 
   // If user is not on the correct step, redirect to their current step

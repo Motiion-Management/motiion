@@ -12,7 +12,7 @@ export default function RootScreen() {
   console.log('🏠 ROOT_INDEX: Rendering', { isLoaded, isSignedIn });
 
   if (isLoaded && isSignedIn) {
-    return <Redirect href="/(app)" />;
+    return <Redirect href="/app" />;
   }
 
   return (

@@ -29,7 +29,7 @@ export const GoogleButton = () => {
   const onPress = React.useCallback(async () => {
     try {
       const { createdSessionId, signIn, signUp, setActive } = await startOAuthFlow({
-        redirectUrl: Linking.createURL('/(app)', { scheme: 'motiion' }),
+        redirectUrl: Linking.createURL('/app', { scheme: 'motiion' }),
       });
 
       if (createdSessionId) {

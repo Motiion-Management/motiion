@@ -67,7 +67,7 @@ export function useOnboardingStatus() {
     redirectPath:
       !isAuthenticated
         ? '/'
-        : ((stableStatus?.redirectPath ?? '/(app)/onboarding/profile-type') as Href),
+        : ((stableStatus?.redirectPath ?? '/app/onboarding/profile-type') as Href),
 
     // Version and metadata
     version: stableStatus?.version ?? 'v2',
@@ -155,7 +155,7 @@ export function useOnboardingStatus() {
       if (!stableStatus || stableStatus.isComplete) return null;
 
       // If there's a redirect path from the backend analysis, use that
-      if (stableStatus.redirectPath && stableStatus.redirectPath !== '/(app)') {
+      if (stableStatus.redirectPath && stableStatus.redirectPath !== '/app') {
         return stableStatus.redirectPath;
       }
 
