@@ -161,20 +161,32 @@ function getFieldValue(user: Doc<'users'>, field: string): any {
       return user.attributes?.height
     case 'ethnicity':
       return user.attributes?.ethnicity
+    case 'hairColor':
+      return user.attributes?.hairColor
+    case 'eyeColor':
+      return user.attributes?.eyeColor
     case 'gender':
       return user.gender
     case 'location':
       return user.location
+    case 'workLocation':
+      return user.workLocation
     case 'sizing':
       return user.sizing
     case 'representation':
       return user.representation
     case 'experiences':
       return user.resume?.experiences
+    case 'training':
+      return user.training
+    case 'skills':
+      return user.resume?.skills
     case 'unionStatus':
       return user.unionStatus
     case 'companyName':
       return user.companyName
+    case 'databaseUse':
+      return user.databaseUse
     default:
       // Handle nested fields like 'resume.experiences'
       if (field.includes('.')) {

@@ -88,7 +88,10 @@ export const users = {
 
   // onboarding-specific fields
   unionStatus: z.enum(['union', 'non-union', 'pending']).optional(),
-  companyName: z.string().optional()
+  companyName: z.string().optional(),
+  workLocation: z.array(z.string()).optional(), // Work location preferences
+  training: z.array(zid('experiences')).optional(), // Training experiences
+  databaseUse: z.string().optional() // How user intends to use the database
 }
 export const zUsers = z.object(users)
 
