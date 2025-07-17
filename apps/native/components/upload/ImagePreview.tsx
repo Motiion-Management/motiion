@@ -10,7 +10,6 @@ interface ImagePreviewProps {
 }
 
 export function ImagePreview({ imageUrl, onRemove, className }: ImagePreviewProps) {
-  console.log({ imageUrl });
   return (
     <View className={cn('relative w-full', className)}>
       <Image

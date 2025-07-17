@@ -40,8 +40,6 @@ export function MultiImageUpload({ onImageCountChange }: MultiImageUploadProps) 
     selectionLimit: 3 - (existingHeadshots?.length || 0), // Limit to 3 total images
   };
 
-  console.log('ImagePicker options:', imagePickerOptions);
-
   // Image picker functions
   const requestPermissions = useCallback(async () => {
     const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();

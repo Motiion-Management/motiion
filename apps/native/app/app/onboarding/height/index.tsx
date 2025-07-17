@@ -1,6 +1,7 @@
 import { useRouter } from 'expo-router';
 import React from 'react';
 import { View } from 'react-native';
+import { toast } from 'sonner-native';
 
 import { HeightPicker } from '~/components/form/HeightPicker';
 import { BaseOnboardingScreen } from '~/components/layouts/BaseOnboardingScreen';
@@ -22,11 +23,29 @@ export default function HeightScreen() {
         const result = await advanceToNextStep();
         if (result.route) {
           router.push(result.route);
+        } else {
+          // If no next step, onboarding is complete
+          router.push('/app/home');
         }
+      } else {
+        // Height form validation failed
+        toast.error('Please enter a valid height');
       }
     } catch (error) {
       console.error('Error in height step:', error);
-      // Show error to user - either data save failed or navigation blocked
+      
+      // Show appropriate error message to user
+      if (error instanceof Error) {
+        if (error.message.includes('Cannot advance')) {
+          toast.error('Please complete the height step before continuing');
+        } else if (error.message.includes('Failed to save')) {
+          toast.error('Failed to save height. Please try again.');
+        } else {
+          toast.error('An error occurred. Please try again.');
+        }
+      } else {
+        toast.error('An unexpected error occurred. Please try again.');
+      }
     }
   };
 

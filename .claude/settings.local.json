@@ -24,7 +24,9 @@
       "WebFetch(domain:tanstack.com)",
       "WebFetch(domain:clerk.com)",
       "Bash(cat:*)",
-      "WebFetch(domain:docs.convex.dev)"
+      "WebFetch(domain:docs.convex.dev)",
+      "mcp__convex__status",
+      "mcp__convex__data"
     ]
   },
   "enableAllProjectMcpServers": false

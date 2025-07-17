@@ -8,7 +8,7 @@ import { ValidationModeForm } from '~/components/form/ValidationModeForm';
 import { useAppForm } from '~/components/form/appForm';
 import { BaseOnboardingScreen } from '~/components/layouts/BaseOnboardingScreen';
 import { OnboardingStepGuard } from '~/components/onboarding/OnboardingGuard';
-import { useOnboardingStatus } from '~/hooks/useOnboardingStatus';
+import { useOnboardingNavigation } from '~/hooks/useOnboardingStatus';
 
 const profileTypeValidator = z.object({
   profileType: z.enum(['dancer', 'choreographer'], {
@@ -21,7 +21,7 @@ type ProfileType = 'dancer' | 'choreographer' | 'guest';
 export default function ProfileTypeScreen() {
   const router = useRouter();
   const updateUser = useMutation(api.users.updateMyUser);
-  const { getNextStepRoute } = useOnboardingStatus();
+  const { advanceToNextStep } = useOnboardingNavigation();
 
   const form = useAppForm({
     defaultValues: {
@@ -40,11 +40,9 @@ export default function ProfileTypeScreen() {
         });
 
         // Navigate to the next step
-        const nextRoute = getNextStepRoute();
-        if (nextRoute) {
-          router.push(nextRoute);
-        } else {
-          router.push('/app');
+        const result = await advanceToNextStep();
+        if (result.route) {
+          router.push(result.route);
         }
       } catch (error) {
         console.error('Error updating profile type:', error);
@@ -60,11 +58,9 @@ export default function ProfileTypeScreen() {
       });
 
       // Navigate to the next step
-      const nextRoute = getNextStepRoute();
-      if (nextRoute) {
-        router.push(nextRoute);
-      } else {
-        router.push('/app');
+      const result = await advanceToNextStep();
+      if (result.route) {
+        router.push(result.route);
       }
     } catch (error) {
       console.error('Error setting guest profile:', error);

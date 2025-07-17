@@ -220,7 +220,7 @@ export function useOnboardingNavigation() {
 
   const advanceToNextStep = useCallback(async () => {
     try {
-      const result = await advanceStep();
+      const result = (await advanceStep()) as { nextStep: string | null; route: Href };
       return result;
     } catch (error) {
       console.error('Failed to advance step:', error);
