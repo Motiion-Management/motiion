@@ -1,6 +1,6 @@
+import { Redirect } from 'expo-router';
 import React from 'react';
 import { View, ActivityIndicator } from 'react-native';
-import { Redirect } from 'expo-router';
 
 import { BackgroundGradientView } from '~/components/ui/background-gradient-view';
 import { Text } from '~/components/ui/text';

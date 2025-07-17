@@ -1,5 +1,6 @@
 import { createFormHook } from '@tanstack/react-form';
 
+import { CheckboxGroupField } from './CheckboxGroupField';
 import { DateInput } from './DateInput';
 import { PhoneNumber } from './PhoneNumber';
 import { PhoneOTP } from './PhoneOTP';
@@ -15,6 +16,7 @@ const { useAppForm } = createFormHook({
     PhoneNumber,
     PhoneOTP,
     RadioGroupField,
+    CheckboxGroupField,
     TextInput,
     DateInput,
   },

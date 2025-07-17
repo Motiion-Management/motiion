@@ -3,7 +3,7 @@ import { useRadioGroupContext } from '@packages/primatives/components/radio-grou
 import * as React from 'react';
 import { View } from 'react-native';
 
-import { Text } from '../text';
+import { SelectionCard } from '../selection-card';
 
 import { cn } from '~/lib/utils';
 
@@ -47,25 +47,31 @@ const RadioGroupItemCard = React.forwardRef<
     description?: string;
   }
 >(({ value, label, description }, ref) => {
-  const { value: current, disabled } = useRadioGroupContext();
+  const { value: current, disabled, onValueChange } = useRadioGroupContext();
+
+  const handleSelect = React.useCallback(
+    (itemValue: string, selected: boolean) => {
+      if (selected && onValueChange) {
+        onValueChange(itemValue);
+      }
+    },
+    [onValueChange]
+  );
+
   return (
     <RadioGroupPrimitive.Item
       ref={ref}
       value={value}
-      className={cn(
-        'my-px flex-row items-center space-x-3 rounded-full border border-border-default bg-surface-high px-6 py-3',
-        current === value && 'my-0 border-2 border-border-accent bg-surface-accent',
-        disabled && 'opacity-50 web:cursor-not-allowed'
-      )}>
-      <View className="flex-1">
-        <Text variant="body">{label}</Text>
-        {description && (
-          <Text variant="bodySm" className="text-text-secondary mt-1">
-            {description}
-          </Text>
-        )}
-      </View>
-      <RadioGroupItem value={value} />
+      className="web:focus:outline-none web:focus-visible:ring-2 web:focus-visible:ring-ring web:focus-visible:ring-offset-2">
+      <SelectionCard
+        variant="radio"
+        value={value}
+        label={label}
+        description={description}
+        selected={current === value}
+        onSelect={handleSelect}
+        disabled={disabled}
+      />
     </RadioGroupPrimitive.Item>
   );
 });

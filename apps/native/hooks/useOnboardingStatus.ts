@@ -223,7 +223,7 @@ export function useOnboardingNavigation() {
       const result = (await advanceStep()) as { nextStep: string | null; route: Href };
       return result;
     } catch (error) {
-      console.error('Failed to advance step:', error);
+      console.log('Failed to advance step:', error);
       throw error;
     }
   }, [advanceStep]);
@@ -234,7 +234,7 @@ export function useOnboardingNavigation() {
         await setStep({ step });
         return { success: true };
       } catch (error) {
-        console.error('Failed to set step:', error);
+        console.log('Failed to set step:', error);
         throw error;
       }
     },

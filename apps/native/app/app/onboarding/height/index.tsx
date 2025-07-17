@@ -33,7 +33,7 @@ export default function HeightScreen() {
       }
     } catch (error) {
       console.error('Error in height step:', error);
-      
+
       // Show appropriate error message to user
       if (error instanceof Error) {
         if (error.message.includes('Cannot advance')) {

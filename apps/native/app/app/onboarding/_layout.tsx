@@ -8,7 +8,7 @@ import { ProgressBar } from '~/components/ui/progress-bar';
 const OnboardingHeader = ({ route }: NativeStackHeaderProps) => {
   // Simple header without dynamic progress - app layout handles onboarding flow
   const stepName = route.name;
-  
+
   // Basic step mapping for display
   const getStepLabel = (step: string) => {
     switch (step) {

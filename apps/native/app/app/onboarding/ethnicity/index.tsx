@@ -1,53 +1,91 @@
 import { api } from '@packages/backend/convex/_generated/api';
+import { ETHNICITY } from '@packages/backend/convex/validators/attributes';
 import { useMutation } from 'convex/react';
 import { useRouter } from 'expo-router';
 import React from 'react';
-import { View, Text } from 'react-native';
+import { toast } from 'sonner-native';
+import * as z from 'zod';
 
+import { ValidationModeForm } from '~/components/form/ValidationModeForm';
+import { useAppForm } from '~/components/form/appForm';
 import { BaseOnboardingScreen } from '~/components/layouts/BaseOnboardingScreen';
 import { OnboardingStepGuard } from '~/components/onboarding/OnboardingGuard';
-import { useOnboardingNavigation, useOnboardingStatus } from '~/hooks/useOnboardingStatus';
+import { useOnboardingNavigation } from '~/hooks/useOnboardingStatus';
+
+const ethnicityValidator = z.object({
+  ethnicity: z.array(z.enum(ETHNICITY)).min(1, 'Please select at least one ethnicity'),
+});
 
 export default function EthnicityScreen() {
   const router = useRouter();
   const updateUser = useMutation(api.users.updateMyUser);
-  const { getStepTitle } = useOnboardingStatus();
   const { advanceToNextStep } = useOnboardingNavigation();
 
-  const handleContinue = async () => {
-    try {
-      // TODO: Implement ethnicity form logic
-      console.log('Ethnicity step - implement form logic');
+  const form = useAppForm({
+    defaultValues: {
+      ethnicity: [] as (typeof ETHNICITY)[number][],
+    },
+    validators: {
+      onChange: ethnicityValidator,
+    },
+    onSubmit: async ({ value }) => {
+      if (!value.ethnicity?.length) return;
 
-      // Navigate to the next step
-      const result = await advanceToNextStep();
-      if (result.route) {
-        router.push(result.route);
-      } else {
-        // If no next step, onboarding is complete
-        router.push('/app/home');
+      try {
+        // Update user ethnicity in attributes
+        await updateUser({
+          attributes: {
+            ethnicity: value.ethnicity,
+          },
+        });
+
+        // Navigate to the next step
+        const result = await advanceToNextStep();
+        if (result.route) {
+          router.push(result.route);
+        } else {
+          // If no next step, onboarding is complete
+          router.push('/app/home');
+        }
+      } catch (error) {
+        console.log('Error updating ethnicity:', error);
+
+        // Show appropriate error message to user
+        if (error instanceof Error) {
+          if (error.message.includes('Cannot advance')) {
+            toast.error('Please complete the ethnicity step before continuing');
+          } else if (error.message.includes('Failed to save')) {
+            toast.error('Failed to save ethnicity. Please try again.');
+          } else {
+            toast.error('An error occurred. Please try again.');
+          }
+        } else {
+          toast.error('An unexpected error occurred. Please try again.');
+        }
       }
-    } catch (error) {
-      console.error('Error in ethnicity step:', error);
-    }
-  };
+    },
+  });
+
+  const ethnicityOptions = ETHNICITY.map((ethnicity) => ({
+    value: ethnicity,
+    label: ethnicity,
+  }));
 
   return (
     <OnboardingStepGuard requiredStep="ethnicity">
       <BaseOnboardingScreen
-        title={getStepTitle()}
-        description="What's your ethnicity?"
-        canProgress={false} // TODO: Set to true when form is filled
+        title="What's your ethnicity?"
+        description="Select all that apply"
+        canProgress={form.state.canSubmit && !form.state.isSubmitting}
         primaryAction={{
-          onPress: handleContinue,
-          disabled: true, // TODO: Enable when form is valid
+          onPress: () => form.handleSubmit(),
         }}>
-        <View className="flex-1 items-center justify-center">
-          <Text className="text-lg text-gray-500">Ethnicity form will be implemented here</Text>
-          <Text className="mt-2 text-sm text-gray-400">
-            This will include ethnicity selection options
-          </Text>
-        </View>
+        <ValidationModeForm form={form}>
+          <form.AppField
+            name="ethnicity"
+            children={(field) => <field.CheckboxGroupField options={ethnicityOptions} />}
+          />
+        </ValidationModeForm>
       </BaseOnboardingScreen>
     </OnboardingStepGuard>
   );
