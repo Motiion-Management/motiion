@@ -28,7 +28,7 @@ export function ImageUploadCard({
       className={cn(
         ' rounded border border-dashed',
         'flex items-center justify-center',
-        shape === 'primary' ? 'aspect-video w-full' : 'aspect-auto h-full',
+        shape === 'primary' ? 'h-[234px] w-full' : 'aspect-auto h-[234px]',
         isActive
           ? 'border-border-accent bg-surface-high'
           : 'bg-buton-surface-disabled border-border-disabled',

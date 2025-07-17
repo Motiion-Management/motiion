@@ -2,7 +2,7 @@ import { api } from '@packages/backend/convex/_generated/api';
 import { useMutation, useQuery } from 'convex/react';
 import * as ImagePicker from 'expo-image-picker';
 import { useCallback, useState } from 'react';
-import { Alert, Image, View } from 'react-native';
+import { Alert, View } from 'react-native';
 
 import { ImagePreview } from './ImagePreview';
 import { ImageUploadCard } from './ImageUploadCard';
@@ -34,6 +34,14 @@ export function MultiImageUpload({ onImageCountChange }: MultiImageUploadProps) 
 
   const canAddMore = (existingHeadshots?.length ?? 0) < 5;
 
+  const imagePickerOptions = {
+    mediaTypes: ImagePicker.MediaTypeOptions.Images,
+    allowsMultipleSelection: true,
+    selectionLimit: 3 - (existingHeadshots?.length || 0), // Limit to 3 total images
+  };
+
+  console.log('ImagePicker options:', imagePickerOptions);
+
   // Image picker functions
   const requestPermissions = useCallback(async () => {
     const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
@@ -48,16 +56,10 @@ export function MultiImageUpload({ onImageCountChange }: MultiImageUploadProps) 
     const hasPermission = await requestPermissions();
     if (!hasPermission) return null;
 
-    const result = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: ImagePicker.MediaTypeOptions.Images,
-      allowsEditing: true,
-      aspect: [3, 4],
-      quality: 0.8,
-      allowsMultipleSelection: false,
-    });
+    const result = await ImagePicker.launchImageLibraryAsync(imagePickerOptions);
 
-    if (!result.canceled && result.assets[0]) {
-      return result.assets[0];
+    if (!result.canceled && result.assets && result.assets.length > 0) {
+      return result.assets;
     }
     return null;
   }, [requestPermissions]);
@@ -69,12 +71,7 @@ export function MultiImageUpload({ onImageCountChange }: MultiImageUploadProps) 
       return null;
     }
 
-    const result = await ImagePicker.launchCameraAsync({
-      mediaTypes: ImagePicker.MediaTypeOptions.Images,
-      allowsEditing: true,
-      aspect: [3, 4],
-      quality: 0.8,
-    });
+    const result = await ImagePicker.launchCameraAsync(imagePickerOptions);
 
     if (!result.canceled && result.assets[0]) {
       return result.assets[0];
@@ -82,40 +79,48 @@ export function MultiImageUpload({ onImageCountChange }: MultiImageUploadProps) 
     return null;
   }, []);
 
-  // Upload function
-  const uploadImage = useCallback(
-    async (imageUri: string) => {
+  // Upload function for multiple images
+  const uploadImages = useCallback(
+    async (imageAssets: ImagePicker.ImagePickerAsset[]) => {
       try {
         setUploadState({ isUploading: true, progress: 0, error: null });
 
-        // Generate upload URL
-        const uploadUrl = await generateUploadUrl();
+        const headshots = [];
+        const totalImages = imageAssets.length;
 
-        // Upload to Convex storage
-        const response = await fetch(imageUri);
-        const blob = await response.blob();
+        for (let i = 0; i < totalImages; i++) {
+          const asset = imageAssets[i];
 
-        const uploadResponse = await fetch(uploadUrl, {
-          method: 'POST',
-          headers: { 'Content-Type': blob.type },
-          body: blob,
-        });
+          // Generate upload URL for each image
+          const uploadUrl = await generateUploadUrl();
 
-        if (!uploadResponse.ok) {
-          throw new Error('Upload failed');
+          // Upload to Convex storage
+          const response = await fetch(asset.uri);
+          const blob = await response.blob();
+
+          const uploadResponse = await fetch(uploadUrl, {
+            method: 'POST',
+            headers: { 'Content-Type': blob.type },
+            body: blob,
+          });
+
+          if (!uploadResponse.ok) {
+            throw new Error(`Upload failed for image ${i + 1}`);
+          }
+
+          const { storageId } = await uploadResponse.json();
+          headshots.push({
+            storageId,
+            uploadDate: new Date().toISOString(),
+          });
+
+          // Update progress
+          const progress = Math.round(((i + 1) / totalImages) * 100);
+          setUploadState({ isUploading: true, progress, error: null });
         }
 
-        const { storageId } = await uploadResponse.json();
-
-        // Save to user's headshots
-        await saveHeadshotIds({
-          headshots: [
-            {
-              storageId,
-              uploadDate: new Date().toISOString(),
-            },
-          ],
-        });
+        // Save all headshots at once
+        await saveHeadshotIds({ headshots });
 
         setUploadState({ isUploading: false, progress: 100, error: null });
       } catch (error) {
@@ -138,7 +143,7 @@ export function MultiImageUpload({ onImageCountChange }: MultiImageUploadProps) 
         onPress: async () => {
           const result = await takePicture();
           if (result) {
-            await uploadImage(result.uri);
+            await uploadImages([result]);
           }
         },
       },
@@ -147,13 +152,13 @@ export function MultiImageUpload({ onImageCountChange }: MultiImageUploadProps) 
         onPress: async () => {
           const result = await pickImage();
           if (result) {
-            await uploadImage(result.uri);
+            await uploadImages(result);
           }
         },
       },
       { text: 'Cancel', style: 'cancel' },
     ]);
-  }, [existingHeadshots?.length, canAddMore, takePicture, pickImage, uploadImage]);
+  }, [existingHeadshots?.length, canAddMore, takePicture, pickImage, uploadImages]);
 
   const handleRemoveImage = useCallback(
     async (storageId: string) => {
@@ -180,23 +185,21 @@ export function MultiImageUpload({ onImageCountChange }: MultiImageUploadProps) 
   const uiCanAddMore = firstEmptySlotIndex !== -1 && canAddMore;
 
   return (
-    <View className="flex-1">
+    <View className="flex-1 gap-4">
       {/* Main upload area - first card full width */}
-      <View className="mb-4 flex-1 basis-1/2">
-        {slots[0].image?.url ? (
-          <ImagePreview
-            imageUrl={slots[0].image.url}
-            onRemove={() => handleRemoveImage(slots[0].image!.storageId)}
-          />
-        ) : (
-          <ImageUploadCard
-            shape="primary"
-            onPress={handleImageUpload}
-            disabled={!uiCanAddMore}
-            isActive={firstEmptySlotIndex === 0}
-          />
-        )}
-      </View>
+      {slots[0].image?.url ? (
+        <ImagePreview
+          imageUrl={slots[0].image.url}
+          onRemove={() => handleRemoveImage(slots[0].image!.storageId)}
+        />
+      ) : (
+        <ImageUploadCard
+          shape="primary"
+          onPress={handleImageUpload}
+          disabled={!uiCanAddMore}
+          isActive={firstEmptySlotIndex === 0}
+        />
+      )}
 
       {/* Grid of two cards in a row */}
       <View className="flex-row gap-4">
@@ -234,15 +237,6 @@ export function MultiImageUpload({ onImageCountChange }: MultiImageUploadProps) 
         <View className="mt-4 rounded-lg border border-red-200 bg-red-50 p-3">
           <Text variant="body" className="text-center text-text-error">
             {uploadState.error}
-          </Text>
-        </View>
-      )}
-
-      {/* Upload limit message */}
-      {!uiCanAddMore && (existingHeadshots?.length ?? 0) >= 3 && (
-        <View className="mt-4 rounded-lg border border-blue-200 bg-blue-50 p-3">
-          <Text variant="body" className="text-center text-text-low">
-            You've reached the maximum of 3 photos for this step
           </Text>
         </View>
       )}
