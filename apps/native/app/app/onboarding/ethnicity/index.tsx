@@ -2,7 +2,6 @@ import { api } from '@packages/backend/convex/_generated/api';
 import { ETHNICITY } from '@packages/backend/convex/validators/attributes';
 import { useStore } from '@tanstack/react-form';
 import { useMutation } from 'convex/react';
-import { useRouter } from 'expo-router';
 import React from 'react';
 import { toast } from 'sonner-native';
 import * as z from 'zod';
@@ -18,7 +17,6 @@ const ethnicityValidator = z.object({
 });
 
 export default function EthnicityScreen() {
-  const router = useRouter();
   const updateUser = useMutation(api.users.updateMyUser);
   const { advanceToNextStep } = useOnboardingNavigation();
 
@@ -40,14 +38,8 @@ export default function EthnicityScreen() {
           },
         });
 
-        // Navigate to the next step
-        const result = await advanceToNextStep();
-        if (result.route) {
-          router.push(result.route);
-        } else {
-          // If no next step, onboarding is complete
-          router.push('/app/home');
-        }
+        // Backend will handle navigation automatically
+        await advanceToNextStep();
       } catch (error) {
         console.log('Error updating ethnicity:', error);
 

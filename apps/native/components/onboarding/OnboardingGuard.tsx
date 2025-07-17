@@ -45,7 +45,7 @@ export function OnboardingStepGuard({
   requiredStep,
   fallback,
 }: OnboardingStepGuardProps) {
-  const { isLoading, currentStep, isComplete, redirectPath } = useOnboardingStatus();
+  const { isLoading, isComplete } = useOnboardingStatus();
 
   // Show loading state
   if (isLoading) {
@@ -63,12 +63,8 @@ export function OnboardingStepGuard({
     return <Redirect href="/app/home" />;
   }
 
-  // If user is not on the correct step, redirect to their current navigation position
-  if (currentStep !== requiredStep) {
-    return <Redirect href={redirectPath} />;
-  }
-
-  // User is on the correct step, render the content
+  // Allow access to any onboarding step - let users navigate freely
+  // The backend will handle validation when they try to advance
   return <AuthErrorBoundary>{children}</AuthErrorBoundary>;
 }
 

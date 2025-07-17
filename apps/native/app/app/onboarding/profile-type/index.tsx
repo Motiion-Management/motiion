@@ -39,11 +39,8 @@ export default function ProfileTypeScreen() {
           profileType: value.profileType,
         });
 
-        // Navigate to the next step
-        const result = await advanceToNextStep();
-        if (result.route) {
-          router.push(result.route);
-        }
+        // Backend will handle navigation automatically
+        await advanceToNextStep();
       } catch (error) {
         console.error('Error updating profile type:', error);
       }
@@ -57,11 +54,8 @@ export default function ProfileTypeScreen() {
         profileType: 'guest',
       });
 
-      // Navigate to the next step
-      const result = await advanceToNextStep();
-      if (result.route) {
-        router.push(result.route);
-      }
+      // Backend will handle navigation automatically
+      await advanceToNextStep();
     } catch (error) {
       console.error('Error setting guest profile:', error);
     }

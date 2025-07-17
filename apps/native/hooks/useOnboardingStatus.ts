@@ -67,7 +67,7 @@ export function useOnboardingStatus(overrideStep?: string) {
     isComplete: status?.isComplete ?? false,
 
     // Current step information
-    currentStep: status?.currentStep ?? null,
+    currentStep: status?.currentStep ?? undefined,
     currentStepIndex,
     totalSteps: status?.totalSteps ?? 1,
 
@@ -97,33 +97,16 @@ export function useOnboardingStatus(overrideStep?: string) {
         const step = stepName || overrideStep || status?.currentStep;
         if (!step) return 'COMPLETE';
 
-        // Get profile type for label
-        switch (step) {
-          case 'profile-type':
-            return 'PROFILE';
-          case 'headshots':
-          case 'height':
-          case 'ethnicity':
-          case 'hair-color':
-          case 'eye-color':
-          case 'gender':
-          case 'sizing':
-          case 'location':
-          case 'work-location':
-          case 'representation':
-          case 'experiences':
-          case 'training':
-          case 'skills':
-          case 'union':
-            return 'DANCER';
-          case 'database-use':
-          case 'company':
-            return 'GUEST';
-          default:
-            return 'ONBOARDING';
+        // For profile-type step, just return 'PROFILE'
+        if (step === 'profile-type') {
+          return 'PROFILE';
         }
+
+        // For all other steps, return 'PROFILE / <PROFILE-TYPE>'
+        const profileTypeLabel = profileType?.toUpperCase() || 'DANCER';
+        return `PROFILE / ${profileTypeLabel}`;
       },
-      [overrideStep, status?.currentStep]
+      [overrideStep, status?.currentStep, profileType]
     ),
 
     getStepTitle: useCallback(() => {

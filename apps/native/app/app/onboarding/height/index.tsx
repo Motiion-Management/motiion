@@ -20,13 +20,8 @@ export default function HeightScreen() {
       // Submit data and advance in one action
       const success = await heightForm.actions.submitHeight();
       if (success) {
-        const result = await advanceToNextStep();
-        if (result.route) {
-          router.push(result.route);
-        } else {
-          // If no next step, onboarding is complete
-          router.push('/app/home');
-        }
+        // Backend will handle navigation automatically
+        await advanceToNextStep();
       } else {
         // Height form validation failed
         toast.error('Please enter a valid height');
