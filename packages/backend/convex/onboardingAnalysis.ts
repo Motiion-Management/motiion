@@ -159,6 +159,8 @@ function getFieldValue(user: Doc<'users'>, field: string): any {
       return user.headshots
     case 'height':
       return user.attributes?.height
+    case 'ethnicity':
+      return user.attributes?.ethnicity
     case 'gender':
       return user.gender
     case 'location':

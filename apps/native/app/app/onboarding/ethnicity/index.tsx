@@ -1,5 +1,6 @@
 import { api } from '@packages/backend/convex/_generated/api';
 import { ETHNICITY } from '@packages/backend/convex/validators/attributes';
+import { useStore } from '@tanstack/react-form';
 import { useMutation } from 'convex/react';
 import { useRouter } from 'expo-router';
 import React from 'react';
@@ -71,12 +72,14 @@ export default function EthnicityScreen() {
     label: ethnicity,
   }));
 
+  const isFormReady = useStore(form.store, (state) => state.canSubmit && state.isDirty);
+
   return (
     <OnboardingStepGuard requiredStep="ethnicity">
       <BaseOnboardingScreen
         title="What's your ethnicity?"
         description="Select all that apply"
-        canProgress={form.state.canSubmit && !form.state.isSubmitting}
+        canProgress={isFormReady}
         primaryAction={{
           onPress: () => form.handleSubmit(),
         }}>
