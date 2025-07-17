@@ -2,7 +2,7 @@ import { api } from '@packages/backend/convex/_generated/api';
 import { useMutation, useQuery } from 'convex/react';
 import * as ImagePicker from 'expo-image-picker';
 import { useCallback, useState } from 'react';
-import { Alert, View } from 'react-native';
+import { Alert, Image, View } from 'react-native';
 
 import { ImagePreview } from './ImagePreview';
 import { ImageUploadCard } from './ImageUploadCard';
@@ -182,7 +182,7 @@ export function MultiImageUpload({ onImageCountChange }: MultiImageUploadProps) 
   return (
     <View className="flex-1">
       {/* Main upload area - first card full width */}
-      <View className="mb-4">
+      <View className="mb-4 flex-1 basis-1/2">
         {slots[0].image?.url ? (
           <ImagePreview
             imageUrl={slots[0].image.url}

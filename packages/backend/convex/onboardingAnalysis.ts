@@ -100,7 +100,7 @@ export function analyzeOnboardingProgress(
   }
 }
 
-function checkStepCompletion(
+export function checkStepCompletion(
   user: Doc<'users'>,
   step: OnboardingStep
 ): boolean {
@@ -108,7 +108,7 @@ function checkStepCompletion(
   return missingFields.length === 0
 }
 
-function getMissingFields(user: Doc<'users'>, step: OnboardingStep): string[] {
+export function getMissingFields(user: Doc<'users'>, step: OnboardingStep): string[] {
   const missing: string[] = []
 
   for (const field of step.required) {

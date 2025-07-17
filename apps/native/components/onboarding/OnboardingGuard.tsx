@@ -63,7 +63,7 @@ export function OnboardingStepGuard({
     return <Redirect href="/app/home" />;
   }
 
-  // If user is not on the correct step, redirect to their current step
+  // If user is not on the correct step, redirect to their current navigation position
   if (currentStep !== requiredStep) {
     return <Redirect href={redirectPath} />;
   }

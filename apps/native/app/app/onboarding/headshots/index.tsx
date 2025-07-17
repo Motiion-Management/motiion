@@ -1,7 +1,7 @@
 import { api } from '@packages/backend/convex/_generated/api';
 import { useQuery } from 'convex/react';
 import { useRouter } from 'expo-router';
-import React, { useState } from 'react';
+import React from 'react';
 import { View } from 'react-native';
 
 import { BaseOnboardingScreen } from '~/components/layouts/BaseOnboardingScreen';
@@ -14,7 +14,6 @@ export default function HeadshotsScreen() {
   const { getStepTitle, getNextStepRoute } = useOnboardingStatus();
   const existingHeadshots = useQuery(api.users.headshots.getMyHeadshots);
   const hasImages = (existingHeadshots?.length ?? 0) > 0;
-  const [hasInteracted, setHasInteracted] = useState(false);
 
   const handleContinue = async () => {
     try {
@@ -31,23 +30,17 @@ export default function HeadshotsScreen() {
     }
   };
 
-  const handleImageCountChange = (count: number) => {
-    if (count > 0) {
-      setHasInteracted(true);
-    }
-  };
-
   return (
     <OnboardingStepGuard requiredStep="headshots">
       <BaseOnboardingScreen
         title={getStepTitle()}
         description="Upload your professional headshots to showcase your look."
-        canProgress={hasImages && hasInteracted}
+        canProgress={hasImages}
         primaryAction={{
           onPress: handleContinue,
         }}>
         <View className="mt-4 flex-1">
-          <MultiImageUpload onImageCountChange={handleImageCountChange} />
+          <MultiImageUpload />
         </View>
       </BaseOnboardingScreen>
     </OnboardingStepGuard>

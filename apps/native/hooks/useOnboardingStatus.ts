@@ -86,6 +86,10 @@ export function useOnboardingStatus(overrideStep?: string) {
     missingFields: status?.missingFields ?? [],
     stepDescription: status?.stepDescription,
 
+    // New navigation fields
+    canAdvance: status?.canAdvance ?? false,
+    isCurrentStepDataComplete: status?.isCurrentStepDataComplete ?? false,
+
     // Helper functions
     //
     getStepLabel: useCallback(
@@ -207,5 +211,38 @@ export function useOnboardingDebug() {
   return {
     isLoading: debug === undefined,
     debugInfo: debug,
+  };
+}
+
+export function useOnboardingNavigation() {
+  const advanceStep = useMutation(api.onboarding.advanceOnboardingStep);
+  const setStep = useMutation(api.onboarding.setOnboardingStep);
+
+  const advanceToNextStep = useCallback(async () => {
+    try {
+      const result = await advanceStep();
+      return result;
+    } catch (error) {
+      console.error('Failed to advance step:', error);
+      throw error;
+    }
+  }, [advanceStep]);
+
+  const goToStep = useCallback(
+    async (step: string) => {
+      try {
+        await setStep({ step });
+        return { success: true };
+      } catch (error) {
+        console.error('Failed to set step:', error);
+        throw error;
+      }
+    },
+    [setStep]
+  );
+
+  return {
+    advanceToNextStep,
+    goToStep,
   };
 }

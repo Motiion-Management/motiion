@@ -61,6 +61,10 @@ export const users = {
   onboardingCompleted: z.boolean().optional(),
   onboardingCompletedAt: z.string().optional(), // ISO date string
   onboardingVersion: z.string().optional(),
+  
+  // Navigation position tracking (separate from data completion)
+  currentOnboardingStep: z.string().optional(),
+  currentOnboardingStepIndex: z.number().optional(),
 
   // user info
   email: z.string(),
