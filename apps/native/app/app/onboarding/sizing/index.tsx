@@ -1,89 +1,43 @@
-import { useRouter } from 'expo-router';
-import React, { useRef, useState } from 'react';
-import { View, ScrollView } from 'react-native';
-import { toast } from 'sonner-native';
+import { api } from '@packages/backend/convex/_generated/api';
+import { useMutation, useQuery } from 'convex/react';
+import React from 'react';
+import { ScrollView } from 'react-native';
 
+import { sizingValidator } from '~/components/form/SizingValidator';
+import { ValidationModeForm } from '~/components/form/ValidationModeForm';
+import { useAppForm } from '~/components/form/appForm';
 import { BaseOnboardingScreen } from '~/components/layouts/BaseOnboardingScreen';
 import { OnboardingStepGuard } from '~/components/onboarding/OnboardingGuard';
-import { SizingCard } from '~/components/sizing/SizingCard';
-import { SizingPickerSheet, SizingPickerSheetRef } from '~/components/sizing/SizingPickerSheet';
-import { Text } from '~/components/ui/text';
-import { sizingMetrics } from '~/config/sizingMetrics';
-import { useOnboardingNavigation, useOnboardingStatus } from '~/hooks/useOnboardingStatus';
-import { useSizingForm } from '~/hooks/useSizingForm';
-import { SizingMetricConfig } from '~/types/sizing';
+import { SizingSection } from '~/components/sizing/SizingSection';
+import { useOnboardingCursor } from '~/hooks/useOnboardingCursor';
 
 export default function SizingScreen() {
-  const router = useRouter();
-  const { getStepTitle } = useOnboardingStatus();
-  const { advanceToNextStep } = useOnboardingNavigation();
-  const sizingForm = useSizingForm();
-  const pickerRef = useRef<SizingPickerSheetRef>(null);
-  const [currentMetricKey, setCurrentMetricKey] = useState<string | null>(null);
+  const updateUser = useMutation(api.users.updateMyUser);
+  const user = useQuery(api.users.getMyUser);
+  const cursor = useOnboardingCursor();
 
-  const handleContinue = async () => {
-    try {
-      // Navigate to the next step - all fields are optional
-      const result = await advanceToNextStep();
-      if (result.route) {
-        router.push(result.route);
-      } else {
-        // If no next step, onboarding is complete
-        router.push('/app/home');
+  const form = useAppForm({
+    defaultValues: {
+      general: user?.sizing?.general || {},
+      male: user?.sizing?.male || {},
+      female: user?.sizing?.female || {},
+    },
+    validators: {
+      onChange: sizingValidator,
+    },
+    onSubmit: async ({ value }) => {
+      try {
+        await updateUser({
+          sizing: value,
+        });
+
+        // Navigate to next step using cursor-based navigation
+        cursor.goToNextStep();
+      } catch (error) {
+        console.error('Error updating sizing:', error);
       }
-    } catch (error) {
-      console.error('Error in sizing step:', error);
-      toast.error('An error occurred. Please try again.');
-    }
-  };
-
-  const handleCardPress = (metricKey: string) => {
-    const metric = sizingMetrics[metricKey];
-    if (metric && pickerRef.current) {
-      setCurrentMetricKey(metricKey);
-      const currentValue = sizingForm.actions.getMetricValue(metric.section, metric.field);
-      pickerRef.current.present(metric, currentValue);
-    }
-  };
-
-  const handleSaveMetric = async (value: string) => {
-    if (!currentMetricKey) return;
-
-    const metric = sizingMetrics[currentMetricKey];
-    if (metric) {
-      const success = await sizingForm.actions.updateMetric(metric.section, metric.field, value);
-
-      if (!success) {
-        toast.error('Failed to save. Please try again.');
-      }
-    }
-  };
-
-  const renderSection = (title: string, metrics: string[]) => (
-    <View className="mb-6">
-      <Text variant="body" className="text-text-secondary mb-3 uppercase">
-        {title}
-      </Text>
-      <View className="flex-row flex-wrap gap-2">
-        {metrics.map((metricKey) => {
-          const metric = sizingMetrics[metricKey];
-          if (!metric) return null;
-
-          const value = sizingForm.actions.getMetricValue(metric.section, metric.field);
-
-          return (
-            <SizingCard
-              key={metricKey}
-              label={metric.label}
-              value={value}
-              unit={metric.unit}
-              onPress={() => handleCardPress(metricKey)}
-            />
-          );
-        })}
-      </View>
-    </View>
-  );
+    },
+  });
 
   return (
     <OnboardingStepGuard requiredStep="sizing">
@@ -92,35 +46,40 @@ export default function SizingScreen() {
         description="Optional - Not all sizing metrics may apply to you. Only input what is relevant to you."
         canProgress // Always true - all fields are optional
         primaryAction={{
-          onPress: handleContinue,
+          onPress: () => form.handleSubmit(),
         }}>
-        <ScrollView
-          className="flex-1"
-          contentContainerStyle={{ paddingBottom: 20 }}
-          showsVerticalScrollIndicator={false}>
-          {renderSection('General', ['waist', 'inseam', 'glove', 'hat'])}
-          {renderSection('Men', [
-            'chest',
-            'neck',
-            'sleeve',
-            'maleShirt',
-            'maleShoes',
-            'maleCoatLength',
-          ])}
-          {renderSection('Women', [
-            'dress',
-            'bust',
-            'underbust',
-            'cup',
-            'hip',
-            'femaleShirt',
-            'pants',
-            'femaleShoes',
-            'femaleCoatLength',
-          ])}
-        </ScrollView>
-
-        <SizingPickerSheet ref={pickerRef} onSave={handleSaveMetric} />
+        <ValidationModeForm form={form}>
+          <ScrollView
+            className="flex-1"
+            contentContainerStyle={{ paddingBottom: 20 }}
+            showsVerticalScrollIndicator={false}>
+            <SizingSection
+              title="General"
+              metrics={['waist', 'inseam', 'glove', 'hat']}
+              form={form}
+            />
+            <SizingSection
+              title="Men"
+              metrics={['chest', 'neck', 'sleeve', 'maleShirt', 'maleShoes', 'maleCoatLength']}
+              form={form}
+            />
+            <SizingSection
+              title="Women"
+              metrics={[
+                'dress',
+                'bust',
+                'underbust',
+                'cup',
+                'hip',
+                'femaleShirt',
+                'pants',
+                'femaleShoes',
+                'femaleCoatLength',
+              ]}
+              form={form}
+            />
+          </ScrollView>
+        </ValidationModeForm>
       </BaseOnboardingScreen>
     </OnboardingStepGuard>
   );
