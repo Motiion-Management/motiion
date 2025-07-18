@@ -1,6 +1,5 @@
 import { api } from '@packages/backend/convex/_generated/api';
 import { useMutation } from 'convex/react';
-import { useRouter } from 'expo-router';
 import React from 'react';
 import * as z from 'zod';
 
@@ -8,7 +7,7 @@ import { ValidationModeForm } from '~/components/form/ValidationModeForm';
 import { useAppForm } from '~/components/form/appForm';
 import { BaseOnboardingScreen } from '~/components/layouts/BaseOnboardingScreen';
 import { OnboardingStepGuard } from '~/components/onboarding/OnboardingGuard';
-import { useOnboardingNavigation } from '~/hooks/useOnboardingStatus';
+import { useOnboardingCursor } from '~/hooks/useOnboardingCursor';
 
 const profileTypeValidator = z.object({
   profileType: z.enum(['dancer', 'choreographer'], {
@@ -19,9 +18,8 @@ const profileTypeValidator = z.object({
 type ProfileType = 'dancer' | 'choreographer' | 'guest';
 
 export default function ProfileTypeScreen() {
-  const router = useRouter();
   const updateUser = useMutation(api.users.updateMyUser);
-  const { advanceToNextStep } = useOnboardingNavigation();
+  const cursor = useOnboardingCursor();
 
   const form = useAppForm({
     defaultValues: {
@@ -34,13 +32,13 @@ export default function ProfileTypeScreen() {
       if (!value.profileType) return;
 
       try {
-        // Just update the profile type - the system will determine the next step
+        // Update the profile type
         await updateUser({
           profileType: value.profileType,
         });
 
-        // Backend will handle navigation automatically
-        await advanceToNextStep();
+        // Navigate to next step using cursor-based navigation
+        cursor.goToNextStep();
       } catch (error) {
         console.error('Error updating profile type:', error);
       }
@@ -49,13 +47,13 @@ export default function ProfileTypeScreen() {
 
   const handleGuestContinue = async () => {
     try {
-      // Just update the profile type - the system will determine the next step
+      // Update the profile type to guest
       await updateUser({
         profileType: 'guest',
       });
 
-      // Backend will handle navigation automatically
-      await advanceToNextStep();
+      // Navigate to next step using cursor-based navigation
+      cursor.goToNextStep();
     } catch (error) {
       console.error('Error setting guest profile:', error);
     }

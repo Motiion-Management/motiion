@@ -27,7 +27,8 @@
       "WebFetch(domain:docs.convex.dev)",
       "mcp__convex__status",
       "mcp__convex__data",
-      "mcp__convex__run"
+      "mcp__convex__run",
+      "mcp__convex__functionSpec"
     ]
   },
   "enableAllProjectMcpServers": false

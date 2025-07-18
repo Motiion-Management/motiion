@@ -8,7 +8,7 @@ import { ValidationModeForm } from '~/components/form/ValidationModeForm';
 import { useAppForm } from '~/components/form/appForm';
 import { BaseOnboardingScreen } from '~/components/layouts/BaseOnboardingScreen';
 import { OnboardingStepGuard } from '~/components/onboarding/OnboardingGuard';
-import { useOnboardingNavigation } from '~/hooks/useOnboardingStatus';
+import { useOnboardingCursor } from '~/hooks/useOnboardingCursor';
 
 const hairColorValidator = z.object({
   hairColor: z.enum(HAIRCOLOR, {
@@ -20,7 +20,7 @@ type HairColor = (typeof HAIRCOLOR)[number];
 
 export default function HairColorScreen() {
   const updateUser = useMutation(api.users.updateMyUser);
-  const { advanceToNextStep } = useOnboardingNavigation();
+  const cursor = useOnboardingCursor();
 
   const form = useAppForm({
     defaultValues: {
@@ -39,7 +39,8 @@ export default function HairColorScreen() {
           },
         });
 
-        await advanceToNextStep();
+        // Navigate to next step using cursor-based navigation
+        cursor.goToNextStep();
       } catch (error) {
         console.error('Error updating hair color:', error);
       }

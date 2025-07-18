@@ -15,7 +15,6 @@ export const EYECOLOR = [
   'Brown',
   'Green',
   'Gray',
-  'Hazel',
   'Mixed'
 ] as const
 export const zEyeColor = z.enum(EYECOLOR).optional()

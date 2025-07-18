@@ -1,4 +1,3 @@
-import { useRouter } from 'expo-router';
 import React from 'react';
 import { View } from 'react-native';
 import { toast } from 'sonner-native';
@@ -8,20 +7,19 @@ import { BaseOnboardingScreen } from '~/components/layouts/BaseOnboardingScreen'
 import { OnboardingStepGuard } from '~/components/onboarding/OnboardingGuard';
 import { Text } from '~/components/ui/text';
 import { useHeightForm } from '~/hooks/useHeightForm';
-import { useOnboardingNavigation } from '~/hooks/useOnboardingStatus';
+import { useOnboardingCursor } from '~/hooks/useOnboardingCursor';
 
 export default function HeightScreen() {
-  const router = useRouter();
   const heightForm = useHeightForm();
-  const { advanceToNextStep } = useOnboardingNavigation();
+  const cursor = useOnboardingCursor();
 
   const handleContinue = async () => {
     try {
       // Submit data and advance in one action
       const success = await heightForm.actions.submitHeight();
       if (success) {
-        // Backend will handle navigation automatically
-        await advanceToNextStep();
+        // Navigate to the next step using cursor-based navigation
+        cursor.goToNextStep();
       } else {
         // Height form validation failed
         toast.error('Please enter a valid height');
@@ -31,9 +29,7 @@ export default function HeightScreen() {
 
       // Show appropriate error message to user
       if (error instanceof Error) {
-        if (error.message.includes('Cannot advance')) {
-          toast.error('Please complete the height step before continuing');
-        } else if (error.message.includes('Failed to save')) {
+        if (error.message.includes('Failed to save')) {
           toast.error('Failed to save height. Please try again.');
         } else {
           toast.error('An error occurred. Please try again.');

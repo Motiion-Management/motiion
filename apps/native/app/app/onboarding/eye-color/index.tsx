@@ -1,53 +1,72 @@
 import { api } from '@packages/backend/convex/_generated/api';
+import { EYECOLOR } from '@packages/backend/convex/validators/attributes';
 import { useMutation } from 'convex/react';
-import { useRouter } from 'expo-router';
 import React from 'react';
-import { View, Text } from 'react-native';
+import * as z from 'zod';
 
+import { ValidationModeForm } from '~/components/form/ValidationModeForm';
+import { useAppForm } from '~/components/form/appForm';
 import { BaseOnboardingScreen } from '~/components/layouts/BaseOnboardingScreen';
 import { OnboardingStepGuard } from '~/components/onboarding/OnboardingGuard';
-import { useOnboardingNavigation, useOnboardingStatus } from '~/hooks/useOnboardingStatus';
+import { useOnboardingCursor } from '~/hooks/useOnboardingCursor';
+
+const eyeColorValidator = z.object({
+  eyeColor: z.enum(EYECOLOR, {
+    required_error: 'Please select an eye color',
+  }),
+});
+
+type EyeColor = (typeof EYECOLOR)[number];
 
 export default function EyeColorScreen() {
-  const router = useRouter();
   const updateUser = useMutation(api.users.updateMyUser);
-  const { getStepTitle } = useOnboardingStatus();
-  const { advanceToNextStep } = useOnboardingNavigation();
+  const cursor = useOnboardingCursor();
 
-  const handleContinue = async () => {
-    try {
-      // TODO: Implement eye color form logic
-      console.log('Eye color step - implement form logic');
+  const form = useAppForm({
+    defaultValues: {
+      eyeColor: undefined as EyeColor | undefined,
+    },
+    validators: {
+      onChange: eyeColorValidator,
+    },
+    onSubmit: async ({ value }) => {
+      if (!value.eyeColor) return;
 
-      // Navigate to the next step
-      const result = await advanceToNextStep();
-      if (result.route) {
-        router.push(result.route);
-      } else {
-        // If no next step, onboarding is complete
-        router.push('/app/home');
+      try {
+        await updateUser({
+          attributes: {
+            eyeColor: value.eyeColor,
+          },
+        });
+
+        // Navigate to next step using cursor-based navigation
+        cursor.goToNextStep();
+      } catch (error) {
+        console.error('Error updating eye color:', error);
       }
-    } catch (error) {
-      console.error('Error in eye color step:', error);
-    }
-  };
+    },
+  });
+
+  const radioOptions = EYECOLOR.map((color) => ({
+    value: color,
+    label: color,
+  }));
 
   return (
     <OnboardingStepGuard requiredStep="eye-color">
       <BaseOnboardingScreen
-        title={getStepTitle()}
-        description="What's your eye color?"
-        canProgress={false} // TODO: Set to true when form is filled
+        title="What color are your eyes?"
+        description="Select one"
+        canProgress={form.state.canSubmit && !form.state.isSubmitting}
         primaryAction={{
-          onPress: handleContinue,
-          disabled: true, // TODO: Enable when form is valid
+          onPress: () => form.handleSubmit(),
         }}>
-        <View className="flex-1 items-center justify-center">
-          <Text className="text-lg text-gray-500">Eye color form will be implemented here</Text>
-          <Text className="mt-2 text-sm text-gray-400">
-            This will include eye color selection options
-          </Text>
-        </View>
+        <ValidationModeForm form={form}>
+          <form.AppField
+            name="eyeColor"
+            children={(field) => <field.RadioGroupField options={radioOptions} />}
+          />
+        </ValidationModeForm>
       </BaseOnboardingScreen>
     </OnboardingStepGuard>
   );

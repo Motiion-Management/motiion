@@ -1,12 +1,14 @@
 import { Platform, View } from 'react-native';
 import { KeyboardAwareScrollView, KeyboardStickyView } from 'react-native-keyboard-controller';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { useFocusEffect, useNavigation } from '@react-navigation/native';
+import { useCallback } from 'react';
 
 import { BackgroundGradientView } from '~/components/ui/background-gradient-view';
 import { Button } from '~/components/ui/button';
 import { Text } from '~/components/ui/text';
 import ChevronRight from '~/lib/icons/ChevronRight';
-// import ChevronLeft from '~/lib/icons/ChevronLeft';
+import { useOnboardingCursor } from '~/hooks/useOnboardingCursor';
 
 export const BaseOnboardingScreen = ({
   title,
@@ -16,6 +18,7 @@ export const BaseOnboardingScreen = ({
   canProgress = false,
   primaryAction,
   secondaryAction,
+  showBackButton = true,
 }: {
   title: string;
   description?: string;
@@ -32,6 +35,30 @@ export const BaseOnboardingScreen = ({
   showBackButton?: boolean;
 }) => {
   const insets = useSafeAreaInsets();
+  const cursor = useOnboardingCursor();
+  const navigation = useNavigation();
+
+  // Intercept back navigation and force it to use goToPreviousStep
+  useFocusEffect(
+    useCallback(() => {
+      const beforeRemove = (e: any) => {
+        // Check if this is a back navigation action
+        if (e.data.action.type === 'GO_BACK' || e.data.action.type === 'POP') {
+          // Prevent default back behavior
+          e.preventDefault();
+          
+          // Use our custom navigation logic
+          if (cursor.canGoPrevious) {
+            cursor.goToPreviousStep();
+          }
+          // If can't go back, do nothing (user stays on current screen)
+        }
+      };
+
+      navigation.addListener('beforeRemove', beforeRemove);
+      return () => navigation.removeListener('beforeRemove', beforeRemove);
+    }, [navigation, cursor])
+  );
 
   return (
     <BackgroundGradientView>

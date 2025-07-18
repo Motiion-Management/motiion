@@ -10,7 +10,7 @@ import { ValidationModeForm } from '~/components/form/ValidationModeForm';
 import { useAppForm } from '~/components/form/appForm';
 import { BaseOnboardingScreen } from '~/components/layouts/BaseOnboardingScreen';
 import { OnboardingStepGuard } from '~/components/onboarding/OnboardingGuard';
-import { useOnboardingNavigation } from '~/hooks/useOnboardingStatus';
+import { useOnboardingCursor } from '~/hooks/useOnboardingCursor';
 
 const ethnicityValidator = z.object({
   ethnicity: z.array(z.enum(ETHNICITY)).min(1, 'Please select at least one ethnicity'),
@@ -18,7 +18,7 @@ const ethnicityValidator = z.object({
 
 export default function EthnicityScreen() {
   const updateUser = useMutation(api.users.updateMyUser);
-  const { advanceToNextStep } = useOnboardingNavigation();
+  const cursor = useOnboardingCursor();
 
   const form = useAppForm({
     defaultValues: {
@@ -38,23 +38,11 @@ export default function EthnicityScreen() {
           },
         });
 
-        // Backend will handle navigation automatically
-        await advanceToNextStep();
+        // Navigate to next step using cursor-based navigation
+        cursor.goToNextStep();
       } catch (error) {
-        console.log('Error updating ethnicity:', error);
-
-        // Show appropriate error message to user
-        if (error instanceof Error) {
-          if (error.message.includes('Cannot advance')) {
-            toast.error('Please complete the ethnicity step before continuing');
-          } else if (error.message.includes('Failed to save')) {
-            toast.error('Failed to save ethnicity. Please try again.');
-          } else {
-            toast.error('An error occurred. Please try again.');
-          }
-        } else {
-          toast.error('An unexpected error occurred. Please try again.');
-        }
+        console.error('Error updating ethnicity:', error);
+        toast.error('Failed to update ethnicity. Please try again.');
       }
     },
   });
