@@ -2,6 +2,8 @@
   "name": "@packages/web-ui",
   "description": "Comprehensive UI library and business logic for Motiion platform - includes components, forms, hooks, and configuration patterns",
   "version": "1.0.0",
+  "main": "./index.ts",
+  "types": "./index.ts",
   "scripts": {
     "type-check": "echo 'Skipping type-check for web-ui due to external library @xixixao/uploadstuff issues'"
   },

@@ -4,7 +4,7 @@ import * as React from 'react'
 import { Day, DayPicker, DayProps } from 'react-day-picker'
 import './calendar.css'
 
-import { cn } from '@/lib/utils'
+import { cn } from '../../lib/utils'
 import { Close } from '@radix-ui/react-popover'
 
 export type CalendarProps = React.ComponentProps<typeof DayPicker>

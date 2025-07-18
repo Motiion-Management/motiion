@@ -8,7 +8,7 @@ import {
   DrawerHeader,
   DrawerTitle,
   DrawerTrigger
-} from '@/components/ui/drawer'
+} from '../ui/drawer'
 import { Pencil, X } from 'lucide-react'
 import { FieldValues, useFormContext } from 'react-hook-form'
 import { FormButton } from './form-button'

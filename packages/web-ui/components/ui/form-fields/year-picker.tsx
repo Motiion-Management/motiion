@@ -1,5 +1,5 @@
 import { FC } from 'react'
-import { Button } from '@/components/ui/button'
+import { Button } from './button'
 import {
   Drawer,
   DrawerClose,
@@ -7,9 +7,9 @@ import {
   DrawerFooter,
   DrawerHeader,
   DrawerTrigger
-} from '@/components/ui/drawer'
+} from './drawer'
 import { X } from 'lucide-react'
-import { FlatWheelPickerField } from '@/components/ui/form-fields/flat-wheel-picker'
+import { FlatWheelPickerField } from './form-fields/flat-wheel-picker'
 import { differenceInYears } from 'date-fns'
 import { useWatch } from 'react-hook-form'
 

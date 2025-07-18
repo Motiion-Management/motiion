@@ -1,4 +1,4 @@
-import { cn } from '@/lib/utils'
+import { cn } from '../../lib/utils'
 import { ExternalLink as LinkIcon } from 'lucide-react'
 import Link from 'next/link'
 

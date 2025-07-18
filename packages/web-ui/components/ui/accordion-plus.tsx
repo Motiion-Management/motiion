@@ -4,7 +4,7 @@ import {
   AccordionItem,
   AccordionContent,
   AccordionTrigger
-} from '@/components/ui/accordion'
+} from './accordion'
 import { PlusCircle } from 'lucide-react'
 
 export function AccordionPlus({

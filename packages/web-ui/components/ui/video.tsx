@@ -1,6 +1,6 @@
 'use client'
 import ReactPlayer from 'react-player'
-import { AspectRatio } from '@/components/ui/aspect-ratio'
+import { AspectRatio } from './aspect-ratio'
 import { FC } from 'react'
 
 export const Video: FC<{ url: string }> = ({ url }) => {

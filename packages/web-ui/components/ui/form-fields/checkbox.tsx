@@ -1,5 +1,5 @@
 import { FormField, FormItem, FormLabel } from '../form'
-import { cn } from '@/lib/utils'
+import { cn } from '../../lib/utils'
 import { Checkbox } from '../checkbox'
 import { ButtonProps } from 'react-html-props'
 

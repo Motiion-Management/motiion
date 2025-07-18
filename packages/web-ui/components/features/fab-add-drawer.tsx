@@ -9,7 +9,7 @@ import {
   DrawerHeader,
   DrawerTitle,
   DrawerTrigger
-} from '@/components/ui/drawer'
+} from '../ui/drawer'
 import { X } from 'lucide-react'
 import { FieldValues, useFormContext } from 'react-hook-form'
 import { FAB } from '../ui/floating-action-button'

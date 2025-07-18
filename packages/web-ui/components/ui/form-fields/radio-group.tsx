@@ -7,7 +7,7 @@ import {
   FormLabel,
   FormMessage
 } from '../form'
-import { cn } from '@/lib/utils'
+import { cn } from '../../lib/utils'
 import { RadioGroup, RadioGroupItem } from '../radio-group'
 
 export type RadioGroupOptions =

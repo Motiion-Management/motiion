@@ -1,21 +1,21 @@
 'use client'
 
-import { cn } from '@/lib/utils'
+import { cn } from '../../../lib/utils'
 import { format } from 'date-fns'
 import { CalendarIcon } from 'lucide-react'
-import { Calendar } from '@/components/ui/calendar'
+import { Calendar } from '../calendar'
 import {
   FormControl,
   FormField,
   FormItem,
   FormLabel,
   FormMessage
-} from '@/components/ui/form'
+} from '../form'
 import {
   Popover,
   PopoverContent,
   PopoverTrigger
-} from '@/components/ui/popover'
+} from '../popover'
 import { Button } from '../button'
 import { z } from 'zod'
 

@@ -1,13 +1,13 @@
 'use client'
-import { Card, CardContent } from '@/components/ui/card'
+import { Card, CardContent } from './card'
 import {
   Accordion,
   AccordionContent,
   AccordionItem,
   AccordionTrigger
-} from '@/components/ui/accordion'
+} from './accordion'
 import { ChevronDown } from 'lucide-react'
-import { cn } from '@/lib/utils'
+import { cn } from '../../lib/utils'
 import React from 'react'
 
 export function AccordionCard({

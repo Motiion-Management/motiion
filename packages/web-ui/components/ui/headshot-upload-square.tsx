@@ -7,7 +7,7 @@ import { api } from '@packages/backend/convex/_generated/api'
 import { Id } from '@packages/backend/convex/_generated/dataModel'
 
 import { Button } from './button'
-import { cn } from '@/lib/utils'
+import { cn } from '../../lib/utils'
 import { useState } from 'react'
 
 export interface HeadshotUploadSquareProps {
