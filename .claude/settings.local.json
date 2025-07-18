@@ -29,7 +29,8 @@
       "mcp__convex__data",
       "mcp__convex__run",
       "mcp__convex__functionSpec",
-      "Bash(pnpm type-check:*)"
+      "Bash(pnpm type-check:*)",
+      "Bash(diff:*)"
     ]
   },
   "enableAllProjectMcpServers": false

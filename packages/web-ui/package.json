@@ -1,6 +1,7 @@
 {
   "name": "@packages/web-ui",
-  "description": "",
+  "description": "Comprehensive UI library and business logic for Motiion platform - includes components, forms, hooks, and configuration patterns",
+  "version": "1.0.0",
   "scripts": {
     "type-check": "echo 'Skipping type-check for web-ui due to external library @xixixao/uploadstuff issues'"
   },
