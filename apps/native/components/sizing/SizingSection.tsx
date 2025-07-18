@@ -1,14 +1,27 @@
 import React from 'react';
 import { View } from 'react-native';
 
-import { SizingFormData } from '~/components/form/SizingValidator';
+import { type SizingFormData } from '~/components/form/SizingValidator';
 import { Text } from '~/components/ui/text';
 import { sizingMetrics } from '~/config/sizingMetrics';
+
+interface FormFieldProps {
+  SizingFormField: React.ComponentType<{ metric: typeof sizingMetrics[keyof typeof sizingMetrics] }>;
+}
+
+interface AppFieldProps {
+  name: string;
+  children: (field: FormFieldProps) => React.ReactNode;
+}
+
+interface SizingForm {
+  AppField: React.ComponentType<AppFieldProps>;
+}
 
 interface SizingSectionProps {
   title: string;
   metrics: string[];
-  form: any; // Will be typed properly when we refactor the form
+  form: SizingForm;
 }
 
 export function SizingSection({ title, metrics, form }: SizingSectionProps) {
@@ -22,14 +35,13 @@ export function SizingSection({ title, metrics, form }: SizingSectionProps) {
           const metric = sizingMetrics[metricKey];
           if (!metric) return null;
 
-          // Build field path for nested form structure
           const fieldPath = `${metric.section}.${metric.field}` as keyof SizingFormData;
 
           return (
             <form.AppField
               key={metricKey}
               name={fieldPath}
-              children={(field: any) => <field.SizingFormField metric={metric} />}
+              children={(field) => <field.SizingFormField metric={metric} />}
             />
           );
         })}

@@ -1,9 +1,10 @@
-import React, { forwardRef, useRef, useCallback } from 'react';
+import React, { forwardRef, useCallback } from 'react';
 import { View, ViewProps } from 'react-native';
 
 import { useFieldContext } from '~/components/form/context';
-import { SizingCard } from '~/components/sizing/SizingCard';
-import { SizingPickerSheet, SizingPickerSheetRef } from '~/components/sizing/SizingPickerSheet';
+import { useSizingPicker } from '~/components/form/hooks/useSizingPicker';
+import { SizingCard } from '~/components/ui/sizing-card';
+import { SizingPickerSheet } from '~/components/ui/sizing-picker-sheet';
 import { Text } from '~/components/ui/text';
 import { useFieldError } from '~/hooks/useFieldError';
 import { useValidationModeContextSafe } from '~/hooks/useValidationMode';
@@ -18,13 +19,11 @@ export const SizingFormField = forwardRef<View, SizingFormFieldProps>(
     const field = useFieldContext<string | undefined>();
     const validationModeContext = useValidationModeContextSafe();
     const { errorMessage } = useFieldError(field, { fieldName: field.name });
-    const pickerRef = useRef<SizingPickerSheetRef>(null);
+    const picker = useSizingPicker();
 
     const handleCardPress = useCallback(() => {
-      if (pickerRef.current) {
-        pickerRef.current.present(metric, field.state.value);
-      }
-    }, [metric, field.state.value]);
+      picker.actions.present(metric, field.state.value);
+    }, [picker.actions, metric, field.state.value]);
 
     const handleSave = useCallback(
       (value: string) => {
@@ -53,7 +52,15 @@ export const SizingFormField = forwardRef<View, SizingFormFieldProps>(
           )}
         </View>
 
-        <SizingPickerSheet ref={pickerRef} onSave={handleSave} />
+        <SizingPickerSheet
+          isOpen={picker.models.isOpen}
+          config={picker.models.config}
+          selectedValue={picker.models.selectedValue}
+          hasValueChanged={picker.models.hasValueChanged}
+          onClose={picker.actions.dismiss}
+          onValueChange={picker.actions.handleValueChange}
+          onSave={handleSave}
+        />
       </>
     );
   }
