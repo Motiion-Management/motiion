@@ -210,6 +210,110 @@ Required variables:
 
 4. **Consistent Patterns**: Follow existing patterns in the codebase rather than introducing new ones.
 
+## Component Architecture Guidelines
+
+### Directory Structure
+
+Components must be organized by their primary responsibility:
+
+```
+components/
+├── ui/                    # Pure visual components
+│   ├── Card.tsx          # Display-only components
+│   ├── Button.tsx        # Interactive UI elements
+│   └── Modal.tsx         # Layout/container components
+├── form/                  # Form-specific components
+│   ├── FormField.tsx     # Form field wrappers
+│   ├── validators/       # Validation schemas
+│   └── hooks/            # Form-related hooks
+└── [domain]/             # Business logic components
+    ├── UserSection.tsx   # Domain-specific orchestration
+    └── hooks/            # Domain-specific hooks
+```
+
+### Component Responsibilities
+
+1. **UI Components** (`components/ui/`):
+   - **Purpose**: Visual presentation and user interaction only
+   - **Rules**: 
+     - No business logic or data fetching
+     - Receive all data via props
+     - Only manage UI-specific state (hover, focus, etc.)
+     - Must be pure and testable in isolation
+
+2. **Form Components** (`components/form/`):
+   - **Purpose**: Form field integration and validation
+   - **Rules**:
+     - Thin wrappers around UI components
+     - Handle form state binding and validation
+     - Extract complex logic to custom hooks
+     - Type-safe field definitions
+
+3. **Domain Components** (`components/[domain]/`):
+   - **Purpose**: Business logic coordination and data orchestration
+   - **Rules**:
+     - Compose UI and form components
+     - Handle data fetching and mutations
+     - Manage complex state through hooks
+     - Coordinate between multiple UI elements
+
+### Anti-Patterns to Avoid
+
+1. **Circular Dependencies**: Components should not import from their own dependency tree
+2. **Mixed Responsibilities**: UI components should not contain business logic
+3. **Imperative APIs**: Prefer controlled components over ref-based imperative APIs
+4. **Deep Prop Drilling**: Use hooks to encapsulate related state and actions
+5. **Any Types**: Always provide proper TypeScript types
+
+### Hook Design Patterns
+
+Extract component logic into custom hooks following this pattern:
+
+```typescript
+// Good: Encapsulated hook with clear return structure
+function useFeatureLogic() {
+  return {
+    models: {
+      data: /* state values */,
+      isLoading: /* boolean states */,
+    },
+    actions: {
+      handleSave: /* memoized callbacks */,
+      handleDelete: /* memoized callbacks */,
+    },
+    forms: {
+      register: /* form utilities */,
+      errors: /* validation state */,
+    }
+  }
+}
+
+// Component becomes thin wrapper
+function FeatureComponent() {
+  const { models, actions, forms } = useFeatureLogic()
+  
+  return (
+    <UIComponent 
+      data={models.data}
+      onSave={actions.handleSave}
+      {...forms.register('field')}
+    />
+  )
+}
+```
+
+### Refactoring Checklist
+
+Before creating new components, ensure:
+
+- [ ] Component has single, clear responsibility
+- [ ] No circular import dependencies
+- [ ] Complex logic extracted to custom hooks
+- [ ] Props are typed explicitly
+- [ ] UI components are pure and testable
+- [ ] Form logic is separated from UI logic
+- [ ] Business logic is in domain-specific components/hooks
+
 ## Development Notes
 
 ### Mobile App Specifics
