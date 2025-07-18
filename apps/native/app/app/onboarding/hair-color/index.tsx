@@ -1,53 +1,71 @@
 import { api } from '@packages/backend/convex/_generated/api';
+import { HAIRCOLOR } from '@packages/backend/convex/validators/attributes';
 import { useMutation } from 'convex/react';
-import { useRouter } from 'expo-router';
 import React from 'react';
-import { View, Text } from 'react-native';
+import * as z from 'zod';
 
+import { ValidationModeForm } from '~/components/form/ValidationModeForm';
+import { useAppForm } from '~/components/form/appForm';
 import { BaseOnboardingScreen } from '~/components/layouts/BaseOnboardingScreen';
 import { OnboardingStepGuard } from '~/components/onboarding/OnboardingGuard';
-import { useOnboardingNavigation, useOnboardingStatus } from '~/hooks/useOnboardingStatus';
+import { useOnboardingNavigation } from '~/hooks/useOnboardingStatus';
+
+const hairColorValidator = z.object({
+  hairColor: z.enum(HAIRCOLOR, {
+    required_error: 'Please select a hair color',
+  }),
+});
+
+type HairColor = (typeof HAIRCOLOR)[number];
 
 export default function HairColorScreen() {
-  const router = useRouter();
   const updateUser = useMutation(api.users.updateMyUser);
-  const { getStepTitle } = useOnboardingStatus();
   const { advanceToNextStep } = useOnboardingNavigation();
 
-  const handleContinue = async () => {
-    try {
-      // TODO: Implement hair color form logic
-      console.log('Hair color step - implement form logic');
+  const form = useAppForm({
+    defaultValues: {
+      hairColor: undefined as HairColor | undefined,
+    },
+    validators: {
+      onChange: hairColorValidator,
+    },
+    onSubmit: async ({ value }) => {
+      if (!value.hairColor) return;
 
-      // Navigate to the next step
-      const result = await advanceToNextStep();
-      if (result.route) {
-        router.push(result.route);
-      } else {
-        // If no next step, onboarding is complete
-        router.push('/app/home');
+      try {
+        await updateUser({
+          attributes: {
+            hairColor: value.hairColor,
+          },
+        });
+
+        await advanceToNextStep();
+      } catch (error) {
+        console.error('Error updating hair color:', error);
       }
-    } catch (error) {
-      console.error('Error in hair color step:', error);
-    }
-  };
+    },
+  });
+
+  const radioOptions = HAIRCOLOR.map((color) => ({
+    value: color,
+    label: color,
+  }));
 
   return (
     <OnboardingStepGuard requiredStep="hair-color">
       <BaseOnboardingScreen
-        title={getStepTitle()}
-        description="What's your hair color?"
-        canProgress={false} // TODO: Set to true when form is filled
+        title="What color is your hair?"
+        description="Select one"
+        canProgress={form.state.canSubmit && !form.state.isSubmitting}
         primaryAction={{
-          onPress: handleContinue,
-          disabled: true, // TODO: Enable when form is valid
+          onPress: () => form.handleSubmit(),
         }}>
-        <View className="flex-1 items-center justify-center">
-          <Text className="text-lg text-gray-500">Hair color form will be implemented here</Text>
-          <Text className="mt-2 text-sm text-gray-400">
-            This will include hair color selection options
-          </Text>
-        </View>
+        <ValidationModeForm form={form}>
+          <form.AppField
+            name="hairColor"
+            children={(field) => <field.RadioGroupField options={radioOptions} />}
+          />
+        </ValidationModeForm>
       </BaseOnboardingScreen>
     </OnboardingStepGuard>
   );

@@ -4,7 +4,8 @@ export const HAIRCOLOR = [
   'Black',
   'Blonde',
   'Brown',
-  'Dyed (see current headshot)'
+  'Red',
+  'Other'
 ] as const
 export const zHairColor = z.enum(HAIRCOLOR).optional()
 
