@@ -29,6 +29,13 @@ export const ETHNICITY = [
 ] as const
 export const zEthnicity = z.enum(ETHNICITY).array().optional()
 
+export const GENDER = [
+  'Man',
+  'Woman',
+  'Non-binary'
+] as const
+export const zGender = z.enum(GENDER).optional()
+
 export const zHeight = z.object({
   feet: z.number(),
   inches: z.number()
@@ -37,6 +44,7 @@ export const attributesPlainObject = {
   ethnicity: zEthnicity,
   hairColor: zHairColor,
   eyeColor: zEyeColor,
+  gender: zGender,
   height: zHeight.optional(),
   yearsOfExperience: z.number().optional()
 }

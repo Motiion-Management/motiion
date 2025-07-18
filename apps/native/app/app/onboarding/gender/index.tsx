@@ -1,53 +1,72 @@
 import { api } from '@packages/backend/convex/_generated/api';
+import { GENDER } from '@packages/backend/convex/validators/attributes';
 import { useMutation } from 'convex/react';
-import { useRouter } from 'expo-router';
 import React from 'react';
-import { View, Text } from 'react-native';
+import * as z from 'zod';
 
+import { ValidationModeForm } from '~/components/form/ValidationModeForm';
+import { useAppForm } from '~/components/form/appForm';
 import { BaseOnboardingScreen } from '~/components/layouts/BaseOnboardingScreen';
 import { OnboardingStepGuard } from '~/components/onboarding/OnboardingGuard';
-import { useOnboardingNavigation, useOnboardingStatus } from '~/hooks/useOnboardingStatus';
+import { useOnboardingCursor } from '~/hooks/useOnboardingCursor';
+
+const genderValidator = z.object({
+  gender: z.enum(GENDER, {
+    required_error: 'Please select your gender',
+  }),
+});
+
+type Gender = (typeof GENDER)[number];
 
 export default function GenderScreen() {
-  const router = useRouter();
   const updateUser = useMutation(api.users.updateMyUser);
-  const { getStepTitle } = useOnboardingStatus();
-  const { advanceToNextStep } = useOnboardingNavigation();
+  const cursor = useOnboardingCursor();
 
-  const handleContinue = async () => {
-    try {
-      // TODO: Implement gender form logic
-      console.log('Gender step - implement form logic');
+  const form = useAppForm({
+    defaultValues: {
+      gender: undefined as Gender | undefined,
+    },
+    validators: {
+      onChange: genderValidator,
+    },
+    onSubmit: async ({ value }) => {
+      if (!value.gender) return;
 
-      // Navigate to the next step
-      const result = await advanceToNextStep();
-      if (result.route) {
-        router.push(result.route);
-      } else {
-        // If no next step, onboarding is complete
-        router.push('/app/home');
+      try {
+        await updateUser({
+          attributes: {
+            gender: value.gender,
+          },
+        });
+
+        // Navigate to next step using cursor-based navigation
+        cursor.goToNextStep();
+      } catch (error) {
+        console.error('Error updating gender:', error);
       }
-    } catch (error) {
-      console.error('Error in gender step:', error);
-    }
-  };
+    },
+  });
+
+  const radioOptions = GENDER.map((gender) => ({
+    value: gender,
+    label: gender,
+  }));
 
   return (
     <OnboardingStepGuard requiredStep="gender">
       <BaseOnboardingScreen
-        title={getStepTitle()}
-        description="What's your gender?"
-        canProgress={false} // TODO: Set to true when form is filled
+        title="What best describes your gender?"
+        description="Select one"
+        canProgress={form.state.canSubmit && !form.state.isSubmitting}
         primaryAction={{
-          onPress: handleContinue,
-          disabled: true, // TODO: Enable when form is valid
+          onPress: () => form.handleSubmit(),
         }}>
-        <View className="flex-1 items-center justify-center">
-          <Text className="text-lg text-gray-500">Gender form will be implemented here</Text>
-          <Text className="mt-2 text-sm text-gray-400">
-            This will include gender selection options
-          </Text>
-        </View>
+        <ValidationModeForm form={form}>
+          <form.AppField
+            name="gender"
+            children={(field) => <field.RadioGroupField options={radioOptions} />}
+          />
+        </ValidationModeForm>
       </BaseOnboardingScreen>
     </OnboardingStepGuard>
   );
