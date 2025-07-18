@@ -17,7 +17,7 @@ import { usePhoneInput } from '~/hooks/usePhoneInput';
 import { useValidationModeContextSafe } from '~/hooks/useValidationMode';
 import ChevronDown from '~/lib/icons/ChevronDown';
 
-interface PhoneNumberProps {
+export interface PhoneNumberProps {
   autoFocus?: boolean;
   helpText?: string;
 }

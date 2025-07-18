@@ -30,12 +30,10 @@ export const CheckboxField: React.FC<CheckboxFieldProps> = ({
             <Checkbox
               checked={field.value}
               onCheckedChange={handleCheckboxChange}
-              {...field}
-              {...buttonProps}
               {...props}
             />
             <button
-              {...buttonProps}
+              type="button"
               onClick={() => handleCheckboxChange(!field.value)}
             >
               <FormLabel className="text-body cursor-pointer">

@@ -8,7 +8,7 @@ import { FC } from 'react'
 export type Profile = {
   headshotUrl: string
   label: string
-  userId: Id<'users'>
+  userId: string  // Changed from Id<'users'> to string to match backend response
 }
 
 export const DiscoverProfileCard: FC<Profile> = ({

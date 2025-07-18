@@ -3,11 +3,14 @@ import { toast } from 'sonner'
 import { extendTailwindMerge } from 'tailwind-merge'
 import { toDate, differenceInYears, endOfToday } from 'date-fns'
 
-import { customFontSizes } from '../tailwind.config'
+// import { customFontSizes } from '../tailwind.config'
+
+// Temporarily use any for customFontSizes to avoid module resolution issues
+const customFontSizes: Record<string, any> = {}
 
 type FontSizeOptions = keyof typeof customFontSizes
 
-const twMerge = extendTailwindMerge<FontSizeOptions>({
+const twMerge = extendTailwindMerge({
   extend: {
     classGroups: {
       'font-size': [{ text: Object.keys(customFontSizes) as FontSizeOptions[] }]

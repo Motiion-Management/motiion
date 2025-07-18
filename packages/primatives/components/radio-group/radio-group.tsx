@@ -1,6 +1,6 @@
 import * as React from 'react'
 import { Pressable, View, type GestureResponderEvent } from 'react-native'
-import * as Slot from '@packages/primatives/components/slot'
+import * as Slot from '../slot'
 import type {
   IndicatorProps,
   IndicatorRef,
@@ -74,7 +74,7 @@ const Item = React.forwardRef<ItemRef, ItemProps>(
         }}
       >
         <Component
-          ref={ref}
+          ref={ref as any}
           role="radio"
           onPress={onPress}
           aria-checked={value === itemValue}

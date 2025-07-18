@@ -11,7 +11,7 @@ interface UseFieldErrorOptions {
   fieldName?: string;
 }
 
-export const useFieldError = (field: FieldApi<any, any>, options: UseFieldErrorOptions = {}) => {
+export const useFieldError = (field: any, options: UseFieldErrorOptions = {}) => {
   const formConfig = useFormConfig();
   const { showWhen = formConfig.errorDisplay.timing, fallbackMessage, fieldName } = options;
 

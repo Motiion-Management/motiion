@@ -8,7 +8,7 @@ import { Input } from '~/components/ui/input';
 import { useFieldError } from '~/hooks/useFieldError';
 import { useValidationModeContextSafe } from '~/hooks/useValidationMode';
 
-interface PhoneOTPProps {
+export interface PhoneOTPProps {
   helperTextOpts?: HelperTextProps;
 }
 

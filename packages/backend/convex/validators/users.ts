@@ -65,6 +65,9 @@ export const users = {
   // Navigation position tracking (separate from data completion)
   currentOnboardingStep: z.string().optional(),
   currentOnboardingStepIndex: z.number().optional(),
+  
+  // Legacy compatibility field (remove when web app is updated)
+  onboardingStep: z.string().optional(),
 
   // user info
   email: z.string(),
@@ -96,6 +99,29 @@ export const zUsers = z.object(users)
 
 export const Users = Table('users', zodToConvexFields(users))
 export type UserDoc = Doc<'users'>
+
+// Legacy compatibility export for web app (temporary)
+export const ONBOARDING_STEPS = {
+  PROFILE_TYPE: 'profile-type',
+  HEADSHOTS: 'headshots',
+  HEIGHT: 'height',
+  ETHNICITY: 'ethnicity',
+  HAIR_COLOR: 'hair-color',
+  EYE_COLOR: 'eye-color',
+  GENDER: 'gender',
+  LOCATION: 'location',
+  UNION: 'union',
+  EXPERIENCES: 'experiences',
+  SKILLS: 'skills',
+  TRAINING: 'training',
+  REPRESENTATION: 'representation',
+  SIZING: 'sizing',
+  COMPANY: 'company',
+  WORK_LOCATION: 'work-location',
+  DATABASE_USE: 'database-use',
+  RESUME: 'resume',
+  COMPLETE: 'complete'
+} as const
 
 export const zClerkCreateUserFields = zUsers.pick({
   email: true,

@@ -14,17 +14,17 @@ const isProtectedRoute = createRouteMatcher([
 
 export default clerkMiddleware(async (auth, req) => {
   if (isProtectedRoute(req)) {
-    auth().protect()
+    (auth() as any).protect()
   }
 
-  if (auth().userId) {
+  if ((auth() as any).userId) {
     const token = await getMiddlewareAuthToken(auth)
     const data = await fetchQuery(api.users.getMyUser, {}, { token })
     if (data) {
       const { onboardingStep } = data
       const onboardingTarget = `/onboarding/${onboardingStep}`
       if (
-        onboardingStep !== ONBOARDING_STEPS.COMPLETE &&
+        onboardingStep !== 'complete' &&
         req.nextUrl.pathname !== onboardingTarget
       ) {
         return NextResponse.redirect(new URL(onboardingTarget, req.url))

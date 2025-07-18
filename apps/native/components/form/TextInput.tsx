@@ -4,7 +4,7 @@ import { Input as TextField } from '~/components/ui/input';
 import { useFieldError } from '~/hooks/useFieldError';
 import { useValidationModeContextSafe } from '~/hooks/useValidationMode';
 
-interface TextInputProps {
+export interface TextInputProps {
   label: string;
   placeholder?: string;
   autoCapitalize?: 'none' | 'sentences' | 'words' | 'characters';

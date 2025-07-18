@@ -1,5 +1,5 @@
 import * as RadioGroup from '@radix-ui/react-radio-group'
-import * as Slot from '@packages/primatives/components/slot'
+import * as Slot from '../slot'
 import * as React from 'react'
 import { GestureResponderEvent, Pressable, View } from 'react-native'
 import type {
@@ -61,7 +61,7 @@ const Item = React.forwardRef<ItemRef, ItemProps>(
     const Component = asChild ? Slot.Pressable : Pressable
     return (
       <RadioGroup.Item value={value} asChild>
-        <Component ref={ref} onPress={onPress} {...props} />
+        <Component ref={ref as any} onPress={onPress} {...props} />
       </RadioGroup.Item>
     )
   }

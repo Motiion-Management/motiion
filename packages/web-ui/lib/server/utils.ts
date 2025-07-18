@@ -5,11 +5,13 @@ import { Preloaded } from 'convex/react'
 import { FunctionReference } from 'convex/server'
 
 export async function getAuthToken() {
-  return (await auth().getToken({ template: 'convex' })) ?? undefined
+  const authResult = await auth()
+  return (await authResult.getToken({ template: 'convex' })) ?? undefined
 }
 
 export async function getMiddlewareAuthToken(clerkAuth: ClerkMiddlewareAuth) {
-  return (await clerkAuth().getToken({ template: 'convex' })) ?? undefined
+  const authResult = await clerkAuth()
+  return (await authResult.getToken({ template: 'convex' })) ?? undefined
 }
 
 export async function preloadHelper<

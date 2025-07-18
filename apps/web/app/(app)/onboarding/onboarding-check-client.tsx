@@ -6,7 +6,7 @@ import { useRouter, usePathname } from 'next/navigation'
 import { useEffect } from 'react'
 import { ONBOARDING_STEPS } from '@packages/backend/convex/validators/users'
 
-function checkOnboardingStep(currentStep: number, pathname: string) {
+function checkOnboardingStep(currentStep: string, pathname: string) {
   const currentTarget = `/onboarding/${currentStep}`
   if (currentStep !== ONBOARDING_STEPS.COMPLETE && pathname !== currentTarget) {
     return currentTarget

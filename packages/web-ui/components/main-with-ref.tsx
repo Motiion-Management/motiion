@@ -1,7 +1,7 @@
 'use client'
 import { RefObject, createContext, useContext, useRef } from 'react'
 
-export const MainRefContext = createContext<RefObject<HTMLElement> | undefined>(
+export const MainRefContext = createContext<RefObject<HTMLElement | null> | undefined>(
   undefined
 )
 
@@ -16,7 +16,7 @@ export function MainWithRefContext({
   children: React.ReactNode
   className?: string
 }) {
-  const mainRef = useRef<HTMLDivElement>(null)
+  const mainRef = useRef<HTMLElement | null>(null)
 
   return (
     <MainRefContext.Provider value={mainRef}>

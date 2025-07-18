@@ -12,8 +12,23 @@ import {
   getStepRoute,
   ProfileType
 } from './onboardingConfig'
+import type { RegisteredQuery, RegisteredMutation } from 'convex/server'
 
-export const getOnboardingStatus = query({
+export const getOnboardingStatus: RegisteredQuery<'public', Record<string, never>, {
+  isComplete: boolean;
+  currentStep: string;
+  currentStepIndex: number;
+  totalSteps: number;
+  redirectPath: string | null;
+  isCurrentStepDataComplete: boolean;
+  progress: number;
+  version: number;
+  canAdvance: boolean;
+  nextRequiredFields: string[];
+  missingFields: string[];
+  stepDescription?: string;
+  shouldRedirect: boolean;
+} | null> = query({
   handler: async (ctx) => {
     // Get user directly from the database instead of calling another query
     const identity = await ctx.auth.getUserIdentity()
@@ -76,7 +91,7 @@ export const getOnboardingStatus = query({
   }
 })
 
-export const completeOnboarding = mutation({
+export const completeOnboarding: RegisteredMutation<'public', Record<string, never>, { success: boolean }> = mutation({
   handler: async (ctx) => {
     // Get user directly from the database
     const identity = await ctx.auth.getUserIdentity()
@@ -113,7 +128,7 @@ export const completeOnboarding = mutation({
   }
 })
 
-export const resetOnboarding = mutation({
+export const resetOnboarding: RegisteredMutation<'public', Record<string, never>, { success: boolean }> = mutation({
   handler: async (ctx) => {
     // Get user directly from the database
     const identity = await ctx.auth.getUserIdentity()
@@ -141,7 +156,15 @@ export const resetOnboarding = mutation({
   }
 })
 
-export const getOnboardingProgress = query({
+export const getOnboardingProgress: RegisteredQuery<'public', Record<string, never>, {
+  progress: number;
+  currentStep: string | null;
+  isComplete: boolean;
+  currentStepIndex: number;
+  totalSteps: number;
+  completedSteps: Set<string>;
+  profileType: string;
+} | null> = query({
   handler: async (ctx) => {
     // Get user directly from the database
     const identity = await ctx.auth.getUserIdentity()
@@ -170,7 +193,7 @@ export const getOnboardingProgress = query({
   }
 })
 
-export const debugOnboardingStatus = query({
+export const debugOnboardingStatus: RegisteredQuery<'public', Record<string, never>, any> = query({
   handler: async (ctx) => {
     // Get user directly from the database
     const identity = await ctx.auth.getUserIdentity()
@@ -211,7 +234,7 @@ export const debugOnboardingStatus = query({
   }
 })
 
-export const advanceOnboardingStep = mutation({
+export const advanceOnboardingStep: RegisteredMutation<'public', Record<string, never>, { nextStep: string | null; route: string }> = mutation({
   handler: async (ctx) => {
     const identity = await ctx.auth.getUserIdentity()
     if (!identity) {
@@ -333,7 +356,7 @@ export const validateCurrentOnboardingStep = mutation({
   }
 })
 
-export const migrateNavigationPosition = internalMutation({
+export const migrateNavigationPosition: RegisteredMutation<'internal', Record<string, never>, { totalUsers: number; migrated: number; failed: number }> = internalMutation({
   handler: async (ctx) => {
     // Get all users who don't have navigation position set
     const users = await ctx.db

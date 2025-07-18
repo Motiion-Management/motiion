@@ -1,11 +1,10 @@
-import type { FormApi } from '@tanstack/react-form';
 import React, { ReactNode } from 'react';
 
 import { ValidationModeProvider, useValidationModeContext } from '~/hooks/useValidationMode';
 
 interface ValidationModeFormProps {
   children: ReactNode;
-  form: FormApi<any, any>;
+  form: any; // Using any for now to avoid complex TanStack Form type issues
 }
 
 // Inner component that has access to validation mode context
@@ -16,7 +15,7 @@ const ValidationModeFormInner = ({ children, form }: ValidationModeFormProps) =>
   React.useEffect(() => {
     const originalOnSubmit = form.options.onSubmit;
 
-    form.options.onSubmit = async (submissionApi) => {
+    form.options.onSubmit = async (submissionApi: any) => {
       markFormSubmitted();
       if (originalOnSubmit) {
         return originalOnSubmit(submissionApi);

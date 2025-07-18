@@ -52,7 +52,7 @@ export default function Dashboard() {
             <PointsList>
               <PointEntry
                 text="Input your information"
-                completed={onboardingStep === 0}
+                completed={onboardingStep === '0'}
               />
               <PointEntry
                 text="Add headshots"
@@ -65,7 +65,7 @@ export default function Dashboard() {
 
               <PointEntry
                 text="Attend an event"
-                completed={onboardingStep === 3}
+                completed={onboardingStep === '3'}
               />
             </PointsList>
           </div>

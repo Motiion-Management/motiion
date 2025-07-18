@@ -27,6 +27,7 @@ export const BaseOnboardingScreen = ({
   canProgress?: boolean;
   primaryAction: {
     onPress: () => void;
+    disabled?: boolean;
   };
   secondaryAction?: {
     onPress: () => void;

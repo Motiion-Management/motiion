@@ -133,7 +133,7 @@ export const TimelineEventCard: FC<TimelineEventCardProps> = ({ event }) => {
 }
 
 export type TimelineProps = {
-  children: ReturnType<typeof ResumeTimelineEvent>[]
+  children: React.ReactNode
   className?: string
 }
 

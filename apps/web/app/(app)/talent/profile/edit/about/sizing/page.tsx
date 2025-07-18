@@ -12,12 +12,12 @@ export default async function ProfileEditAttributesPage() {
       <AccordionCard title="General Sizing" defaultOpen>
         <GeneralSizingForm preloadedValues={preloadedUser} />
       </AccordionCard>
-      {user.gender !== 'Female' && (
+      {user.attributes?.gender !== 'Female' && (
         <AccordionCard title="Male Sizing" defaultOpen>
           <MaleSizingForm preloadedValues={preloadedUser} />
         </AccordionCard>
       )}
-      {user.gender !== 'Male' && (
+      {user.attributes?.gender !== 'Male' && (
         <AccordionCard title="Female Sizing" defaultOpen>
           <FemaleSizingForm preloadedValues={preloadedUser} />
         </AccordionCard>

@@ -24,3 +24,6 @@ export const zFileUploadObject = z.object({
 })
 
 export const zFileUploadObjectArray = z.array(zFileUploadObject)
+
+// Re-export GENDER for compatibility
+export { GENDER } from './attributes'

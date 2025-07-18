@@ -18,7 +18,7 @@ const OnboardingHeader = ({ route }: NativeStackHeaderProps) => {
         <ProgressBar
           currentStep={cursor.currentStepIndex}
           totalSteps={cursor.totalSteps}
-          label={getStepLabel(cursor.currentStep)}
+          label={getStepLabel(cursor.currentStep || '')}
         />
       </View>
     </SafeAreaView>

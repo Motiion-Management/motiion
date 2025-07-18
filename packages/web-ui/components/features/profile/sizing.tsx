@@ -5,7 +5,9 @@ import { UserDoc } from '@packages/backend/convex/validators/users'
 
 export const SizingCard: FC<{
   user: UserDoc
-}> = ({ user: { sizing, gender } }) => {
+}> = ({ user }) => {
+  const { sizing, attributes } = user
+  const gender = attributes?.gender
   return (
     <AccordionCard title="Sizing" withParent>
       <StatGroup title="General" cols={2}>

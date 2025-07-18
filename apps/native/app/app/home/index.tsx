@@ -35,7 +35,7 @@ export default function AuthIndexScreen() {
             for What's Next
           </Text>
         </View>
-        <Button variant="destructive" onPress={() => signOut()} className="mx-8">
+        <Button variant="primary" onPress={() => signOut()} className="mx-8">
           <Text>Sign Out</Text>
         </Button>
       </View>

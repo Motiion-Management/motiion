@@ -11,7 +11,7 @@ import { useFieldError } from '~/hooks/useFieldError';
 import { useValidationModeContextSafe } from '~/hooks/useValidationMode';
 import { cn } from '~/lib/cn';
 
-interface DateInputProps {
+export interface DateInputProps {
   label: string;
   minimumDate?: Date;
   maximumDate?: Date;

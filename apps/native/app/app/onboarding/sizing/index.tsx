@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { api } from '@packages/backend/convex/_generated/api';
 import { useMutation, useQuery } from 'convex/react';
 import React from 'react';

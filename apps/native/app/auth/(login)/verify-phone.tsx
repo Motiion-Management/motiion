@@ -48,7 +48,7 @@ export default function VerifyPhoneScreen() {
         if (result.status === 'complete') {
           await setActive({ session: result.createdSessionId });
           // Navigate to the main app
-          router.replace('/home');
+          router.replace('/app/home');
         } else {
           setVerificationError('Sign-in incomplete. Please try again.');
         }
@@ -109,7 +109,7 @@ export default function VerifyPhoneScreen() {
                         // Resend the verification code
                         await signIn?.prepareFirstFactor({
                           strategy: 'phone_code',
-                          phoneNumberId: signIn.supportedFirstFactors.find(
+                          phoneNumberId: signIn.supportedFirstFactors?.find(
                             (factor) => factor.strategy === 'phone_code'
                           )?.phoneNumberId!,
                         });

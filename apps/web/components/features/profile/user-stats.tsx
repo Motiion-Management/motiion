@@ -25,7 +25,7 @@ export function UserStats({ user }: { user: UserDoc }) {
       <div className="grid grid-cols-5 grid-rows-2 gap-5 border-y border-y-gray-500 p-5">
         <Stat label="Age" value={calculateAge(user?.dateOfBirth)} />
         <Stat label="Yrs Exp" value={user.attributes?.yearsOfExperience} />
-        <Stat label="Gender" value={user?.gender?.[0]} />
+        <Stat label="Gender" value={user?.attributes?.gender?.[0]} />
         <Stat label="Height" value={formatHeight(user.attributes?.height)} />
         <Stat label="Hair" value={user.attributes?.hairColor?.slice(0, 2)} />
         <Stat label="Eyes" value={user.attributes?.eyeColor?.slice(0, 3)} />

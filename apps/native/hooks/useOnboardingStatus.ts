@@ -165,7 +165,10 @@ export function useOnboardingStatus(overrideStep?: string) {
   };
 }
 
-export function useOnboardingCompletion() {
+export function useOnboardingCompletion(): {
+  completeOnboarding: any;
+  resetOnboarding: any;
+} {
   const completeOnboarding = useMutation(api.onboarding.completeOnboarding);
   const resetOnboarding = useMutation(api.onboarding.resetOnboarding);
 
