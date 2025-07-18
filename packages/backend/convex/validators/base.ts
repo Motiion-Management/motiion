@@ -4,9 +4,6 @@ import { z } from 'zod'
 export const VISIBILITY = ['Public', 'Private'] as const
 export const zVisibility = z.enum(VISIBILITY)
 
-export const GENDER = ['Male', 'Female', 'Non-Binary'] as const
-export const zGender = z.enum(GENDER)
-
 export const zLocation = z.object({
   name: z.string().optional(),
   country: z.string(),

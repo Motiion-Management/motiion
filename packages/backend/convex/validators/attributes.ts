@@ -30,8 +30,8 @@ export const ETHNICITY = [
 export const zEthnicity = z.enum(ETHNICITY).array().optional()
 
 export const GENDER = [
-  'Man',
-  'Woman',
+  'Male',
+  'Female',
   'Non-binary'
 ] as const
 export const zGender = z.enum(GENDER).optional()

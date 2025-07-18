@@ -1,6 +1,6 @@
 import { useSegments, useRouter } from 'expo-router';
 import { useCallback, useMemo } from 'react';
-import { useQuery } from 'convex/react';
+import { useQuery, useMutation } from 'convex/react';
 import { api } from '@packages/backend/convex/_generated/api';
 import { getOnboardingFlow, ProfileType } from '@packages/backend/convex/onboardingConfig';
 
@@ -58,6 +58,8 @@ export function useOnboardingCursor() {
   const segments = useSegments();
   const router = useRouter();
   const user = useQuery(api.users.getMyUser);
+  const validateStep = useMutation(api.onboarding.validateCurrentOnboardingStep);
+  const setStep = useMutation(api.onboarding.setOnboardingStep);
 
   // Get current step from the route
   const currentStep = useMemo(() => {
@@ -89,21 +91,48 @@ export function useOnboardingCursor() {
   }, [currentStepIndex, flow.length]);
 
   // Navigation functions
-  const goToNextStep = useCallback(() => {
-    if (currentStepIndex < flow.length - 1) {
-      const nextStep = flow[currentStepIndex + 1];
-      const nextRoute = STEP_TO_ROUTE_MAP[nextStep.step as keyof typeof STEP_TO_ROUTE_MAP];
-      if (nextRoute) {
-        router.push(nextRoute);
+  const goToNextStep = useCallback(async () => {
+    if (!currentStep) {
+      console.error('No current step defined');
+      return false;
+    }
+
+    try {
+      // Validate current step before advancing
+      const validation = await validateStep({ currentStep });
+      
+      if (!validation.isValid) {
+        console.error('Cannot advance onboarding step:', {
+          step: currentStep,
+          missingFields: validation.missingFields
+        });
+        return false;
+      }
+
+      // Update backend step tracking before navigation
+      if (currentStepIndex < flow.length - 1) {
+        const nextStep = flow[currentStepIndex + 1];
+        
+        // Update backend tracking to the next step
+        await setStep({ step: nextStep.step });
+        
+        // Proceed with cursor navigation
+        const nextRoute = STEP_TO_ROUTE_MAP[nextStep.step as keyof typeof STEP_TO_ROUTE_MAP];
+        if (nextRoute) {
+          router.push(nextRoute);
+          return true;
+        }
+      } else {
+        // If we're at the last step, mark onboarding as complete and go to home
+        router.push('/app/home');
         return true;
       }
-    } else {
-      // If we're at the last step, go to home
-      router.push('/app/home');
-      return true;
+      return false;
+    } catch (error) {
+      console.error('Error validating onboarding step:', error);
+      return false;
     }
-    return false;
-  }, [currentStepIndex, flow, router]);
+  }, [currentStep, currentStepIndex, flow, router, validateStep, setStep]);
 
   const goToPreviousStep = useCallback(() => {
     if (currentStepIndex > 0) {

@@ -166,7 +166,7 @@ function getFieldValue(user: Doc<'users'>, field: string): any {
     case 'eyeColor':
       return user.attributes?.eyeColor
     case 'gender':
-      return user.gender
+      return user.attributes?.gender
     case 'location':
       return user.location
     case 'workLocation':

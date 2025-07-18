@@ -1,7 +1,7 @@
 import { zid, zodToConvex, zodToConvexFields } from 'convex-helpers/server/zod'
 import { Table } from 'convex-helpers/server'
 import { z } from 'zod'
-import { zFileUploadObjectArray, zGender, zLocation } from './base'
+import { zFileUploadObjectArray, zLocation } from './base'
 import { attributesPlainObject } from './attributes'
 import { sizingPlainObject } from './sizing'
 import { Doc } from '../_generated/dataModel'
@@ -74,7 +74,6 @@ export const users = {
   fullName: z.string().optional(),
   phone: z.string().optional(),
   dateOfBirth: z.string().optional(),
-  gender: zGender.optional(),
   location: zLocation.optional(),
 
   // talent profile

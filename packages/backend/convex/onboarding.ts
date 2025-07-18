@@ -195,7 +195,7 @@ export const debugOnboardingStatus = query({
       userData: {
         profileType: user.profileType,
         headshots: user.headshots?.length || 0,
-        gender: user.gender,
+        gender: user.attributes?.gender,
         location: !!user.location,
         sizing: !!user.sizing,
         representation: !!user.representation,
@@ -290,6 +290,46 @@ export const setOnboardingStep = mutation({
     })
 
     return { success: true }
+  }
+})
+
+export const validateCurrentOnboardingStep = mutation({
+  args: { currentStep: v.string() },
+  handler: async (ctx, { currentStep }) => {
+    const identity = await ctx.auth.getUserIdentity()
+    if (!identity) {
+      throw new ConvexError('Not authenticated')
+    }
+
+    const user = await ctx.db
+      .query('users')
+      .withIndex('tokenId', (q) => q.eq('tokenId', identity.subject))
+      .first()
+
+    if (!user) {
+      throw new ConvexError('User not found')
+    }
+
+    const profileType = (user.profileType || 'dancer') as ProfileType
+    const flow = getOnboardingFlow(profileType, CURRENT_ONBOARDING_VERSION)
+    const step = flow.find(s => s.step === currentStep)
+
+    if (!step) {
+      return {
+        isValid: false,
+        missingFields: ['invalid step'],
+        step: currentStep
+      }
+    }
+
+    const isComplete = checkStepCompletion(user, step)
+    const missingFields = getMissingFields(user, step)
+
+    return {
+      isValid: isComplete,
+      missingFields,
+      step: currentStep
+    }
   }
 })
 

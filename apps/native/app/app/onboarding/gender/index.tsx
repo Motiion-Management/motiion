@@ -1,6 +1,6 @@
 import { api } from '@packages/backend/convex/_generated/api';
 import { GENDER } from '@packages/backend/convex/validators/attributes';
-import { useMutation } from 'convex/react';
+import { useMutation, useQuery } from 'convex/react';
 import React from 'react';
 import * as z from 'zod';
 
@@ -16,15 +16,14 @@ const genderValidator = z.object({
   }),
 });
 
-type Gender = (typeof GENDER)[number];
-
 export default function GenderScreen() {
   const updateUser = useMutation(api.users.updateMyUser);
+  const user = useQuery(api.users.getMyUser);
   const cursor = useOnboardingCursor();
 
   const form = useAppForm({
     defaultValues: {
-      gender: undefined as Gender | undefined,
+      gender: user?.attributes?.gender,
     },
     validators: {
       onChange: genderValidator,
