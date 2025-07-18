@@ -36,7 +36,6 @@
     "@hookform/resolvers": "^3.4.2",
     "@packages/backend": "workspace:*",
     "@packages/primatives": "workspace:*",
-    "@packages/web-ui": "workspace:*",
     "@quidone/react-native-wheel-picker": "^1.4.1",
     "@quidone/react-native-wheel-picker-feedback": "^2.0.0",
     "@react-native-community/datetimepicker": "8.4.1",
