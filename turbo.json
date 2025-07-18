@@ -21,6 +21,7 @@
       "persistent": true
     },
     "lint": {},
+    "type-check": {},
     "clean": {
       "cache": false
     }

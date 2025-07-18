@@ -17,6 +17,7 @@
     "prebuild": "expo prebuild",
     "lint": "eslint \"**/*.{js,jsx,ts,tsx}\" && prettier -c \"**/*.{js,jsx,ts,tsx,json}\"",
     "format": "eslint \"**/*.{js,jsx,ts,tsx}\" --fix && prettier \"**/*.{js,jsx,ts,tsx,json}\" --write",
+    "type-check": "tsc --noEmit",
     "migrate-tokens": "node scripts/migrate-tokens-simple.js",
     "migrate-tokens:dry": "node scripts/migrate-tokens-simple.js --dry-run",
     "migrate-figma-tokens": "node scripts/migrate-to-figma-tokens.js",

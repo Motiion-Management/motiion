@@ -1,7 +1,9 @@
 {
   "name": "@packages/primatives",
   "description": "",
-  "scripts": {},
+  "scripts": {
+    "type-check": "tsc --noEmit"
+  },
   "author": "@panzacoder",
   "license": "ISC",
   "dependencies": {

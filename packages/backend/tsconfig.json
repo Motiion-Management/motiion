@@ -1,7 +1,7 @@
 {
   "compilerOptions": {
     "target": "ESNext",
-    "lib": ["dom", "dom.iterable", "esnext"],
+    "lib": ["esnext"],
     "allowJs": true,
     "skipLibCheck": true,
     "strict": true,
@@ -13,16 +13,7 @@
     "isolatedModules": true,
     "jsx": "preserve",
     "incremental": true,
-    "composite": true,
-    "plugins": [
-      {
-        "name": "ts-plugin-sort-import-suggestions"
-      }
-    ],
-    "paths": {
-      "~/*": ["./*"],
-      "@packages/primatives/*": ["./*"]
-    }
+    "composite": true
   },
   "include": ["**/*.ts", "**/*.tsx"],
   "exclude": ["node_modules"]
