@@ -169,13 +169,8 @@ const config: Config = {
 }
 
 // Simplified function - same RGB approach for all platforms
-function withOpacity(variableName: string) {
-  return ({ opacityValue }: { opacityValue?: number }) => {
-    if (opacityValue !== undefined) {
-      return `rgb(var(--${variableName}) / ${opacityValue})`;
-    }
-    return `rgb(var(--${variableName}))`;
-  };
+function withOpacity(variableName: string): string {
+  return `rgb(var(--${variableName}))`;
 }
 
 export default config
