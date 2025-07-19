@@ -10,17 +10,17 @@ export function Header() {
         />
       </div>
       {/* Navigation Links */}
-      <nav className="hidden items-center space-x-8 md:flex">
-        <a href="#" className="text-white hover:text-gray-300">
-          Search
-        </a>
-        <a href="#" className="text-white hover:text-gray-300">
-          Lists
-        </a>
-        <a href="#" className="text-white hover:text-gray-300">
-          Resources
-        </a>
-      </nav>
+      {/* <nav className="hidden items-center space-x-8 md:flex"> */}
+      {/*   <a href="#" className="text-white hover:text-gray-300"> */}
+      {/*     Search */}
+      {/*   </a> */}
+      {/*   <a href="#" className="text-white hover:text-gray-300"> */}
+      {/*     Lists */}
+      {/*   </a> */}
+      {/*   <a href="#" className="text-white hover:text-gray-300"> */}
+      {/*     Resources */}
+      {/*   </a> */}
+      {/* </nav> */}
       {/* User Menu */}
       <div className="flex w-[88px] items-center space-x-4">
         {/* <button className="p-2"> */}
