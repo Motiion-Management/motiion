@@ -1,11 +1,15 @@
+import Image from 'next/image'
+
 export function Header() {
   return (
     <header className="flex items-center justify-between p-6">
       {/* Logo */}
       <div className="flex items-center">
-        <img
+        <Image
           src="/round-wordmark-logo.svg"
           alt="motiion"
+          width={112}
+          height={40}
           className="mr-3 h-auto w-[112px]"
         />
       </div>

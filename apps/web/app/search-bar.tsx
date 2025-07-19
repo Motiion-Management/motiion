@@ -41,7 +41,7 @@ export function SearchBar() {
             {/* Height */}
             <div className="hidden w-[130px] shrink-0 lg:block">
               <div className="text-xs font-semibold text-[#dddddd]">Height</div>
-              <div className="text-sm text-gray-500">5'8" - 5'11"</div>
+              <div className="text-sm text-gray-500">5&apos;8&quot; - 5&apos;11&quot;</div>
             </div>
 
             {/* More Options */}
