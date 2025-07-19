@@ -8,6 +8,7 @@ TypeScript monorepo for talent management platform. Primary focus: React Native 
 ## ENFORCE: Component Architecture
 
 ### Directory Structure (STRICT)
+
 ```
 components/
 ├── ui/           # Pure visual, no business logic, props only
@@ -16,6 +17,7 @@ components/
 ```
 
 ### Component Rules (ENFORCE)
+
 - **UI components**: No data fetching, no business logic, pure presentation
 - **Form components**: Thin wrappers around UI, handle form state only
 - **Domain components**: Orchestrate UI/form components, handle data/state
@@ -24,12 +26,19 @@ components/
 - **NO mixed responsibilities**
 
 ### Hook Pattern (ENFORCE)
+
 ```typescript
 function useFeatureLogic() {
   return {
-    models: { /* state values */ },
-    actions: { /* memoized callbacks */ },
-    forms: { /* form utilities */ }
+    models: {
+      /* state values */
+    },
+    actions: {
+      /* memoized callbacks */
+    },
+    forms: {
+      /* form utilities */
+    }
   }
 }
 ```
@@ -60,11 +69,13 @@ pnpm clean        # Clean build artifacts
 ## Architecture Essentials
 
 ### Structure
+
 - **apps/native**: React Native mobile app (PRIMARY FOCUS)
 - **apps/web**: Next.js web app (DEPRECATED - not maintained)
 - **packages/backend**: Convex backend + database schemas
 
 ### Key Patterns
+
 - **Real-time by default**: All data fetching uses Convex `useQuery` hooks
 - **End-to-end type safety**: Types flow from Convex schema to frontend
 - **Authentication**: Clerk → Convex JWT validation → user data sync
@@ -72,28 +83,40 @@ pnpm clean        # Clean build artifacts
 - **Styling**: NativeWind (TailwindCSS for React Native)
 
 ### Critical Locations
+
 - **Database schemas**: `packages/backend/convex/schema.ts`
 - **Server functions**: `packages/backend/convex/` (organized by domain)
 - **Native UI components**: `apps/native/components/nativewindui/`
 
 ### Environment Setup
+
 - **Native**: `apps/native/.env`
 - **Backend**: `packages/backend/.env.local`
 
 Required vars:
+
 - `EXPO_PUBLIC_CONVEX_URL`
 - `EXPO_PUBLIC_CLERK_PUBLISHABLE_KEY`
 
 ## Technical Specifics
 
 ### Mobile App
+
 - Expo SDK 53 + React Native 0.79.2
 - File-based routing with Expo Router
 - Custom NativeWind UI components
 - react-hook-form with custom wrappers
 
 ### Convex Integration
+
 - All database queries/mutations through Convex functions
 - Real-time subscriptions automatic
 - File uploads use Convex file storage
 - Background jobs use Convex scheduled functions
+
+## Claude Preferred Behavior
+
+- When fixing code, include only the relevant changes
+- Prefer concise explanations over verbose ones
+- Don’t repeat unchanged code unless I ask
+- In code generation, include minimal necessary imports
