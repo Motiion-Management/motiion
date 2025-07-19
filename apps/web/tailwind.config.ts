@@ -1,292 +1,181 @@
 import type { Config } from 'tailwindcss'
-
-const pxToRem = (px: number | string, base: number = 16) => {
-  const rem = (1 / base) * parseInt(`${px}`.replace('px', ''))
-
-  return `${rem}rem`
-}
-
-export const customFontSizes = {
-  // semantic
-  h1: [
-    pxToRem(40),
-    {
-      fontWeight: '600',
-      letterSpacing: '-0.02em',
-      lineHeight: '1.2'
-    }
-  ],
-  h2: [
-    pxToRem(32),
-    {
-      fontWeight: '600',
-      letterSpacing: '-0.02em',
-      lineHeight: '1.2'
-    }
-  ],
-  h3: [
-    pxToRem(24),
-    {
-      fontWeight: '600',
-      letterSpacing: '-0.02em',
-      lineHeight: '1.2'
-    }
-  ],
-  h4: [
-    pxToRem(18),
-    {
-      fontWeight: '600',
-      letterSpacing: '-0.02em',
-      lineHeight: '1.2'
-    }
-  ],
-  h5: [
-    pxToRem(16),
-    {
-      fontWeight: '600',
-      letterSpacing: '-0.02em',
-      lineHeight: '1.4'
-    }
-  ],
-  h6: [
-    pxToRem(12),
-    {
-      fontWeight: '600',
-      letterSpacing: '-0.02em',
-      lineHeight: '1.4'
-    }
-  ],
-  'body-lg': [
-    pxToRem(18),
-    {
-      fontWeight: '400',
-      letterSpacing: '-0.025em',
-      lineHeight: '1.5'
-    }
-  ],
-  body: [
-    pxToRem(16),
-    {
-      fontWeight: '400',
-      letterSpacing: '-0.025em',
-      lineHeight: '1.5'
-    }
-  ],
-  'body-sm': [
-    pxToRem(14),
-    {
-      fontWeight: '400',
-      letterSpacing: '-0.025em',
-      lineHeight: '1.4'
-    }
-  ],
-  'body-xs': [
-    pxToRem(12),
-    {
-      fontWeight: '400',
-      letterSpacing: '-0.025em',
-      lineHeight: '1.4'
-    }
-  ],
-  'link-lg': [
-    pxToRem(18),
-    {
-      fontWeight: '700',
-      letterSpacing: '-0.01em',
-      lineHeight: '1.5'
-    }
-  ],
-  link: [
-    pxToRem(16),
-    {
-      fontWeight: '700',
-      letterSpacing: '-0.01em',
-      lineHeight: '1.5'
-    }
-  ],
-  'link-sm': [
-    pxToRem(14),
-    {
-      fontWeight: '700',
-      letterSpacing: '-0.01em',
-      lineHeight: '1.2'
-    }
-  ],
-  'label-lg': [
-    pxToRem(48),
-    {
-      fontWeight: '500',
-      letterSpacing: '-0.04em',
-      lineHeight: '1.2'
-    }
-  ],
-  label: [
-    pxToRem(24),
-    {
-      fontWeight: '500',
-      letterSpacing: '-0.02em',
-      lineHeight: '1.2'
-    }
-  ],
-  'label-sm': [
-    pxToRem(18),
-    {
-      fontWeight: '500',
-      letterSpacing: '-0.02em',
-      lineHeight: '1.2'
-    }
-  ],
-  'label-xs': [
-    pxToRem(10),
-    {
-      fontWeight: '500',
-      letterSpacing: '0.06em',
-      lineHeight: '1.2'
-    }
-  ],
-
-  // scale
-  '2xs': pxToRem(10),
-  xs: pxToRem(12),
-  sm: pxToRem(14),
-  base: pxToRem(16),
-  lg: pxToRem(18),
-  xl: pxToRem(24),
-  '2xl': pxToRem(32),
-  '3xl': pxToRem(40),
-  '4xl': pxToRem(48)
-}
+import { customFontSizes } from './lib/theme/fontSizes'
 
 const config: Config = {
-  darkMode: ['class'],
-  content: [
-    './pages/**/*.{ts,tsx}',
-    './components/**/*.{ts,tsx}',
-    './app/**/*.{ts,tsx}',
-    './lib/**/*.{ts,tsx}',
-    './src/**/*.{ts,tsx}'
-  ],
-  prefix: '',
+  // NOTE: Update this to include the paths to all of your component files.
+  content: ['./app/**/*.{js,jsx,ts,tsx}', './components/**/*.{js,jsx,ts,tsx}'],
+  darkMode: 'media',
   theme: {
     extend: {
-      container: {
-        center: true,
-        padding: '2rem',
-        screens: {
-          '2xl': '1400px'
-        }
-      },
-      lineHeight: {
-        normal: '1.5',
-        snug: '1.4',
-        tight: '1.2'
-      },
       letterSpacing: {
         'very-tight': '-0.04em',
         tight: '-0.025em',
         normal: '-0.02em',
         loose: '-0.01em',
-        'very-loose': '0.06em'
+        'very-loose': '0.06em',
       },
-      fontSize: JSON.parse(JSON.stringify(customFontSizes)),
+      fontSize: {
+        ...JSON.parse(JSON.stringify(customFontSizes)),
+      },
       fontWeight: {
         light: '300',
         normal: '400',
         medium: '500',
         semibold: '600',
-        bold: '700'
+        bold: '700',
       },
       fontFamily: {
-        sans: ['Montserrat', 'sans-serif']
+        sans: ['Montserrat', 'sans-serif'],
       },
       colors: {
-        border: 'hsl(var(--border))',
-        input: {
-          DEFAULT: 'hsl(var(--input))', // border
-          background: 'hsl(var(--input-background))',
-          foreground: 'hsl(var(--input-foreground))'
-        },
-        ring: 'hsl(var(--ring))',
-        background: 'hsl(var(--background))',
-        foreground: 'hsl(var(--foreground))',
+        // Legacy token support (uses CSS variable aliases)
+        border: withOpacity('border'),
+        input: withOpacity('input'),
+        ring: withOpacity('ring'),
+        background: withOpacity('background'),
+        foreground: withOpacity('foreground'),
+
         primary: {
-          DEFAULT: 'hsl(var(--primary))',
-          foreground: 'hsl(var(--primary-foreground))'
+          DEFAULT: withOpacity('primary'),
+          foreground: withOpacity('primary-foreground'),
         },
         secondary: {
-          DEFAULT: 'hsl(var(--secondary))',
-          foreground: 'hsl(var(--secondary-foreground))'
+          DEFAULT: withOpacity('secondary'),
+          foreground: withOpacity('secondary-foreground'),
+        },
+        tonal: {
+          DEFAULT: withOpacity('tonal'),
+          foreground: withOpacity('tonal-foreground'),
         },
         destructive: {
-          DEFAULT: 'hsl(var(--destructive))',
-          foreground: 'hsl(var(--destructive-foreground))'
+          DEFAULT: withOpacity('destructive'),
+          foreground: withOpacity('destructive-foreground'),
         },
         muted: {
-          DEFAULT: 'hsl(var(--muted))',
-          foreground: 'hsl(var(--muted-foreground))'
+          DEFAULT: withOpacity('muted'),
+          foreground: withOpacity('muted-foreground'),
         },
         accent: {
-          DEFAULT: 'hsl(var(--accent))',
-          foreground: 'hsl(var(--accent-foreground))'
+          DEFAULT: withOpacity('accent'),
+          foreground: withOpacity('accent-foreground'),
         },
         popover: {
-          DEFAULT: 'hsl(var(--popover))',
-          foreground: 'hsl(var(--popover-foreground))'
+          DEFAULT: withOpacity('popover'),
+          foreground: withOpacity('popover-foreground'),
         },
         card: {
-          DEFAULT: 'hsl(var(--card))',
-          foreground: 'hsl(var(--card-foreground))'
-        }
+          DEFAULT: withOpacity('card'),
+          foreground: withOpacity('card-foreground'),
+        },
+
+        // Figma semantic tokens (new naming)
+        // Background tokens
+        'background-default': withOpacity('background-default'),
+        'background-low': withOpacity('background-low'),
+        'background-accent': withOpacity('background-accent'),
+        'background-overlay': withOpacity('background-overlay'),
+        'background-utility-dark': withOpacity('background-utility-dark'),
+        'background-utility-light': withOpacity('background-utility-light'),
+        'background-utility-accent': withOpacity('background-utility-accent'),
+
+        // Surface tokens
+        'surface-default': withOpacity('surface-default'),
+        'surface-high': withOpacity('surface-high'),
+        'surface-accent': withOpacity('surface-accent'),
+        'surface-low': withOpacity('surface-low'),
+        'surface-dark': withOpacity('surface-dark'),
+        'surface-tint': withOpacity('surface-tint'),
+        'surface-overlay': withOpacity('surface-overlay'),
+        'surface-tint-accent': withOpacity('surface-tint-accent'),
+        'surface-disabled': withOpacity('surface-disabled'),
+        'surface-error': withOpacity('surface-error'),
+        'surface-caution': withOpacity('surface-caution'),
+
+        // Text tokens
+        'text-default': withOpacity('text-default'),
+        'text-high': withOpacity('text-high'),
+        'text-low': withOpacity('text-low'),
+        'text-text-accent': withOpacity('text-accent'),
+        'text-text-accent-low': withOpacity('text-accent-low'),
+        'text-disabled': withOpacity('text-disabled'),
+        'text-error': withOpacity('text-error'),
+        'text-utility-light': withOpacity('text-utility-light'),
+        'text-utility-dark': withOpacity('text-utility-dark'),
+        'text-error-emphasis': withOpacity('text-error-emphasis'),
+        'text-caution-emphasis': withOpacity('text-caution-emphasis'),
+
+        // Button surface tokens
+        'button-surface': {
+          DEFAULT: withOpacity('button-surface-default'),
+          default: withOpacity('button-surface-default'),
+          tint: withOpacity('button-surface-tint'),
+          disabled: withOpacity('button-surface-disabled'),
+          low: withOpacity('button-surface-low'),
+          high: withOpacity('button-surface-high'),
+          accent: withOpacity('button-surface-accent'),
+          'accent-low': withOpacity('button-surface-accent-low'),
+          'utility-dark': withOpacity('button-surface-utility-dark'),
+          'utility-light': withOpacity('button-surface-utility-light'),
+        },
+
+        // Icon tokens
+        'icon-default': withOpacity('icon-default'),
+        'icon-tint': withOpacity('icon-tint'),
+        'icon-inverse': withOpacity('icon-inverse'),
+        'icon-low': withOpacity('icon-low'),
+        'icon-accent': withOpacity('icon-accent'),
+        'icon-disabled': withOpacity('icon-disabled'),
+        'icon-utility-dark': withOpacity('icon-utility-dark'),
+        'icon-error': withOpacity('icon-error'),
+        'icon-error-emphasis': withOpacity('icon-error-emphasis'),
+        'icon-caution-emphasis': withOpacity('icon-caution-emphasis'),
+
+        // Border tokens
+        'border-default': withOpacity('border-default'),
+        'border-low': withOpacity('border-low'),
+        'border-high': withOpacity('border-high'),
+        'border-accent': withOpacity('border-accent'),
+        'border-disabled': withOpacity('border-disabled'),
+        'border-tint': withOpacity('border-tint'),
+        'border-inverse': withOpacity('border-inverse'),
+
+        // Direct Figma color values for utility use
+        'primary-0': 'rgb(244 255 254)' /* #f4fffe */,
+        'primary-50': 'rgb(221 250 247)' /* #ddfaf7 */,
+        'primary-100': 'rgb(196 245 240)' /* #c4f5f0 */,
+        'primary-500': 'rgb(0 204 183)' /* #00ccb7 */,
+        'primary-850': 'rgb(0 61 55)' /* #003d37 */,
+        'primary-900': 'rgb(0 41 37)' /* #002925 */,
+
+        'utility-0': 'rgb(255 255 255)' /* #ffffff */,
+        'utility-50': 'rgb(250 250 250)' /* #fafafa */,
+        'utility-60': 'rgb(248 249 250)' /* #f8f9fa */,
+        'utility-200': 'rgb(135 143 155)' /* #878f9b */,
+        'utility-300': 'rgb(83 88 96)' /* #535860 */,
+        'utility-500': 'rgb(21 25 28)' /* #15191c */,
+
+        'error-500': 'rgb(204 1 36)' /* #cc0124 */,
+        'caution-500': 'rgb(245 142 49)' /* #f58e31 */,
+        'success-500': 'rgb(100 173 40)' /* #64ad28 */,
       },
       borderRadius: {
         lg: 'var(--radius)',
         md: 'calc(var(--radius) - 2px)',
-        sm: 'calc(var(--radius) - 4px)'
+        sm: 'calc(var(--radius) - 4px)',
       },
-      keyframes: {
-        'accordion-down': {
-          from: { height: '0' },
-          to: { height: 'var(--radix-accordion-content-height)' }
-        },
-        'accordion-up': {
-          from: { height: 'var(--radix-accordion-content-height)' },
-          to: { height: '0' }
-        }
-      },
-      animation: {
-        'accordion-down': 'accordion-down 0.2s ease-out',
-        'accordion-up': 'accordion-up 0.2s ease-out'
-      },
-      screens: {
-        touch: { raw: '(hover: none)' },
-        'no-touch': { raw: '(hover: hover)' }
-      },
-      gridTemplateColumns: {
-        'social-input': 'auto 1fr',
-        drawer: 'minmax(0, 1fr)',
-        'user-screen': 'minmax(0, 1fr)'
-      },
-      gridTemplateRows: {
-        'social-input': '1rem 1fr',
-        drawer: 'min-content max-content minmax(0, 1fr) max-content',
-        'user-screen':
-          'minmax(min-content, 5dvh) minmax(0, 1fr) minmax(min-content, 5dvh)',
-        'user-screen-md': 'max-content max-content minmax(0, 1fr)'
-      },
-      gridTemplateAreas: {
-        'social-input': ['... input', 'icon input'],
-        drawer: ['handle', 'header', 'content', 'footer'],
-        'user-screen': ['title', 'content', 'nav'],
-        'user-screen-md': ['nav', 'title', 'content']
-      }
-    }
+    },
   },
-  plugins: [
-    // require('@tailwindcss/forms'),
-    require('tailwindcss-animate'),
-    require('tailwindcss-displaymodes'),
-    require('@savvywombat/tailwindcss-grid-areas')
-  ]
-} as const
+  plugins: [],
+}
+
+// Simplified function - same RGB approach for all platforms
+function withOpacity(variableName: string) {
+  return ({ opacityValue }: { opacityValue?: number }) => {
+    if (opacityValue !== undefined) {
+      return `rgb(var(--${variableName}) / ${opacityValue})`;
+    }
+    return `rgb(var(--${variableName}))`;
+  };
+}
 
 export default config
