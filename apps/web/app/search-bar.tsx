@@ -1,10 +1,10 @@
 export function SearchBar() {
   return (
-    <div className="mx-auto mb-16 max-w-5xl px-4 md:px-0">
-      <div className="relative overflow-hidden rounded-[1000px] bg-[rgba(28,29,32,0.5)]">
-        <div className="absolute inset-0 rounded-[1000px] border border-[#4b4a5e]" />
-        <div className="relative flex items-center px-4 py-2 pr-2 md:px-8">
-          <div className="flex flex-1 items-center gap-3 overflow-x-auto md:gap-6">
+    <div className="mx-auto mb-16 w-fit max-w-5xl px-2">
+      <div className="relative overflow-hidden rounded-full bg-[rgba(28,29,32,0.5)]">
+        <div className="absolute inset-0 rounded-full border border-[#4b4a5e]" />
+        <div className="relative flex items-center px-2 py-2 pr-2">
+          <div className="flex flex-1 items-center gap-6 overflow-x-auto pl-6">
             {/* Location */}
             <div className="w-[110px] shrink-0 md:w-[130px]">
               <div className="text-xs font-semibold text-[#dddddd]">
@@ -18,9 +18,7 @@ export function SearchBar() {
 
             {/* Gender */}
             <div className="hidden w-[130px] shrink-0 md:block">
-              <div className="text-xs font-semibold text-[#dddddd]">
-                Gender
-              </div>
+              <div className="text-xs font-semibold text-[#dddddd]">Gender</div>
               <div className="text-sm text-gray-500">Male</div>
             </div>
 
@@ -42,9 +40,7 @@ export function SearchBar() {
 
             {/* Height */}
             <div className="hidden w-[130px] shrink-0 lg:block">
-              <div className="text-xs font-semibold text-[#dddddd]">
-                Height
-              </div>
+              <div className="text-xs font-semibold text-[#dddddd]">Height</div>
               <div className="text-sm text-gray-500">5'8" - 5'11"</div>
             </div>
 
