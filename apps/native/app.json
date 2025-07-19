@@ -32,7 +32,8 @@
           "photosPermission": "Allow Motiion to access your photos to upload and share.",
           "cameraPermission": "Allow Motiion to access your camera to take photos and videos."
         }
-      ]
+      ],
+      "./plugins/withFollyFix"
     ],
     "experiments": {
       "typedRoutes": true,
@@ -68,6 +69,7 @@
     },
     "android": {
       "package": "io.motiion.motiion",
+      "edgeToEdgeEnabled": true,
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#ffffff"
