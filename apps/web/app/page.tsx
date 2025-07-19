@@ -2,7 +2,7 @@ import { TalentGrid } from './talent-grid'
 import { Header } from './header'
 import { Hero } from './hero'
 import { SearchBar } from './search-bar'
-import { Footer } from './footer'
+// import { Footer } from './footer'
 
 export default function HomePage() {
   return (
@@ -15,7 +15,7 @@ export default function HomePage() {
         <Hero />
         <SearchBar />
       </main>
-      <Footer />
+      {/* <Footer /> */}
     </div>
   )
 }
