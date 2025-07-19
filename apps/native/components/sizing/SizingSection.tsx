@@ -6,7 +6,9 @@ import { Text } from '~/components/ui/text';
 import { sizingMetrics } from '~/config/sizingMetrics';
 
 interface FormFieldProps {
-  SizingFormField: React.ComponentType<{ metric: typeof sizingMetrics[keyof typeof sizingMetrics] }>;
+  SizingFormField: React.ComponentType<{
+    metric: (typeof sizingMetrics)[keyof typeof sizingMetrics];
+  }>;
 }
 
 interface AppFieldProps {

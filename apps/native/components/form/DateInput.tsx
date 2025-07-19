@@ -1,10 +1,8 @@
-import { Icon } from '@roninoss/icons';
-import React, { useState } from 'react';
-import { View, Platform, Pressable } from 'react-native';
+import React from 'react';
+import { View } from 'react-native';
 
 import { useFieldContext } from './context';
 
-import { Button } from '~/components/ui/button';
 import { DatePicker } from '~/components/ui/date-picker';
 import { Text } from '~/components/ui/text';
 import { useFieldError } from '~/hooks/useFieldError';

@@ -1,4 +1,3 @@
-import type { FieldApi } from '@tanstack/react-form';
 import { useMemo, useEffect } from 'react';
 
 import { useFormConfig } from './useFormConfig';

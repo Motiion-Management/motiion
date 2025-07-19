@@ -10,14 +10,14 @@ import {
   SHIRT,
   SHOESMEN,
   SHOESWOMEN,
-  SHOEWIDTH,
   DRESSORPANT,
   CUP,
   BUST,
   UNDERBUST,
   HIPS,
-} from '@packages/backend/convex/validators/sizing'
-import { SizingMetricConfig } from '~/types/sizing'
+} from '@packages/backend/convex/validators/sizing';
+
+import { SizingMetricConfig } from '~/types/sizing';
 
 export const sizingMetrics: Record<string, SizingMetricConfig> = {
   // General metrics
@@ -166,4 +166,4 @@ export const sizingMetrics: Record<string, SizingMetricConfig> = {
     values: COATLENGTH,
     pickerType: 'enum',
   },
-}
+};

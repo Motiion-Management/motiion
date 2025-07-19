@@ -10,60 +10,73 @@ import {
   SHIRT,
   SHOESMEN,
   SHOESWOMEN,
-  SHOEWIDTH,
   DRESSORPANT,
   CUP,
   BUST,
   UNDERBUST,
   HIPS,
-} from '@packages/backend/convex/validators/sizing'
+} from '@packages/backend/convex/validators/sizing';
 
 export type GeneralSizing = {
-  waist?: typeof WAIST[number]
-  inseam?: typeof INSEAM[number]
-  glove?: typeof GLOVE[number]
-  hat?: typeof HAT[number]
-}
+  waist?: (typeof WAIST)[number];
+  inseam?: (typeof INSEAM)[number];
+  glove?: (typeof GLOVE)[number];
+  hat?: (typeof HAT)[number];
+};
 
 export type MaleSizing = {
-  neck?: typeof NECK[number]
-  chest?: typeof CHEST[number]
-  sleeve?: typeof SLEEVE[number]
-  coatLength?: typeof COATLENGTH[number]
-  shirt?: typeof SHIRT[number]
-  shoes?: typeof SHOESMEN[number]
-}
+  neck?: (typeof NECK)[number];
+  chest?: (typeof CHEST)[number];
+  sleeve?: (typeof SLEEVE)[number];
+  coatLength?: (typeof COATLENGTH)[number];
+  shirt?: (typeof SHIRT)[number];
+  shoes?: (typeof SHOESMEN)[number];
+};
 
 export type FemaleSizing = {
-  hips?: typeof HIPS[number]
-  bust?: typeof BUST[number]
-  underbust?: typeof UNDERBUST[number]
-  cup?: typeof CUP[number]
-  coatLength?: typeof COATLENGTH[number]
-  shirt?: typeof SHIRT[number]
-  dress?: typeof DRESSORPANT[number]
-  pants?: typeof DRESSORPANT[number]
-  shoes?: typeof SHOESWOMEN[number]
-}
+  hips?: (typeof HIPS)[number];
+  bust?: (typeof BUST)[number];
+  underbust?: (typeof UNDERBUST)[number];
+  cup?: (typeof CUP)[number];
+  coatLength?: (typeof COATLENGTH)[number];
+  shirt?: (typeof SHIRT)[number];
+  dress?: (typeof DRESSORPANT)[number];
+  pants?: (typeof DRESSORPANT)[number];
+  shoes?: (typeof SHOESWOMEN)[number];
+};
 
 export type SizingData = {
-  general?: GeneralSizing
-  male?: MaleSizing
-  female?: FemaleSizing
-}
+  general?: GeneralSizing;
+  male?: MaleSizing;
+  female?: FemaleSizing;
+};
 
-export type SizingMetricType = 
-  | 'waist' | 'inseam' | 'glove' | 'hat'
-  | 'neck' | 'chest' | 'sleeve' | 'coatLength' | 'shirt' | 'shoesMen'
-  | 'hips' | 'bust' | 'underbust' | 'cup' | 'dress' | 'pants' | 'shoesWomen'
+export type SizingMetricType =
+  | 'waist'
+  | 'inseam'
+  | 'glove'
+  | 'hat'
+  | 'neck'
+  | 'chest'
+  | 'sleeve'
+  | 'coatLength'
+  | 'shirt'
+  | 'shoesMen'
+  | 'hips'
+  | 'bust'
+  | 'underbust'
+  | 'cup'
+  | 'dress'
+  | 'pants'
+  | 'shoesWomen';
 
-export type SizingSection = 'general' | 'male' | 'female'
+export type SizingSection = 'general' | 'male' | 'female';
 
 export interface SizingMetricConfig {
-  section: SizingSection
-  field: string
-  label: string
-  values: readonly string[]
-  unit?: string
-  pickerType?: 'numeric' | 'size' | 'enum'
+  section: SizingSection;
+  field: string;
+  label: string;
+  values: readonly string[];
+  unit?: string;
+  pickerType?: 'numeric' | 'size' | 'enum';
 }

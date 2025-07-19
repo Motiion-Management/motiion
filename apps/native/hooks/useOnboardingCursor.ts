@@ -1,30 +1,30 @@
-import { useSegments, useRouter } from 'expo-router';
-import { useCallback, useMemo } from 'react';
-import { useQuery, useMutation } from 'convex/react';
 import { api } from '@packages/backend/convex/_generated/api';
 import { getOnboardingFlow, ProfileType } from '@packages/backend/convex/onboardingConfig';
+import { useQuery, useMutation } from 'convex/react';
+import { useSegments, useRouter } from 'expo-router';
+import { useCallback, useMemo } from 'react';
 
 /**
  * Maps route segments to step names for navigation
  */
 const ROUTE_TO_STEP_MAP = {
   'profile-type': 'profile-type',
-  'headshots': 'headshots',
-  'height': 'height',
-  'ethnicity': 'ethnicity',
+  headshots: 'headshots',
+  height: 'height',
+  ethnicity: 'ethnicity',
   'hair-color': 'hair-color',
   'eye-color': 'eye-color',
-  'gender': 'gender',
-  'sizing': 'sizing',
-  'location': 'location',
+  gender: 'gender',
+  sizing: 'sizing',
+  location: 'location',
   'work-location': 'work-location',
-  'representation': 'representation',
-  'experiences': 'experiences',
-  'training': 'training',
-  'skills': 'skills',
-  'union': 'union',
+  representation: 'representation',
+  experiences: 'experiences',
+  training: 'training',
+  skills: 'skills',
+  union: 'union',
   'database-use': 'database-use',
-  'company': 'company',
+  company: 'company',
 } as const;
 
 /**
@@ -32,22 +32,22 @@ const ROUTE_TO_STEP_MAP = {
  */
 const STEP_TO_ROUTE_MAP = {
   'profile-type': '/app/onboarding/profile-type',
-  'headshots': '/app/onboarding/headshots',
-  'height': '/app/onboarding/height',
-  'ethnicity': '/app/onboarding/ethnicity',
+  headshots: '/app/onboarding/headshots',
+  height: '/app/onboarding/height',
+  ethnicity: '/app/onboarding/ethnicity',
   'hair-color': '/app/onboarding/hair-color',
   'eye-color': '/app/onboarding/eye-color',
-  'gender': '/app/onboarding/gender',
-  'sizing': '/app/onboarding/sizing',
-  'location': '/app/onboarding/location',
+  gender: '/app/onboarding/gender',
+  sizing: '/app/onboarding/sizing',
+  location: '/app/onboarding/location',
   'work-location': '/app/onboarding/work-location',
-  'representation': '/app/onboarding/representation',
-  'experiences': '/app/onboarding/experiences',
-  'training': '/app/onboarding/training',
-  'skills': '/app/onboarding/skills',
-  'union': '/app/onboarding/union',
+  representation: '/app/onboarding/representation',
+  experiences: '/app/onboarding/experiences',
+  training: '/app/onboarding/training',
+  skills: '/app/onboarding/skills',
+  union: '/app/onboarding/union',
   'database-use': '/app/onboarding/database-use',
-  'company': '/app/onboarding/company',
+  company: '/app/onboarding/company',
 } as const;
 
 /**
@@ -80,7 +80,7 @@ export function useOnboardingCursor() {
   // Calculate current step index in the flow
   const currentStepIndex = useMemo(() => {
     if (!currentStep || !flow.length) return 0;
-    const index = flow.findIndex(step => step.step === currentStep);
+    const index = flow.findIndex((step) => step.step === currentStep);
     return index >= 0 ? index : 0;
   }, [currentStep, flow]);
 
@@ -100,11 +100,11 @@ export function useOnboardingCursor() {
     try {
       // Validate current step before advancing
       const validation = await validateStep({ currentStep });
-      
+
       if (!validation.isValid) {
         console.error('Cannot advance onboarding step:', {
           step: currentStep,
-          missingFields: validation.missingFields
+          missingFields: validation.missingFields,
         });
         return false;
       }
@@ -112,10 +112,10 @@ export function useOnboardingCursor() {
       // Update backend step tracking before navigation
       if (currentStepIndex < flow.length - 1) {
         const nextStep = flow[currentStepIndex + 1];
-        
+
         // Update backend tracking to the next step
         await setStep({ step: nextStep.step });
-        
+
         // Proceed with cursor navigation
         const nextRoute = STEP_TO_ROUTE_MAP[nextStep.step as keyof typeof STEP_TO_ROUTE_MAP];
         if (nextRoute) {
@@ -146,17 +146,20 @@ export function useOnboardingCursor() {
     return false;
   }, [currentStepIndex, flow, router]);
 
-  const goToStep = useCallback((stepName: string) => {
-    const stepIndex = flow.findIndex(step => step.step === stepName);
-    if (stepIndex >= 0) {
-      const route = STEP_TO_ROUTE_MAP[stepName as keyof typeof STEP_TO_ROUTE_MAP];
-      if (route) {
-        router.push(route);
-        return true;
+  const goToStep = useCallback(
+    (stepName: string) => {
+      const stepIndex = flow.findIndex((step) => step.step === stepName);
+      if (stepIndex >= 0) {
+        const route = STEP_TO_ROUTE_MAP[stepName as keyof typeof STEP_TO_ROUTE_MAP];
+        if (route) {
+          router.push(route);
+          return true;
+        }
       }
-    }
-    return false;
-  }, [flow, router]);
+      return false;
+    },
+    [flow, router]
+  );
 
   return {
     // Current state
@@ -164,23 +167,24 @@ export function useOnboardingCursor() {
     currentStepIndex,
     totalSteps: flow.length,
     progress,
-    
+
     // Navigation state
     canGoNext: currentStepIndex < flow.length - 1,
     canGoPrevious: currentStepIndex > 0,
     isFirstStep: currentStepIndex === 0,
     isLastStep: currentStepIndex === flow.length - 1,
-    
+
     // Navigation functions
     goToNextStep,
     goToPreviousStep,
     goToStep,
-    
+
     // Step information
     getCurrentStepConfig: () => flow[currentStepIndex] || null,
-    getNextStepConfig: () => currentStepIndex < flow.length - 1 ? flow[currentStepIndex + 1] : null,
-    getPreviousStepConfig: () => currentStepIndex > 0 ? flow[currentStepIndex - 1] : null,
-    
+    getNextStepConfig: () =>
+      currentStepIndex < flow.length - 1 ? flow[currentStepIndex + 1] : null,
+    getPreviousStepConfig: () => (currentStepIndex > 0 ? flow[currentStepIndex - 1] : null),
+
     // Metadata
     flow,
     profileType: user?.profileType as ProfileType,

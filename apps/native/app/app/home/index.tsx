@@ -1,7 +1,6 @@
 import { useClerk } from '@clerk/clerk-expo';
-import { Link } from 'expo-router';
 import * as React from 'react';
-import { Image, Platform, View } from 'react-native';
+import { Image, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { AlertAnchor } from '~/components/ui/alert';
@@ -11,10 +10,6 @@ import { Text } from '~/components/ui/text';
 
 const LOGO_SOURCE = {
   uri: 'https://nativewindui.com/_next/image?url=/_next/static/media/logo.28276aeb.png&w=2048&q=75',
-};
-
-const GOOGLE_SOURCE = {
-  uri: 'https://www.pngall.com/wp-content/uploads/13/Google-Logo.png',
 };
 
 export default function AuthIndexScreen() {

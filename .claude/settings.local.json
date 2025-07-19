@@ -31,7 +31,11 @@
       "mcp__convex__functionSpec",
       "Bash(pnpm type-check:*)",
       "Bash(diff:*)",
-      "Bash(pnpm lint:*)"
+      "Bash(pnpm lint:*)",
+      "Bash(for:*)",
+      "Bash(do echo \"File: $file\")",
+      "Bash(head:*)",
+      "Bash(done)"
     ]
   },
   "enableAllProjectMcpServers": false

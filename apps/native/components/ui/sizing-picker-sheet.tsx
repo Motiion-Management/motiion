@@ -1,22 +1,22 @@
-import { BottomSheetModal } from '@gorhom/bottom-sheet'
-import React, { useCallback, useRef, useEffect } from 'react'
-import { View, Pressable } from 'react-native'
+import { BottomSheetModal } from '@gorhom/bottom-sheet';
+import React, { useCallback, useRef, useEffect } from 'react';
+import { View, Pressable } from 'react-native';
 
-import { Sheet } from '~/components/ui/sheet'
-import { Text } from '~/components/ui/text'
-import { WheelPicker, WheelPickerData } from '~/components/ui/wheel-picker'
-import { Button } from '~/components/ui/button'
-import X from '~/lib/icons/X'
-import { SizingMetricConfig } from '~/types/sizing'
+import { Button } from '~/components/ui/button';
+import { Sheet } from '~/components/ui/sheet';
+import { Text } from '~/components/ui/text';
+import { WheelPicker, WheelPickerData } from '~/components/ui/wheel-picker';
+import X from '~/lib/icons/X';
+import { SizingMetricConfig } from '~/types/sizing';
 
 interface SizingPickerSheetProps {
-  isOpen: boolean
-  config: SizingMetricConfig | null
-  selectedValue: string
-  hasValueChanged: boolean
-  onClose: () => void
-  onValueChange: (value: string) => void
-  onSave: (value: string) => void
+  isOpen: boolean;
+  config: SizingMetricConfig | null;
+  selectedValue: string;
+  hasValueChanged: boolean;
+  onClose: () => void;
+  onValueChange: (value: string) => void;
+  onSave: (value: string) => void;
 }
 
 export function SizingPickerSheet({
@@ -28,29 +28,29 @@ export function SizingPickerSheet({
   onValueChange,
   onSave,
 }: SizingPickerSheetProps) {
-  const sheetRef = useRef<BottomSheetModal>(null)
+  const sheetRef = useRef<BottomSheetModal>(null);
 
   useEffect(() => {
     if (isOpen) {
-      sheetRef.current?.present()
+      sheetRef.current?.present();
     } else {
-      sheetRef.current?.dismiss()
+      sheetRef.current?.dismiss();
     }
-  }, [isOpen])
+  }, [isOpen]);
 
   const handleSave = useCallback(() => {
     if (config) {
-      onSave(selectedValue)
-      onClose()
+      onSave(selectedValue);
+      onClose();
     }
-  }, [config, selectedValue, onSave, onClose])
+  }, [config, selectedValue, onSave, onClose]);
 
-  if (!config) return null
+  if (!config) return null;
 
   const pickerData: WheelPickerData[] = config.values.map((value) => ({
     value,
     label: value,
-  }))
+  }));
 
   return (
     <Sheet ref={sheetRef} snapPoints={['50%']} onDismiss={onClose}>
@@ -61,7 +61,7 @@ export function SizingPickerSheet({
             {`<${config.label}>`}
           </Text>
           <Pressable onPress={onClose} className="p-2">
-            <X className="h-6 w-6 text-text-tertiary" />
+            <X className="text-text-tertiary h-6 w-6" />
           </Pressable>
         </View>
 
@@ -71,7 +71,7 @@ export function SizingPickerSheet({
             <View className="relative h-full">
               {/* Highlight region */}
               <View className="absolute left-0 right-0 top-1/2 h-14 -translate-y-1/2 border-b border-t border-border-accent bg-surface-high" />
-              
+
               {/* Picker */}
               <View className="h-full items-center justify-center">
                 <WheelPicker
@@ -88,15 +88,11 @@ export function SizingPickerSheet({
 
         {/* Save Button */}
         <View className="pb-8 pt-4">
-          <Button
-            onPress={handleSave}
-            disabled={!hasValueChanged}
-            className="w-full"
-          >
+          <Button onPress={handleSave} disabled={!hasValueChanged} className="w-full">
             <Text>Save</Text>
           </Button>
         </View>
       </View>
     </Sheet>
-  )
+  );
 }

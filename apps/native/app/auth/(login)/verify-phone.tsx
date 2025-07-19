@@ -1,4 +1,4 @@
-import { useSignIn, useClerk } from '@clerk/clerk-expo';
+import { useSignIn } from '@clerk/clerk-expo';
 import { useStore } from '@tanstack/react-store';
 import { router } from 'expo-router';
 import React, { useState } from 'react';
@@ -12,7 +12,6 @@ import { Text } from '~/components/ui/text';
 
 export default function VerifyPhoneScreen() {
   const { isLoaded, signIn, setActive } = useSignIn();
-  const clerk = useClerk();
   const [isVerifying, setIsVerifying] = useState(false);
   const [verificationError, setVerificationError] = useState<string | null>(null);
 

@@ -1,5 +1,3 @@
-import { api } from '@packages/backend/convex/_generated/api';
-import { useMutation } from 'convex/react';
 import { useRouter } from 'expo-router';
 import React from 'react';
 import { View, Text } from 'react-native';
@@ -10,7 +8,6 @@ import { useOnboardingNavigation, useOnboardingStatus } from '~/hooks/useOnboard
 
 export default function CompanyScreen() {
   const router = useRouter();
-  const updateUser = useMutation(api.users.updateMyUser);
   const { getStepTitle } = useOnboardingStatus();
   const { advanceToNextStep } = useOnboardingNavigation();
 

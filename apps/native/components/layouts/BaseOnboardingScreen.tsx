@@ -1,14 +1,14 @@
+import { useFocusEffect, useNavigation } from '@react-navigation/native';
+import { useCallback } from 'react';
 import { Platform, View } from 'react-native';
 import { KeyboardAwareScrollView, KeyboardStickyView } from 'react-native-keyboard-controller';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { useFocusEffect, useNavigation } from '@react-navigation/native';
-import { useCallback } from 'react';
 
 import { BackgroundGradientView } from '~/components/ui/background-gradient-view';
 import { Button } from '~/components/ui/button';
 import { Text } from '~/components/ui/text';
-import ChevronRight from '~/lib/icons/ChevronRight';
 import { useOnboardingCursor } from '~/hooks/useOnboardingCursor';
+import ChevronRight from '~/lib/icons/ChevronRight';
 
 export const BaseOnboardingScreen = ({
   title,
@@ -47,7 +47,7 @@ export const BaseOnboardingScreen = ({
         if (e.data.action.type === 'GO_BACK' || e.data.action.type === 'POP') {
           // Prevent default back behavior
           e.preventDefault();
-          
+
           // Use our custom navigation logic
           if (cursor.canGoPrevious) {
             cursor.goToPreviousStep();

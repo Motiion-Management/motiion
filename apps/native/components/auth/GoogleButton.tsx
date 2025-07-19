@@ -28,7 +28,7 @@ export const GoogleButton = () => {
 
   const onPress = React.useCallback(async () => {
     try {
-      const { createdSessionId, signIn, signUp, setActive } = await startOAuthFlow({
+      const { createdSessionId, setActive } = await startOAuthFlow({
         redirectUrl: Linking.createURL('/app', { scheme: 'motiion' }),
       });
 
@@ -36,7 +36,6 @@ export const GoogleButton = () => {
         setActive!({ session: createdSessionId });
       } else {
         Alert.alert('No session ID created. Use signIn or signUp for next steps such as MFA');
-        // Use signIn or signUp for next steps such as MFA
       }
     } catch (err) {
       console.error('OAuth error', err);
