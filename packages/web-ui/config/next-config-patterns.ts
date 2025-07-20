@@ -1,6 +1,6 @@
 /**
  * Next.js Configuration Patterns for Motiion
- * 
+ *
  * This file contains common configuration patterns used in the Motiion web app
  * that can be referenced when setting up new Next.js projects.
  */
@@ -38,12 +38,12 @@ export const motiionNextConfigPatterns = {
 
 /**
  * Example Next.js config using these patterns:
- * 
+ *
  * import withSerwistInit from '@serwist/next'
  * import { motiionNextConfigPatterns } from '@packages/web-ui/config/next-config-patterns'
- * 
+ *
  * const withSerwist = withSerwistInit(motiionNextConfigPatterns.pwa)
- * 
+ *
  * export default withSerwist({
  *   images: motiionNextConfigPatterns.images,
  *   env: motiionNextConfigPatterns.clerkEnvVars,

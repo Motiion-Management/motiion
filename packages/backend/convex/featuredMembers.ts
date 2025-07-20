@@ -38,11 +38,16 @@ export const getFeaturedChoreographers = query({
   }
 })
 
-export const getFeaturedTalent: RegisteredQuery<'public', Record<string, never>, Array<{
-  userId: string;
-  label: string;
-  headshotUrl: string;
-}> | undefined> = query({
+export const getFeaturedTalent: RegisteredQuery<
+  'public',
+  Record<string, never>,
+  | Array<{
+      userId: string
+      label: string
+      headshotUrl: string
+    }>
+  | undefined
+> = query({
   async handler(ctx) {
     const result = await ctx.db.query('featuredMembers').first()
     const users = await getAll(ctx.db, result?.talent || [])

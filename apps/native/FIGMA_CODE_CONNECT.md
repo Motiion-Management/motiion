@@ -128,12 +128,10 @@ apps/native/
 ### Common Issues
 
 1. **"Code Connect is only available on Organization plans"**
-
    - This is expected until plan upgrade
    - All setup work is complete and ready to activate
 
 2. **Token Mismatch Errors**
-
    - Verify Figma token names match CSS variable names exactly
    - Check `global.css` and `tailwind.config.ts` consistency
 

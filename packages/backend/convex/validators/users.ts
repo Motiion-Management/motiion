@@ -61,11 +61,11 @@ export const users = {
   onboardingCompleted: z.boolean().optional(),
   onboardingCompletedAt: z.string().optional(), // ISO date string
   onboardingVersion: z.string().optional(),
-  
+
   // Navigation position tracking (separate from data completion)
   currentOnboardingStep: z.string().optional(),
   currentOnboardingStepIndex: z.number().optional(),
-  
+
   // Legacy compatibility field (remove when web app is updated)
   onboardingStep: z.string().optional(),
 

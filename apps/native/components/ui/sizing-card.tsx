@@ -19,21 +19,17 @@ export function SizingCard({ label, value, onPress, unit }: SizingCardProps) {
     <Pressable
       onPress={onPress}
       className={cn(
-        'rounded-full border px-4 py-2.5',
-        hasValue ? 'border-border-accent bg-surface-high' : 'border-border-low bg-surface-default'
+        'w-full flex-col items-start justify-center rounded-full border px-5 py-4',
+        hasValue
+          ? 'border-border-accent bg-surface-accent'
+          : 'border-border-default bg-surface-high'
       )}>
-      <View className="flex-row items-center justify-between">
-        <Text
-          variant="body"
-          className={cn('font-medium', hasValue ? 'text-text-accent' : 'text-text-secondary')}>
-          {label}
-        </Text>
-        <Text
-          variant="body"
-          className={cn('ml-2', hasValue ? 'text-text-accent' : 'text-text-tertiary')}>
-          {displayValue}
-        </Text>
-      </View>
+      <Text variant="header6" className={cn('font-medium text-text-default')}>
+        {label}
+      </Text>
+      <Text variant="labelXs" className={cn('text-text-low')}>
+        {displayValue}
+      </Text>
     </Pressable>
   );
 }

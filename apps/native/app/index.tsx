@@ -17,7 +17,7 @@ export default function RootScreen() {
 
   // Show landing page for unauthenticated users
   return (
-    <ImageBackground source={require('./background.png')} className="h-full ">
+    <ImageBackground source={require('./background.png')} className="h-full">
       <SafeAreaView style={{ flex: 1 }}>
         <View className="mt-[25%] flex w-full items-center">
           <Text variant="largeTitle" color="utilityLight">

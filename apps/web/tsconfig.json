@@ -30,6 +30,18 @@
       "@/*": ["./*"]
     }
   },
-  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts", "types/**/*.d.ts"],
-  "exclude": ["node_modules", "../../node_modules/@xixixao", "../../node_modules/@xixixao/uploadstuff", "../../node_modules/@xixixao/uploadstuff/lib", "../../node_modules/@xixixao/uploadstuff/lib/useEvent.ts"]
+  "include": [
+    "next-env.d.ts",
+    "**/*.ts",
+    "**/*.tsx",
+    ".next/types/**/*.ts",
+    "types/**/*.d.ts"
+  ],
+  "exclude": [
+    "node_modules",
+    "../../node_modules/@xixixao",
+    "../../node_modules/@xixixao/uploadstuff",
+    "../../node_modules/@xixixao/uploadstuff/lib",
+    "../../node_modules/@xixixao/uploadstuff/lib/useEvent.ts"
+  ]
 }

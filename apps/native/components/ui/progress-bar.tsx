@@ -105,7 +105,7 @@ export const ProgressBar = ({ currentStep, totalSteps, label }: ProgressBarProps
   const steps = Array.from({ length: totalSteps }, (_, index) => index);
 
   return (
-    <View className="h-full flex-1 flex-row items-center gap-2 ">
+    <View className="h-full flex-1 flex-row items-center gap-2">
       <Text variant="labelXs" color="primary" className="mr-2">
         {label}
       </Text>

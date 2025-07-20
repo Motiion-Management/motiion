@@ -29,7 +29,7 @@ interface SizingSectionProps {
 export function SizingSection({ title, metrics, form }: SizingSectionProps) {
   return (
     <View className="mb-6">
-      <Text variant="body" className="text-text-secondary mb-3 uppercase">
+      <Text variant="labelXs" className="mb-3 uppercase text-text-low">
         {title}
       </Text>
       <View className="flex-row flex-wrap gap-2">

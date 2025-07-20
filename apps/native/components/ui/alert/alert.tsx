@@ -215,7 +215,7 @@ const Alert = React.forwardRef<AlertRef, AlertProps>(
                                       : text
                                   );
                                 }}>
-                                <Text className="text-[14px] font-medium  text-text-default">
+                                <Text className="text-[14px] font-medium text-text-default">
                                   {button.text}
                                 </Text>
                               </Button>
@@ -241,7 +241,7 @@ const Alert = React.forwardRef<AlertRef, AlertProps>(
                                       : text
                                   );
                                 }}>
-                                <Text className="text-[14px] font-medium  text-text-default">
+                                <Text className="text-[14px] font-medium text-text-default">
                                   {button.text}
                                 </Text>
                               </Button>
@@ -263,7 +263,7 @@ const Alert = React.forwardRef<AlertRef, AlertProps>(
                                     : text
                                 );
                               }}>
-                              <Text className="text-[14px] font-medium  text-text-default">
+                              <Text className="text-[14px] font-medium text-text-default">
                                 {button.text}
                               </Text>
                             </Button>

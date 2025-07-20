@@ -64,7 +64,9 @@ export const SkillsForm: FC<{
           value={skillsRT.proficient?.join(', ')}
         >
           {/* EditSkillList component would need to be created */}
-          <div>Proficient skills editing functionality needs to be implemented</div>
+          <div>
+            Proficient skills editing functionality needs to be implemented
+          </div>
         </EditDrawer>
         <EditDrawer<FormSchema>
           label="Novice Skills"

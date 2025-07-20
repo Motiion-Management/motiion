@@ -81,7 +81,7 @@ export function WheelPicker<T = any>({
 
       {label && (
         <View className="absolute left-2/3 top-2/3 mt-0.5 -translate-y-1/2">
-          <Text variant="bodyLg" className={cn(' text-text-default', labelClassName)}>
+          <Text variant="bodyLg" className={cn('text-text-default', labelClassName)}>
             {label}
           </Text>
         </View>

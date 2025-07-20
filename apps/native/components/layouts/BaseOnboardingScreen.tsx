@@ -2,12 +2,13 @@ import { useFocusEffect, useNavigation } from '@react-navigation/native';
 import { useCallback } from 'react';
 import { Platform, View } from 'react-native';
 import { KeyboardAwareScrollView, KeyboardStickyView } from 'react-native-keyboard-controller';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { BackgroundGradientView } from '~/components/ui/background-gradient-view';
 import { Button } from '~/components/ui/button';
 import { Text } from '~/components/ui/text';
 import { useOnboardingCursor } from '~/hooks/useOnboardingCursor';
+import { cn } from '~/lib/cn';
 import ChevronRight from '~/lib/icons/ChevronRight';
 
 export const BaseOnboardingScreen = ({
@@ -63,11 +64,9 @@ export const BaseOnboardingScreen = ({
 
   return (
     <BackgroundGradientView>
-      <View
-        className="flex-1"
-        style={{ paddingBottom: insets.bottom, paddingTop: insets.top + 48 }}>
+      <View className="relative flex-1" style={{ paddingBottom: 0, paddingTop: insets.top + 48 }}>
         <KeyboardAwareScrollView
-          bottomOffset={Platform.select({ ios: 8 })}
+          // bottomOffset={Platform.select({ ios: 8 })}
           bounces={false}
           disableScrollOnKeyboardHide
           contentInsetAdjustmentBehavior="never"
@@ -81,7 +80,7 @@ export const BaseOnboardingScreen = ({
                 {description}
               </Text>
             )}
-            <View className="mt-8 gap-4 ">
+            <View className="mt-8 gap-4">
               {children}
               {helpText && (
                 <View className="items-center pt-2">
@@ -93,33 +92,37 @@ export const BaseOnboardingScreen = ({
             </View>
           </View>
         </KeyboardAwareScrollView>
+
         <KeyboardStickyView
           offset={{
             closed: 0,
             opened: Platform.select({ ios: insets.bottom, default: insets.bottom }),
           }}>
-          <View className="flex-row items-center justify-between px-4 pb-2">
-            <View className="flex-1 flex-row justify-start">
-              {secondaryAction && (
-                <Button variant="plain" onPress={secondaryAction.onPress}>
-                  <Text className="text-sm text-text-default">{secondaryAction.text}</Text>
-                </Button>
-              )}
-            </View>
+          <View
+            className={'absolute bottom-0 right-0 flex-row items-center justify-between px-4 pb-2'}>
+            <SafeAreaView>
+              <View className="flex-1 flex-row justify-start">
+                {secondaryAction && (
+                  <Button variant="plain" onPress={secondaryAction.onPress}>
+                    <Text className="text-sm text-text-default">{secondaryAction.text}</Text>
+                  </Button>
+                )}
+              </View>
 
-            {/* Continue Button */}
-            <Button
-              disabled={!canProgress}
-              size="icon"
-              variant="accent"
-              onPress={() => {
-                if (!canProgress) {
-                  return;
-                }
-                primaryAction.onPress();
-              }}>
-              <ChevronRight size={24} className="color-icon-accent" />
-            </Button>
+              {/* Continue Button */}
+              <Button
+                disabled={!canProgress}
+                size="icon"
+                variant="accent"
+                onPress={() => {
+                  if (!canProgress) {
+                    return;
+                  }
+                  primaryAction.onPress();
+                }}>
+                <ChevronRight size={24} className="color-icon-accent" />
+              </Button>
+            </SafeAreaView>
           </View>
         </KeyboardStickyView>
       </View>

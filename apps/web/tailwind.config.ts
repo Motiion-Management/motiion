@@ -12,20 +12,20 @@ const config: Config = {
         tight: '-0.025em',
         normal: '-0.02em',
         loose: '-0.01em',
-        'very-loose': '0.06em',
+        'very-loose': '0.06em'
       },
       fontSize: {
-        ...JSON.parse(JSON.stringify(customFontSizes)),
+        ...JSON.parse(JSON.stringify(customFontSizes))
       },
       fontWeight: {
         light: '300',
         normal: '400',
         medium: '500',
         semibold: '600',
-        bold: '700',
+        bold: '700'
       },
       fontFamily: {
-        sans: ['Montserrat', 'sans-serif'],
+        sans: ['Montserrat', 'sans-serif']
       },
       colors: {
         // Legacy token support (uses CSS variable aliases)
@@ -37,35 +37,35 @@ const config: Config = {
 
         primary: {
           DEFAULT: withOpacity('primary'),
-          foreground: withOpacity('primary-foreground'),
+          foreground: withOpacity('primary-foreground')
         },
         secondary: {
           DEFAULT: withOpacity('secondary'),
-          foreground: withOpacity('secondary-foreground'),
+          foreground: withOpacity('secondary-foreground')
         },
         tonal: {
           DEFAULT: withOpacity('tonal'),
-          foreground: withOpacity('tonal-foreground'),
+          foreground: withOpacity('tonal-foreground')
         },
         destructive: {
           DEFAULT: withOpacity('destructive'),
-          foreground: withOpacity('destructive-foreground'),
+          foreground: withOpacity('destructive-foreground')
         },
         muted: {
           DEFAULT: withOpacity('muted'),
-          foreground: withOpacity('muted-foreground'),
+          foreground: withOpacity('muted-foreground')
         },
         accent: {
           DEFAULT: withOpacity('accent'),
-          foreground: withOpacity('accent-foreground'),
+          foreground: withOpacity('accent-foreground')
         },
         popover: {
           DEFAULT: withOpacity('popover'),
-          foreground: withOpacity('popover-foreground'),
+          foreground: withOpacity('popover-foreground')
         },
         card: {
           DEFAULT: withOpacity('card'),
-          foreground: withOpacity('card-foreground'),
+          foreground: withOpacity('card-foreground')
         },
 
         // Figma semantic tokens (new naming)
@@ -115,7 +115,7 @@ const config: Config = {
           accent: withOpacity('button-surface-accent'),
           'accent-low': withOpacity('button-surface-accent-low'),
           'utility-dark': withOpacity('button-surface-utility-dark'),
-          'utility-light': withOpacity('button-surface-utility-light'),
+          'utility-light': withOpacity('button-surface-utility-light')
         },
 
         // Icon tokens
@@ -156,21 +156,21 @@ const config: Config = {
 
         'error-500': 'rgb(204 1 36)' /* #cc0124 */,
         'caution-500': 'rgb(245 142 49)' /* #f58e31 */,
-        'success-500': 'rgb(100 173 40)' /* #64ad28 */,
+        'success-500': 'rgb(100 173 40)' /* #64ad28 */
       },
       borderRadius: {
         lg: 'var(--radius)',
         md: 'calc(var(--radius) - 2px)',
-        sm: 'calc(var(--radius) - 4px)',
-      },
-    },
+        sm: 'calc(var(--radius) - 4px)'
+      }
+    }
   },
-  plugins: [],
+  plugins: []
 }
 
 // Simplified function - same RGB approach for all platforms
 function withOpacity(variableName: string): string {
-  return `rgb(var(--${variableName}))`;
+  return `rgb(var(--${variableName}))`
 }
 
 export default config

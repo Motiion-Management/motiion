@@ -10,6 +10,4 @@ export {
   motiionTailwindConfig as defaultTailwindConfig
 } from './tailwind-config'
 
-export {
-  motiionNextConfigPatterns as nextConfigPatterns
-} from './next-config-patterns'
+export { motiionNextConfigPatterns as nextConfigPatterns } from './next-config-patterns'

@@ -102,7 +102,8 @@ Required vars:
 
 ### Mobile App
 
-- Expo SDK 53 + React Native 0.79.2
+- Expo SDK 54 + React Native 0.80
+- **Continuous Native Generation (CNG)** - All native changes should be made via app.json/expo config or plugins
 - File-based routing with Expo Router
 - Custom NativeWind UI components
 - react-hook-form with custom wrappers
@@ -118,5 +119,12 @@ Required vars:
 
 - When fixing code, include only the relevant changes
 - Prefer concise explanations over verbose ones
-- Don’t repeat unchanged code unless I ask
+- Don't repeat unchanged code unless I ask
 - In code generation, include minimal necessary imports
+
+## Experimental Software Preference
+
+- **Embrace beta/experimental versions** - If beta or experimental packages are installed, work with them rather than suggesting downgrades
+- **Novel solutions over safety** - Find creative workarounds and novel approaches instead of reverting to stable versions
+- **Debug compatibility issues** - When experimental versions cause conflicts, debug and patch rather than downgrade
+- **Stay bleeding edge** - Preference for using latest features and experimental APIs when available

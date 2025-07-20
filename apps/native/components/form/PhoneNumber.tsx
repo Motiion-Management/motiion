@@ -93,7 +93,7 @@ export const PhoneNumber = ({ autoFocus = false, helpText }: PhoneNumberProps) =
                   onPress={() => setCountryPickerVisible(true)}
                   className="-ml-1 mr-3 h-full flex-row items-center border-r border-border-default pr-5">
                   <Flag withFlagButton withEmoji countryCode={models.countryCode} flagSize={24} />
-                  <Text variant="bodySm" className=" mr-2 text-text-default">
+                  <Text variant="bodySm" className="mr-2 text-text-default">
                     {models.callingCode}
                   </Text>
                   <ChevronDown className="color-icon-default" size={14} />

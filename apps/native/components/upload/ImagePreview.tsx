@@ -14,7 +14,7 @@ export function ImagePreview({ imageUrl, onRemove, className }: ImagePreviewProp
     <View className={cn('relative w-full', className)}>
       <Image
         src={imageUrl}
-        className=" h-[234px] w-full rounded"
+        className="h-[234px] w-full rounded"
         onError={(error) => {
           console.error('Failed to load image:', error);
         }}

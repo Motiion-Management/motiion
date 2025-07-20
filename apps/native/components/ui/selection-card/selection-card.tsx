@@ -31,7 +31,7 @@ const SelectionCard = React.forwardRef<React.ElementRef<typeof Pressable>, Selec
         disabled={disabled}
         className={cn(
           'rounded-full border border-border-default bg-surface-high px-6 py-3',
-          selected && ' border-2 border-border-accent bg-surface-accent',
+          selected && 'border-2 border-border-accent bg-surface-accent',
           disabled && 'opacity-50 web:cursor-not-allowed'
         )}>
         <View className={cn('flex-row items-center gap-3 p-px', selected && 'p-0')}>

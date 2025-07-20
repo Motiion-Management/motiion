@@ -6,7 +6,7 @@ import {
   checkStepCompletion,
   getMissingFields
 } from './onboardingAnalysis'
-import { 
+import {
   CURRENT_ONBOARDING_VERSION,
   getOnboardingFlow,
   getStepRoute,
@@ -14,21 +14,25 @@ import {
 } from './onboardingConfig'
 import type { RegisteredQuery, RegisteredMutation } from 'convex/server'
 
-export const getOnboardingStatus: RegisteredQuery<'public', Record<string, never>, {
-  isComplete: boolean;
-  currentStep: string;
-  currentStepIndex: number;
-  totalSteps: number;
-  redirectPath: string | null;
-  isCurrentStepDataComplete: boolean;
-  progress: number;
-  version: number;
-  canAdvance: boolean;
-  nextRequiredFields: string[];
-  missingFields: string[];
-  stepDescription?: string;
-  shouldRedirect: boolean;
-} | null> = query({
+export const getOnboardingStatus: RegisteredQuery<
+  'public',
+  Record<string, never>,
+  {
+    isComplete: boolean
+    currentStep: string
+    currentStepIndex: number
+    totalSteps: number
+    redirectPath: string | null
+    isCurrentStepDataComplete: boolean
+    progress: number
+    version: number
+    canAdvance: boolean
+    nextRequiredFields: string[]
+    missingFields: string[]
+    stepDescription?: string
+    shouldRedirect: boolean
+  } | null
+> = query({
   handler: async (ctx) => {
     // Get user directly from the database instead of calling another query
     const identity = await ctx.auth.getUserIdentity()
@@ -48,25 +52,33 @@ export const getOnboardingStatus: RegisteredQuery<'public', Record<string, never
     // Use navigation position if set, otherwise fall back to data-based calculation
     const profileType = (user.profileType || 'dancer') as ProfileType
     const flow = getOnboardingFlow(profileType, CURRENT_ONBOARDING_VERSION)
-    
+
     let currentStep: string
     let currentStepIndex: number
 
-    if (user.currentOnboardingStep && user.currentOnboardingStepIndex !== undefined) {
+    if (
+      user.currentOnboardingStep &&
+      user.currentOnboardingStepIndex !== undefined
+    ) {
       // Use explicit navigation position
       currentStep = user.currentOnboardingStep
       currentStepIndex = user.currentOnboardingStepIndex
     } else {
       // Fall back to data-based calculation for new users
-      const analysis = analyzeOnboardingProgress(user, CURRENT_ONBOARDING_VERSION)
+      const analysis = analyzeOnboardingProgress(
+        user,
+        CURRENT_ONBOARDING_VERSION
+      )
       currentStep = analysis.currentStep || 'profile-type'
       currentStepIndex = analysis.currentStepIndex
     }
 
     // Get data completion status for current step
     const currentStepConfig = flow[currentStepIndex]
-    const isCurrentStepDataComplete = currentStepConfig ? checkStepCompletion(user, currentStepConfig) : false
-    
+    const isCurrentStepDataComplete = currentStepConfig
+      ? checkStepCompletion(user, currentStepConfig)
+      : false
+
     return {
       isComplete: user.onboardingCompleted || false,
       currentStep,
@@ -75,23 +87,29 @@ export const getOnboardingStatus: RegisteredQuery<'public', Record<string, never
       progress: Math.round((currentStepIndex / flow.length) * 100),
       version: CURRENT_ONBOARDING_VERSION,
       redirectPath: getStepRoute(currentStep),
-      
+
       // Data completion info
       isCurrentStepDataComplete,
       canAdvance: isCurrentStepDataComplete,
-      
+
       // Keep existing fields for compatibility
       nextRequiredFields: currentStepConfig?.required || [],
-      missingFields: currentStepConfig ? getMissingFields(user, currentStepConfig) : [],
+      missingFields: currentStepConfig
+        ? getMissingFields(user, currentStepConfig)
+        : [],
       stepDescription: currentStepConfig?.description,
-      
+
       // Maintain shouldRedirect for backward compatibility
       shouldRedirect: !user.onboardingCompleted && !!currentStep
     }
   }
 })
 
-export const completeOnboarding: RegisteredMutation<'public', Record<string, never>, { success: boolean }> = mutation({
+export const completeOnboarding: RegisteredMutation<
+  'public',
+  Record<string, never>,
+  { success: boolean }
+> = mutation({
   handler: async (ctx) => {
     // Get user directly from the database
     const identity = await ctx.auth.getUserIdentity()
@@ -128,7 +146,11 @@ export const completeOnboarding: RegisteredMutation<'public', Record<string, nev
   }
 })
 
-export const resetOnboarding: RegisteredMutation<'public', Record<string, never>, { success: boolean }> = mutation({
+export const resetOnboarding: RegisteredMutation<
+  'public',
+  Record<string, never>,
+  { success: boolean }
+> = mutation({
   handler: async (ctx) => {
     // Get user directly from the database
     const identity = await ctx.auth.getUserIdentity()
@@ -156,15 +178,19 @@ export const resetOnboarding: RegisteredMutation<'public', Record<string, never>
   }
 })
 
-export const getOnboardingProgress: RegisteredQuery<'public', Record<string, never>, {
-  progress: number;
-  currentStep: string | null;
-  isComplete: boolean;
-  currentStepIndex: number;
-  totalSteps: number;
-  completedSteps: Set<string>;
-  profileType: string;
-} | null> = query({
+export const getOnboardingProgress: RegisteredQuery<
+  'public',
+  Record<string, never>,
+  {
+    progress: number
+    currentStep: string | null
+    isComplete: boolean
+    currentStepIndex: number
+    totalSteps: number
+    completedSteps: Set<string>
+    profileType: string
+  } | null
+> = query({
   handler: async (ctx) => {
     // Get user directly from the database
     const identity = await ctx.auth.getUserIdentity()
@@ -193,7 +219,11 @@ export const getOnboardingProgress: RegisteredQuery<'public', Record<string, nev
   }
 })
 
-export const debugOnboardingStatus: RegisteredQuery<'public', Record<string, never>, any> = query({
+export const debugOnboardingStatus: RegisteredQuery<
+  'public',
+  Record<string, never>,
+  any
+> = query({
   handler: async (ctx) => {
     // Get user directly from the database
     const identity = await ctx.auth.getUserIdentity()
@@ -234,7 +264,11 @@ export const debugOnboardingStatus: RegisteredQuery<'public', Record<string, nev
   }
 })
 
-export const advanceOnboardingStep: RegisteredMutation<'public', Record<string, never>, { nextStep: string | null; route: string }> = mutation({
+export const advanceOnboardingStep: RegisteredMutation<
+  'public',
+  Record<string, never>,
+  { nextStep: string | null; route: string }
+> = mutation({
   handler: async (ctx) => {
     const identity = await ctx.auth.getUserIdentity()
     if (!identity) {
@@ -258,7 +292,9 @@ export const advanceOnboardingStep: RegisteredMutation<'public', Record<string, 
     // Verify current step is complete before advancing
     if (currentStep && !checkStepCompletion(user, currentStep)) {
       const missingFields = getMissingFields(user, currentStep)
-      throw new ConvexError(`Cannot advance. Complete current step first. Missing: ${missingFields.join(', ')}`)
+      throw new ConvexError(
+        `Cannot advance. Complete current step first. Missing: ${missingFields.join(', ')}`
+      )
     }
 
     const nextIndex = currentIndex + 1
@@ -301,7 +337,7 @@ export const setOnboardingStep = mutation({
 
     const profileType = (user.profileType || 'dancer') as ProfileType
     const flow = getOnboardingFlow(profileType, CURRENT_ONBOARDING_VERSION)
-    const stepIndex = flow.findIndex(s => s.step === step)
+    const stepIndex = flow.findIndex((s) => s.step === step)
 
     if (stepIndex === -1) {
       throw new ConvexError(`Invalid step: ${step}`)
@@ -335,7 +371,7 @@ export const validateCurrentOnboardingStep = mutation({
 
     const profileType = (user.profileType || 'dancer') as ProfileType
     const flow = getOnboardingFlow(profileType, CURRENT_ONBOARDING_VERSION)
-    const step = flow.find(s => s.step === currentStep)
+    const step = flow.find((s) => s.step === currentStep)
 
     if (!step) {
       return {
@@ -356,35 +392,42 @@ export const validateCurrentOnboardingStep = mutation({
   }
 })
 
-export const migrateNavigationPosition: RegisteredMutation<'internal', Record<string, never>, { totalUsers: number; migrated: number; failed: number }> = internalMutation({
+export const migrateNavigationPosition: RegisteredMutation<
+  'internal',
+  Record<string, never>,
+  { totalUsers: number; migrated: number; failed: number }
+> = internalMutation({
   handler: async (ctx) => {
     // Get all users who don't have navigation position set
     const users = await ctx.db
       .query('users')
-      .filter(q => q.eq(q.field('currentOnboardingStep'), undefined))
+      .filter((q) => q.eq(q.field('currentOnboardingStep'), undefined))
       .collect()
-    
+
     let migrated = 0
     let errors = 0
-    
+
     for (const user of users) {
       try {
         // Calculate their position based on data completion
-        const analysis = analyzeOnboardingProgress(user, CURRENT_ONBOARDING_VERSION)
-        
+        const analysis = analyzeOnboardingProgress(
+          user,
+          CURRENT_ONBOARDING_VERSION
+        )
+
         await ctx.db.patch(user._id, {
           currentOnboardingStep: analysis.currentStep || 'profile-type',
           currentOnboardingStepIndex: analysis.currentStepIndex
         })
-        
+
         migrated++
       } catch (error) {
         console.error(`Failed to migrate user ${user._id}:`, error)
         errors++
       }
     }
-    
-    return { 
+
+    return {
       totalUsers: users.length,
       migrated,
       errors,

@@ -85,7 +85,7 @@ const Input = React.forwardRef<InputRef, InputProps>(
 
     return (
       <Pressable
-        className={cn(editable === false && 'opacity-50 ', 'gap-4', containerClassName)}
+        className={cn(editable === false && 'opacity-50', 'gap-4', containerClassName)}
         disabled={editable === false || readOnly}
         onPress={focus}>
         {!!label && <InputLabel>{label}</InputLabel>}

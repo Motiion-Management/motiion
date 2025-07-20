@@ -1,13 +1,16 @@
+import { BottomSheetModal } from '@gorhom/bottom-sheet';
 import React, { forwardRef, useCallback } from 'react';
 import { View, ViewProps } from 'react-native';
 
+import { useSheetRef } from '../ui/sheet';
+
 import { useFieldContext } from '~/components/form/context';
-import { useSizingPicker } from '~/components/form/hooks/useSizingPicker';
 import { SizingCard } from '~/components/ui/sizing-card';
 import { SizingPickerSheet } from '~/components/ui/sizing-picker-sheet';
 import { Text } from '~/components/ui/text';
 import { useFieldError } from '~/hooks/useFieldError';
 import { useValidationModeContextSafe } from '~/hooks/useValidationMode';
+import { cn } from '~/lib/cn';
 import { SizingMetricConfig } from '~/types/sizing';
 
 export interface SizingFormFieldProps extends ViewProps {
@@ -19,11 +22,12 @@ export const SizingFormField = forwardRef<View, SizingFormFieldProps>(
     const field = useFieldContext<string | undefined>();
     const validationModeContext = useValidationModeContextSafe();
     const { errorMessage } = useFieldError(field, { fieldName: field.name });
-    const picker = useSizingPicker();
+    const sheetRef = useSheetRef();
 
     const handleCardPress = useCallback(() => {
-      picker.actions.present(metric, field.state.value);
-    }, [picker.actions, metric, field.state.value]);
+      console.log('Opening sizing picker for:', metric.field);
+      sheetRef.current?.present();
+    }, [metric.field]);
 
     const handleSave = useCallback(
       (value: string) => {
@@ -31,13 +35,18 @@ export const SizingFormField = forwardRef<View, SizingFormFieldProps>(
         if (validationModeContext) {
           validationModeContext.markFieldBlurred(field.name);
         }
+        sheetRef.current?.dismiss();
       },
       [field, validationModeContext]
     );
 
+    const handleClose = useCallback(() => {
+      sheetRef.current?.dismiss();
+    }, []);
+
     return (
       <>
-        <View ref={ref} className={className} {...props}>
+        <View ref={ref} className={cn('w-[118px]', className)} {...props}>
           <SizingCard
             label={metric.label}
             value={field.state.value}
@@ -53,12 +62,10 @@ export const SizingFormField = forwardRef<View, SizingFormFieldProps>(
         </View>
 
         <SizingPickerSheet
-          isOpen={picker.models.isOpen}
-          config={picker.models.config}
-          selectedValue={picker.models.selectedValue}
-          hasValueChanged={picker.models.hasValueChanged}
-          onClose={picker.actions.dismiss}
-          onValueChange={picker.actions.handleValueChange}
+          ref={sheetRef}
+          metric={metric}
+          initialValue={field.state.value}
+          onClose={handleClose}
           onSave={handleSave}
         />
       </>

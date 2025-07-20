@@ -12,10 +12,7 @@ export {
   type PersonalDetailsFormSchema
 } from './onboarding-form'
 
-export {
-  sizingFormSchema,
-  type SizingFormSchema
-} from './sizing-forms'
+export { sizingFormSchema, type SizingFormSchema } from './sizing-forms'
 
 export {
   attributesFormSchema,
@@ -27,10 +24,7 @@ export {
   type RepresentationFormSchema
 } from './representation-form'
 
-export {
-  skillsFormSchema,
-  type SkillsFormSchema
-} from './skills-form'
+export { skillsFormSchema, type SkillsFormSchema } from './skills-form'
 
 export {
   accountSettingsFormSchema,

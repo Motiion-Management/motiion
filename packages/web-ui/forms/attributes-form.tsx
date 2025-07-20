@@ -50,7 +50,9 @@ export function AttributesForm({
           label="Ethnicity"
           value={
             <div className="flex flex-col items-start">
-              {attributes?.ethnicity?.sort().map((e) => <div key={e}>{e}</div>)}
+              {attributes?.ethnicity?.sort().map((e) => (
+                <div key={e}>{e}</div>
+              ))}
             </div>
           }
         >

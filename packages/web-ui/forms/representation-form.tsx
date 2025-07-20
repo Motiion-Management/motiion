@@ -121,7 +121,10 @@ export const RepresentationForm: React.FC<{
                   <TabsContent value="manual">
                     {/* ManualAgencyInput component would need to be created */}
                     <div className="grid gap-3">
-                      <p>Manual agency input functionality needs to be implemented</p>
+                      <p>
+                        Manual agency input functionality needs to be
+                        implemented
+                      </p>
                     </div>
                   </TabsContent>
                 </div>
