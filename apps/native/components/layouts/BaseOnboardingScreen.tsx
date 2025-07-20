@@ -98,32 +98,31 @@ export const BaseOnboardingScreen = ({
             closed: 0,
             opened: Platform.select({ ios: insets.bottom, default: insets.bottom }),
           }}>
-          <View
-            className={'absolute bottom-0 right-0 flex-row items-center justify-between px-4 pb-2'}>
-            <SafeAreaView>
-              <View className="flex-1 flex-row justify-start">
-                {secondaryAction && (
-                  <Button variant="plain" onPress={secondaryAction.onPress}>
-                    <Text className="text-sm text-text-default">{secondaryAction.text}</Text>
-                  </Button>
-                )}
-              </View>
+          <SafeAreaView
+            edges={['bottom', 'left', 'right']}
+            className="absolute bottom-0 right-0 flex-row items-center justify-between px-4 pb-2">
+            <View className="flex-1 flex-row justify-start">
+              {secondaryAction && (
+                <Button variant="plain" onPress={secondaryAction.onPress}>
+                  <Text className="text-sm text-text-default">{secondaryAction.text}</Text>
+                </Button>
+              )}
+            </View>
 
-              {/* Continue Button */}
-              <Button
-                disabled={!canProgress}
-                size="icon"
-                variant="accent"
-                onPress={() => {
-                  if (!canProgress) {
-                    return;
-                  }
-                  primaryAction.onPress();
-                }}>
-                <ChevronRight size={24} className="color-icon-accent" />
-              </Button>
-            </SafeAreaView>
-          </View>
+            {/* Continue Button */}
+            <Button
+              disabled={!canProgress}
+              size="icon"
+              variant="accent"
+              onPress={() => {
+                if (!canProgress) {
+                  return;
+                }
+                primaryAction.onPress();
+              }}>
+              <ChevronRight size={24} className="color-icon-accent" />
+            </Button>
+          </SafeAreaView>
         </KeyboardStickyView>
       </View>
     </BackgroundGradientView>

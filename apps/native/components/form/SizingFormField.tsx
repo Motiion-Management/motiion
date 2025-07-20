@@ -1,8 +1,7 @@
-import { BottomSheetModal } from '@gorhom/bottom-sheet';
 import React, { forwardRef, useCallback } from 'react';
 import { View, ViewProps } from 'react-native';
 
-import { useSheetRef } from '../ui/sheet';
+import { useSheetState } from '../ui/sheet';
 
 import { useFieldContext } from '~/components/form/context';
 import { SizingCard } from '~/components/ui/sizing-card';
@@ -22,12 +21,12 @@ export const SizingFormField = forwardRef<View, SizingFormFieldProps>(
     const field = useFieldContext<string | undefined>();
     const validationModeContext = useValidationModeContextSafe();
     const { errorMessage } = useFieldError(field, { fieldName: field.name });
-    const sheetRef = useSheetRef();
+    const { isOpen, open, close } = useSheetState();
 
-    const handleCardPress = useCallback(() => {
+    const handleCardPress = () => {
       console.log('Opening sizing picker for:', metric.field);
-      sheetRef.current?.present();
-    }, [metric.field]);
+      open();
+    };
 
     const handleSave = useCallback(
       (value: string) => {
@@ -35,14 +34,18 @@ export const SizingFormField = forwardRef<View, SizingFormFieldProps>(
         if (validationModeContext) {
           validationModeContext.markFieldBlurred(field.name);
         }
-        sheetRef.current?.dismiss();
       },
       [field, validationModeContext]
     );
 
-    const handleClose = useCallback(() => {
-      sheetRef.current?.dismiss();
-    }, []);
+    const handleOpenChange = useCallback(
+      (isOpen: boolean) => {
+        if (!isOpen) {
+          close();
+        }
+      },
+      [close]
+    );
 
     return (
       <>
@@ -62,10 +65,10 @@ export const SizingFormField = forwardRef<View, SizingFormFieldProps>(
         </View>
 
         <SizingPickerSheet
-          ref={sheetRef}
           metric={metric}
           initialValue={field.state.value}
-          onClose={handleClose}
+          isOpen={isOpen}
+          onOpenChange={handleOpenChange}
           onSave={handleSave}
         />
       </>
