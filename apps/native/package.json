@@ -32,7 +32,6 @@
     "@expo/react-native-action-sheet": "^4.1.1",
     "@expo/ui": "0.1.1-canary-20250713-8f814f8",
     "@expo/vector-icons": "^14.1.0",
-    "@gorhom/bottom-sheet": "^5.1.6",
     "@hookform/resolvers": "^5.1.1",
     "@packages/backend": "workspace:*",
     "@packages/primatives": "workspace:*",
