@@ -11,25 +11,32 @@ module.exports = function withFollyFix(config) {
       if (fs.existsSync(podfilePath)) {
         let podfileContent = fs.readFileSync(podfilePath, 'utf8');
 
-        // Add the Folly fix to the post_install hook
-        const postInstallHook = `
-    # Fix for React Native 0.80.x - disable coroutines in Folly
-    installer.pods_project.targets.each do |target|
-      if target.name == 'RCT-Folly'
-        target.build_configurations.each do |config|
-          config.build_settings['GCC_PREPROCESSOR_DEFINITIONS'] ||= ['$(inherited)']
-          config.build_settings['GCC_PREPROCESSOR_DEFINITIONS'] << 'FOLLY_CFG_NO_COROUTINES=1'
-        end
-      end
-    end`;
+        // Check if the prebuilt dependencies fix is already applied
+        if (podfileContent.includes("ENV['RCT_USE_RN_DEP'] = '1'")) {
+          return config;
+        }
 
-        // Find the post_install block and add our fix before the last 'end'
-        const postInstallRegex = /post_install do \|installer\|[\s\S]*?(\n\s*end\s*\nend)/;
-        const match = podfileContent.match(postInstallRegex);
-
-        if (match) {
-          // Insert our fix right before the closing 'end' of post_install
-          podfileContent = podfileContent.replace(match[1], `${postInstallHook}${match[1]}`);
+        // Find the line where environment variables are set
+        const envRegex = /ENV\['RCT_USE_RN_DEP'\] = '1' if podfile_properties\['ios\.buildFromSource'\] == 'false'/;
+        
+        if (envRegex.test(podfileContent)) {
+          // Replace the conditional with a forced setting
+          podfileContent = podfileContent.replace(
+            envRegex,
+            "ENV['RCT_USE_RN_DEP'] = '1' # Force use of prebuilt dependencies for React Native 0.80.x"
+          );
+        } else {
+          // If the line doesn't exist, add it after other ENV declarations
+          const envBlockRegex = /(ENV\[['"][^'"]+['"]\][^\\n]*\n)+/;
+          const match = podfileContent.match(envBlockRegex);
+          
+          if (match) {
+            const insertPosition = match.index + match[0].length;
+            podfileContent = 
+              podfileContent.slice(0, insertPosition) + 
+              "ENV['RCT_USE_RN_DEP'] = '1' # Force use of prebuilt dependencies for React Native 0.80.x\n" + 
+              podfileContent.slice(insertPosition);
+          }
         }
 
         fs.writeFileSync(podfilePath, podfileContent);

@@ -2,7 +2,6 @@ import '../global.css';
 
 import 'expo-dev-client';
 import { ActionSheetProvider } from '@expo/react-native-action-sheet';
-// import { Host } from '@expo/ui/swift-ui';
 import { BottomSheetModalProvider } from '@gorhom/bottom-sheet';
 import { ThemeProvider as NavThemeProvider } from '@react-navigation/native';
 import { Stack } from 'expo-router';
@@ -35,8 +34,8 @@ export default function RootLayout() {
         style={isDarkColorScheme ? 'light' : 'dark'}
       />
       <GestureHandlerRootView style={{ flex: 1 }}>
-        <KeyboardProvider statusBarTranslucent navigationBarTranslucent>
-          <BottomSheetModalProvider>
+        <BottomSheetModalProvider>
+          <KeyboardProvider statusBarTranslucent navigationBarTranslucent>
             <ActionSheetProvider>
               <NavThemeProvider value={NAV_THEME[colorScheme]}>
                 <ConvexClientProvider>
@@ -45,8 +44,8 @@ export default function RootLayout() {
                 </ConvexClientProvider>
               </NavThemeProvider>
             </ActionSheetProvider>
-          </BottomSheetModalProvider>
-        </KeyboardProvider>
+          </KeyboardProvider>
+        </BottomSheetModalProvider>
       </GestureHandlerRootView>
     </>
   );
