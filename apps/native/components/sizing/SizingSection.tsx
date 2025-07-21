@@ -17,7 +17,7 @@ interface AppFieldProps {
 }
 
 interface SizingForm {
-  AppField: React.ComponentType<AppFieldProps>;
+  AppField: any; // TanStack Form's FieldComponent type
 }
 
 interface SizingSectionProps {
@@ -43,7 +43,7 @@ export function SizingSection({ title, metrics, form }: SizingSectionProps) {
             <form.AppField
               key={metricKey}
               name={fieldPath}
-              children={(field) => <field.SizingFormField metric={metric} />}
+              children={(field: any) => <field.SizingFormField metric={metric} />}
             />
           );
         })}

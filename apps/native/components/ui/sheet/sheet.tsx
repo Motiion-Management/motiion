@@ -92,7 +92,7 @@ const SheetContent = forwardRef<SheetRef, SheetProps>(
     );
 
     const renderBackdrop = useCallback(
-      (props) => (
+      (props: any) => (
         <BottomSheetBackdrop
           {...props}
           disappearsOnIndex={-1}
@@ -105,7 +105,7 @@ const SheetContent = forwardRef<SheetRef, SheetProps>(
     );
 
     const renderBackground = useCallback(
-      (props) => (
+      (props: any) => (
         <BottomSheetBackground
           {...props}
           className={cn(
@@ -118,7 +118,7 @@ const SheetContent = forwardRef<SheetRef, SheetProps>(
     );
 
     const renderHandle = useCallback(
-      (props) => (
+      (props: any) => (
         <BottomSheetHandle
           {...props}
           className={handleClassName}
