@@ -102,14 +102,8 @@ export default function SizingScreen() {
 
         <Sheet
           isOpened={isBottomSheetOpen}
-          onIsOpenedChange={handleBottomSheetChange}
-          actions={[
-            {
-              onPress: handleBottomSheetClose,
-              slot: 'Close',
-            },
-          ]}>
-          <View className="flex-1 p-6">
+          onIsOpenedChange={handleBottomSheetChange}>
+          <View className="p-6">
             <Text className="mb-4 text-center text-xl font-bold">🎉 Bottom Sheet Example</Text>
             <Text className="mb-4 text-gray-600">
               This is a simple bottom sheet example using Expo's SwiftUI components.
