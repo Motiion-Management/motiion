@@ -174,13 +174,9 @@ interface SheetActionProps {
 }
 
 const SheetAction = ({ onPress, children }: SheetActionProps) => (
-  <View className="flex-1 items-center justify-center">
-    <View className="flex-1 items-center justify-center">
-      <Button variant="primary" onPress={onPress}>
-        <Text>{children}</Text>
-      </Button>
-    </View>
-  </View>
+  <Button variant="primary" onPress={onPress} className="w-full">
+    <Text>{children}</Text>
+  </Button>
 );
 
 export { Sheet, SheetAction, useSheetState, SheetProps };
