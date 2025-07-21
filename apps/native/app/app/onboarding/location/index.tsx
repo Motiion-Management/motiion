@@ -1,51 +1,59 @@
-import { useRouter } from 'expo-router';
-import React from 'react';
-import { View, Text } from 'react-native';
+import { api } from '@packages/backend/convex/_generated/api'
+import { useMutation, useQuery } from 'convex/react'
+import React from 'react'
+import { View } from 'react-native'
 
-import { BaseOnboardingScreen } from '~/components/layouts/BaseOnboardingScreen';
-import { OnboardingStepGuard } from '~/components/onboarding/OnboardingGuard';
-import { useOnboardingNavigation, useOnboardingStatus } from '~/hooks/useOnboardingStatus';
+import { BaseOnboardingScreen } from '~/components/layouts/BaseOnboardingScreen'
+import { LocationPicker } from '~/components/ui/location-picker'
+import { useLocationForm } from '~/hooks/useLocationForm'
+import { useOnboardingCursor } from '~/hooks/useOnboardingCursor'
 
 export default function LocationScreen() {
-  const router = useRouter();
-  const { getStepTitle } = useOnboardingStatus();
-  const { advanceToNextStep } = useOnboardingNavigation();
+  const updateUser = useMutation(api.users.updateMyUser)
+  const user = useQuery(api.users.getMyUser)
+  const cursor = useOnboardingCursor()
 
-  const handleContinue = async () => {
-    try {
-      // TODO: Implement location form logic
-      console.log('Location step - implement form logic');
+  // Initialize form with user's current location if available
+  const initialLocation = user?.location ? {
+    city: user.location.city || '',
+    state: user.location.state || '',
+    stateCode: user.location.state || '' // Use state as fallback since stateCode doesn't exist in schema
+  } : null
 
-      // Navigate to the next step
-      const result = await advanceToNextStep();
-      if (result.route) {
-        router.push(result.route);
-      } else {
-        // If no next step, onboarding is complete
-        router.push('/app/home');
-      }
-    } catch (error) {
-      console.error('Error in location step:', error);
+  const locationForm = useLocationForm({
+    initialValue: initialLocation,
+    onSubmit: async (data) => {
+      if (!data.primaryLocation) return
+      
+      // Update user location in database
+      await updateUser({
+        location: {
+          city: data.primaryLocation.city,
+          state: data.primaryLocation.state,
+          country: 'United States'
+        }
+      })
+      
+      // Navigate to next step
+      cursor.goToNextStep()
     }
-  };
+  })
 
   return (
-    <OnboardingStepGuard requiredStep="location">
-      <BaseOnboardingScreen
-        title={getStepTitle()}
-        description="Where are you located and willing to work?"
-        canProgress={false} // TODO: Set to true when form is filled
-        primaryAction={{
-          onPress: handleContinue,
-          disabled: true, // TODO: Enable when form is valid
-        }}>
-        <View className="flex-1 items-center justify-center">
-          <Text className="text-lg text-gray-500">Location form will be implemented here</Text>
-          <Text className="mt-2 text-sm text-gray-400">
-            This will include current location, work areas, and travel preferences
-          </Text>
-        </View>
-      </BaseOnboardingScreen>
-    </OnboardingStepGuard>
-  );
+    <BaseOnboardingScreen
+      title="Where are you located?"
+      canProgress={locationForm.isValid}
+      primaryAction={{
+        onPress: locationForm.actions.submit,
+        disabled: !locationForm.isValid || locationForm.isSubmitting,
+      }}>
+      <View className="w-full">
+        <LocationPicker
+          value={locationForm.data.primaryLocation}
+          onValueChange={locationForm.actions.setLocation}
+          error={locationForm.errors.primaryLocation}
+        />
+      </View>
+    </BaseOnboardingScreen>
+  )
 }
