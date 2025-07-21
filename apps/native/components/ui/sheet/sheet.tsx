@@ -42,8 +42,8 @@ interface BottomSheetHandleProps {
 
 const BottomSheetHandle = ({ className }: BottomSheetHandleProps) => {
   return (
-    <View className={cn('self-center pb-2 pt-3', className)}>
-      <View className="h-1.5 w-10 rounded-full bg-gray-300" />
+    <View className={cn('self-center pt-3', className)}>
+      <View className="h-1.5 w-10 rounded-full bg-surface-tint" />
     </View>
   );
 };
@@ -92,7 +92,7 @@ const SheetContent = forwardRef<SheetRef, SheetProps>(
           disappearsOnIndex={-1}
           appearsOnIndex={0}
           pressBehavior="close"
-          opacity={0.5}
+          opacity={0.8}
         />
       ),
       []
@@ -125,7 +125,7 @@ const SheetContent = forwardRef<SheetRef, SheetProps>(
         handleIndicatorStyle={!enableCustomHandle ? handleIndicatorStyle : undefined}
         enablePanDownToClose>
         <BottomSheetView>
-          <SafeAreaView edges={['left', 'right', 'bottom']} className={className}>
+          <SafeAreaView edges={['bottom']} className={className}>
             {children}
           </SafeAreaView>
         </BottomSheetView>

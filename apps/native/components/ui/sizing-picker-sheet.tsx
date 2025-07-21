@@ -71,20 +71,20 @@ export const SizingPickerSheet: React.FC<SizingPickerSheetProps> = ({
 
   return (
     <Sheet isOpened={isOpen} onIsOpenedChange={onOpenChange}>
-      <View className="z-10 px-4">
+      <View className="z-10">
         {/* Header */}
-        <View className="flex-row items-center justify-between py-4">
-          <Text variant="header2" className="text-text-default">
+        <View className="flex-row items-center justify-between px-4 py-4">
+          <Text variant="header4" className="text-text-default">
             {`<${metric.label}>`}
           </Text>
           <Pressable onPress={handleClose} className="p-2">
-            <X className="text-text-tertiary h-6 w-6" />
+            <X className="h-6 w-6 color-icon-default" />
           </Pressable>
         </View>
 
         {/* Picker */}
         <View className="items-center justify-center py-4">
-          <View className="h-[178px] w-full overflow-hidden rounded-lg border border-border-low">
+          <View className="h-[178px] w-full overflow-hidden rounded-lg">
             <View className="relative h-full">
               {/* Highlight region */}
               <View className="absolute left-0 right-0 top-1/2 h-14 -translate-y-1/2 border-b border-t border-border-accent bg-surface-high" />
@@ -92,7 +92,7 @@ export const SizingPickerSheet: React.FC<SizingPickerSheetProps> = ({
               {/* Picker */}
               <View className="h-full items-center justify-center">
                 <WheelPicker
-                  width={200}
+                  width={402}
                   data={pickerData}
                   value={selectedValue}
                   onValueChange={handleValueChange}
@@ -104,7 +104,7 @@ export const SizingPickerSheet: React.FC<SizingPickerSheetProps> = ({
         </View>
 
         {/* Save Button */}
-        <View className="pb-8 pt-4">
+        <View className="px-4 pb-8 pt-4">
           <Button onPress={handleSave} disabled={!hasValueChanged || isSaving} className="w-full">
             <Text>{isSaving ? 'Saving...' : 'Save'}</Text>
           </Button>
