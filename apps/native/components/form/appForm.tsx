@@ -5,7 +5,6 @@ import { DateInput } from './DateInput';
 import { PhoneNumber } from './PhoneNumber';
 import { PhoneOTP } from './PhoneOTP';
 import { RadioGroupField } from './RadioGroupField';
-import { SizingFormField } from './SizingFormField';
 import { TextInput } from './TextInput';
 import { fieldContext, formContext } from './context';
 
@@ -18,7 +17,6 @@ const { useAppForm } = createFormHook({
     PhoneOTP,
     RadioGroupField,
     CheckboxGroupField,
-    SizingFormField,
     TextInput,
     DateInput,
   },

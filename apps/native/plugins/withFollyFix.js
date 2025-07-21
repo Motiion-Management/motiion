@@ -17,8 +17,9 @@ module.exports = function withFollyFix(config) {
         }
 
         // Find the line where environment variables are set
-        const envRegex = /ENV\['RCT_USE_RN_DEP'\] = '1' if podfile_properties\['ios\.buildFromSource'\] == 'false'/;
-        
+        const envRegex =
+          /ENV\['RCT_USE_RN_DEP'\] = '1' if podfile_properties\['ios\.buildFromSource'\] == 'false'/;
+
         if (envRegex.test(podfileContent)) {
           // Replace the conditional with a forced setting
           podfileContent = podfileContent.replace(
@@ -29,12 +30,12 @@ module.exports = function withFollyFix(config) {
           // If the line doesn't exist, add it after other ENV declarations
           const envBlockRegex = /(ENV\[['"][^'"]+['"]\][^\\n]*\n)+/;
           const match = podfileContent.match(envBlockRegex);
-          
+
           if (match) {
             const insertPosition = match.index + match[0].length;
-            podfileContent = 
-              podfileContent.slice(0, insertPosition) + 
-              "ENV['RCT_USE_RN_DEP'] = '1' # Force use of prebuilt dependencies for React Native 0.80.x\n" + 
+            podfileContent =
+              podfileContent.slice(0, insertPosition) +
+              "ENV['RCT_USE_RN_DEP'] = '1' # Force use of prebuilt dependencies for React Native 0.80.x\n" +
               podfileContent.slice(insertPosition);
           }
         }

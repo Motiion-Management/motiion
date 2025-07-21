@@ -1,8 +1,4 @@
-import {
-  BottomSheetModal,
-  BottomSheetView,
-  BottomSheetBackdrop,
-} from '@gorhom/bottom-sheet';
+import { BottomSheetModal, BottomSheetView, BottomSheetBackdrop } from '@gorhom/bottom-sheet';
 import React, { useRef, useImperativeHandle, forwardRef, useCallback, useEffect } from 'react';
 import { View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -35,12 +31,7 @@ interface BottomSheetBackgroundProps {
 }
 
 const BottomSheetBackground = ({ style, className }: BottomSheetBackgroundProps) => {
-  return (
-    <View
-      style={style}
-      className={cn('bg-surface-default rounded-t-xl', className)}
-    />
-  );
+  return <View style={style} className={cn('rounded-t-xl bg-surface-default', className)} />;
 };
 
 interface BottomSheetHandleProps {
@@ -51,24 +42,27 @@ interface BottomSheetHandleProps {
 
 const BottomSheetHandle = ({ className }: BottomSheetHandleProps) => {
   return (
-    <View className={cn('self-center pt-3 pb-2', className)}>
-      <View className="w-10 h-1.5 bg-gray-300 rounded-full" />
+    <View className={cn('self-center pb-2 pt-3', className)}>
+      <View className="h-1.5 w-10 rounded-full bg-gray-300" />
     </View>
   );
 };
 
 const SheetContent = forwardRef<SheetRef, SheetProps>(
-  ({ 
-    isOpened, 
-    onIsOpenedChange, 
-    children, 
-    className,
-    backgroundClassName,
-    handleClassName,
-    handleIndicatorStyle,
-    enableCustomHandle = true,
-    borderRadius = 'xl'
-  }, ref) => {
+  (
+    {
+      isOpened,
+      onIsOpenedChange,
+      children,
+      className,
+      backgroundClassName,
+      handleClassName,
+      handleIndicatorStyle,
+      enableCustomHandle = true,
+      borderRadius = 'xl',
+    },
+    ref
+  ) => {
     const bottomSheetModalRef = useRef<BottomSheetModal>(null);
 
     useImperativeHandle(ref, () => ({
@@ -108,22 +102,14 @@ const SheetContent = forwardRef<SheetRef, SheetProps>(
       (props: any) => (
         <BottomSheetBackground
           {...props}
-          className={cn(
-            `rounded-t-${borderRadius}`,
-            backgroundClassName
-          )}
+          className={cn(`rounded-t-${borderRadius}`, backgroundClassName)}
         />
       ),
       [backgroundClassName, borderRadius]
     );
 
     const renderHandle = useCallback(
-      (props: any) => (
-        <BottomSheetHandle
-          {...props}
-          className={handleClassName}
-        />
-      ),
+      (props: any) => <BottomSheetHandle {...props} className={handleClassName} />,
       [handleClassName]
     );
 
@@ -139,9 +125,7 @@ const SheetContent = forwardRef<SheetRef, SheetProps>(
         handleIndicatorStyle={!enableCustomHandle ? handleIndicatorStyle : undefined}
         enablePanDownToClose>
         <BottomSheetView>
-          <SafeAreaView
-            edges={['left', 'right', 'bottom']}
-            className={className}>
+          <SafeAreaView edges={['left', 'right', 'bottom']} className={className}>
             {children}
           </SafeAreaView>
         </BottomSheetView>
@@ -180,4 +164,3 @@ const SheetAction = ({ onPress, children }: SheetActionProps) => (
 );
 
 export { Sheet, SheetAction, useSheetState, SheetProps };
-

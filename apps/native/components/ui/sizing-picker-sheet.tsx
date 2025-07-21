@@ -1,3 +1,5 @@
+import { api } from '@packages/backend/convex/_generated/api';
+import { useMutation } from 'convex/react';
 import React, { useCallback, useState, useEffect } from 'react';
 import { View, Pressable } from 'react-native';
 
@@ -13,7 +15,6 @@ interface SizingPickerSheetProps {
   initialValue?: string;
   isOpen: boolean;
   onOpenChange: (isOpen: boolean) => void;
-  onSave: (value: string) => void;
 }
 
 export const SizingPickerSheet: React.FC<SizingPickerSheetProps> = ({
@@ -21,12 +22,13 @@ export const SizingPickerSheet: React.FC<SizingPickerSheetProps> = ({
   initialValue,
   isOpen,
   onOpenChange,
-  onSave,
 }) => {
+  const updateSizingField = useMutation(api.users.updateMySizingField);
   // Initialize with initialValue or first available value
   const defaultValue = initialValue || metric.values[0];
   const [selectedValue, setSelectedValue] = useState(defaultValue);
   const [originalValue] = useState(defaultValue);
+  const [isSaving, setIsSaving] = useState(false);
 
   // Reset to initial value when initialValue changes
   useEffect(() => {
@@ -36,10 +38,23 @@ export const SizingPickerSheet: React.FC<SizingPickerSheetProps> = ({
 
   const hasValueChanged = selectedValue !== originalValue;
 
-  const handleSave = useCallback(() => {
-    onSave(selectedValue);
-    onOpenChange(false);
-  }, [selectedValue, onSave, onOpenChange]);
+  const handleSave = useCallback(async () => {
+    setIsSaving(true);
+    try {
+      // Use the dedicated sizing field mutation
+      await updateSizingField({
+        section: metric.section,
+        field: metric.field,
+        value: selectedValue,
+      });
+      onOpenChange(false);
+    } catch (error) {
+      console.error('Error updating sizing:', error);
+      // Could add error handling/toast here
+    } finally {
+      setIsSaving(false);
+    }
+  }, [selectedValue, updateSizingField, metric.section, metric.field, onOpenChange]);
 
   const handleClose = useCallback(() => {
     onOpenChange(false);
@@ -90,8 +105,8 @@ export const SizingPickerSheet: React.FC<SizingPickerSheetProps> = ({
 
         {/* Save Button */}
         <View className="pb-8 pt-4">
-          <Button onPress={handleSave} disabled={!hasValueChanged} className="w-full">
-            <Text>Save</Text>
+          <Button onPress={handleSave} disabled={!hasValueChanged || isSaving} className="w-full">
+            <Text>{isSaving ? 'Saving...' : 'Save'}</Text>
           </Button>
         </View>
       </View>

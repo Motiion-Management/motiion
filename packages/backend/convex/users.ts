@@ -56,6 +56,43 @@ export const updateMyUser = authMutation({
   }
 })
 
+export const updateMySizingField = authMutation({
+  args: {
+    section: v.string(),
+    field: v.string(),
+    value: v.string()
+  },
+  async handler(ctx, { section, field, value }): Promise<void> {
+    // Get current sizing data
+    const currentSizing = ctx.user.sizing || {}
+    const currentSection = (currentSizing as any)[section] || {}
+
+    // Merge the new field value with existing section data
+    const updatedSection = {
+      ...currentSection,
+      [field]: value
+    }
+
+    // Update the user with merged sizing data
+    await ctx.db.patch(ctx.user._id, {
+      sizing: {
+        ...currentSizing,
+        [section]: updatedSection
+      } as any
+    })
+
+    // Trigger afterUpdate for any derived calculations
+    const updatedUser = {
+      ...ctx.user,
+      sizing: {
+        ...currentSizing,
+        [section]: updatedSection
+      } as any
+    }
+    await ctx.scheduler.runAfter(0, internal.users.afterUpdate, updatedUser)
+  }
+})
+
 // clerk webhook functions
 export const getUserByTokenId = internalQuery({
   args: { tokenId: Users.withoutSystemFields.tokenId },
