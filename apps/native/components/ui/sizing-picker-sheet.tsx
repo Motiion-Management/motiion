@@ -56,7 +56,7 @@ export const SizingPickerSheet: React.FC<SizingPickerSheetProps> = ({
 
   return (
     <Sheet isOpened={isOpen} onIsOpenedChange={onOpenChange}>
-      <View className="z-10 flex-1 px-4">
+      <View className="z-10 px-4">
         {/* Header */}
         <View className="flex-row items-center justify-between py-4">
           <Text variant="header2" className="text-text-default">
@@ -68,7 +68,7 @@ export const SizingPickerSheet: React.FC<SizingPickerSheetProps> = ({
         </View>
 
         {/* Picker */}
-        <View className="flex-1 items-center justify-center">
+        <View className="items-center justify-center py-4">
           <View className="h-[178px] w-full overflow-hidden rounded-lg border border-border-low">
             <View className="relative h-full">
               {/* Highlight region */}
