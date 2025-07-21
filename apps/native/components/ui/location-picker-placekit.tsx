@@ -1,13 +1,8 @@
 import placekit from '@placekit/client-js/lite';
 import React, { useState, useCallback, useRef } from 'react';
-import {
-  View,
-  Pressable,
-  ScrollView,
-  TextInput as RNTextInput,
-  ActivityIndicator,
-} from 'react-native';
+import { View, Pressable, ScrollView, ActivityIndicator } from 'react-native';
 
+import { Input } from './input';
 import { Text } from './text';
 
 import { cn } from '~/lib/cn';
@@ -149,88 +144,47 @@ export function LocationPicker({
 
   return (
     <View className={className}>
-      {/* Label */}
-      <View className="mb-4 flex-row items-center justify-start px-6">
-        <Text variant="labelXs" className="uppercase text-text-low">
-          {label}
-        </Text>
-      </View>
-
-      {/* Input Container */}
-      <View className="relative">
-        <View
-          className={cn(
-            'rounded-[29px] border bg-surface-high',
-            error ? 'border-border-error' : 'border-border-default',
-            isOpen && searchResults.length > 0 && 'rounded-b-none'
-          )}>
-          <View className="flex-row items-center px-6 py-3">
-            <RNTextInput
-              value={displayValue}
-              onChangeText={handleInputChange}
-              onFocus={handleInputFocus}
-              onBlur={handleInputBlur}
-              placeholder={placeholder}
-              placeholderTextColor="#9CA3AF"
-              className="flex-1 text-[16px] font-normal leading-[24px] text-text-default"
-              style={{ color: '#ffffff' }}
-            />
-            {isLoading ? (
-              <ActivityIndicator size="small" color="#9CA3AF" className="ml-4" />
-            ) : (
-              <View className="ml-4 size-6">
-                <ChevronDown
-                  className={cn(
-                    'text-text-tertiary h-6 w-6 transition-transform',
-                    isOpen && 'rotate-180'
-                  )}
-                />
-              </View>
-            )}
-          </View>
-        </View>
-
-        {/* Dropdown Results */}
-        {isOpen && searchResults.length > 0 && (
-          <View className="absolute left-0 right-0 top-full z-50 max-h-60 rounded-b-[29px] border-x border-b border-border-default bg-surface-high">
-            <ScrollView keyboardShouldPersistTaps="handled" showsVerticalScrollIndicator={false}>
-              {searchResults.map((result, index) => (
-                <Pressable
-                  key={`${result.city}-${result.administrative}-${index}`}
-                  onPress={() => handleSelectLocation(result)}
-                  className={cn(
-                    'px-6 py-3',
-                    index === searchResults.length - 1 && 'rounded-b-[29px]'
-                  )}
-                  style={({ pressed }) => ({
-                    backgroundColor: pressed ? 'rgba(255, 255, 255, 0.1)' : 'transparent',
-                  })}>
-                  <Text className="text-[16px] font-normal leading-[24px] text-text-default">
-                    {formatResultDisplay(result)}
-                  </Text>
-                </Pressable>
-              ))}
-            </ScrollView>
-          </View>
-        )}
-      </View>
-
-      {/* Helper Text */}
-      <View className="mt-4 px-6">
-        <Text variant="bodySm" className="text-text-low">
-          This is your primary city of residence. Local work locations can be provided on the next
-          screen.
-        </Text>
-      </View>
-
-      {/* Error Message */}
-      {error && (
-        <View className="mt-2 px-6">
-          <Text variant="bodySm" className="text-text-error">
-            {error}
-          </Text>
-        </View>
-      )}
+      <Input
+        label={label}
+        labelClassName="uppercase"
+        value={displayValue}
+        onChangeText={handleInputChange}
+        onFocus={handleInputFocus}
+        onBlur={handleInputBlur}
+        placeholder={placeholder}
+        placeholderTextColor="#9CA3AF"
+        borderRadiusVariant={isOpen && searchResults.length > 0 ? 'dropdown-open' : 'full'}
+        errorMessage={error}
+        helperTextProps={{
+          message:
+            'This is your primary city of residence. Local work locations can be provided on the next screen.',
+        }}
+        bottomSlot={
+          /* Dropdown Results */
+          isOpen && searchResults.length > 0 ? (
+            <View className="absolute left-0 right-0 top-full z-50 -mt-px max-h-60 rounded-b-[29px] border border-border-default border-t-border-low bg-surface-high">
+              <ScrollView keyboardShouldPersistTaps="handled" showsVerticalScrollIndicator={false}>
+                {searchResults.map((result, index) => (
+                  <Pressable
+                    key={`${result.city}-${result.administrative}-${index}`}
+                    onPress={() => handleSelectLocation(result)}
+                    className={cn(
+                      'px-6 py-3',
+                      index === searchResults.length - 1 && 'rounded-b-[29px]'
+                    )}
+                    style={({ pressed }) => ({
+                      backgroundColor: pressed ? 'rgba(255, 255, 255, 0.1)' : 'transparent',
+                    })}>
+                    <Text className="text-[16px] font-normal leading-[24px] text-text-default">
+                      {formatResultDisplay(result)}
+                    </Text>
+                  </Pressable>
+                ))}
+              </ScrollView>
+            </View>
+          ) : null
+        }
+      />
     </View>
-  )
+  );
 }

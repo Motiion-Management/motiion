@@ -34,6 +34,17 @@ type InputProps = TextInputProps & {
   materialVariant?: 'outlined' | 'filled';
   materialRingColor?: string;
   materialHideActionIcons?: boolean;
+  /**
+   * Border radius variant for dropdown compatibility
+   * @default full - fully rounded corners
+   * @dropdown-open - rounded top only for seamless dropdown connection
+   */
+  borderRadiusVariant?: 'full' | 'dropdown-open';
+  /**
+   * Content slot that appears directly below the input field
+   * Useful for dropdowns, autocomplete results, etc.
+   */
+  bottomSlot?: React.ReactNode;
 };
 
 type InputRef = TextInput;
@@ -59,6 +70,8 @@ const Input = React.forwardRef<InputRef, InputProps>(
       materialVariant: _materialVariant,
       materialRingColor: _materialRingColor,
       materialHideActionIcons: _materialHideActionIcons,
+      borderRadiusVariant = 'full',
+      bottomSlot,
       ...props
     },
     ref
@@ -89,29 +102,33 @@ const Input = React.forwardRef<InputRef, InputProps>(
         disabled={editable === false || readOnly}
         onPress={focus}>
         {!!label && <InputLabel>{label}</InputLabel>}
-        <View
-          className={cn(
-            'flex-row items-center rounded-full border border-border-default bg-surface-high px-6'
-          )}>
-          {!!leftView && leftView}
-          <TextInput
-            ref={inputRef}
-            editable={editable}
-            readOnly={readOnly}
+        <View className="relative">
+          <View
             className={cn(
-              'flex-1 bg-transparent py-3 text-[16px] text-text-default placeholder:text-text-default/40',
-              invalid && 'text-text-error',
-              leftView && 'pl-2',
-              rightView && 'pr-2',
-              className
-            )}
-            onChangeText={onChangeText}
-            value={value}
-            clearButtonMode="while-editing"
-            accessibilityHint={accessibilityHint ?? errorMessage}
-            {...props}
-          />
-          {rightView}
+              'flex-row items-center border border-border-default bg-surface-high px-6',
+              borderRadiusVariant === 'full' ? 'rounded-full' : 'rounded-t-[29px]'
+            )}>
+            {!!leftView && leftView}
+            <TextInput
+              ref={inputRef}
+              editable={editable}
+              readOnly={readOnly}
+              className={cn(
+                'flex-1 bg-transparent py-3 text-[16px] text-text-default placeholder:text-text-default/40',
+                invalid && 'text-text-error',
+                leftView && 'pl-2',
+                rightView && 'pr-2',
+                className
+              )}
+              onChangeText={onChangeText}
+              value={value}
+              clearButtonMode="while-editing"
+              accessibilityHint={accessibilityHint ?? errorMessage}
+              {...props}
+            />
+            {rightView}
+          </View>
+          {bottomSlot}
         </View>
         {errorMessage && <ErrorText>{errorMessage}</ErrorText>}
         {helperTextProps && <HelperText {...helperTextProps} />}
