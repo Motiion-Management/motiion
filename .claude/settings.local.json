@@ -36,7 +36,9 @@
       "Bash(do echo \"File: $file\")",
       "Bash(head:*)",
       "Bash(done)",
-      "Bash(npm view:*)"
+      "Bash(npm view:*)",
+      "WebFetch(domain:gorhom.github.io)",
+      "WebFetch(domain:gorhom.dev)"
     ]
   },
   "enableAllProjectMcpServers": false

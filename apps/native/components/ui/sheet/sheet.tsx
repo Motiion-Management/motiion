@@ -2,7 +2,6 @@ import {
   BottomSheetModal,
   BottomSheetView,
   BottomSheetBackdrop,
-  BottomSheetBackdropProps,
 } from '@gorhom/bottom-sheet';
 import React, { useRef, useImperativeHandle, forwardRef, useCallback, useEffect } from 'react';
 import { View } from 'react-native';
@@ -18,6 +17,11 @@ interface SheetProps {
   onIsOpenedChange: (isOpen: boolean) => void;
   children: React.ReactNode;
   className?: string;
+  backgroundClassName?: string;
+  handleClassName?: string;
+  handleIndicatorStyle?: any;
+  enableCustomHandle?: boolean;
+  borderRadius?: 'sm' | 'md' | 'lg' | 'xl';
 }
 
 interface SheetRef {
@@ -25,20 +29,46 @@ interface SheetRef {
   close: () => void;
 }
 
-function SheetBackdrop(props: BottomSheetBackdropProps) {
-  return (
-    <BottomSheetBackdrop
-      {...props}
-      disappearsOnIndex={-1}
-      appearsOnIndex={0}
-      pressBehavior="close"
-      opacity={0.5}
-    />
-  );
+interface BottomSheetBackgroundProps {
+  style?: any;
+  className?: string;
 }
 
+const BottomSheetBackground = ({ style, className }: BottomSheetBackgroundProps) => {
+  return (
+    <View
+      style={style}
+      className={cn('bg-surface-default rounded-t-xl', className)}
+    />
+  );
+};
+
+interface BottomSheetHandleProps {
+  animatedIndex?: any;
+  animatedPosition?: any;
+  className?: string;
+}
+
+const BottomSheetHandle = ({ className }: BottomSheetHandleProps) => {
+  return (
+    <View className={cn('self-center pt-3 pb-2', className)}>
+      <View className="w-10 h-1.5 bg-gray-300 rounded-full" />
+    </View>
+  );
+};
+
 const SheetContent = forwardRef<SheetRef, SheetProps>(
-  ({ isOpened, onIsOpenedChange, children, className }, ref) => {
+  ({ 
+    isOpened, 
+    onIsOpenedChange, 
+    children, 
+    className,
+    backgroundClassName,
+    handleClassName,
+    handleIndicatorStyle,
+    enableCustomHandle = true,
+    borderRadius = 'xl'
+  }, ref) => {
     const bottomSheetModalRef = useRef<BottomSheetModal>(null);
 
     useImperativeHandle(ref, () => ({
@@ -61,18 +91,57 @@ const SheetContent = forwardRef<SheetRef, SheetProps>(
       [onIsOpenedChange]
     );
 
+    const renderBackdrop = useCallback(
+      (props) => (
+        <BottomSheetBackdrop
+          {...props}
+          disappearsOnIndex={-1}
+          appearsOnIndex={0}
+          pressBehavior="close"
+          opacity={0.5}
+        />
+      ),
+      []
+    );
+
+    const renderBackground = useCallback(
+      (props) => (
+        <BottomSheetBackground
+          {...props}
+          className={cn(
+            `rounded-t-${borderRadius}`,
+            backgroundClassName
+          )}
+        />
+      ),
+      [backgroundClassName, borderRadius]
+    );
+
+    const renderHandle = useCallback(
+      (props) => (
+        <BottomSheetHandle
+          {...props}
+          className={handleClassName}
+        />
+      ),
+      [handleClassName]
+    );
+
     return (
       <BottomSheetModal
         ref={bottomSheetModalRef}
         index={0}
         enableDynamicSizing
         onChange={handleSheetChanges}
-        backdropComponent={SheetBackdrop}
+        backdropComponent={renderBackdrop}
+        backgroundComponent={renderBackground}
+        handleComponent={enableCustomHandle ? renderHandle : undefined}
+        handleIndicatorStyle={!enableCustomHandle ? handleIndicatorStyle : undefined}
         enablePanDownToClose>
         <BottomSheetView>
           <SafeAreaView
             edges={['left', 'right', 'bottom']}
-            className={cn('bg-surface-default', className)}>
+            className={className}>
             {children}
           </SafeAreaView>
         </BottomSheetView>
