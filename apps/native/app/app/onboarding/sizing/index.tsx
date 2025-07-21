@@ -59,7 +59,7 @@ export default function SizingScreen() {
   });
 
   return (
-    <View className="h-full w-full flex-1 items-center justify-center p-4">
+    <View className="h-full w-full flex-1 items-center justify-center">
       <BaseOnboardingScreen
         title="Size Card"
         description="Optional - Not all sizing metrics may apply to you. Only input what is relevant to you."
