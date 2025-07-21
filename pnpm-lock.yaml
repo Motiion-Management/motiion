@@ -59,6 +59,9 @@ importers:
       '@packages/primatives':
         specifier: workspace:*
         version: link:../../packages/primatives
+      '@placekit/client-js':
+        specifier: ^2.3.0
+        version: 2.3.0
       '@quidone/react-native-wheel-picker':
         specifier: ^1.5.2
         version: 1.5.2(react-native@0.80.1(@babel/core@7.28.0)(@types/react@19.1.8)(react@19.1.0))(react@19.1.0)

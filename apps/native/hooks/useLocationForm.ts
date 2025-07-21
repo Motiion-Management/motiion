@@ -1,15 +1,15 @@
 import { useState, useCallback } from 'react'
 
-import { type USCity } from '~/data/usCities'
+import { type PlaceKitLocation } from '~/components/ui/location-picker-placekit'
 
 export interface LocationFormData {
-  primaryLocation: USCity | null
+  primaryLocation: PlaceKitLocation | null
 }
 
 export interface LocationFormOptions {
-  initialValue?: USCity | null
+  initialValue?: PlaceKitLocation | null
   onSubmit?: (data: LocationFormData) => Promise<void> | void
-  validateLocation?: (location: USCity | null) => string | null
+  validateLocation?: (location: PlaceKitLocation | null) => string | null
 }
 
 export interface LocationFormState {
@@ -22,7 +22,7 @@ export interface LocationFormState {
 }
 
 export interface LocationFormActions {
-  setLocation: (location: USCity | null) => void
+  setLocation: (location: PlaceKitLocation | null) => void
   submit: () => Promise<void>
   reset: () => void
   validate: () => boolean
@@ -44,7 +44,7 @@ export function useLocationForm(options: LocationFormOptions = {}) {
     isValid: !!initialValue
   })
   
-  const validateForm = useCallback((location: USCity | null = state.data.primaryLocation) => {
+  const validateForm = useCallback((location: PlaceKitLocation | null = state.data.primaryLocation) => {
     const errors: LocationFormState['errors'] = {}
     
     // Required field validation
@@ -69,7 +69,7 @@ export function useLocationForm(options: LocationFormOptions = {}) {
     return isValid
   }, [state.data.primaryLocation, validateLocation])
   
-  const setLocation = useCallback((location: USCity | null) => {
+  const setLocation = useCallback((location: PlaceKitLocation | null) => {
     setState(prev => ({
       ...prev,
       data: {

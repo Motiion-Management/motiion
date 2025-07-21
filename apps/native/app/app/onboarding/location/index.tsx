@@ -4,7 +4,7 @@ import React from 'react'
 import { View } from 'react-native'
 
 import { BaseOnboardingScreen } from '~/components/layouts/BaseOnboardingScreen'
-import { LocationPicker } from '~/components/ui/location-picker'
+import { LocationPicker } from '~/components/ui/location-picker-placekit'
 import { useLocationForm } from '~/hooks/useLocationForm'
 import { useOnboardingCursor } from '~/hooks/useOnboardingCursor'
 
@@ -17,7 +17,8 @@ export default function LocationScreen() {
   const initialLocation = user?.location ? {
     city: user.location.city || '',
     state: user.location.state || '',
-    stateCode: user.location.state || '' // Use state as fallback since stateCode doesn't exist in schema
+    stateCode: user.location.state || '', // Use state as fallback since stateCode doesn't exist in schema
+    country: user.location.country || 'United States'
   } : null
 
   const locationForm = useLocationForm({
