@@ -39,7 +39,8 @@
       "Bash(npm view:*)",
       "WebFetch(domain:gorhom.github.io)",
       "WebFetch(domain:gorhom.dev)",
-      "Bash(npm search:*)"
+      "Bash(npm search:*)",
+      "Bash(npx eslint:*)"
     ]
   },
   "enableAllProjectMcpServers": false

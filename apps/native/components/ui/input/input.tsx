@@ -57,19 +57,14 @@ const Input = React.forwardRef<InputRef, InputProps>(
       editable,
       readOnly,
       className,
-      children,
       leftView,
       rightView,
       label,
-      labelClassName,
       containerClassName,
       invalid,
       accessibilityHint,
       helperTextProps,
       errorMessage,
-      materialVariant: _materialVariant,
-      materialRingColor: _materialRingColor,
-      materialHideActionIcons: _materialHideActionIcons,
       borderRadiusVariant = 'full',
       bottomSlot,
       ...props
@@ -97,42 +92,44 @@ const Input = React.forwardRef<InputRef, InputProps>(
     }
 
     return (
-      <Pressable
-        className={cn(editable === false && 'opacity-50', 'gap-4', containerClassName)}
-        disabled={editable === false || readOnly}
-        onPress={focus}>
+      <View className={cn(editable === false && 'opacity-50', 'gap-2', containerClassName)}>
         {!!label && <InputLabel>{label}</InputLabel>}
-        <View className="relative">
-          <View
-            className={cn(
-              'flex-row items-center border border-border-default bg-surface-high px-6',
-              borderRadiusVariant === 'full' ? 'rounded-full' : 'rounded-t-[29px]'
-            )}>
-            {!!leftView && leftView}
-            <TextInput
-              ref={inputRef}
-              editable={editable}
-              readOnly={readOnly}
+        <Pressable
+          disabled={editable === false || readOnly}
+          onPress={focus}>
+          <View className="relative">
+            <Pressable
+              onPress={focus}
               className={cn(
-                'flex-1 bg-transparent py-3 text-[16px] text-text-default placeholder:text-text-default/40',
-                invalid && 'text-text-error',
-                leftView && 'pl-2',
-                rightView && 'pr-2',
-                className
-              )}
-              onChangeText={onChangeText}
-              value={value}
-              clearButtonMode="while-editing"
-              accessibilityHint={accessibilityHint ?? errorMessage}
-              {...props}
-            />
-            {rightView}
+                'flex-row items-center border border-border-default bg-surface-high px-6',
+                borderRadiusVariant === 'full' ? 'rounded-full' : 'rounded-t-[29px]'
+              )}>
+              {!!leftView && leftView}
+              <TextInput
+                ref={inputRef}
+                editable={editable}
+                readOnly={readOnly}
+                className={cn(
+                  'flex-1 bg-transparent py-3 text-[16px] text-text-default placeholder:text-text-default/40',
+                  invalid && 'text-text-error',
+                  leftView && 'pl-2',
+                  rightView && 'pr-2',
+                  className
+                )}
+                onChangeText={onChangeText}
+                value={value}
+                clearButtonMode="while-editing"
+                accessibilityHint={accessibilityHint ?? errorMessage}
+                {...props}
+              />
+              {rightView}
+            </Pressable>
+            {bottomSlot}
           </View>
-          {bottomSlot}
-        </View>
+        </Pressable>
         {errorMessage && <ErrorText>{errorMessage}</ErrorText>}
         {helperTextProps && <HelperText {...helperTextProps} />}
-      </Pressable>
+      </View>
     );
   }
 );

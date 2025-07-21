@@ -1,12 +1,11 @@
 import placekit from '@placekit/client-js/lite';
 import React, { useState, useCallback, useRef } from 'react';
-import { View, Pressable, ScrollView, ActivityIndicator } from 'react-native';
+import { View, Pressable, ScrollView } from 'react-native';
 
 import { Input } from './input';
 import { Text } from './text';
 
 import { cn } from '~/lib/cn';
-import ChevronDown from '~/lib/icons/ChevronDown';
 
 // Initialize PlaceKit client
 const pk = placekit(process.env.EXPO_PUBLIC_PLACEKIT_KEY!);
@@ -20,11 +19,15 @@ export interface PlaceKitLocation {
 
 export interface LocationPickerProps {
   value?: PlaceKitLocation | null;
-  onValueChange: (location: PlaceKitLocation | null) => void;
+  // eslint-disable-next-line no-unused-vars
+  onValueChange: (value: PlaceKitLocation | null) => void;
   placeholder?: string;
   label?: string;
   className?: string;
   error?: string;
+  excludeLocations?: PlaceKitLocation[];
+  showHelperText?: boolean;
+  rightView?: React.ReactNode;
 }
 
 // PlaceKit result types we need for location
@@ -42,11 +45,13 @@ export function LocationPicker({
   label = 'City & State',
   className,
   error,
+  excludeLocations = [],
+  showHelperText = true,
+  rightView,
 }: LocationPickerProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [searchResults, setSearchResults] = useState<LocationResult[]>([]);
-  const [isLoading, setIsLoading] = useState(false);
   const searchTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   // Display value - either selected location or search query
@@ -59,7 +64,6 @@ export function LocationPicker({
       return;
     }
 
-    setIsLoading(true);
     try {
       const response = await pk.search(query, {
         types: ['city'],
@@ -75,14 +79,20 @@ export function LocationPicker({
         country: result.country,
       }));
 
-      setSearchResults(mappedResults);
+      // Filter out excluded locations
+      const filteredResults = mappedResults.filter((result) => {
+        const resultLocationString = `${result.city}, ${result.administrative}`;
+        return !excludeLocations.some(
+          (excluded) => `${excluded.city}, ${excluded.state}` === resultLocationString
+        );
+      });
+
+      setSearchResults(filteredResults);
     } catch (error) {
       console.error('PlaceKit search error:', error);
       setSearchResults([]);
-    } finally {
-      setIsLoading(false);
     }
-  }, []);
+  }, [excludeLocations]);
 
   const handleInputChange = useCallback(
     (text: string) => {
@@ -146,7 +156,6 @@ export function LocationPicker({
     <View className={className}>
       <Input
         label={label}
-        labelClassName="uppercase"
         value={displayValue}
         onChangeText={handleInputChange}
         onFocus={handleInputFocus}
@@ -155,14 +164,21 @@ export function LocationPicker({
         placeholderTextColor="#9CA3AF"
         borderRadiusVariant={isOpen && searchResults.length > 0 ? 'dropdown-open' : 'full'}
         errorMessage={error}
-        helperTextProps={{
-          message:
-            'This is your primary city of residence. Local work locations can be provided on the next screen.',
-        }}
+        rightView={rightView}
+        helperTextProps={
+          showHelperText
+            ? {
+                message:
+                  'This is your primary city of residence. Local work locations can be provided on the next screen.',
+              }
+            : undefined
+        }
         bottomSlot={
           /* Dropdown Results */
           isOpen && searchResults.length > 0 ? (
-            <View className="absolute left-0 right-0 top-full z-50 -mt-px max-h-60 rounded-b-[29px] border border-border-default border-t-border-low bg-surface-high">
+            <View 
+              className="absolute left-0 right-0 top-full -mt-px max-h-60 rounded-b-[29px] border border-border-default border-t-border-low bg-surface-high"
+              style={{ zIndex: 99999, elevation: 10 }}>
               <ScrollView keyboardShouldPersistTaps="handled" showsVerticalScrollIndicator={false}>
                 {searchResults.map((result, index) => (
                   <Pressable

@@ -26,6 +26,7 @@ const buttonVariants = cva('flex-row items-center justify-center gap-2', {
       md: 'ios:rounded-full py-2 ios:py-1.5 ios:px-3.5 px-5 rounded-full',
       lg: 'py-2.5 px-5 ios:py-2 rounded-full gap-2',
       icon: 'ios:rounded-full h-12 w-12 rounded-full',
+      iconInline: 'ios:rounded-full h-4 w-4 rounded-full',
     },
   },
   defaultVariants: {
