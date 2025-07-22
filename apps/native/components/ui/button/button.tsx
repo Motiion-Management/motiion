@@ -40,6 +40,7 @@ const androidRootVariants = cva('overflow-hidden', {
     size: {
       none: '',
       icon: 'rounded-full',
+      iconInline: 'rounded-full',
       sm: 'rounded-full',
       md: 'rounded-full',
       lg: 'rounded-full',
@@ -66,6 +67,7 @@ const buttonTextVariants = cva('font-semibold', {
     size: {
       none: '',
       icon: 'text-[20px]',
+      iconInline: 'text-[12px]',
       sm: 'text-[12px] leading-[16.8px]',
       md: 'text-[16px] leading-[22.4px]',
       lg: 'text-[16px] leading-[22.4px]',

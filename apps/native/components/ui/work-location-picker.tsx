@@ -2,8 +2,6 @@ import React from 'react';
 import { View } from 'react-native';
 
 import { LocationPicker, LocationPickerProps } from './location-picker-placekit';
-import XCircle from '~/lib/icons/XCircle';
-import { Button } from './button';
 
 export interface WorkLocationPickerProps extends LocationPickerProps {
   index: number;
@@ -14,13 +12,13 @@ export function WorkLocationPicker({ index, onRemove, ...rest }: WorkLocationPic
   const label = `Location ${index + 1}`;
   const placeholder = index === 0 ? 'Primary work location...' : 'Additional work location...';
 
-  // Create remove button for non-primary locations
-  const removeButton =
-    index > 0 && onRemove ? (
-      <Button onPress={onRemove} size="iconInline" variant="primary">
-        <XCircle className="text-text-high" />
-      </Button>
-    ) : undefined;
+  const additionalLocationProps: Partial<LocationPickerProps> =
+    index > 0
+      ? {
+        clearButtonMode: 'always',
+        onClear: onRemove,
+      }
+      : {};
 
   return (
     <View style={{ zIndex: 1000 - index }}>
@@ -28,7 +26,7 @@ export function WorkLocationPicker({ index, onRemove, ...rest }: WorkLocationPic
         label={label}
         placeholder={placeholder}
         showHelperText={false}
-        rightView={removeButton}
+        {...additionalLocationProps}
         {...rest}
       />
     </View>

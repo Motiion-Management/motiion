@@ -8,6 +8,7 @@ export interface WorkLocationFormData {
 
 export interface WorkLocationFormOptions {
   primaryLocation?: PlaceKitLocation | null
+  existingWorkLocations?: PlaceKitLocation[]
   onSubmit?: (data: WorkLocationFormData) => Promise<void> | void
 }
 
@@ -32,16 +33,23 @@ export interface WorkLocationFormActions {
 const MAX_LOCATIONS = 5
 
 export function useWorkLocationForm(options: WorkLocationFormOptions = {}) {
-  const { primaryLocation = null, onSubmit } = options
+  const { primaryLocation = null, existingWorkLocations = [], onSubmit } = options
   
-  const [state, setState] = useState<WorkLocationFormState>(() => ({
-    data: {
-      locations: primaryLocation ? [primaryLocation] : [null]
-    },
-    errors: {},
-    isSubmitting: false,
-    isValid: !!primaryLocation
-  }))
+  const [state, setState] = useState<WorkLocationFormState>(() => {
+    // If we have existing work locations, use them; otherwise use primary location
+    const initialLocations = existingWorkLocations.length > 0 
+      ? existingWorkLocations 
+      : primaryLocation ? [primaryLocation] : [null]
+    
+    return {
+      data: {
+        locations: initialLocations
+      },
+      errors: {},
+      isSubmitting: false,
+      isValid: initialLocations[0] !== null
+    }
+  })
   
   // Check for duplicate locations
   const hasDuplicates = useCallback((locations: (PlaceKitLocation | null)[]) => {
@@ -159,15 +167,19 @@ export function useWorkLocationForm(options: WorkLocationFormOptions = {}) {
   }, [state.data, onSubmit, validateForm])
   
   const reset = useCallback(() => {
+    const initialLocations = existingWorkLocations.length > 0 
+      ? existingWorkLocations 
+      : primaryLocation ? [primaryLocation] : [null]
+      
     setState({
       data: {
-        locations: primaryLocation ? [primaryLocation] : [null]
+        locations: initialLocations
       },
       errors: {},
       isSubmitting: false,
-      isValid: !!primaryLocation
+      isValid: initialLocations[0] !== null
     })
-  }, [primaryLocation])
+  }, [primaryLocation, existingWorkLocations])
   
   // Validate whenever locations change
   useEffect(() => {

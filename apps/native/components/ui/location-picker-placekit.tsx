@@ -2,7 +2,7 @@ import placekit from '@placekit/client-js/lite';
 import React, { useState, useCallback, useRef } from 'react';
 import { View, Pressable, ScrollView } from 'react-native';
 
-import { Input } from './input';
+import { Input, InputProps } from './input';
 import { Text } from './text';
 
 import { cn } from '~/lib/cn';
@@ -28,6 +28,8 @@ export interface LocationPickerProps {
   excludeLocations?: PlaceKitLocation[];
   showHelperText?: boolean;
   rightView?: React.ReactNode;
+  onClear?: InputProps['onClear'];
+  clearButtonMode?: InputProps['clearButtonMode'];
 }
 
 // PlaceKit result types we need for location
@@ -48,6 +50,8 @@ export function LocationPicker({
   excludeLocations = [],
   showHelperText = true,
   rightView,
+  onClear,
+  clearButtonMode,
 }: LocationPickerProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
@@ -58,41 +62,44 @@ export function LocationPicker({
   const displayValue = value ? `${value.city}, ${value.stateCode || value.state}` : searchQuery;
 
   // Search PlaceKit API with debounce
-  const searchPlaceKit = useCallback(async (query: string) => {
-    if (!query.trim()) {
-      setSearchResults([]);
-      return;
-    }
+  const searchPlaceKit = useCallback(
+    async (query: string) => {
+      if (!query.trim()) {
+        setSearchResults([]);
+        return;
+      }
 
-    try {
-      const response = await pk.search(query, {
-        types: ['city'],
-        countries: ['us'],
-        maxResults: 8,
-      });
+      try {
+        const response = await pk.search(query, {
+          types: ['city'],
+          countries: ['us'],
+          maxResults: 8,
+        });
 
-      // Map PlaceKit results to our LocationResult format
-      const mappedResults: LocationResult[] = response.results.map((result) => ({
-        city: result.city,
-        administrative: result.administrative,
-        countrycode: result.countrycode,
-        country: result.country,
-      }));
+        // Map PlaceKit results to our LocationResult format
+        const mappedResults: LocationResult[] = response.results.map((result) => ({
+          city: result.city,
+          administrative: result.administrative,
+          countrycode: result.countrycode,
+          country: result.country,
+        }));
 
-      // Filter out excluded locations
-      const filteredResults = mappedResults.filter((result) => {
-        const resultLocationString = `${result.city}, ${result.administrative}`;
-        return !excludeLocations.some(
-          (excluded) => `${excluded.city}, ${excluded.state}` === resultLocationString
-        );
-      });
+        // Filter out excluded locations
+        const filteredResults = mappedResults.filter((result) => {
+          const resultLocationString = `${result.city}, ${result.administrative}`;
+          return !excludeLocations.some(
+            (excluded) => `${excluded.city}, ${excluded.state}` === resultLocationString
+          );
+        });
 
-      setSearchResults(filteredResults);
-    } catch (error) {
-      console.error('PlaceKit search error:', error);
-      setSearchResults([]);
-    }
-  }, [excludeLocations]);
+        setSearchResults(filteredResults);
+      } catch (error) {
+        console.error('PlaceKit search error:', error);
+        setSearchResults([]);
+      }
+    },
+    [excludeLocations]
+  );
 
   const handleInputChange = useCallback(
     (text: string) => {
@@ -165,18 +172,20 @@ export function LocationPicker({
         borderRadiusVariant={isOpen && searchResults.length > 0 ? 'dropdown-open' : 'full'}
         errorMessage={error}
         rightView={rightView}
+        onClear={onClear}
+        clearButtonMode={clearButtonMode}
         helperTextProps={
           showHelperText
             ? {
-                message:
-                  'This is your primary city of residence. Local work locations can be provided on the next screen.',
-              }
+              message:
+                'This is your primary city of residence. Local work locations can be provided on the next screen.',
+            }
             : undefined
         }
         bottomSlot={
           /* Dropdown Results */
           isOpen && searchResults.length > 0 ? (
-            <View 
+            <View
               className="absolute left-0 right-0 top-full -mt-px max-h-60 rounded-b-[29px] border border-border-default border-t-border-low bg-surface-high"
               style={{ zIndex: 99999, elevation: 10 }}>
               <ScrollView keyboardShouldPersistTaps="handled" showsVerticalScrollIndicator={false}>
