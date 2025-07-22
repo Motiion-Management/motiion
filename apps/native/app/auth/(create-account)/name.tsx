@@ -7,7 +7,7 @@ import * as z from 'zod';
 
 import { ValidationModeForm } from '~/components/form/ValidationModeForm';
 import { useAppForm } from '~/components/form/appForm';
-import { BaseOnboardingScreen } from '~/components/layouts/BaseOnboardingScreen';
+import { BaseAuthScreen } from '~/components/layouts/BaseAuthScreen';
 import { ErrorText } from '~/components/ui/error-text';
 import { Text } from '~/components/ui/text';
 
@@ -82,7 +82,7 @@ export default function NameScreen() {
   }
 
   return (
-    <BaseOnboardingScreen
+    <BaseAuthScreen
       title="What's your name?"
       helpText="Please use your legal name for your account. You can provide a stage name or a preferred name to display on your profile later."
       canProgress={isFormReady}
@@ -125,6 +125,6 @@ export default function NameScreen() {
           )}
         </View>
       </ValidationModeForm>
-    </BaseOnboardingScreen>
+    </BaseAuthScreen>
   );
 }

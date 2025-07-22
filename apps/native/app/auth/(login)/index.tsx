@@ -8,7 +8,7 @@ import * as z from 'zod';
 
 import { ValidationModeForm } from '~/components/form/ValidationModeForm';
 import { useAppForm } from '~/components/form/appForm';
-import { BaseOnboardingScreen } from '~/components/layouts/BaseOnboardingScreen';
+import { BaseAuthScreen } from '~/components/layouts/BaseAuthScreen';
 import { Text } from '~/components/ui/text';
 import { determineSigninStep } from '~/utils/signinNavigation';
 
@@ -104,7 +104,7 @@ export default function LoginScreen() {
   }
 
   return (
-    <BaseOnboardingScreen
+    <BaseAuthScreen
       title="Welcome back!"
       helpText="Enter your phone number to sign in to your account."
       canProgress={isFormReady}
@@ -131,6 +131,6 @@ export default function LoginScreen() {
           )}
         </View>
       </ValidationModeForm>
-    </BaseOnboardingScreen>
+    </BaseAuthScreen>
   );
 }

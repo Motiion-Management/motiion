@@ -8,7 +8,7 @@ import * as z from 'zod';
 
 import { ValidationModeForm } from '~/components/form/ValidationModeForm';
 import { useAppForm } from '~/components/form/appForm';
-import { BaseOnboardingScreen } from '~/components/layouts/BaseOnboardingScreen';
+import { BaseAuthScreen } from '~/components/layouts/BaseAuthScreen';
 import { determineSignupStep } from '~/utils/signupNavigation';
 
 const formValidator = z.object({
@@ -109,7 +109,7 @@ export default function InfoScreen() {
   }
 
   return (
-    <BaseOnboardingScreen
+    <BaseAuthScreen
       title="What's your phone number?"
       canProgress={isFormReady}
       primaryAction={{
@@ -122,6 +122,6 @@ export default function InfoScreen() {
           <form.AppField name="phone" children={(field) => <field.PhoneNumber autoFocus />} />
         </View>
       </ValidationModeForm>
-    </BaseOnboardingScreen>
+    </BaseAuthScreen>
   );
 }

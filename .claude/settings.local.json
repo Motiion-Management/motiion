@@ -40,7 +40,8 @@
       "WebFetch(domain:gorhom.github.io)",
       "WebFetch(domain:gorhom.dev)",
       "Bash(npm search:*)",
-      "Bash(npx eslint:*)"
+      "Bash(npx eslint:*)",
+      "mcp__convex__tables"
     ]
   },
   "enableAllProjectMcpServers": false

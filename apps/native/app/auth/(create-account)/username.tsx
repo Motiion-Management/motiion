@@ -7,7 +7,7 @@ import * as z from 'zod';
 
 import { ValidationModeForm } from '~/components/form/ValidationModeForm';
 import { useAppForm } from '~/components/form/appForm';
-import { BaseOnboardingScreen } from '~/components/layouts/BaseOnboardingScreen';
+import { BaseAuthScreen } from '~/components/layouts/BaseAuthScreen';
 import { Text } from '~/components/ui/text';
 
 const formValidator = z.object({
@@ -96,7 +96,7 @@ export default function UsernameScreen() {
   }
 
   return (
-    <BaseOnboardingScreen
+    <BaseAuthScreen
       title="What name do you want displayed?"
       helpText="This will be the name displayed on your public profile. If you go by another name, professionally, you should enter it here."
       canProgress={isFormReady}
@@ -127,6 +127,6 @@ export default function UsernameScreen() {
           )}
         </View>
       </ValidationModeForm>
-    </BaseOnboardingScreen>
+    </BaseAuthScreen>
   );
 }

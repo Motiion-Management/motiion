@@ -7,7 +7,7 @@ import * as z from 'zod';
 
 import { ValidationModeForm } from '~/components/form/ValidationModeForm';
 import { useAppForm } from '~/components/form/appForm';
-import { BaseOnboardingScreen } from '~/components/layouts/BaseOnboardingScreen';
+import { BaseAuthScreen } from '~/components/layouts/BaseAuthScreen';
 import { Text } from '~/components/ui/text';
 
 const calculateAge = (dob: Date): number => {
@@ -95,7 +95,7 @@ export default function DOBScreen() {
   }
 
   return (
-    <BaseOnboardingScreen
+    <BaseAuthScreen
       title="What's your date of birth?"
       helpText={helpText}
       canProgress={isFormReady}
@@ -119,6 +119,6 @@ export default function DOBScreen() {
           {signupError && <Text className="text-sm text-text-error">{signupError}</Text>}
         </View>
       </ValidationModeForm>
-    </BaseOnboardingScreen>
+    </BaseAuthScreen>
   );
 }
