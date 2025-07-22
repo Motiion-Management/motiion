@@ -37,7 +37,6 @@ export default function EthnicityScreen() {
             ethnicity: value.ethnicity,
           },
         });
-
       } catch (error) {
         console.error('Error updating ethnicity:', error);
         toast.error('Failed to update ethnicity. Please try again.');

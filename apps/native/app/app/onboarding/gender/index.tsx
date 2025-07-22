@@ -37,7 +37,6 @@ export default function GenderScreen() {
             gender: value.gender,
           },
         });
-
       } catch (error) {
         console.error('Error updating gender:', error);
       }

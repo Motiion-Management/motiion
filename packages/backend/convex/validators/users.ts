@@ -94,7 +94,9 @@ export const users = {
   workLocation: z.array(z.string()).optional(), // Work location preferences
   training: z.array(zid('experiences')).optional(), // Training experiences
   databaseUse: z.string().optional(), // How user intends to use the database
-  representationStatus: z.enum(['represented', 'seeking', 'independent']).optional() // Representation status
+  representationStatus: z
+    .enum(['represented', 'seeking', 'independent'])
+    .optional() // Representation status
 }
 export const zUsers = z.object(users)
 

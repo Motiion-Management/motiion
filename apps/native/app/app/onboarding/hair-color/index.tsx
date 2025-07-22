@@ -38,7 +38,6 @@ export default function HairColorScreen() {
             hairColor: value.hairColor,
           },
         });
-
       } catch (error) {
         console.error('Error updating hair color:', error);
       }

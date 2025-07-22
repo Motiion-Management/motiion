@@ -15,11 +15,11 @@ export default function WorkLocationScreen() {
   // Get primary location from previous step
   const primaryLocation = user?.location
     ? {
-      city: user.location.city || '',
-      state: user.location.state || '',
-      stateCode: user.location.state || '',
-      country: user.location.country || 'United States',
-    }
+        city: user.location.city || '',
+        state: user.location.state || '',
+        stateCode: user.location.state || '',
+        country: user.location.country || 'United States',
+      }
     : null;
 
   // Convert existing work locations back to PlaceKitLocation format
@@ -61,9 +61,9 @@ export default function WorkLocationScreen() {
         secondaryAction={
           workLocationForm.canAddMore
             ? {
-              text: 'Add a location',
-              onPress: workLocationForm.actions.addLocation,
-            }
+                text: 'Add a location',
+                onPress: workLocationForm.actions.addLocation,
+              }
             : undefined
         }>
         <Pressable className="w-full flex-1" onPress={Keyboard.dismiss}>

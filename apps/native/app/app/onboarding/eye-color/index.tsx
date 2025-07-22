@@ -38,7 +38,6 @@ export default function EyeColorScreen() {
             eyeColor: value.eyeColor,
           },
         });
-
       } catch (error) {
         console.error('Error updating eye color:', error);
       }

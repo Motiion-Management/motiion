@@ -1,5 +1,5 @@
 import { api } from '@packages/backend/convex/_generated/api';
-import { getOnboardingFlow, ProfileType } from '@packages/backend/convex/onboardingConfig';
+import { ProfileType } from '@packages/backend/convex/onboardingConfig';
 import { useQuery, useMutation } from 'convex/react';
 import { useSegments, useRouter, Href } from 'expo-router';
 import { useCallback, useMemo } from 'react';
@@ -73,11 +73,8 @@ export function useOnboardingCursor() {
     return null;
   }, [segments]);
 
-  // Get the flow for the current user's profile type
-  const flow = useMemo(() => {
-    if (!user?.profileType) return [];
-    return getOnboardingFlow(user.profileType as ProfileType);
-  }, [user?.profileType]);
+  // Get the flow for the current user (filtered based on their representation status)
+  const flow = useQuery(api.onboarding.getUserOnboardingFlow) || [];
 
   // Calculate current step index in the flow
   const currentStepIndex = useMemo(() => {
@@ -139,12 +136,13 @@ export function useOnboardingCursor() {
   const goToPreviousStep = useCallback(async () => {
     if (currentStepIndex > 0) {
       const previousStep = flow[currentStepIndex - 1];
-      
+
       try {
         // Update backend step tracking to the previous step
         await setStep({ step: previousStep.step });
-        
-        const previousRoute = STEP_TO_ROUTE_MAP[previousStep.step as keyof typeof STEP_TO_ROUTE_MAP];
+
+        const previousRoute =
+          STEP_TO_ROUTE_MAP[previousStep.step as keyof typeof STEP_TO_ROUTE_MAP];
         if (previousRoute) {
           router.dismissTo(previousRoute);
           return true;
@@ -152,7 +150,8 @@ export function useOnboardingCursor() {
       } catch (error) {
         console.error('Error updating step on goToPreviousStep:', error);
         // Still navigate even if backend update fails
-        const previousRoute = STEP_TO_ROUTE_MAP[previousStep.step as keyof typeof STEP_TO_ROUTE_MAP];
+        const previousRoute =
+          STEP_TO_ROUTE_MAP[previousStep.step as keyof typeof STEP_TO_ROUTE_MAP];
         if (previousRoute) {
           router.dismissTo(previousRoute);
           return true;
@@ -169,7 +168,7 @@ export function useOnboardingCursor() {
         try {
           // Update backend step tracking to the target step
           await setStep({ step: stepName });
-          
+
           const route = STEP_TO_ROUTE_MAP[stepName as keyof typeof STEP_TO_ROUTE_MAP];
           if (route) {
             router.push(route);

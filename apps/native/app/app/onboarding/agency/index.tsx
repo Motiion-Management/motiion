@@ -11,7 +11,6 @@ import { OnboardingStepGuard } from '~/components/onboarding/OnboardingGuard';
 import { Input } from '~/components/ui/input';
 import { Text } from '~/components/ui/text';
 import { Button } from '~/components/ui/button';
-import { useOnboardingCursor } from '~/hooks/useOnboardingCursor';
 import { cn } from '~/lib/cn';
 
 const agencyValidator = z.object({
@@ -30,16 +29,7 @@ interface AgencyResult {
 
 export default function AgencySelectionScreen() {
   const addMyRepresentation = useMutation(api.users.representation.addMyRepresentation);
-  const user = useQuery(api.users.getMyUser);
-  const cursor = useOnboardingCursor();
 
-  // If user doesn't have representation, auto-advance to next step
-  React.useEffect(() => {
-    if (user && user.representationStatus !== 'represented') {
-      cursor.goToNextStep();
-    }
-  }, [user, cursor]);
-  
   const [searchQuery, setSearchQuery] = useState('');
   const [searchResults, setSearchResults] = useState<AgencyResult[]>([]);
   const [selectedAgencies, setSelectedAgencies] = useState<string[]>([]);
@@ -70,28 +60,31 @@ export default function AgencySelectionScreen() {
 
   // We need to use a query hook for the search
   const searchAgenciesQuery = useQuery(
-    api.agencies.search, 
+    api.agencies.search,
     searchQuery ? { query: searchQuery } : 'skip'
   );
 
   // Search agencies with debounce
-  const searchAgencies = useCallback((query: string, inputIndex: number) => {
-    if (!query.trim()) {
-      setSearchResults([]);
-      setShowNewAgencyTooltip(null);
-      setSearchQuery('');
-      return;
-    }
+  const searchAgencies = useCallback(
+    (query: string, inputIndex: number) => {
+      if (!query.trim()) {
+        setSearchResults([]);
+        setShowNewAgencyTooltip(null);
+        setSearchQuery('');
+        return;
+      }
 
-    setSearchQuery(query);
-    
-    // Show tooltip if no results found
-    if (searchAgenciesQuery && searchAgenciesQuery.length === 0) {
-      setShowNewAgencyTooltip(inputIndex);
-    } else {
-      setShowNewAgencyTooltip(null);
-    }
-  }, [searchAgenciesQuery]);
+      setSearchQuery(query);
+
+      // Show tooltip if no results found
+      if (searchAgenciesQuery && searchAgenciesQuery.length === 0) {
+        setShowNewAgencyTooltip(inputIndex);
+      } else {
+        setShowNewAgencyTooltip(null);
+      }
+    },
+    [searchAgenciesQuery]
+  );
 
   // Update search results when query changes
   React.useEffect(() => {
@@ -100,33 +93,39 @@ export default function AgencySelectionScreen() {
     }
   }, [searchAgenciesQuery]);
 
-  const handleInputChange = useCallback((text: string, inputIndex: number) => {
-    const newInputs = [...agencyInputs];
-    newInputs[inputIndex] = text;
-    setAgencyInputs(newInputs);
+  const handleInputChange = useCallback(
+    (text: string, inputIndex: number) => {
+      const newInputs = [...agencyInputs];
+      newInputs[inputIndex] = text;
+      setAgencyInputs(newInputs);
 
-    // Debounce search
-    if (searchTimeoutRef.current) {
-      clearTimeout(searchTimeoutRef.current);
-    }
-    searchTimeoutRef.current = setTimeout(() => {
-      searchAgencies(text, inputIndex);
-    }, 300);
-  }, [agencyInputs, searchAgencies]);
+      // Debounce search
+      if (searchTimeoutRef.current) {
+        clearTimeout(searchTimeoutRef.current);
+      }
+      searchTimeoutRef.current = setTimeout(() => {
+        searchAgencies(text, inputIndex);
+      }, 300);
+    },
+    [agencyInputs, searchAgencies]
+  );
 
-  const handleSelectAgency = useCallback((agency: AgencyResult, inputIndex: number) => {
-    const newInputs = [...agencyInputs];
-    newInputs[inputIndex] = agency.name;
-    setAgencyInputs(newInputs);
-    
-    const newSelected = [...selectedAgencies];
-    newSelected[inputIndex] = agency._id;
-    setSelectedAgencies(newSelected);
-    
-    form.setFieldValue('agencies', newSelected.filter(Boolean));
-    setSearchResults([]);
-    setShowNewAgencyTooltip(null);
-  }, [agencyInputs, selectedAgencies, form]);
+  const handleSelectAgency = useCallback(
+    (agency: AgencyResult, inputIndex: number) => {
+      const newInputs = [...agencyInputs];
+      newInputs[inputIndex] = agency.name;
+      setAgencyInputs(newInputs);
+
+      const newSelected = [...selectedAgencies];
+      newSelected[inputIndex] = agency._id;
+      setSelectedAgencies(newSelected);
+
+      form.setFieldValue('agencies', newSelected.filter(Boolean));
+      setSearchResults([]);
+      setShowNewAgencyTooltip(null);
+    },
+    [agencyInputs, selectedAgencies, form]
+  );
 
   const addAnotherAgency = useCallback(() => {
     if (agencyInputs.length < 2) {
@@ -134,24 +133,21 @@ export default function AgencySelectionScreen() {
     }
   }, [agencyInputs]);
 
-  const removeAgency = useCallback((indexToRemove: number) => {
-    const newInputs = agencyInputs.filter((_, index) => index !== indexToRemove);
-    const newSelected = selectedAgencies.filter((_, index) => index !== indexToRemove);
-    
-    setAgencyInputs(newInputs.length === 0 ? [''] : newInputs);
-    setSelectedAgencies(newSelected);
-    form.setFieldValue('agencies', newSelected.filter(Boolean));
-  }, [agencyInputs, selectedAgencies, form]);
+  const removeAgency = useCallback(
+    (indexToRemove: number) => {
+      const newInputs = agencyInputs.filter((_, index) => index !== indexToRemove);
+      const newSelected = selectedAgencies.filter((_, index) => index !== indexToRemove);
+
+      setAgencyInputs(newInputs.length === 0 ? [''] : newInputs);
+      setSelectedAgencies(newSelected);
+      form.setFieldValue('agencies', newSelected.filter(Boolean));
+    },
+    [agencyInputs, selectedAgencies, form]
+  );
 
   const getInputLabel = (index: number) => {
     if (agencyInputs.length === 1) return 'Agency';
     return `Agency ${index + 1}`;
-  };
-
-  const getButtonText = () => {
-    if (agencyInputs.length === 1 && !agencyInputs[0]) return 'Go back';
-    if (agencyInputs.length < 2) return 'Add another agency';
-    return '';
   };
 
   return (
@@ -162,19 +158,7 @@ export default function AgencySelectionScreen() {
         canProgress={selectedAgencies.filter(Boolean).length > 0}
         primaryAction={{
           onPress: () => form.handleSubmit(),
-        }}
-        secondaryAction={
-          getButtonText() ? {
-            text: getButtonText(),
-            onPress: () => {
-              if (getButtonText() === 'Go back') {
-                cursor.goToPreviousStep();
-              } else {
-                addAnotherAgency();
-              }
-            }
-          } : undefined
-        }>
+        }}>
         <ValidationModeForm form={form}>
           <View className="gap-4">
             {agencyInputs.map((inputValue, index) => (
@@ -187,10 +171,7 @@ export default function AgencySelectionScreen() {
                   borderRadiusVariant={searchResults.length > 0 ? 'dropdown-open' : 'full'}
                   rightView={
                     index > 0 ? (
-                      <Button
-                        variant="plain"
-                        size="sm"
-                        onPress={() => removeAgency(index)}>
+                      <Button variant="plain" size="sm" onPress={() => removeAgency(index)}>
                         <Text className="text-text-low">Remove</Text>
                       </Button>
                     ) : undefined
@@ -200,7 +181,9 @@ export default function AgencySelectionScreen() {
                       <View
                         className="absolute left-0 right-0 top-full -mt-px max-h-60 rounded-b-[29px] border border-border-default border-t-border-low bg-surface-high"
                         style={{ zIndex: 99999, elevation: 10 }}>
-                        <ScrollView keyboardShouldPersistTaps="handled" showsVerticalScrollIndicator={false}>
+                        <ScrollView
+                          keyboardShouldPersistTaps="handled"
+                          showsVerticalScrollIndicator={false}>
                           {searchResults.map((agency, resultIndex) => (
                             <Pressable
                               key={agency._id}
@@ -210,7 +193,9 @@ export default function AgencySelectionScreen() {
                                 resultIndex === searchResults.length - 1 && 'rounded-b-[29px]'
                               )}
                               style={({ pressed }) => ({
-                                backgroundColor: pressed ? 'rgba(255, 255, 255, 0.1)' : 'transparent',
+                                backgroundColor: pressed
+                                  ? 'rgba(255, 255, 255, 0.1)'
+                                  : 'transparent',
                               })}>
                               <Text className="text-[16px] font-normal leading-[24px] text-text-default">
                                 {agency.name}
@@ -231,9 +216,11 @@ export default function AgencySelectionScreen() {
                                 setAgencyInputs(newInputs);
                                 setShowNewAgencyTooltip(index);
                               }}
-                              className="px-6 py-3 rounded-b-[29px]"
+                              className="rounded-b-[29px] px-6 py-3"
                               style={({ pressed }) => ({
-                                backgroundColor: pressed ? 'rgba(255, 255, 255, 0.1)' : 'transparent',
+                                backgroundColor: pressed
+                                  ? 'rgba(255, 255, 255, 0.1)'
+                                  : 'transparent',
                               })}>
                               <Text className="text-[16px] font-normal leading-[24px] text-text-default">
                                 Add "{inputValue}" as new agency
@@ -245,14 +232,15 @@ export default function AgencySelectionScreen() {
                     ) : null
                   }
                 />
-                
+
                 {showNewAgencyTooltip === index && inputValue && (
-                  <View className="mt-2 p-3 bg-surface-high border border-border-default rounded-2xl">
-                    <Text className="text-[14px] font-semibold text-text-default mb-1">
+                  <View className="mt-2 rounded-2xl border border-border-default bg-surface-high p-3">
+                    <Text className="mb-1 text-[14px] font-semibold text-text-default">
                       New agency requested
                     </Text>
                     <Text className="text-[12px] text-text-low">
-                      We will confirm this agency's authenticity before adding and will reach out if there are any issues.
+                      We will confirm this agency's authenticity before adding and will reach out if
+                      there are any issues.
                     </Text>
                   </View>
                 )}

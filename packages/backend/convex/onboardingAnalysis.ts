@@ -66,6 +66,16 @@ export function analyzeOnboardingProgress(
   // Find the first incomplete step
   for (let i = 0; i < flow.length; i++) {
     const step = flow[i]
+
+    // Special handling for agency step - only required if user has representation
+    if (step.step === 'agency') {
+      const representationStatus = user.representationStatus
+      if (representationStatus !== 'represented') {
+        // User doesn't have representation, skip agency step
+        continue
+      }
+    }
+
     const isStepComplete = checkStepCompletion(user, step)
 
     if (!isStepComplete) {
@@ -104,6 +114,15 @@ export function checkStepCompletion(
   user: Doc<'users'>,
   step: OnboardingStep
 ): boolean {
+  // Special handling for agency step - only required if user has representation
+  if (step.step === 'agency') {
+    const representationStatus = user.representationStatus
+    if (representationStatus !== 'represented') {
+      // User doesn't have representation, consider agency step complete
+      return true
+    }
+  }
+
   const missingFields = getMissingFields(user, step)
   return missingFields.length === 0
 }
@@ -178,6 +197,10 @@ function getFieldValue(user: Doc<'users'>, field: string): any {
       return user.sizing
     case 'representation':
       return user.representation
+    case 'representationStatus':
+      return user.representationStatus
+    case 'agency':
+      return user.representation?.agencyId
     case 'experiences':
       return user.resume?.experiences
     case 'training':

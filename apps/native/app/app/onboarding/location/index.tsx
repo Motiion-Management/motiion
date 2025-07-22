@@ -14,11 +14,11 @@ export default function LocationScreen() {
   // Initialize form with user's current location if available
   const initialLocation = user?.location
     ? {
-      city: user.location.city || '',
-      state: user.location.state || '',
-      stateCode: user.location.state || '', // Use state as fallback since stateCode doesn't exist in schema
-      country: user.location.country || 'United States',
-    }
+        city: user.location.city || '',
+        state: user.location.state || '',
+        stateCode: user.location.state || '', // Use state as fallback since stateCode doesn't exist in schema
+        country: user.location.country || 'United States',
+      }
     : null;
 
   const locationForm = useLocationForm({

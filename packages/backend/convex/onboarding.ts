@@ -10,6 +10,7 @@ import {
   CURRENT_ONBOARDING_VERSION,
   getOnboardingFlow,
   getStepRoute,
+  OnboardingStep,
   ProfileType
 } from './onboardingConfig'
 import type { RegisteredQuery, RegisteredMutation } from 'convex/server'
@@ -297,15 +298,39 @@ export const advanceOnboardingStep: RegisteredMutation<
       )
     }
 
-    const nextIndex = currentIndex + 1
-    const nextStep = flow[nextIndex]
+    // Get the user's filtered flow (which excludes agency for non-represented users)
+    const userProfileType = (user.profileType || 'dancer') as ProfileType
+    const baseFlow = getOnboardingFlow(
+      userProfileType,
+      CURRENT_ONBOARDING_VERSION
+    )
+    const userFlow = baseFlow.filter((step) => {
+      if (step.step === 'agency') {
+        return user.representationStatus === 'represented'
+      }
+      return true
+    })
 
-    if (nextStep) {
+    // Find current step in filtered flow and advance to next
+    const currentIndexInUserFlow = userFlow.findIndex(
+      (step) => step.step === currentStep?.step
+    )
+    const nextStepInUserFlow = userFlow[currentIndexInUserFlow + 1]
+
+    if (nextStepInUserFlow) {
+      // Find the index of this step in the original flow for backend tracking
+      const nextIndexInOriginalFlow = baseFlow.findIndex(
+        (step) => step.step === nextStepInUserFlow.step
+      )
+
       await ctx.db.patch(user._id, {
-        currentOnboardingStep: nextStep.step,
-        currentOnboardingStepIndex: nextIndex
+        currentOnboardingStep: nextStepInUserFlow.step,
+        currentOnboardingStepIndex: nextIndexInOriginalFlow
       })
-      return { nextStep: nextStep.step, route: getStepRoute(nextStep.step) }
+      return {
+        nextStep: nextStepInUserFlow.step,
+        route: getStepRoute(nextStepInUserFlow.step)
+      }
     } else {
       // All steps complete
       await ctx.db.patch(user._id, {
@@ -389,6 +414,39 @@ export const validateCurrentOnboardingStep = mutation({
       missingFields,
       step: currentStep
     }
+  }
+})
+
+export const getUserOnboardingFlow: RegisteredQuery<
+  'public',
+  Record<string, never>,
+  OnboardingStep[]
+> = query({
+  handler: async (ctx) => {
+    const identity = await ctx.auth.getUserIdentity()
+    if (!identity) {
+      return []
+    }
+
+    const user = await ctx.db
+      .query('users')
+      .withIndex('tokenId', (q) => q.eq('tokenId', identity.subject))
+      .first()
+
+    if (!user) {
+      return []
+    }
+
+    const profileType = (user.profileType || 'dancer') as ProfileType
+    const flow = getOnboardingFlow(profileType, CURRENT_ONBOARDING_VERSION)
+
+    // Filter out agency step if user doesn't have representation
+    return flow.filter((step) => {
+      if (step.step === 'agency') {
+        return user.representationStatus === 'represented'
+      }
+      return true
+    })
   }
 })
 

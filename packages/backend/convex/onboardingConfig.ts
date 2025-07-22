@@ -77,7 +77,7 @@ export const ONBOARDING_FLOWS: OnboardingFlows = {
       },
       {
         step: 'representation',
-        required: ['representation'],
+        required: ['representationStatus'],
         description: 'Agency and representation information'
       },
       {
@@ -126,7 +126,7 @@ export const ONBOARDING_FLOWS: OnboardingFlows = {
       },
       {
         step: 'representation',
-        required: ['representation'],
+        required: ['representationStatus'],
         description: 'Agency and representation information'
       },
       {

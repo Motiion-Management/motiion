@@ -8,12 +8,11 @@ import { ValidationModeForm } from '~/components/form/ValidationModeForm';
 import { useAppForm } from '~/components/form/appForm';
 import { BaseOnboardingScreen } from '~/components/layouts/BaseOnboardingScreen';
 import { OnboardingStepGuard } from '~/components/onboarding/OnboardingGuard';
-import { useOnboardingCursor } from '~/hooks/useOnboardingCursor';
 
 const representationStatusOptions = [
-  { value: 'represented', label: 'Yes, I\'m represented' },
+  { value: 'represented', label: "Yes, I'm represented" },
   { value: 'seeking', label: 'No, but looking for representation' },
-  { value: 'independent', label: 'No, I\'m an independent artist' },
+  { value: 'independent', label: "No, I'm an independent artist" },
 ];
 
 const representationValidator = z.object({
@@ -24,8 +23,8 @@ const representationValidator = z.object({
 
 export default function RepresentationScreen() {
   const updateUser = useMutation(api.users.updateMyUser);
+  const advanceStep = useMutation(api.onboarding.advanceOnboardingStep);
   const user = useQuery(api.users.getMyUser);
-  const cursor = useOnboardingCursor();
 
   const form = useAppForm({
     defaultValues: {
@@ -38,18 +37,16 @@ export default function RepresentationScreen() {
       if (!value.representationStatus) return;
 
       try {
+        // Save the representation status
         await updateUser({
           representationStatus: value.representationStatus,
         });
 
-        // Navigate conditionally based on selection
-        if (value.representationStatus === 'represented') {
-          // Go to agency selection screen
-          router.push('/app/onboarding/agency');
-        } else {
-          // Skip to next onboarding step
-          await cursor.goToNextStep();
-        }
+        // Advance to next step using backend logic
+        const result = await advanceStep();
+
+        // Navigate to the route determined by backend
+        router.push(result.route as any);
       } catch (error) {
         console.error('Error updating representation status:', error);
       }
@@ -70,11 +67,7 @@ export default function RepresentationScreen() {
         <ValidationModeForm form={form}>
           <form.AppField
             name="representationStatus"
-            children={(field) => (
-              <field.RadioGroupField 
-                options={representationStatusOptions}
-              />
-            )}
+            children={(field) => <field.RadioGroupField options={representationStatusOptions} />}
           />
         </ValidationModeForm>
       </BaseOnboardingScreen>

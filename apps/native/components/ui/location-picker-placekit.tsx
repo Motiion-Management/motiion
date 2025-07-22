@@ -177,9 +177,9 @@ export function LocationPicker({
         helperTextProps={
           showHelperText
             ? {
-              message:
-                'This is your primary city of residence. Local work locations can be provided on the next screen.',
-            }
+                message:
+                  'This is your primary city of residence. Local work locations can be provided on the next screen.',
+              }
             : undefined
         }
         bottomSlot={

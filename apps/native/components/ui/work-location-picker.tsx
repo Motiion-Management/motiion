@@ -15,9 +15,9 @@ export function WorkLocationPicker({ index, onRemove, ...rest }: WorkLocationPic
   const additionalLocationProps: Partial<LocationPickerProps> =
     index > 0
       ? {
-        clearButtonMode: 'always',
-        onClear: onRemove,
-      }
+          clearButtonMode: 'always',
+          onClear: onRemove,
+        }
       : {};
 
   return (

@@ -107,15 +107,21 @@ const Input = React.forwardRef<InputRef, InputProps>(
       onChangeText('');
     }
 
-    const handleFocus = React.useCallback((e: any) => {
-      setIsFocused(true);
-      onFocusProp?.(e);
-    }, [onFocusProp]);
+    const handleFocus = React.useCallback(
+      (e: any) => {
+        setIsFocused(true);
+        onFocusProp?.(e);
+      },
+      [onFocusProp]
+    );
 
-    const handleBlur = React.useCallback((e: any) => {
-      setIsFocused(false);
-      onBlurProp?.(e);
-    }, [onBlurProp]);
+    const handleBlur = React.useCallback(
+      (e: any) => {
+        setIsFocused(false);
+        onBlurProp?.(e);
+      },
+      [onBlurProp]
+    );
 
     const handleClear = React.useCallback(() => {
       clear(); // Always clear the input
@@ -123,10 +129,8 @@ const Input = React.forwardRef<InputRef, InputProps>(
     }, [onClear]);
 
     // Determine if clear button should be shown
-    const shouldShowClearButton = value && (
-      clearButtonMode === 'always' || 
-      (clearButtonMode === 'while-editing' && isFocused)
-    );
+    const shouldShowClearButton =
+      value && (clearButtonMode === 'always' || (clearButtonMode === 'while-editing' && isFocused));
 
     // Create the exact same clear button as in WorkLocationPicker
     const clearButton = shouldShowClearButton ? (
@@ -148,9 +152,7 @@ const Input = React.forwardRef<InputRef, InputProps>(
     return (
       <View className={cn(editable === false && 'opacity-50', 'gap-2', containerClassName)}>
         {!!label && <InputLabel>{label}</InputLabel>}
-        <Pressable
-          disabled={editable === false || readOnly}
-          onPress={focus}>
+        <Pressable disabled={editable === false || readOnly} onPress={focus}>
           <View className="relative">
             <Pressable
               onPress={focus}

@@ -36,7 +36,6 @@ export default function ProfileTypeScreen() {
         await updateUser({
           profileType: value.profileType,
         });
-
       } catch (error) {
         console.error('Error updating profile type:', error);
       }
@@ -49,7 +48,6 @@ export default function ProfileTypeScreen() {
       await updateUser({
         profileType: 'guest',
       });
-
     } catch (error) {
       console.error('Error setting guest profile:', error);
     }
