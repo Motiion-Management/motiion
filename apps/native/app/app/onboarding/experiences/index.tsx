@@ -1,29 +1,14 @@
-import { useRouter } from 'expo-router';
 import React from 'react';
 import { View, Text } from 'react-native';
 
 import { BaseOnboardingScreen } from '~/components/layouts/BaseOnboardingScreen';
 import { OnboardingStepGuard } from '~/components/onboarding/OnboardingGuard';
-import { useOnboardingNavigation, useOnboardingStatus } from '~/hooks/useOnboardingStatus';
 
 export default function ExperiencesScreen() {
-  const router = useRouter();
-  const { getStepTitle } = useOnboardingStatus();
-  const { advanceToNextStep } = useOnboardingNavigation();
-
   const handleContinue = async () => {
     try {
       // TODO: Implement experiences form logic
       console.log('Experiences step - implement form logic');
-
-      // Navigate to the next step
-      const result = await advanceToNextStep();
-      if (result.route) {
-        router.push(result.route);
-      } else {
-        // If no next step, onboarding is complete
-        router.push('/app/home');
-      }
     } catch (error) {
       console.error('Error in experiences step:', error);
     }
@@ -32,7 +17,7 @@ export default function ExperiencesScreen() {
   return (
     <OnboardingStepGuard requiredStep="experiences">
       <BaseOnboardingScreen
-        title={getStepTitle()}
+        title="Professional Experience"
         description="Tell us about your professional experience."
         canProgress={false} // TODO: Set to true when form is filled
         primaryAction={{

@@ -1,6 +1,5 @@
 import { api } from '@packages/backend/convex/_generated/api';
 import { useMutation, useQuery } from 'convex/react';
-import { useRouter } from 'expo-router';
 import React from 'react';
 import { View, ScrollView, Pressable, Keyboard } from 'react-native';
 
@@ -8,35 +7,32 @@ import { BaseOnboardingScreen } from '~/components/layouts/BaseOnboardingScreen'
 import { OnboardingStepGuard } from '~/components/onboarding/OnboardingGuard';
 import { WorkLocationPicker } from '~/components/ui/work-location-picker';
 import { useWorkLocationForm } from '~/hooks/useWorkLocationForm';
-import { useOnboardingNavigation, useOnboardingStatus } from '~/hooks/useOnboardingStatus';
 
 export default function WorkLocationScreen() {
-  const router = useRouter();
-  const { getStepTitle } = useOnboardingStatus();
-  const { advanceToNextStep } = useOnboardingNavigation();
   const updateUser = useMutation(api.users.updateMyUser);
   const user = useQuery(api.users.getMyUser);
 
   // Get primary location from previous step
   const primaryLocation = user?.location
     ? {
-        city: user.location.city || '',
-        state: user.location.state || '',
-        stateCode: user.location.state || '',
-        country: user.location.country || 'United States',
-      }
+      city: user.location.city || '',
+      state: user.location.state || '',
+      stateCode: user.location.state || '',
+      country: user.location.country || 'United States',
+    }
     : null;
 
   // Convert existing work locations back to PlaceKitLocation format
-  const existingWorkLocations = user?.workLocation?.map((locationString) => {
-    const [city, state] = locationString.split(', ');
-    return {
-      city,
-      state,
-      stateCode: state,
-      country: 'United States',
-    };
-  }) || [];
+  const existingWorkLocations =
+    user?.workLocation?.map((locationString) => {
+      const [city, state] = locationString.split(', ');
+      return {
+        city,
+        state,
+        stateCode: state,
+        country: 'United States',
+      };
+    }) || [];
 
   const workLocationForm = useWorkLocationForm({
     primaryLocation,
@@ -50,14 +46,6 @@ export default function WorkLocationScreen() {
       await updateUser({
         workLocation: workLocations,
       });
-
-      // Navigate to the next step
-      const result = await advanceToNextStep();
-      if (result.route) {
-        router.push(result.route);
-      } else {
-        router.push('/app/home');
-      }
     },
   });
 
@@ -73,9 +61,9 @@ export default function WorkLocationScreen() {
         secondaryAction={
           workLocationForm.canAddMore
             ? {
-                text: 'Add a location',
-                onPress: workLocationForm.actions.addLocation,
-              }
+              text: 'Add a location',
+              onPress: workLocationForm.actions.addLocation,
+            }
             : undefined
         }>
         <Pressable className="w-full flex-1" onPress={Keyboard.dismiss}>
