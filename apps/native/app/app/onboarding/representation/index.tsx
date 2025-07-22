@@ -1,52 +1,84 @@
-import { useRouter } from 'expo-router';
+import { api } from '@packages/backend/convex/_generated/api';
+import { useMutation, useQuery } from 'convex/react';
+import { router } from 'expo-router';
 import React from 'react';
-import { View, Text } from 'react-native';
+import * as z from 'zod';
 
+import { ValidationModeForm } from '~/components/form/ValidationModeForm';
+import { useAppForm } from '~/components/form/appForm';
 import { BaseOnboardingScreen } from '~/components/layouts/BaseOnboardingScreen';
 import { OnboardingStepGuard } from '~/components/onboarding/OnboardingGuard';
-import { useOnboardingNavigation, useOnboardingStatus } from '~/hooks/useOnboardingStatus';
+import { useOnboardingCursor } from '~/hooks/useOnboardingCursor';
+
+const representationStatusOptions = [
+  { value: 'represented', label: 'Yes, I\'m represented' },
+  { value: 'seeking', label: 'No, but looking for representation' },
+  { value: 'independent', label: 'No, I\'m an independent artist' },
+];
+
+type RepresentationStatus = typeof representationStatusOptions[number]['value'];
+
+const representationValidator = z.object({
+  representationStatus: z.enum(['represented', 'seeking', 'independent'], {
+    required_error: 'Please select your representation status',
+  }),
+});
 
 export default function RepresentationScreen() {
-  const router = useRouter();
-  const { getStepTitle } = useOnboardingStatus();
-  const { advanceToNextStep } = useOnboardingNavigation();
+  const updateUser = useMutation(api.users.updateMyUser);
+  const user = useQuery(api.users.getMyUser);
+  const cursor = useOnboardingCursor();
 
-  const handleContinue = async () => {
-    try {
-      // TODO: Implement representation form logic
-      console.log('Representation step - implement form logic');
+  const form = useAppForm({
+    defaultValues: {
+      representationStatus: user?.representationStatus,
+    },
+    validators: {
+      onChange: representationValidator,
+    },
+    onSubmit: async ({ value }) => {
+      if (!value.representationStatus) return;
 
-      // Navigate to the next step
-      const result = await advanceToNextStep();
-      if (result.route) {
-        router.push(result.route);
-      } else {
-        // If no next step, onboarding is complete
-        router.push('/app/home');
+      try {
+        await updateUser({
+          representationStatus: value.representationStatus,
+        });
+
+        // Navigate conditionally based on selection
+        if (value.representationStatus === 'represented') {
+          // Go to agency selection screen
+          router.push('/app/onboarding/representation/agency');
+        } else {
+          // Skip to next onboarding step
+          await cursor.goToNextStep();
+        }
+      } catch (error) {
+        console.error('Error updating representation status:', error);
       }
-    } catch (error) {
-      console.error('Error in representation step:', error);
-    }
-  };
+    },
+  });
 
   return (
     <OnboardingStepGuard requiredStep="representation">
       <BaseOnboardingScreen
-        title={getStepTitle()}
-        description="Tell us about your agency and representation."
-        canProgress={false} // TODO: Set to true when form is filled
+        title="Are you represented by an agent?"
+        description="Select one"
+        helpText="Requires Verification"
+        canProgress={form.state.canSubmit && !form.state.isSubmitting}
         primaryAction={{
-          onPress: handleContinue,
-          disabled: true, // TODO: Enable when form is valid
+          onPress: () => form.handleSubmit(),
+          handlesNavigation: true,
         }}>
-        <View className="flex-1 items-center justify-center">
-          <Text className="text-lg text-gray-500">
-            Representation form will be implemented here
-          </Text>
-          <Text className="mt-2 text-sm text-gray-400">
-            This will include agency information, contact details, and representation preferences
-          </Text>
-        </View>
+        <ValidationModeForm form={form}>
+          <form.AppField
+            name="representationStatus"
+            children={(field) => (
+              <field.RadioGroupField 
+                options={representationStatusOptions}
+              />
+            )}
+          />
+        </ValidationModeForm>
       </BaseOnboardingScreen>
     </OnboardingStepGuard>
   );
