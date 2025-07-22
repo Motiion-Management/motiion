@@ -37,8 +37,6 @@ export default function ProfileTypeScreen() {
           profileType: value.profileType,
         });
 
-        // Navigate to next step using cursor-based navigation
-        cursor.goToNextStep();
       } catch (error) {
         console.error('Error updating profile type:', error);
       }
@@ -52,8 +50,6 @@ export default function ProfileTypeScreen() {
         profileType: 'guest',
       });
 
-      // Navigate to next step using cursor-based navigation
-      cursor.goToNextStep();
     } catch (error) {
       console.error('Error setting guest profile:', error);
     }

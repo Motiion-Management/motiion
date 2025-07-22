@@ -39,8 +39,6 @@ export default function EyeColorScreen() {
           },
         });
 
-        // Navigate to next step using cursor-based navigation
-        cursor.goToNextStep();
       } catch (error) {
         console.error('Error updating eye color:', error);
       }

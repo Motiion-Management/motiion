@@ -139,7 +139,7 @@ export function useOnboardingCursor() {
       const previousStep = flow[currentStepIndex - 1];
       const previousRoute = STEP_TO_ROUTE_MAP[previousStep.step as keyof typeof STEP_TO_ROUTE_MAP];
       if (previousRoute) {
-        router.push(previousRoute);
+        router.dismissTo(previousRoute);
         return true;
       }
     }

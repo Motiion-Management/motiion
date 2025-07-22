@@ -39,8 +39,6 @@ export default function HairColorScreen() {
           },
         });
 
-        // Navigate to next step using cursor-based navigation
-        cursor.goToNextStep();
       } catch (error) {
         console.error('Error updating hair color:', error);
       }

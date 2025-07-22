@@ -27,8 +27,20 @@ export default function WorkLocationScreen() {
       }
     : null;
 
+  // Convert existing work locations back to PlaceKitLocation format
+  const existingWorkLocations = user?.workLocation?.map((locationString) => {
+    const [city, state] = locationString.split(', ');
+    return {
+      city,
+      state,
+      stateCode: state,
+      country: 'United States',
+    };
+  }) || [];
+
   const workLocationForm = useWorkLocationForm({
     primaryLocation,
+    existingWorkLocations,
     onSubmit: async (data) => {
       // Convert locations to array of strings for the backend
       const workLocations = data.locations

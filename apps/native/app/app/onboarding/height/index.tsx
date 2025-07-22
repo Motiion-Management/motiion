@@ -18,8 +18,6 @@ export default function HeightScreen() {
       // Submit data and advance in one action
       const success = await heightForm.actions.submitHeight();
       if (success) {
-        // Navigate to the next step using cursor-based navigation
-        cursor.goToNextStep();
       } else {
         // Height form validation failed
         toast.error('Please enter a valid height');

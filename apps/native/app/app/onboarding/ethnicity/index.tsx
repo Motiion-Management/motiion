@@ -38,8 +38,6 @@ export default function EthnicityScreen() {
           },
         });
 
-        // Navigate to next step using cursor-based navigation
-        cursor.goToNextStep();
       } catch (error) {
         console.error('Error updating ethnicity:', error);
         toast.error('Failed to update ethnicity. Please try again.');

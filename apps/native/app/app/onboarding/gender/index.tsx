@@ -38,8 +38,6 @@ export default function GenderScreen() {
           },
         });
 
-        // Navigate to next step using cursor-based navigation
-        cursor.goToNextStep();
       } catch (error) {
         console.error('Error updating gender:', error);
       }

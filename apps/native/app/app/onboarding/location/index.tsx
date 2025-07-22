@@ -1,44 +1,41 @@
-import { api } from '@packages/backend/convex/_generated/api'
-import { useMutation, useQuery } from 'convex/react'
-import React from 'react'
-import { View } from 'react-native'
+import { api } from '@packages/backend/convex/_generated/api';
+import { useMutation, useQuery } from 'convex/react';
+import React from 'react';
+import { View } from 'react-native';
 
-import { BaseOnboardingScreen } from '~/components/layouts/BaseOnboardingScreen'
-import { LocationPicker } from '~/components/ui/location-picker-placekit'
-import { useLocationForm } from '~/hooks/useLocationForm'
-import { useOnboardingCursor } from '~/hooks/useOnboardingCursor'
+import { BaseOnboardingScreen } from '~/components/layouts/BaseOnboardingScreen';
+import { LocationPicker } from '~/components/ui/location-picker-placekit';
+import { useLocationForm } from '~/hooks/useLocationForm';
 
 export default function LocationScreen() {
-  const updateUser = useMutation(api.users.updateMyUser)
-  const user = useQuery(api.users.getMyUser)
-  const cursor = useOnboardingCursor()
+  const updateUser = useMutation(api.users.updateMyUser);
+  const user = useQuery(api.users.getMyUser);
 
   // Initialize form with user's current location if available
-  const initialLocation = user?.location ? {
-    city: user.location.city || '',
-    state: user.location.state || '',
-    stateCode: user.location.state || '', // Use state as fallback since stateCode doesn't exist in schema
-    country: user.location.country || 'United States'
-  } : null
+  const initialLocation = user?.location
+    ? {
+      city: user.location.city || '',
+      state: user.location.state || '',
+      stateCode: user.location.state || '', // Use state as fallback since stateCode doesn't exist in schema
+      country: user.location.country || 'United States',
+    }
+    : null;
 
   const locationForm = useLocationForm({
     initialValue: initialLocation,
     onSubmit: async (data) => {
-      if (!data.primaryLocation) return
-      
+      if (!data.primaryLocation) return;
+
       // Update user location in database
       await updateUser({
         location: {
           city: data.primaryLocation.city,
           state: data.primaryLocation.state,
-          country: 'United States'
-        }
-      })
-      
-      // Navigate to next step
-      cursor.goToNextStep()
-    }
-  })
+          country: 'United States',
+        },
+      });
+    },
+  });
 
   return (
     <BaseOnboardingScreen
@@ -56,5 +53,5 @@ export default function LocationScreen() {
         />
       </View>
     </BaseOnboardingScreen>
-  )
+  );
 }

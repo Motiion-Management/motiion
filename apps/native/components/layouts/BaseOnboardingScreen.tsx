@@ -8,7 +8,7 @@ import { BackgroundGradientView } from '~/components/ui/background-gradient-view
 import { Button } from '~/components/ui/button';
 import { Text } from '~/components/ui/text';
 import { useOnboardingCursor } from '~/hooks/useOnboardingCursor';
-import { cn } from '~/lib/cn';
+import ChevronLeft from '~/lib/icons/ChevronLeft';
 import ChevronRight from '~/lib/icons/ChevronRight';
 
 export const BaseOnboardingScreen = ({
@@ -19,14 +19,13 @@ export const BaseOnboardingScreen = ({
   canProgress = false,
   primaryAction,
   secondaryAction,
-  showBackButton = true,
 }: {
   title: string;
   description?: string;
   children: React.ReactNode;
   helpText?: string;
   canProgress?: boolean;
-  primaryAction: {
+  primaryAction?: {
     onPress: () => void;
     disabled?: boolean;
   };
@@ -34,7 +33,6 @@ export const BaseOnboardingScreen = ({
     onPress: () => void;
     text: string;
   };
-  showBackButton?: boolean;
 }) => {
   const insets = useSafeAreaInsets();
   const cursor = useOnboardingCursor();
@@ -100,7 +98,7 @@ export const BaseOnboardingScreen = ({
           }}>
           <SafeAreaView
             edges={['bottom', 'left', 'right']}
-            className="absolute bottom-0 right-0 flex-row items-center justify-between px-4 pb-2">
+            className="absolute bottom-0 right-0 flex-row items-center justify-between gap-4 px-4 pb-2">
             <View className="flex-1 flex-row justify-start">
               {secondaryAction && (
                 <Button variant="plain" onPress={secondaryAction.onPress}>
@@ -109,16 +107,30 @@ export const BaseOnboardingScreen = ({
               )}
             </View>
 
+            {cursor.canGoPrevious && (
+              <Button
+                size="icon"
+                variant="plain"
+                onPress={() => {
+                  if (cursor.canGoPrevious) {
+                    cursor.goToPreviousStep();
+                  } else {
+                    if (navigation.canGoBack()) {
+                      navigation.goBack();
+                    }
+                  }
+                }}>
+                <ChevronLeft size={24} className="color-icon-accent" />
+              </Button>
+            )}
             {/* Continue Button */}
             <Button
-              disabled={!canProgress}
+              disabled={!canProgress || !cursor.canGoNext}
               size="icon"
               variant="accent"
               onPress={() => {
-                if (!canProgress) {
-                  return;
-                }
-                primaryAction.onPress();
+                primaryAction?.onPress();
+                cursor.goToNextStep();
               }}>
               <ChevronRight size={24} className="color-icon-accent" />
             </Button>
