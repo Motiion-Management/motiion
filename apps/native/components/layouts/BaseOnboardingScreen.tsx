@@ -1,4 +1,5 @@
 import { useFocusEffect, useNavigation } from '@react-navigation/native';
+import { router } from 'expo-router';
 import { useCallback } from 'react';
 import { Platform, View } from 'react-native';
 import { KeyboardAwareScrollView, KeyboardStickyView } from 'react-native-keyboard-controller';
@@ -26,8 +27,9 @@ export const BaseOnboardingScreen = ({
   helpText?: string;
   canProgress?: boolean;
   primaryAction?: {
-    onPress: () => void;
+    onPress: () => void | Promise<void>;
     disabled?: boolean;
+    handlesNavigation?: boolean;
   };
   secondaryAction?: {
     onPress: () => void;
@@ -58,6 +60,21 @@ export const BaseOnboardingScreen = ({
       navigation.addListener('beforeRemove', beforeRemove);
       return () => navigation.removeListener('beforeRemove', beforeRemove);
     }, [navigation, cursor])
+  );
+
+  // Prefetch next step route for better performance
+  useFocusEffect(
+    useCallback(() => {
+      const nextRoute = cursor.getNextStepLink();
+      if (nextRoute && cursor.canGoNext) {
+        try {
+          router.prefetch(nextRoute);
+        } catch (error) {
+          // Prefetch can fail silently - not critical
+          console.log('Prefetch failed for:', nextRoute);
+        }
+      }
+    }, [cursor])
   );
 
   return (
@@ -111,9 +128,9 @@ export const BaseOnboardingScreen = ({
               <Button
                 size="icon"
                 variant="plain"
-                onPress={() => {
+                onPress={async () => {
                   if (cursor.canGoPrevious) {
-                    cursor.goToPreviousStep();
+                    await cursor.goToPreviousStep();
                   } else {
                     if (navigation.canGoBack()) {
                       navigation.goBack();
@@ -128,9 +145,15 @@ export const BaseOnboardingScreen = ({
               disabled={!canProgress || !cursor.canGoNext}
               size="icon"
               variant="accent"
-              onPress={() => {
-                primaryAction?.onPress();
-                cursor.goToNextStep();
+              onPress={async () => {
+                // Execute primary action first (validation, etc.)
+                if (primaryAction?.onPress) {
+                  await primaryAction.onPress();
+                }
+                // Only navigate if primary action doesn't handle navigation
+                if (cursor.canGoNext && !primaryAction?.handlesNavigation) {
+                  await cursor.goToNextStep();
+                }
               }}>
               <ChevronRight size={24} className="color-icon-accent" />
             </Button>

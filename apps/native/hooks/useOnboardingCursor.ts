@@ -1,7 +1,7 @@
 import { api } from '@packages/backend/convex/_generated/api';
 import { getOnboardingFlow, ProfileType } from '@packages/backend/convex/onboardingConfig';
 import { useQuery, useMutation } from 'convex/react';
-import { useSegments, useRouter } from 'expo-router';
+import { useSegments, useRouter, Href } from 'expo-router';
 import { useCallback, useMemo } from 'react';
 
 /**
@@ -134,31 +134,58 @@ export function useOnboardingCursor() {
     }
   }, [currentStep, currentStepIndex, flow, router, validateStep, setStep]);
 
-  const goToPreviousStep = useCallback(() => {
+  const goToPreviousStep = useCallback(async () => {
     if (currentStepIndex > 0) {
       const previousStep = flow[currentStepIndex - 1];
-      const previousRoute = STEP_TO_ROUTE_MAP[previousStep.step as keyof typeof STEP_TO_ROUTE_MAP];
-      if (previousRoute) {
-        router.dismissTo(previousRoute);
-        return true;
+      
+      try {
+        // Update backend step tracking to the previous step
+        await setStep({ step: previousStep.step });
+        
+        const previousRoute = STEP_TO_ROUTE_MAP[previousStep.step as keyof typeof STEP_TO_ROUTE_MAP];
+        if (previousRoute) {
+          router.dismissTo(previousRoute);
+          return true;
+        }
+      } catch (error) {
+        console.error('Error updating step on goToPreviousStep:', error);
+        // Still navigate even if backend update fails
+        const previousRoute = STEP_TO_ROUTE_MAP[previousStep.step as keyof typeof STEP_TO_ROUTE_MAP];
+        if (previousRoute) {
+          router.dismissTo(previousRoute);
+          return true;
+        }
       }
     }
     return false;
-  }, [currentStepIndex, flow, router]);
+  }, [currentStepIndex, flow, router, setStep]);
 
   const goToStep = useCallback(
-    (stepName: string) => {
+    async (stepName: string) => {
       const stepIndex = flow.findIndex((step) => step.step === stepName);
       if (stepIndex >= 0) {
-        const route = STEP_TO_ROUTE_MAP[stepName as keyof typeof STEP_TO_ROUTE_MAP];
-        if (route) {
-          router.push(route);
-          return true;
+        try {
+          // Update backend step tracking to the target step
+          await setStep({ step: stepName });
+          
+          const route = STEP_TO_ROUTE_MAP[stepName as keyof typeof STEP_TO_ROUTE_MAP];
+          if (route) {
+            router.push(route);
+            return true;
+          }
+        } catch (error) {
+          console.error('Error updating step on goToStep:', error);
+          // Still navigate even if backend update fails
+          const route = STEP_TO_ROUTE_MAP[stepName as keyof typeof STEP_TO_ROUTE_MAP];
+          if (route) {
+            router.push(route);
+            return true;
+          }
         }
       }
       return false;
     },
-    [flow, router]
+    [flow, router, setStep]
   );
 
   return {
@@ -178,6 +205,18 @@ export function useOnboardingCursor() {
     goToNextStep,
     goToPreviousStep,
     goToStep,
+    getNextStepLink: () => {
+      const nextStep = flow[currentStepIndex + 1];
+      return (
+        nextStep ? STEP_TO_ROUTE_MAP[nextStep.step as keyof typeof STEP_TO_ROUTE_MAP] : null
+      ) as Href;
+    },
+    getPreviousStepLink: () => {
+      const previousStep = flow[currentStepIndex - 1];
+      return (
+        previousStep ? STEP_TO_ROUTE_MAP[previousStep.step as keyof typeof STEP_TO_ROUTE_MAP] : null
+      ) as Href;
+    },
 
     // Step information
     getCurrentStepConfig: () => flow[currentStepIndex] || null,
