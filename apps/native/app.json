@@ -51,6 +51,10 @@
     "updates": {
       "assetPatternsToBeBundled": ["**/*"]
     },
+    "notification": {
+      "icon": "./assets/notification-icon.png",
+      "color": "#003D37"
+    },
     "ios": {
       "bundleIdentifier": "io.motiion.motiion",
       "supportsTablet": true,
@@ -73,7 +77,14 @@
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#ffffff"
-      }
+      },
+      "permissions": [
+        "android.permission.CAMERA",
+        "android.permission.READ_EXTERNAL_STORAGE",
+        "android.permission.RECEIVE_BOOT_COMPLETED",
+        "android.permission.WAKE_LOCK",
+        "com.android.alarm.permission.SET_ALARM"
+      ]
     },
     "extra": {
       "router": {
