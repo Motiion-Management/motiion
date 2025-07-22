@@ -1,6 +1,5 @@
 import { api } from '@packages/backend/convex/_generated/api';
 import { useMutation, useQuery } from 'convex/react';
-import { router } from 'expo-router';
 import React, { useState, useCallback, useRef } from 'react';
 import { View, Pressable, ScrollView } from 'react-native';
 import * as z from 'zod';
@@ -30,10 +29,16 @@ interface AgencyResult {
 }
 
 export default function AgencySelectionScreen() {
-  const updateUser = useMutation(api.users.updateMyUser);
   const addMyRepresentation = useMutation(api.users.representation.addMyRepresentation);
   const user = useQuery(api.users.getMyUser);
   const cursor = useOnboardingCursor();
+
+  // If user doesn't have representation, auto-advance to next step
+  React.useEffect(() => {
+    if (user && user.representationStatus !== 'represented') {
+      cursor.goToNextStep();
+    }
+  }, [user, cursor]);
   
   const [searchQuery, setSearchQuery] = useState('');
   const [searchResults, setSearchResults] = useState<AgencyResult[]>([]);
@@ -150,26 +155,20 @@ export default function AgencySelectionScreen() {
   };
 
   return (
-    <OnboardingStepGuard requiredStep="representation">
+    <OnboardingStepGuard requiredStep="agency">
       <BaseOnboardingScreen
         title="Select Agency"
         description="Search and select your representation agency"
         canProgress={selectedAgencies.filter(Boolean).length > 0}
         primaryAction={{
-          onPress: async () => {
-            await form.handleSubmit();
-            // Navigate to next step after successful submission
-            await cursor.goToNextStep();
-          },
-          handlesNavigation: true,
+          onPress: () => form.handleSubmit(),
         }}
         secondaryAction={
           getButtonText() ? {
             text: getButtonText(),
             onPress: () => {
               if (getButtonText() === 'Go back') {
-                // Go back to representation status screen
-                router.back();
+                cursor.goToPreviousStep();
               } else {
                 addAnotherAgency();
               }

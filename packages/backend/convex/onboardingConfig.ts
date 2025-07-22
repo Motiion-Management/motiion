@@ -81,6 +81,11 @@ export const ONBOARDING_FLOWS: OnboardingFlows = {
         description: 'Agency and representation information'
       },
       {
+        step: 'agency',
+        required: ['agency'],
+        description: 'Agency selection (conditional)'
+      },
+      {
         step: 'experiences',
         required: ['experiences'],
         minItems: 1,
@@ -125,6 +130,11 @@ export const ONBOARDING_FLOWS: OnboardingFlows = {
         description: 'Agency and representation information'
       },
       {
+        step: 'agency',
+        required: ['agency'],
+        description: 'Agency selection (conditional)'
+      },
+      {
         step: 'experiences',
         required: ['experiences'],
         minItems: 1,
@@ -163,6 +173,7 @@ export const STEP_ROUTES = {
   location: '/app/onboarding/location',
   'work-location': '/app/onboarding/work-location',
   representation: '/app/onboarding/representation',
+  agency: '/app/onboarding/agency',
   experiences: '/app/onboarding/experiences',
   training: '/app/onboarding/training',
   skills: '/app/onboarding/skills',

@@ -16,8 +16,6 @@ const representationStatusOptions = [
   { value: 'independent', label: 'No, I\'m an independent artist' },
 ];
 
-type RepresentationStatus = typeof representationStatusOptions[number]['value'];
-
 const representationValidator = z.object({
   representationStatus: z.enum(['represented', 'seeking', 'independent'], {
     required_error: 'Please select your representation status',
@@ -47,7 +45,7 @@ export default function RepresentationScreen() {
         // Navigate conditionally based on selection
         if (value.representationStatus === 'represented') {
           // Go to agency selection screen
-          router.push('/app/onboarding/representation/agency');
+          router.push('/app/onboarding/agency');
         } else {
           // Skip to next onboarding step
           await cursor.goToNextStep();
