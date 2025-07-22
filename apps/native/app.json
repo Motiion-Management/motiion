@@ -49,7 +49,11 @@
       "backgroundColor": "#003D37"
     },
     "updates": {
-      "assetPatternsToBeBundled": ["**/*"]
+      "url": "https://u.expo.dev/26b62811-8f3e-4bab-9548-9ab85dfa7cb2",
+      "assetPatternsToBeBundled": [
+        "**/*",
+        "**/*"
+      ]
     },
     "notification": {
       "icon": "./assets/notification-icon.png",
@@ -59,11 +63,21 @@
       "bundleIdentifier": "io.motiion.motiion",
       "supportsTablet": true,
       "entitlements": {
-        "com.apple.developer.associated-domains": ["applinks:motiion.io", "applinks:motiion.io"],
+        "com.apple.developer.associated-domains": [
+          "applinks:motiion.io",
+          "applinks:motiion.io",
+          "applinks:motiion.io",
+          "applinks:motiion.io"
+        ],
         "com.apple.developer.authentication-services.autofill-credential-provider": true,
         "com.apple.developer.usernotifications.communication": true,
         "aps-environment": "production",
-        "com.apple.developer.applesignin": ["Default", "Default"],
+        "com.apple.developer.applesignin": [
+          "Default",
+          "Default",
+          "Default",
+          "Default"
+        ],
         "com.apple.developer.usernotifications.time-sensitive": true
       },
       "infoPlist": {
@@ -83,7 +97,14 @@
         "android.permission.READ_EXTERNAL_STORAGE",
         "android.permission.RECEIVE_BOOT_COMPLETED",
         "android.permission.WAKE_LOCK",
-        "com.android.alarm.permission.SET_ALARM"
+        "com.android.alarm.permission.SET_ALARM",
+        "android.permission.RECORD_AUDIO",
+        "android.permission.CAMERA",
+        "android.permission.READ_EXTERNAL_STORAGE",
+        "android.permission.RECEIVE_BOOT_COMPLETED",
+        "android.permission.WAKE_LOCK",
+        "com.android.alarm.permission.SET_ALARM",
+        "android.permission.RECORD_AUDIO"
       ]
     },
     "extra": {
@@ -94,6 +115,9 @@
         "projectId": "26b62811-8f3e-4bab-9548-9ab85dfa7cb2"
       }
     },
-    "owner": "motiion"
+    "owner": "motiion",
+    "runtimeVersion": {
+      "policy": "appVersion"
+    }
   }
 }

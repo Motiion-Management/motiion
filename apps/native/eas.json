@@ -4,7 +4,8 @@
       "pnpm": "9.0.6",
       "env": {
         "EXPO_USE_FAST_RESOLVER": "true"
-      }
+      },
+      "channel": "monorepo"
     },
     "development": {
       "extends": "monorepo",
@@ -15,14 +16,16 @@
       },
       "ios": {
         "resourceClass": "m-medium"
-      }
+      },
+      "channel": "development"
     },
     "dev-sim": {
       "developmentClient": true,
       "distribution": "internal",
       "ios": {
         "simulator": true
-      }
+      },
+      "channel": "dev-sim"
     },
     "production": {
       "extends": "monorepo",
@@ -32,7 +35,8 @@
       },
       "ios": {
         "resourceClass": "m-medium"
-      }
+      },
+      "channel": "production"
     }
   },
   "cli": {
