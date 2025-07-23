@@ -17,15 +17,27 @@
       "ios": {
         "resourceClass": "m-medium"
       },
+      "environment": "development",
       "channel": "development"
     },
     "dev-sim": {
-      "developmentClient": true,
-      "distribution": "internal",
+      "extends": "development",
       "ios": {
         "simulator": true
       },
       "channel": "dev-sim"
+    },
+    "preview": {
+      "extends": "monorepo",
+      "distribution": "store",
+      "android": {
+        "buildType": "app-bundle"
+      },
+      "ios": {
+        "resourceClass": "m-medium"
+      },
+      "environment": "preview",
+      "channel": "preview"
     },
     "production": {
       "extends": "monorepo",
@@ -36,6 +48,7 @@
       "ios": {
         "resourceClass": "m-medium"
       },
+      "environment": "production",
       "channel": "production"
     }
   },
