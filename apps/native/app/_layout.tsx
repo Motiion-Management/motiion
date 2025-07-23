@@ -16,6 +16,7 @@ import { AlertRef } from '~/components/ui/alert/types';
 import { useAuthenticated } from '~/hooks/useAuthenticated';
 import { useColorScheme, useInitialAndroidBarSync } from '~/lib/useColorScheme';
 import { NAV_THEME } from '~/theme';
+import { PortalHost } from '@rn-primitives/portal';
 
 export {
   // Catch any errors thrown by the Layout component.
@@ -41,6 +42,7 @@ export default function RootLayout() {
                 <ConvexClientProvider>
                   <RootStack />
                   <AlertAnchor ref={alertRef} />
+                  <PortalHost />
                 </ConvexClientProvider>
               </NavThemeProvider>
             </ActionSheetProvider>
