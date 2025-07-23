@@ -104,7 +104,7 @@ export function useOnboardingStatus(overrideStep?: string) {
 
         // For all other steps, return 'PROFILE / <PROFILE-TYPE>'
         const profileTypeLabel = profileType?.toUpperCase() || 'DANCER';
-        return `PROFILE / ${profileTypeLabel}`;
+        return `${profileTypeLabel}`;
       },
       [overrideStep, status?.currentStep, profileType]
     ),

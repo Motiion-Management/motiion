@@ -3,6 +3,7 @@ import { Stack } from 'expo-router';
 import { View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
+import { UserButton } from '~/components/auth/UserButton';
 import { ProgressBar } from '~/components/ui/progress-bar';
 import { useOnboardingCursor } from '~/hooks/useOnboardingCursor';
 import { useOnboardingStatus } from '~/hooks/useOnboardingStatus';
@@ -14,12 +15,13 @@ const OnboardingHeader = ({ route }: NativeStackHeaderProps) => {
 
   return (
     <SafeAreaView style={{ position: 'absolute', top: 0, left: 0, right: 0, zIndex: 10 }}>
-      <View className="h-8 flex-row items-center bg-transparent pl-4 pr-0">
+      <View className="h-8 flex-row items-center bg-transparent px-4 ">
         <ProgressBar
           currentStep={cursor.currentStepIndex}
           totalSteps={cursor.totalSteps}
           label={getStepLabel(cursor.currentStep || '')}
         />
+        <UserButton />
       </View>
     </SafeAreaView>
   );
