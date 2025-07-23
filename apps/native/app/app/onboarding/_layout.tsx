@@ -15,7 +15,7 @@ const OnboardingHeader = ({ route }: NativeStackHeaderProps) => {
 
   return (
     <SafeAreaView style={{ position: 'absolute', top: 0, left: 0, right: 0, zIndex: 10 }}>
-      <View className="h-8 flex-row items-center bg-transparent px-4 ">
+      <View className="h-8 flex-row items-center bg-transparent px-4">
         <ProgressBar
           currentStep={cursor.currentStepIndex}
           totalSteps={cursor.totalSteps}
