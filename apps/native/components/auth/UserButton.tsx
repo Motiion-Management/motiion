@@ -4,7 +4,12 @@ import { Pressable } from 'react-native';
 
 import { api } from '@packages/backend/convex/_generated/api';
 import { Avatar, AvatarFallback } from '~/components/ui/avatar';
-import { DropdownMenu } from '~/components/nativewindui/DropdownMenu';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from '~/components/ui/dropdown-menu';
 import { Text } from '~/components/ui/text';
 
 export function UserButton() {
@@ -31,25 +36,21 @@ export function UserButton() {
   };
 
   return (
-    <DropdownMenu
-      items={[
-        {
-          actionKey: 'signout',
-          title: 'Sign out',
-        },
-      ]}
-      onItemPress={(item) => {
-        if (item.actionKey === 'signout') {
-          signOut();
-        }
-      }}>
-      <Pressable>
-        <Avatar alt={user?.displayName || user?.email || 'User avatar'} className="h-8 w-8">
-          <AvatarFallback>
-            <Text className="text-sm font-medium text-text-default">{getInitials()}</Text>
-          </AvatarFallback>
-        </Avatar>
-      </Pressable>
+    <DropdownMenu>
+      <DropdownMenuTrigger asChild>
+        <Pressable>
+          <Avatar alt={user?.displayName || user?.email || 'User avatar'} className="h-8 w-8">
+            <AvatarFallback>
+              <Text className="text-sm font-medium text-text-default">{getInitials()}</Text>
+            </AvatarFallback>
+          </Avatar>
+        </Pressable>
+      </DropdownMenuTrigger>
+      <DropdownMenuContent className="w-48">
+        <DropdownMenuItem onPress={() => signOut()}>
+          <Text>Sign out</Text>
+        </DropdownMenuItem>
+      </DropdownMenuContent>
     </DropdownMenu>
   );
 }

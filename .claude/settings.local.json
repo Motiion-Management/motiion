@@ -42,7 +42,8 @@
       "Bash(npm search:*)",
       "Bash(npx eslint:*)",
       "mcp__convex__tables",
-      "WebFetch(domain:docs.expo.dev)"
+      "WebFetch(domain:docs.expo.dev)",
+      "Bash(npx expo:*)"
     ]
   },
   "enableAllProjectMcpServers": false
