@@ -8,6 +8,7 @@ import { Rewards } from './validators/rewards'
 import { Agencies } from './validators/agencies'
 import { Agents } from './validators/agents'
 import { Experiences } from './validators/experiences'
+import { OnboardingFlows } from './validators/onboardingFlows'
 
 export default defineSchema({
   // global
@@ -28,7 +29,12 @@ export default defineSchema({
 
   // agency
   agents: Agents.table.index('userId', ['userId']),
-  agencies: Agencies.table.searchIndex('search_name', { searchField: 'name' })
+  agencies: Agencies.table.searchIndex('search_name', { searchField: 'name' }),
+
+  // onboarding
+  onboardingFlows: OnboardingFlows.table
+    .index('by_version_and_profileType', ['version', 'profileType'])
+    .index('by_isActive', ['isActive'])
   // },
   // {
   //   // ONLY ENABLE WHEN DOING SCHEMA MIGRATION

@@ -144,7 +144,7 @@ export function useOnboardingCursor() {
         const previousRoute =
           STEP_TO_ROUTE_MAP[previousStep.step as keyof typeof STEP_TO_ROUTE_MAP];
         if (previousRoute) {
-          router.dismissTo(previousRoute);
+          router.replace(previousRoute);
           return true;
         }
       } catch (error) {
@@ -153,7 +153,7 @@ export function useOnboardingCursor() {
         const previousRoute =
           STEP_TO_ROUTE_MAP[previousStep.step as keyof typeof STEP_TO_ROUTE_MAP];
         if (previousRoute) {
-          router.dismissTo(previousRoute);
+          router.replace(previousRoute);
           return true;
         }
       }

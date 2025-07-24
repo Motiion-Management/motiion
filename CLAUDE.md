@@ -122,6 +122,49 @@ Required vars:
 - Don't repeat unchanged code unless I ask
 - In code generation, include minimal necessary imports
 
+## ENFORCE: Convex Development Patterns
+
+### Always Reference Documentation
+
+- **ALWAYS consult @docs/convex_rules.txt** when working with Convex functions
+- Check for updates to patterns and best practices before implementing
+
+### Validator Pattern (STRICT)
+
+```typescript
+// 1. Plain object with Zod validators
+export const tableName = {
+  field1: z.string(),
+  field2: zid('otherTable').optional()
+}
+
+// 2. Table export using convex-helpers
+export const TableName = Table('tableName', zodToConvexFields(tableName))
+
+// 3. In schema.ts - use .table property
+tableName: TableName.table.index('by_field1', ['field1'])
+```
+
+### Function Patterns (ENFORCE)
+
+- **ALWAYS include returns validator** - even `returns: v.null()` for void functions
+- Use new function syntax from convex_rules.txt
+- Name indexes with pattern: `by_field1_and_field2`
+- Export functions directly, never through api/internal objects
+
+### Import Consistency
+
+```typescript
+// Validator files
+import { zid, zodToConvexFields } from 'convex-helpers/server/zod'
+import { Table } from 'convex-helpers/server'
+import { z } from 'zod'
+
+// Convex function files
+import { query, mutation, internalMutation } from './_generated/server'
+import { ConvexError, v } from 'convex/values'
+```
+
 ## Experimental Software Preference
 
 - **Embrace beta/experimental versions** - If beta or experimental packages are installed, work with them rather than suggesting downgrades

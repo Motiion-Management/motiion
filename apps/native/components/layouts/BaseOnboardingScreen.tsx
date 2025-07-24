@@ -1,7 +1,7 @@
 import { useFocusEffect, useNavigation } from '@react-navigation/native';
 import { useClerk } from '@clerk/clerk-expo';
 import { router } from 'expo-router';
-import { useCallback } from 'react';
+import React, { useCallback } from 'react';
 import { Platform, View } from 'react-native';
 import { KeyboardAwareScrollView, KeyboardStickyView } from 'react-native-keyboard-controller';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -41,27 +41,15 @@ export const BaseOnboardingScreen = ({
   const cursor = useOnboardingCursor();
   const navigation = useNavigation();
 
-  // Intercept back navigation and force it to use goToPreviousStep
-  useFocusEffect(
-    useCallback(() => {
-      const beforeRemove = (e: any) => {
-        // Check if this is a back navigation action
-        if (e.data.action.type === 'GO_BACK' || e.data.action.type === 'POP') {
-          // Prevent default back behavior
-          e.preventDefault();
-
-          // Use our custom navigation logic
-          if (cursor.canGoPrevious) {
-            cursor.goToPreviousStep();
-          }
-          // If can't go back, do nothing (user stays on current screen)
-        }
-      };
-
-      navigation.addListener('beforeRemove', beforeRemove);
-      return () => navigation.removeListener('beforeRemove', beforeRemove);
-    }, [navigation, cursor])
-  );
+  // Use React Navigation's built-in back handler instead of beforeRemove
+  // This avoids the native/JS state mismatch issue
+  React.useLayoutEffect(() => {
+    navigation.setOptions({
+      headerBackVisible: cursor.canGoPrevious,
+      // Use gesture handler for swipe back instead of intercepting
+      gestureEnabled: cursor.canGoPrevious,
+    });
+  }, [navigation, cursor.canGoPrevious]);
 
   // Prefetch next step route for better performance
   useFocusEffect(
@@ -132,13 +120,8 @@ export const BaseOnboardingScreen = ({
                 size="icon"
                 variant="plain"
                 onPress={async () => {
-                  if (cursor.canGoPrevious) {
-                    await cursor.goToPreviousStep();
-                  } else {
-                    if (navigation.canGoBack()) {
-                      navigation.goBack();
-                    }
-                  }
+                  // Simply use the cursor navigation which will handle routing
+                  await cursor.goToPreviousStep();
                 }}>
                 <ChevronLeft size={24} className="color-icon-accent" />
               </Button>
