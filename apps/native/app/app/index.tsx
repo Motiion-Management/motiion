@@ -15,13 +15,7 @@ export default function AppRouter() {
     return segments.length >= 2 && segments[1] === 'onboarding';
   }, [segments]);
 
-  console.log('🔄 APP_ROUTER: Onboarding status check', {
-    isLoading,
-    isComplete,
-    redirectPath,
-    currentSegments: segments,
-    isOnOnboardingScreen,
-  });
+  // Debug logging removed for cleaner output
 
   // Show loading state while checking onboarding status
   if (isLoading) {
@@ -36,7 +30,6 @@ export default function AppRouter() {
 
   // If already on an onboarding screen, don't redirect (avoid loops)
   if (isOnOnboardingScreen && !isComplete) {
-    console.log('🚫 APP_ROUTER: Already on onboarding screen, skipping redirect');
     // Return empty view instead of null to avoid placeholder screen issues
     return <View style={{ flex: 1 }} />;
   }
@@ -46,7 +39,7 @@ export default function AppRouter() {
     ? '/app/home'
     : redirectPath || '/app/onboarding/profile-type';
 
-  console.log('🎯 APP_ROUTER: Redirecting to:', destination);
+  // Redirect to appropriate screen
 
   return (
     <AuthErrorBoundary>

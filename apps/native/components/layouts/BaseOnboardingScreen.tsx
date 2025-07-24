@@ -46,15 +46,20 @@ export const BaseOnboardingScreen = ({
   React.useLayoutEffect(() => {
     // Check if navigation is ready and not a placeholder
     if (navigation && navigation.setOptions && !cursor.isLoading) {
-      try {
-        navigation.setOptions({
-          headerBackVisible: cursor.canGoPrevious,
-          // Use gesture handler for swipe back instead of intercepting
-          gestureEnabled: cursor.canGoPrevious,
-        });
-      } catch (error) {
-        // Silently handle if navigation isn't ready yet
-        console.warn('Navigation not ready for options:', error);
+      // Additional check to ensure we're not on a placeholder screen
+      const canSetOptions = navigation.getState && navigation.getState()?.index !== undefined;
+      
+      if (canSetOptions) {
+        try {
+          navigation.setOptions({
+            headerBackVisible: cursor.canGoPrevious,
+            // Use gesture handler for swipe back instead of intercepting
+            gestureEnabled: cursor.canGoPrevious,
+          });
+        } catch (error) {
+          // Silently ignore - this happens during navigation transitions
+          // The options will be set once navigation stabilizes
+        }
       }
     }
   }, [navigation, cursor.canGoPrevious, cursor.isLoading]);
