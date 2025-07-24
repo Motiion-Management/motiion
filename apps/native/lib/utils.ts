@@ -82,3 +82,14 @@ export async function shareLink(shareTitle: string, shareText: string, link: str
 export function createShareLink(shareTitle: string, shareText: string, link: string) {
   return async () => await shareLink(shareTitle, shareText, link);
 }
+
+export function debounce<T extends (...args: any[]) => any>(
+  func: T,
+  wait: number
+): (...args: Parameters<T>) => void {
+  let timeout: ReturnType<typeof setTimeout> | null = null;
+  return (...args: Parameters<T>) => {
+    if (timeout) clearTimeout(timeout);
+    timeout = setTimeout(() => func(...args), wait);
+  };
+}

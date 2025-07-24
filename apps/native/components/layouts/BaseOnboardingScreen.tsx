@@ -44,26 +44,36 @@ export const BaseOnboardingScreen = ({
   // Use React Navigation's built-in back handler instead of beforeRemove
   // This avoids the native/JS state mismatch issue
   React.useLayoutEffect(() => {
-    navigation.setOptions({
-      headerBackVisible: cursor.canGoPrevious,
-      // Use gesture handler for swipe back instead of intercepting
-      gestureEnabled: cursor.canGoPrevious,
-    });
-  }, [navigation, cursor.canGoPrevious]);
+    // Check if navigation is ready and not a placeholder
+    if (navigation && navigation.setOptions && !cursor.isLoading) {
+      try {
+        navigation.setOptions({
+          headerBackVisible: cursor.canGoPrevious,
+          // Use gesture handler for swipe back instead of intercepting
+          gestureEnabled: cursor.canGoPrevious,
+        });
+      } catch (error) {
+        // Silently handle if navigation isn't ready yet
+        console.warn('Navigation not ready for options:', error);
+      }
+    }
+  }, [navigation, cursor.canGoPrevious, cursor.isLoading]);
 
   // Prefetch next step route for better performance
   useFocusEffect(
     useCallback(() => {
-      const nextRoute = cursor.getNextStepLink();
-      if (nextRoute && cursor.canGoNext) {
-        try {
-          router.prefetch(nextRoute);
-        } catch (error) {
-          // Prefetch can fail silently - not critical
-          console.log('Prefetch failed for:', nextRoute);
+      // Only prefetch when cursor is loaded and we have a valid next route
+      if (!cursor.isLoading) {
+        const nextRoute = cursor.getNextStepLink();
+        if (nextRoute && cursor.canGoNext) {
+          try {
+            router.prefetch(nextRoute);
+          } catch (error) {
+            // Prefetch can fail silently - not critical
+          }
         }
       }
-    }, [cursor])
+    }, [cursor.canGoNext, cursor.isLoading, cursor.getNextStepLink])
   );
 
   return (

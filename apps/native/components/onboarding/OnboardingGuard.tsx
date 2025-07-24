@@ -4,6 +4,7 @@ import { View, ActivityIndicator } from 'react-native';
 
 import { AuthErrorBoundary } from '~/components/auth/AuthErrorBoundary';
 import { useOnboardingStatus } from '~/hooks/useOnboardingStatus';
+import { useOnboardingFlow } from '~/hooks/useOnboardingFlow';
 
 interface OnboardingGuardProps {
   children: React.ReactNode;
@@ -46,9 +47,10 @@ export function OnboardingStepGuard({
   fallback,
 }: OnboardingStepGuardProps) {
   const { isLoading, isComplete } = useOnboardingStatus();
+  const { flow, getStep, isLoading: flowLoading } = useOnboardingFlow();
 
   // Show loading state
-  if (isLoading) {
+  if (isLoading || flowLoading) {
     return (
       fallback ?? (
         <View className="flex-1 items-center justify-center">
@@ -61,6 +63,11 @@ export function OnboardingStepGuard({
   // If onboarding is complete, redirect to home
   if (isComplete) {
     return <Redirect href="/app/home" />;
+  }
+
+  // Validate that the required step exists in the flow
+  if (flow && !getStep(requiredStep)) {
+    console.warn(`Step "${requiredStep}" not found in onboarding flow`);
   }
 
   // Allow access to any onboarding step - let users navigate freely

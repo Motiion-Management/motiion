@@ -3,58 +3,12 @@ import { ProfileType } from '@packages/backend/convex/onboardingConfig';
 import { useQuery, useMutation } from 'convex/react';
 import { useSegments, useRouter, Href } from 'expo-router';
 import { useCallback, useMemo } from 'react';
-
-/**
- * Maps route segments to step names for navigation
- */
-const ROUTE_TO_STEP_MAP = {
-  'profile-type': 'profile-type',
-  headshots: 'headshots',
-  height: 'height',
-  ethnicity: 'ethnicity',
-  'hair-color': 'hair-color',
-  'eye-color': 'eye-color',
-  gender: 'gender',
-  sizing: 'sizing',
-  location: 'location',
-  'work-location': 'work-location',
-  representation: 'representation',
-  agency: 'agency',
-  experiences: 'experiences',
-  training: 'training',
-  skills: 'skills',
-  union: 'union',
-  'database-use': 'database-use',
-  company: 'company',
-} as const;
-
-/**
- * Maps step names to route paths for navigation
- */
-const STEP_TO_ROUTE_MAP = {
-  'profile-type': '/app/onboarding/profile-type',
-  headshots: '/app/onboarding/headshots',
-  height: '/app/onboarding/height',
-  ethnicity: '/app/onboarding/ethnicity',
-  'hair-color': '/app/onboarding/hair-color',
-  'eye-color': '/app/onboarding/eye-color',
-  gender: '/app/onboarding/gender',
-  sizing: '/app/onboarding/sizing',
-  location: '/app/onboarding/location',
-  'work-location': '/app/onboarding/work-location',
-  representation: '/app/onboarding/representation',
-  agency: '/app/onboarding/agency',
-  experiences: '/app/onboarding/experiences',
-  training: '/app/onboarding/training',
-  skills: '/app/onboarding/skills',
-  union: '/app/onboarding/union',
-  'database-use': '/app/onboarding/database-use',
-  company: '/app/onboarding/company',
-} as const;
+import { useOnboardingFlow } from './useOnboardingFlow';
 
 /**
  * Hook for cursor-based onboarding navigation
  * Navigation is controlled by the current route/screen, not backend state
+ * Uses dynamic flow data from the server
  */
 export function useOnboardingCursor() {
   const segments = useSegments();
@@ -63,36 +17,49 @@ export function useOnboardingCursor() {
   const validateStep = useMutation(api.onboarding.validateCurrentOnboardingStep);
   const setStep = useMutation(api.onboarding.setOnboardingStep);
 
+  // Get dynamic flow data
+  const {
+    flow,
+    getStepIdFromRoute,
+    getStep,
+    getStepIndex,
+    getNextStep,
+    getPreviousStep,
+    calculateProgress,
+    isLoading: flowLoading,
+  } = useOnboardingFlow();
+
   // Get current step from the route
   const currentStep = useMemo(() => {
     // Extract the onboarding step from segments like ['app', 'onboarding', 'hair-color']
     if (segments.length >= 3 && segments[1] === 'onboarding') {
-      const routeSegment = segments[2] as keyof typeof ROUTE_TO_STEP_MAP;
-      return ROUTE_TO_STEP_MAP[routeSegment] || null;
+      const routePath = `/app/onboarding/${segments[2]}`;
+      const stepId = getStepIdFromRoute(routePath);
+      return stepId;
     }
-    return null;
-  }, [segments]);
 
-  // Get the flow for the current user (filtered based on their representation status)
-  const flow = useQuery(api.onboarding.getUserOnboardingFlow) || [];
+    console.log('[useOnboardingCursor] No valid onboarding segments found');
+    return null;
+  }, [segments, getStepIdFromRoute, flow]);
 
   // Calculate current step index in the flow
   const currentStepIndex = useMemo(() => {
-    if (!currentStep || !flow.length) return 0;
-    const index = flow.findIndex((step) => step.step === currentStep);
-    return index >= 0 ? index : 0;
-  }, [currentStep, flow]);
+    if (!currentStep || !flow) return 0;
+    const index = getStepIndex(currentStep);
+    return index;
+  }, [currentStep, flow, getStepIndex]);
 
   // Calculate progress based on cursor position
   const progress = useMemo(() => {
-    if (!flow.length) return 0;
-    return Math.round((currentStepIndex / flow.length) * 100);
-  }, [currentStepIndex, flow.length]);
+    if (!currentStep || !user) return 0;
+    const prog = calculateProgress(currentStep, user);
+    return prog;
+  }, [currentStep, user, calculateProgress]);
 
   // Navigation functions
   const goToNextStep = useCallback(async () => {
-    if (!currentStep) {
-      console.error('No current step defined');
+    if (!currentStep || !user) {
+      console.error('No current step or user data');
       return false;
     }
 
@@ -108,22 +75,22 @@ export function useOnboardingCursor() {
         return false;
       }
 
-      // Update backend step tracking before navigation
-      if (currentStepIndex < flow.length - 1) {
-        const nextStep = flow[currentStepIndex + 1];
+      // Get next step considering decision points
+      const nextStep = getNextStep(currentStep, user);
 
-        // Update backend tracking to the next step
-        await setStep({ step: nextStep.step });
+      if (nextStep) {
+        // Update backend step tracking before navigation
+        await setStep({ step: nextStep.id });
 
-        // Proceed with cursor navigation
-        const nextRoute = STEP_TO_ROUTE_MAP[nextStep.step as keyof typeof STEP_TO_ROUTE_MAP];
+        // Navigate to next step
+        const nextRoute = nextStep.route;
         if (nextRoute) {
-          router.push(nextRoute);
+          router.push(nextRoute as Href);
           return true;
         }
       } else {
         // If we're at the last step, mark onboarding as complete and go to home
-        router.push('/app/home');
+        router.push('/app/home' as Href);
         return true;
       }
       return false;
@@ -131,102 +98,121 @@ export function useOnboardingCursor() {
       console.error('Error validating onboarding step:', error);
       return false;
     }
-  }, [currentStep, currentStepIndex, flow, router, validateStep, setStep]);
+  }, [currentStep, user, router, validateStep, setStep, getNextStep]);
 
   const goToPreviousStep = useCallback(async () => {
-    if (currentStepIndex > 0) {
-      const previousStep = flow[currentStepIndex - 1];
+    if (!currentStep) return false;
 
+    const previousStep = getPreviousStep(currentStep);
+    if (previousStep) {
       try {
         // Update backend step tracking to the previous step
-        await setStep({ step: previousStep.step });
+        await setStep({ step: previousStep.id });
 
-        const previousRoute =
-          STEP_TO_ROUTE_MAP[previousStep.step as keyof typeof STEP_TO_ROUTE_MAP];
+        const previousRoute = previousStep.route;
         if (previousRoute) {
-          router.replace(previousRoute);
+          router.replace(previousRoute as Href);
           return true;
         }
       } catch (error) {
         console.error('Error updating step on goToPreviousStep:', error);
         // Still navigate even if backend update fails
-        const previousRoute =
-          STEP_TO_ROUTE_MAP[previousStep.step as keyof typeof STEP_TO_ROUTE_MAP];
+        const previousRoute = previousStep.route;
         if (previousRoute) {
-          router.replace(previousRoute);
+          router.replace(previousRoute as Href);
           return true;
         }
       }
     }
     return false;
-  }, [currentStepIndex, flow, router, setStep]);
+  }, [currentStep, router, setStep, getPreviousStep]);
 
   const goToStep = useCallback(
-    async (stepName: string) => {
-      const stepIndex = flow.findIndex((step) => step.step === stepName);
-      if (stepIndex >= 0) {
+    async (stepId: string) => {
+      const step = getStep(stepId);
+      if (step) {
         try {
           // Update backend step tracking to the target step
-          await setStep({ step: stepName });
+          await setStep({ step: stepId });
 
-          const route = STEP_TO_ROUTE_MAP[stepName as keyof typeof STEP_TO_ROUTE_MAP];
+          const route = step.route;
           if (route) {
-            router.push(route);
+            router.push(route as Href);
             return true;
           }
         } catch (error) {
           console.error('Error updating step on goToStep:', error);
           // Still navigate even if backend update fails
-          const route = STEP_TO_ROUTE_MAP[stepName as keyof typeof STEP_TO_ROUTE_MAP];
+          const route = step.route;
           if (route) {
-            router.push(route);
+            router.push(route as Href);
             return true;
           }
         }
       }
       return false;
     },
-    [flow, router, setStep]
+    [getStep, router, setStep]
   );
+
+  // Get step configurations
+  const getCurrentStepConfig = useCallback(() => {
+    if (!currentStep) return null;
+    return getStep(currentStep);
+  }, [currentStep, getStep]);
+
+  const getNextStepConfig = useCallback(() => {
+    if (!currentStep || !user) return null;
+    return getNextStep(currentStep, user);
+  }, [currentStep, user, getNextStep]);
+
+  const getPreviousStepConfig = useCallback(() => {
+    if (!currentStep) return null;
+    return getPreviousStep(currentStep);
+  }, [currentStep, getPreviousStep]);
+
+  // Debug navigation state calculations
+  const canGoNext = currentStep ? !!getNextStep(currentStep, user || {}) : false;
+  const canGoPrevious = currentStep ? !!getPreviousStep(currentStep) : false;
+  const previousStep = currentStep ? getPreviousStep(currentStep) : null;
+  const nextStep = currentStep ? getNextStep(currentStep, user || {}) : null;
 
   return {
     // Current state
     currentStep,
     currentStepIndex,
-    totalSteps: flow.length,
+    totalSteps: flow?.steps.length || 0,
     progress,
 
     // Navigation state
-    canGoNext: currentStepIndex < flow.length - 1,
-    canGoPrevious: currentStepIndex > 0,
+    canGoNext,
+    canGoPrevious,
     isFirstStep: currentStepIndex === 0,
-    isLastStep: currentStepIndex === flow.length - 1,
+    isLastStep: currentStep ? !getNextStep(currentStep, user || {}) : false,
 
     // Navigation functions
     goToNextStep,
     goToPreviousStep,
     goToStep,
     getNextStepLink: () => {
-      const nextStep = flow[currentStepIndex + 1];
-      return (
-        nextStep ? STEP_TO_ROUTE_MAP[nextStep.step as keyof typeof STEP_TO_ROUTE_MAP] : null
-      ) as Href;
+      if (!currentStep || !user) return null;
+      const nextStep = getNextStep(currentStep, user);
+      return nextStep ? (nextStep.route as Href) : null;
     },
     getPreviousStepLink: () => {
-      const previousStep = flow[currentStepIndex - 1];
-      return (
-        previousStep ? STEP_TO_ROUTE_MAP[previousStep.step as keyof typeof STEP_TO_ROUTE_MAP] : null
-      ) as Href;
+      if (!currentStep) return null;
+      const previousStep = getPreviousStep(currentStep);
+      return previousStep ? (previousStep.route as Href) : null;
     },
 
     // Step information
-    getCurrentStepConfig: () => flow[currentStepIndex] || null,
-    getNextStepConfig: () =>
-      currentStepIndex < flow.length - 1 ? flow[currentStepIndex + 1] : null,
-    getPreviousStepConfig: () => (currentStepIndex > 0 ? flow[currentStepIndex - 1] : null),
+    getCurrentStepConfig,
+    getNextStepConfig,
+    getPreviousStepConfig,
 
     // Metadata
     flow,
     profileType: user?.profileType as ProfileType,
+    isLoading: flowLoading,
   };
 }

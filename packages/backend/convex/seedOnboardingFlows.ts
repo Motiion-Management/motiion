@@ -180,7 +180,9 @@ export const seedInitialFlows = internalMutation({
           name: step.step,
           route: `/app/onboarding/${step.step}`,
           required: step.required,
-          ...('minItems' in step && step.minItems !== undefined ? { minItems: step.minItems } : {}),
+          ...('minItems' in step && step.minItems !== undefined
+            ? { minItems: step.minItems }
+            : {}),
           description: step.description,
           // Add conditional for agency step
           conditional:
