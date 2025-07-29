@@ -25,9 +25,9 @@ export default function HairColorScreen() {
   const updateUser = useMutation(api.users.updateMyUser);
   const cursor = useOnboardingCursor();
 
-  const form = useAutoSaveAppForm({
+  const form = useAutoSaveAppForm<{ hairColor: HairColor | undefined }>({
     defaultValues: {
-      hairColor: undefined as HairColor | undefined,
+      hairColor: undefined,
     },
     validators: {
       onChange: hairColorValidator,
@@ -39,9 +39,10 @@ export default function HairColorScreen() {
         hairColor: 'attributes.hairColor', // Map form field to nested Convex field
       },
     },
-    onSubmit: async ({ value }) => {
+    onSubmit: async (props) => {
       // Since we're auto-saving, submit just navigates to next step
       // The data is already saved
+      const value = props.value as { hairColor: HairColor | undefined };
       if (!value.hairColor) return;
     },
   });

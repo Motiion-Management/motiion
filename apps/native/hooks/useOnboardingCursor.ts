@@ -3,7 +3,11 @@ import { ProfileType } from '@packages/backend/convex/onboardingConfig';
 import { useQuery, useMutation } from 'convex/react';
 import { useSegments, useRouter, Href } from 'expo-router';
 import { useCallback, useMemo } from 'react';
-import { useOnboardingFlow } from './useOnboardingFlow';
+import { useSharedOnboardingFlow } from '~/contexts/OnboardingFlowContext';
+import { useUser } from './useUser';
+import { useClientSideValidation } from './useClientSideValidation';
+import { useBackgroundSync } from './useBackgroundSync';
+import { perfLog, perfMark, perfMeasure, trackNavigation } from '~/utils/performanceDebug';
 
 /**
  * Hook for cursor-based onboarding navigation
@@ -13,9 +17,11 @@ import { useOnboardingFlow } from './useOnboardingFlow';
 export function useOnboardingCursor() {
   const segments = useSegments();
   const router = useRouter();
-  const user = useQuery(api.users.getMyUser);
+  const { user } = useUser();
   const validateStep = useMutation(api.onboarding.validateCurrentOnboardingStep);
   const setStep = useMutation(api.onboarding.setOnboardingStep);
+  const { validateStep: validateClientSide } = useClientSideValidation();
+  const { queueTask } = useBackgroundSync();
 
   // Get dynamic flow data
   const {
@@ -27,7 +33,7 @@ export function useOnboardingCursor() {
     getPreviousStep,
     calculateProgress,
     isLoading: flowLoading,
-  } = useOnboardingFlow();
+  } = useSharedOnboardingFlow();
 
   // Get current step from the route
   const currentStep = useMemo(() => {
@@ -35,10 +41,12 @@ export function useOnboardingCursor() {
     if (segments.length >= 3 && segments[1] === 'onboarding') {
       const routePath = `/app/onboarding/${segments[2]}`;
       const stepId = getStepIdFromRoute(routePath);
+      perfMeasure('cursor:getCurrentStep', undefined, { stepId, routePath });
       return stepId;
     }
 
     console.log('[useOnboardingCursor] No valid onboarding segments found');
+    perfMeasure('cursor:getCurrentStep', undefined, { stepId: null });
     return null;
   }, [segments, getStepIdFromRoute, flow]);
 
@@ -56,103 +64,194 @@ export function useOnboardingCursor() {
     return prog;
   }, [currentStep, user, calculateProgress]);
 
-  // Navigation functions
-  const goToNextStep = useCallback(async () => {
-    if (!currentStep || !user) {
-      console.error('No current step or user data');
+  // Navigation functions - Local-first with optimistic updates
+  const goToNextStep = useCallback(() => {
+    if (!currentStep || !user || !flow) {
+      console.error('No current step, user data, or flow data');
       return false;
     }
 
-    try {
-      // Validate current step before advancing
-      const validation = await validateStep({ currentStep });
+    // 1. Get current step configuration
+    const currentStepConfig = getStep(currentStep);
 
-      if (!validation.isValid) {
-        console.error('Cannot advance onboarding step:', {
-          step: currentStep,
-          missingFields: validation.missingFields,
-        });
-        return false;
-      }
+    if (!currentStepConfig) {
+      console.error('Current step configuration not found');
+      trackNavigation.complete();
+      return false;
+    }
 
-      // Get next step considering decision points
-      const nextStep = getNextStep(currentStep, user);
+    // 2. Client-side validation (immediate, no backend call)
+    perfMark('navigation:clientValidation');
+    const validation = validateClientSide(currentStepConfig, user);
+    perfMeasure('navigation:clientValidation', undefined, {
+      isValid: validation.isValid,
+      missingFields: validation.missingFields?.length || 0,
+    });
 
-      if (nextStep) {
-        // Update backend step tracking before navigation
-        await setStep({ step: nextStep.id });
+    if (!validation.isValid) {
+      console.error('Client-side validation failed:', {
+        step: currentStep,
+        missingFields: validation.missingFields,
+      });
+      trackNavigation.validationComplete(false, { missingFields: validation.missingFields });
+      trackNavigation.complete();
+      return false;
+    }
 
-        // Navigate to next step
-        const nextRoute = nextStep.route;
-        if (nextRoute) {
-          router.push(nextRoute as Href);
-          return true;
-        }
-      } else {
-        // If we're at the last step, mark onboarding as complete and go to home
-        router.push('/app/home' as Href);
+    trackNavigation.validationComplete(true);
+
+    // 3. Get next step considering decision points
+    perfMark('navigation:calculateNextStep');
+    const nextStep = getNextStep(currentStep, user);
+    perfMeasure('navigation:calculateNextStep', undefined, {
+      nextStepId: nextStep?.id,
+      nextRoute: nextStep?.route,
+    });
+
+    if (nextStep) {
+      // 4. Navigate immediately (optimistic update)
+      const nextRoute = nextStep.route;
+      if (nextRoute) {
+        perfMark('navigation:routerPush');
+        router.push(nextRoute as Href);
+        perfMeasure('navigation:routerPush');
+        trackNavigation.routingComplete();
+
+        // 5. Queue backend update (non-blocking)
+        perfLog('navigation:queueBackendSync', { currentStep, nextStep: nextStep.id });
+        queueTask(
+          async () => {
+            perfMark('navigation:backendSync');
+            // Optionally validate on backend for consistency
+            await validateStep({ currentStep });
+            // Update backend step tracking
+            await setStep({ step: nextStep.id });
+            perfMeasure('navigation:backendSync');
+          },
+          {
+            id: `advance-step-${currentStep}-to-${nextStep.id}`,
+            maxRetries: 3,
+          }
+        );
+
         return true;
       }
-      return false;
-    } catch (error) {
-      console.error('Error validating onboarding step:', error);
+    } else {
+      // Last step - navigate to home
+      router.push('/app/home' as Href);
+
+      // Queue completion update
+      queueTask(
+        async () => {
+          // Mark onboarding as complete in backend
+          await setStep({ step: 'complete' });
+        },
+        { id: 'complete-onboarding', maxRetries: 3 }
+      );
+
+      trackNavigation.complete();
+      return true;
+    }
+
+    trackNavigation.complete();
+    return false;
+  }, [
+    currentStep,
+    user,
+    flow,
+    router,
+    validateStep,
+    setStep,
+    getNextStep,
+    getStep,
+    validateClientSide,
+    queueTask,
+  ]);
+
+  const goToPreviousStep = useCallback(() => {
+    perfLog('goToPreviousStep:start', { currentStep });
+
+    if (!currentStep) {
+      perfLog('goToPreviousStep:failed', { reason: 'no current step' });
       return false;
     }
-  }, [currentStep, user, router, validateStep, setStep, getNextStep]);
 
-  const goToPreviousStep = useCallback(async () => {
-    if (!currentStep) return false;
+    trackNavigation.start(currentStep, 'previous');
 
+    perfMark('navigation:calculatePreviousStep');
     const previousStep = getPreviousStep(currentStep);
-    if (previousStep) {
-      try {
-        // Update backend step tracking to the previous step
-        await setStep({ step: previousStep.id });
+    perfMeasure('navigation:calculatePreviousStep', undefined, {
+      previousStepId: previousStep?.id,
+      previousRoute: previousStep?.route,
+    });
 
-        const previousRoute = previousStep.route;
-        if (previousRoute) {
-          router.replace(previousRoute as Href);
-          return true;
-        }
-      } catch (error) {
-        console.error('Error updating step on goToPreviousStep:', error);
-        // Still navigate even if backend update fails
-        const previousRoute = previousStep.route;
-        if (previousRoute) {
-          router.replace(previousRoute as Href);
-          return true;
-        }
+    if (previousStep) {
+      const previousRoute = previousStep.route;
+      if (previousRoute) {
+        // Navigate immediately
+        perfMark('navigation:routerPush');
+        router.replace(previousRoute as Href);
+        perfMeasure('navigation:routerPush');
+        trackNavigation.routingComplete();
+
+        // Queue backend update (non-blocking)
+        queueTask(
+          async () => {
+            await setStep({ step: previousStep.id });
+          },
+          {
+            id: `back-step-${currentStep}-to-${previousStep.id}`,
+            maxRetries: 2,
+          }
+        );
+
+        trackNavigation.complete();
+        return true;
       }
     }
+
+    trackNavigation.complete();
     return false;
-  }, [currentStep, router, setStep, getPreviousStep]);
+  }, [currentStep, router, setStep, getPreviousStep, queueTask]);
 
   const goToStep = useCallback(
-    async (stepId: string) => {
-      const step = getStep(stepId);
-      if (step) {
-        try {
-          // Update backend step tracking to the target step
-          await setStep({ step: stepId });
+    (stepId: string) => {
+      perfLog('goToStep:start', { targetStep: stepId, currentStep });
+      trackNavigation.start(currentStep || 'unknown', stepId);
 
-          const route = step.route;
-          if (route) {
-            router.push(route as Href);
-            return true;
-          }
-        } catch (error) {
-          console.error('Error updating step on goToStep:', error);
-          // Still navigate even if backend update fails
-          const route = step.route;
-          if (route) {
-            router.push(route as Href);
-            return true;
-          }
+      perfMark('navigation:getStep');
+      const step = getStep(stepId);
+      perfMeasure('navigation:getStep', undefined, { found: !!step });
+
+      if (step) {
+        const route = step.route;
+        if (route) {
+          // Navigate immediately
+          perfMark('navigation:routerPush');
+          router.push(route as Href);
+          perfMeasure('navigation:routerPush');
+          trackNavigation.routingComplete();
+
+          // Queue backend update (non-blocking)
+          queueTask(
+            async () => {
+              await setStep({ step: stepId });
+            },
+            {
+              id: `goto-step-${stepId}`,
+              maxRetries: 2,
+            }
+          );
+
+          trackNavigation.complete();
+          return true;
         }
       }
+
+      trackNavigation.complete();
       return false;
     },
-    [getStep, router, setStep]
+    [getStep, router, setStep, queueTask, currentStep]
   );
 
   // Get step configurations

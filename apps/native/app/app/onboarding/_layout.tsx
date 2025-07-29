@@ -1,5 +1,4 @@
-import { NativeStackHeaderProps } from '@react-navigation/native-stack';
-import { Stack } from 'expo-router';
+import { Stack, usePathname } from 'expo-router';
 import { View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
@@ -8,8 +7,8 @@ import { ProgressBar } from '~/components/ui/progress-bar';
 import { useOnboardingCursor } from '~/hooks/useOnboardingCursor';
 import { useOnboardingStatus } from '~/hooks/useOnboardingStatus';
 
-const OnboardingHeader = ({ route }: NativeStackHeaderProps) => {
-  const stepName = route.name;
+const OnboardingHeader = () => {
+  const stepName = usePathname();
   const cursor = useOnboardingCursor();
   const { getStepLabel } = useOnboardingStatus(stepName);
 
@@ -29,15 +28,17 @@ const OnboardingHeader = ({ route }: NativeStackHeaderProps) => {
 
 export default function OnboardingLayout() {
   return (
-    <Stack
-      screenOptions={{
-        headerShown: true,
-        title: 'Profile Setup',
-        header: OnboardingHeader,
-        contentStyle: { backgroundColor: 'transparent' },
-        animation: 'default',
-        gestureEnabled: true,
-      }}
-    />
+    <View className="flex-1">
+      <OnboardingHeader />
+      <Stack
+        screenOptions={{
+          headerShown: false,
+          title: 'Profile Setup',
+          contentStyle: { backgroundColor: 'transparent' },
+          animation: 'default',
+          gestureEnabled: true,
+        }}
+      />
+    </View>
   );
 }

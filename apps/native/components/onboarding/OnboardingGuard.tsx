@@ -1,10 +1,11 @@
 import { Redirect } from 'expo-router';
-import React from 'react';
+import React, { useEffect } from 'react';
 import { View, ActivityIndicator } from 'react-native';
 
 import { AuthErrorBoundary } from '~/components/auth/AuthErrorBoundary';
 import { useOnboardingStatus } from '~/hooks/useOnboardingStatus';
-import { useOnboardingFlow } from '~/hooks/useOnboardingFlow';
+import { useSharedOnboardingFlow } from '~/contexts/OnboardingFlowContext';
+import { perfLog, perfMark, perfMeasure } from '~/utils/performanceDebug';
 
 interface OnboardingGuardProps {
   children: React.ReactNode;
@@ -47,7 +48,22 @@ export function OnboardingStepGuard({
   fallback,
 }: OnboardingStepGuardProps) {
   const { isLoading, isComplete } = useOnboardingStatus();
-  const { flow, getStep, isLoading: flowLoading } = useOnboardingFlow();
+  const { flow, getStep, isLoading: flowLoading } = useSharedOnboardingFlow();
+
+  // Track guard evaluation
+  useEffect(() => {
+    perfMark(`stepGuard:${requiredStep}:start`);
+    perfLog('stepGuard:evaluating', {
+      requiredStep,
+      isLoading,
+      flowLoading,
+      hasFlow: !!flow,
+    });
+
+    return () => {
+      perfMeasure(`stepGuard:${requiredStep}:start`, `stepGuard:${requiredStep}:end`);
+    };
+  }, [requiredStep]);
 
   // Show loading state
   if (isLoading || flowLoading) {

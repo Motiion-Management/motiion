@@ -6,7 +6,7 @@ import { useAutoSaveForm, AutoSaveConfig } from '~/hooks/useAutoSaveForm';
 import { cn } from '~/lib/utils';
 
 interface AutoSaveFormFieldProps {
-  children: React.ReactNode;
+  children: React.ReactElement<{ value?: any; onValueChange?: (value: any) => void }>;
   fieldName: string;
   value: any;
   onValueChange?: (value: any) => void;
@@ -45,7 +45,7 @@ export function AutoSaveFormField({
   return (
     <View className={cn('relative', className)}>
       {/* Render the form field */}
-      {React.cloneElement(children as React.ReactElement, {
+      {React.cloneElement(children, {
         value,
         onValueChange: handleValueChange,
       })}

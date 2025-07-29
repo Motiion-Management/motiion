@@ -31,6 +31,7 @@ import type * as rewards from "../rewards.js";
 import type * as seedOnboardingFlows from "../seedOnboardingFlows.js";
 import type * as users_experiences from "../users/experiences.js";
 import type * as users_headshots from "../users/headshots.js";
+import type * as users_headshotsOptimized from "../users/headshotsOptimized.js";
 import type * as users_helpers from "../users/helpers.js";
 import type * as users_representation from "../users/representation.js";
 import type * as users_resume from "../users/resume.js";
@@ -77,6 +78,7 @@ declare const fullApi: ApiFromModules<{
   seedOnboardingFlows: typeof seedOnboardingFlows;
   "users/experiences": typeof users_experiences;
   "users/headshots": typeof users_headshots;
+  "users/headshotsOptimized": typeof users_headshotsOptimized;
   "users/helpers": typeof users_helpers;
   "users/representation": typeof users_representation;
   "users/resume": typeof users_resume;

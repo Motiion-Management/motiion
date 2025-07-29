@@ -1,6 +1,6 @@
 import { api } from '@packages/backend/convex/_generated/api';
 import { useMutation } from 'convex/react';
-import React from 'react';
+import React, { useEffect } from 'react';
 import * as z from 'zod';
 
 import { ValidationModeForm } from '~/components/form/ValidationModeForm';
@@ -8,6 +8,7 @@ import { useAppForm } from '~/components/form/appForm';
 import { BaseOnboardingScreen } from '~/components/layouts/BaseOnboardingScreen';
 import { OnboardingStepGuard } from '~/components/onboarding/OnboardingGuard';
 import { useOnboardingCursor } from '~/hooks/useOnboardingCursor';
+import { trackScreen, perfLog } from '~/utils/performanceDebug';
 
 const profileTypeValidator = z.object({
   profileType: z.enum(['dancer', 'choreographer'], {
@@ -20,6 +21,16 @@ type ProfileType = 'dancer' | 'choreographer' | 'guest';
 export default function ProfileTypeScreen() {
   const updateUser = useMutation(api.users.updateMyUser);
   const cursor = useOnboardingCursor();
+
+  // Track screen mount
+  useEffect(() => {
+    trackScreen.mountStart('ProfileTypeScreen');
+    perfLog('screen:ProfileType:mounted');
+
+    return () => {
+      trackScreen.mountComplete('ProfileTypeScreen');
+    };
+  }, []);
 
   const form = useAppForm({
     defaultValues: {

@@ -4,11 +4,12 @@ import { Href } from 'expo-router';
 import { useCallback } from 'react';
 
 import { useAuthenticated } from './useAuthenticated';
+import { useUser } from './useUser';
 
 export function useOnboardingStatus(overrideStep?: string) {
   const { isLoading: authLoading } = useAuthenticated();
   const status = useQuery(api.onboarding.getOnboardingStatus);
-  const user = useQuery(api.users.getMyUser);
+  const { user } = useUser();
 
   // Define all possible steps in order based on profile type
   const getAllSteps = useCallback((profileType: string) => {

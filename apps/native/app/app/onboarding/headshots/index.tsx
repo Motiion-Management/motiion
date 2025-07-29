@@ -1,15 +1,38 @@
 import { api } from '@packages/backend/convex/_generated/api';
 import { useQuery } from 'convex/react';
-import React from 'react';
+import React, { useEffect } from 'react';
 import { View } from 'react-native';
 
 import { BaseOnboardingScreen } from '~/components/layouts/BaseOnboardingScreen';
 import { OnboardingStepGuard } from '~/components/onboarding/OnboardingGuard';
 import { MultiImageUpload } from '~/components/upload';
+import { trackScreen, perfLog, trackQuery } from '~/utils/performanceDebug';
 
 export default function HeadshotsScreen() {
+  // Track screen mount
+  useEffect(() => {
+    trackScreen.mountStart('HeadshotsScreen');
+    perfLog('screen:Headshots:mounted');
+    trackQuery.start('getMyHeadshots');
+
+    return () => {
+      trackScreen.mountComplete('HeadshotsScreen');
+    };
+  }, []);
+
   const existingHeadshots = useQuery(api.users.headshots.getMyHeadshots);
   const hasImages = (existingHeadshots?.length ?? 0) > 0;
+
+  // Track query completion
+  useEffect(() => {
+    if (existingHeadshots !== undefined) {
+      trackQuery.complete('getMyHeadshots', existingHeadshots?.length || 0);
+      perfLog('headshots:queryComplete', {
+        count: existingHeadshots?.length || 0,
+        hasImages,
+      });
+    }
+  }, [existingHeadshots, hasImages]);
 
   return (
     <OnboardingStepGuard requiredStep="headshots">
