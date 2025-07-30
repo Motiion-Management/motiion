@@ -9,6 +9,7 @@ import { Agencies } from './validators/agencies'
 import { Agents } from './validators/agents'
 import { Experiences } from './validators/experiences'
 import { OnboardingFlows } from './validators/onboardingFlows'
+import { OnboardingFlowsV3 } from './validators/onboardingFlowsV3'
 
 export default defineSchema({
   // global
@@ -34,7 +35,11 @@ export default defineSchema({
   // onboarding
   onboardingFlows: OnboardingFlows.table
     .index('by_version_and_profileType', ['version', 'profileType'])
+    .index('by_isActive', ['isActive']),
+  onboardingFlowsV3: OnboardingFlowsV3.table
+    .index('by_version_and_profileType', ['version', 'profileType'])
     .index('by_isActive', ['isActive'])
+    .index('by_isDefault', ['isDefault'])
   // },
   // {
   //   // ONLY ENABLE WHEN DOING SCHEMA MIGRATION

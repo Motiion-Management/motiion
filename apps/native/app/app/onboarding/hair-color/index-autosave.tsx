@@ -5,6 +5,7 @@ import React from 'react';
 import * as z from 'zod';
 import { View } from 'react-native';
 import { CheckCircle2, Loader2 } from 'lucide-react-native';
+import { useSearchParams } from 'expo-router';
 
 import { ValidationModeForm } from '~/components/form/ValidationModeForm';
 import { BaseOnboardingScreen } from '~/components/layouts/BaseOnboardingScreen';
@@ -12,6 +13,7 @@ import { OnboardingStepGuard } from '~/components/onboarding/OnboardingGuard';
 import { useOnboardingCursor } from '~/hooks/useOnboardingCursor';
 import { useAutoSaveAppForm } from '~/hooks/useAutoSaveAppForm';
 import { Text } from '~/components/ui/text';
+import { GenericOnboardingScreenV3 } from '~/components/onboarding/GenericOnboardingScreenV3';
 
 const hairColorValidator = z.object({
   hairColor: z.enum(HAIRCOLOR, {
@@ -22,6 +24,19 @@ const hairColorValidator = z.object({
 type HairColor = (typeof HAIRCOLOR)[number];
 
 export default function HairColorScreen() {
+  const params = useSearchParams();
+  const useV3 = params.get('v3') === 'true';
+  
+  // Use V3 implementation if feature flag is enabled
+  if (useV3) {
+    return <GenericOnboardingScreenV3 />;
+  }
+  
+  // Otherwise use the original implementation
+  return <HairColorScreenV1 />;
+}
+
+function HairColorScreenV1() {
   const updateUser = useMutation(api.users.updateMyUser);
   const cursor = useOnboardingCursor();
 
