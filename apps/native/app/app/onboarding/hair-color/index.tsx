@@ -9,6 +9,8 @@ import { useAppForm } from '~/components/form/appForm';
 import { BaseOnboardingScreen } from '~/components/layouts/BaseOnboardingScreen';
 import { OnboardingStepGuard } from '~/components/onboarding/OnboardingGuard';
 import { useOnboardingCursor } from '~/hooks/useOnboardingCursor';
+import { GenericOnboardingScreenV3 } from '~/components/onboarding/GenericOnboardingScreenV3';
+import { useIsV3Onboarding } from '../_layout';
 
 const hairColorValidator = z.object({
   hairColor: z.enum(HAIRCOLOR, {
@@ -19,6 +21,16 @@ const hairColorValidator = z.object({
 type HairColor = (typeof HAIRCOLOR)[number];
 
 export default function HairColorScreen() {
+  const useV3 = useIsV3Onboarding();
+
+  if (useV3) {
+    return <GenericOnboardingScreenV3 />;
+  }
+
+  return <HairColorScreenV1 />;
+}
+
+function HairColorScreenV1() {
   const updateUser = useMutation(api.users.updateMyUser);
   const cursor = useOnboardingCursor();
 

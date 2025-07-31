@@ -9,6 +9,7 @@ import { BaseOnboardingScreen } from '~/components/layouts/BaseOnboardingScreen'
 import { OnboardingStepGuard } from '~/components/onboarding/OnboardingGuard';
 import { useOnboardingCursor } from '~/hooks/useOnboardingCursor';
 import { trackScreen, perfLog } from '~/utils/performanceDebug';
+import { OnboardingScreenWrapper } from '~/components/onboarding/OnboardingScreenWrapper';
 
 const profileTypeValidator = z.object({
   profileType: z.enum(['dancer', 'choreographer'], {
@@ -19,6 +20,10 @@ const profileTypeValidator = z.object({
 type ProfileType = 'dancer' | 'choreographer' | 'guest';
 
 export default function ProfileTypeScreen() {
+  return <OnboardingScreenWrapper v1Component={ProfileTypeScreenV1} screenName="profile-type" />;
+}
+
+function ProfileTypeScreenV1() {
   const updateUser = useMutation(api.users.updateMyUser);
   const cursor = useOnboardingCursor();
 

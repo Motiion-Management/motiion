@@ -1,33 +1,36 @@
-import React from 'react'
-import { View } from 'react-native'
-import { z } from 'zod'
-import { router } from 'expo-router'
-import { BaseOnboardingScreenV3 } from '~/components/layouts/BaseOnboardingScreenV3'
-import { AutoSubmitFormV3 } from '~/components/form/AutoSubmitFormV3'
-import { useOnboardingFlowV3 } from '~/hooks/useOnboardingFlowV3'
-import { useUser } from '~/hooks/useUser'
-import { Text } from '~/components/ui/text'
-import { Input } from '~/components/ui/input'
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '~/components/ui/select'
-import { RadioGroup, RadioGroupItem } from '~/components/ui/radio-group'
-import { Label } from '~/components/ui/label'
-import { Button } from '~/components/ui/button'
-import { type OnboardingStepV3 } from '@packages/backend/convex/validators/onboardingFlowsV3'
+import React from 'react';
+import { View } from 'react-native';
+import { z } from 'zod';
+import { router } from 'expo-router';
+import { BaseOnboardingScreenV3 } from '~/components/layouts/BaseOnboardingScreenV3';
+import { AutoSubmitFormV3 } from '~/components/form/AutoSubmitFormV3';
+import { useOnboardingFlowV3 } from '~/hooks/useOnboardingFlowV3';
+import { useUser } from '~/hooks/useUser';
+import { Text } from '~/components/ui/text';
+import { Input } from '~/components/ui/input';
+import { Picker, PickerItem } from '~/components/ui/select';
+import { RadioGroup, RadioGroupItem } from '~/components/ui/radio-group';
+import { InputLabel } from '~/components/ui/label';
+import { Button } from '~/components/ui/button';
+import { type OnboardingStepV3 } from '@packages/backend/convex/validators/onboardingFlowsV3';
+import { SizingFieldV3 } from '~/components/sizing/SizingFieldV3';
+import { HeadshotsFieldV3 } from '~/components/upload/HeadshotsFieldV3';
+import { HeightFieldV3 } from '~/components/form/HeightFieldV3';
 
 // Field type definitions
-type FieldType = 'text' | 'select' | 'radio' | 'number' | 'email' | 'phone' | 'custom'
+type FieldType = 'text' | 'select' | 'radio' | 'number' | 'email' | 'phone' | 'custom';
 
 interface FieldConfig {
-  name: string
-  type: FieldType
-  label: string
-  placeholder?: string
-  options?: Array<{ value: string; label: string }>
-  validation?: z.ZodSchema<any>
-  required?: boolean
-  minItems?: number
-  maxItems?: number
-  customComponent?: React.ComponentType<any>
+  name: string;
+  type: FieldType;
+  label: string;
+  placeholder?: string;
+  options?: Array<{ value: string; label: string }>;
+  validation?: z.ZodSchema<any>;
+  required?: boolean;
+  minItems?: number;
+  maxItems?: number;
+  customComponent?: React.ComponentType<any>;
 }
 
 // Map of field names to their configurations
@@ -38,48 +41,22 @@ const FIELD_CONFIGS: Record<string, Partial<FieldConfig>> = {
     options: [
       { value: 'dancer', label: 'Dancer' },
       { value: 'choreographer', label: 'Choreographer' },
-      { value: 'guest', label: 'Guest' }
+      { value: 'guest', label: 'Guest' },
     ],
-    validation: z.enum(['dancer', 'choreographer', 'guest'])
+    validation: z.enum(['dancer', 'choreographer', 'guest']),
   },
   height: {
-    type: 'select',
+    type: 'custom',
     label: 'Height',
     placeholder: 'Select your height',
-    options: [
-      { value: '4-0', label: "4'0\"" },
-      { value: '4-1', label: "4'1\"" },
-      { value: '4-2', label: "4'2\"" },
-      { value: '4-3', label: "4'3\"" },
-      { value: '4-4', label: "4'4\"" },
-      { value: '4-5', label: "4'5\"" },
-      { value: '4-6', label: "4'6\"" },
-      { value: '4-7', label: "4'7\"" },
-      { value: '4-8', label: "4'8\"" },
-      { value: '4-9', label: "4'9\"" },
-      { value: '4-10', label: "4'10\"" },
-      { value: '4-11', label: "4'11\"" },
-      { value: '5-0', label: "5'0\"" },
-      { value: '5-1', label: "5'1\"" },
-      { value: '5-2', label: "5'2\"" },
-      { value: '5-3', label: "5'3\"" },
-      { value: '5-4', label: "5'4\"" },
-      { value: '5-5', label: "5'5\"" },
-      { value: '5-6', label: "5'6\"" },
-      { value: '5-7', label: "5'7\"" },
-      { value: '5-8', label: "5'8\"" },
-      { value: '5-9', label: "5'9\"" },
-      { value: '5-10', label: "5'10\"" },
-      { value: '5-11', label: "5'11\"" },
-      { value: '6-0', label: "6'0\"" },
-      { value: '6-1', label: "6'1\"" },
-      { value: '6-2', label: "6'2\"" },
-      { value: '6-3', label: "6'3\"" },
-      { value: '6-4', label: "6'4\"" },
-      { value: '6-5', label: "6'5\"" },
-      { value: '6-6', label: "6'6\"" }
-    ],
-    validation: z.string().regex(/^\d-\d+$/)
+    customComponent: HeightFieldV3,
+    validation: z.union([
+      z.string().regex(/^\d-\d+$/),
+      z.object({
+        feet: z.number(),
+        inches: z.number(),
+      }),
+    ]),
   },
   ethnicity: {
     type: 'select',
@@ -94,82 +71,119 @@ const FIELD_CONFIGS: Record<string, Partial<FieldConfig>> = {
       { value: 'native-american', label: 'Native American' },
       { value: 'pacific-islander', label: 'Pacific Islander' },
       { value: 'mixed', label: 'Mixed' },
-      { value: 'other', label: 'Other' }
+      { value: 'other', label: 'Other' },
     ],
-    validation: z.string()
+    validation: z.string(),
   },
   hairColor: {
-    type: 'select',
+    type: 'radio',
     label: 'Hair Color',
-    placeholder: 'Select your hair color',
     options: [
-      { value: 'black', label: 'Black' },
-      { value: 'brown', label: 'Brown' },
-      { value: 'blonde', label: 'Blonde' },
-      { value: 'red', label: 'Red' },
-      { value: 'auburn', label: 'Auburn' },
-      { value: 'gray', label: 'Gray' },
-      { value: 'white', label: 'White' },
-      { value: 'other', label: 'Other' }
+      { value: 'Black', label: 'Black' },
+      { value: 'Blonde', label: 'Blonde' },
+      { value: 'Brown', label: 'Brown' },
+      { value: 'Red', label: 'Red' },
+      { value: 'Other', label: 'Other' },
     ],
-    validation: z.string()
+    validation: z.enum(['Black', 'Blonde', 'Brown', 'Red', 'Other']),
   },
   eyeColor: {
-    type: 'select',
+    type: 'radio',
     label: 'Eye Color',
-    placeholder: 'Select your eye color',
     options: [
-      { value: 'brown', label: 'Brown' },
-      { value: 'blue', label: 'Blue' },
-      { value: 'green', label: 'Green' },
-      { value: 'hazel', label: 'Hazel' },
-      { value: 'gray', label: 'Gray' },
-      { value: 'amber', label: 'Amber' },
-      { value: 'other', label: 'Other' }
+      { value: 'Amber', label: 'Amber' },
+      { value: 'Blue', label: 'Blue' },
+      { value: 'Brown', label: 'Brown' },
+      { value: 'Green', label: 'Green' },
+      { value: 'Gray', label: 'Gray' },
+      { value: 'Mixed', label: 'Mixed' },
     ],
-    validation: z.string()
+    validation: z.enum(['Amber', 'Blue', 'Brown', 'Green', 'Gray', 'Mixed']),
   },
   gender: {
     type: 'radio',
     label: 'Gender',
     options: [
-      { value: 'male', label: 'Male' },
-      { value: 'female', label: 'Female' },
-      { value: 'non-binary', label: 'Non-binary' },
-      { value: 'prefer-not-to-say', label: 'Prefer not to say' }
+      { value: 'Male', label: 'Male' },
+      { value: 'Female', label: 'Female' },
+      { value: 'Non-binary', label: 'Non-binary' },
     ],
-    validation: z.string()
+    validation: z.enum(['Male', 'Female', 'Non-binary']),
   },
   location: {
     type: 'text',
     label: 'Location',
     placeholder: 'Enter your city, state',
-    validation: z.string().min(3)
+    validation: z.string().min(3),
   },
   workLocation: {
     type: 'text',
     label: 'Work Locations',
     placeholder: 'Cities where you can work',
-    validation: z.string().min(3)
-  }
-}
+    validation: z.string().min(3),
+  },
+  sizing: {
+    type: 'custom',
+    label: 'Sizing Information',
+    customComponent: SizingFieldV3,
+    validation: z.object({
+      general: z
+        .object({
+          waist: z.string().optional(),
+          inseam: z.string().optional(),
+          hat: z.string().optional(),
+          glove: z.string().optional(),
+        })
+        .optional(),
+      male: z
+        .object({
+          shirt: z.string().optional(),
+          shoes: z.string().optional(),
+          chest: z.string().optional(),
+          neck: z.string().optional(),
+          sleeve: z.string().optional(),
+          coatLength: z.string().optional(),
+        })
+        .optional(),
+      female: z
+        .object({
+          dress: z.string().optional(),
+          shirt: z.string().optional(),
+          shoes: z.string().optional(),
+          bust: z.string().optional(),
+          cup: z.string().optional(),
+          underbust: z.string().optional(),
+          hips: z.string().optional(),
+          pants: z.string().optional(),
+          coatLength: z.string().optional(),
+        })
+        .optional(),
+    }),
+  },
+  headshots: {
+    type: 'custom',
+    label: 'Headshots',
+    customComponent: HeadshotsFieldV3,
+    validation: z.array(z.any()).min(1).max(5),
+  },
+};
 
 // Generate schema from step fields
 function generateSchema(step: OnboardingStepV3): z.ZodObject<any> {
-  const schemaFields: Record<string, z.ZodSchema<any>> = {}
-  
-  step.fields.forEach(field => {
-    const config = FIELD_CONFIGS[field.name]
-    let fieldSchema = config?.validation || z.string()
-    
+  const schemaFields: Record<string, z.ZodSchema<any>> = {};
+
+  step.fields.forEach((field) => {
+    const config = FIELD_CONFIGS[field.name];
+    let fieldSchema = config?.validation || z.string();
+
     if (!field.required) {
-      fieldSchema = fieldSchema.optional()
+      fieldSchema = fieldSchema.optional();
     }
-    
-    schemaFields[field.name] = fieldSchema
-  })
-  
-  return z.object(schemaFields)
+
+    schemaFields[field.name] = fieldSchema;
+  });
+
+  return z.object(schemaFields);
 }
 
 // Render a form field based on configuration
@@ -189,59 +203,56 @@ function renderField(
           value={value || ''}
           onChangeText={onChange}
           keyboardType={
-            fieldConfig.type === 'email' ? 'email-address' :
-            fieldConfig.type === 'phone' ? 'phone-pad' : 'default'
+            fieldConfig.type === 'email'
+              ? 'email-address'
+              : fieldConfig.type === 'phone'
+                ? 'phone-pad'
+                : 'default'
           }
         />
-      )
-    
+      );
+
     case 'select':
       return (
-        <Select value={value} onValueChange={onChange}>
-          <SelectTrigger>
-            <SelectValue placeholder={fieldConfig.placeholder || `Select ${fieldConfig.label}`} />
-          </SelectTrigger>
-          <SelectContent>
-            {fieldConfig.options?.map(option => (
-              <SelectItem key={option.value} value={option.value}>
-                {option.label}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
-      )
-    
+        <Picker selectedValue={value} onValueChange={onChange}>
+          <PickerItem label={fieldConfig.placeholder || `Select ${fieldConfig.label}`} value="" />
+          {fieldConfig.options?.map((option) => (
+            <PickerItem key={option.value} label={option.label} value={option.value} />
+          ))}
+        </Picker>
+      );
+
     case 'radio':
       return (
         <RadioGroup value={value} onValueChange={onChange}>
-          {fieldConfig.options?.map(option => (
-            <View key={option.value} className="flex-row items-center space-x-2 mb-2">
+          {fieldConfig.options?.map((option) => (
+            <View key={option.value} className="mb-2 flex-row items-center space-x-2">
               <RadioGroupItem value={option.value} />
-              <Label className="flex-1" onPress={() => onChange(option.value)}>
-                {option.label}
-              </Label>
+              <View className="flex-1">
+                <Text onPress={() => onChange(option.value)}>{option.label}</Text>
+              </View>
             </View>
           ))}
         </RadioGroup>
-      )
-    
+      );
+
     case 'custom':
       if (fieldConfig.customComponent) {
-        const CustomComponent = fieldConfig.customComponent
-        return <CustomComponent value={value} onChange={onChange} {...fieldConfig} />
+        const CustomComponent = fieldConfig.customComponent;
+        return <CustomComponent value={value} onChange={onChange} {...fieldConfig} />;
       }
-      return <Text>Custom field not implemented</Text>
-    
+      return <Text>Custom field not implemented</Text>;
+
     default:
-      return <Text>Unknown field type: {fieldConfig.type}</Text>
+      return <Text>Unknown field type: {fieldConfig.type}</Text>;
   }
 }
 
 interface GenericOnboardingScreenV3Props {
   // Optional custom field components
-  customFields?: Record<string, React.ComponentType<any>>
+  customFields?: Record<string, React.ComponentType<any>>;
   // Optional override for specific steps
-  stepOverrides?: Record<string, React.ComponentType>
+  stepOverrides?: Record<string, React.ComponentType>;
 }
 
 /**
@@ -252,56 +263,87 @@ interface GenericOnboardingScreenV3Props {
  */
 export function GenericOnboardingScreenV3({
   customFields,
-  stepOverrides
+  stepOverrides,
 }: GenericOnboardingScreenV3Props = {}) {
-  const { currentStep, currentStepId } = useOnboardingFlowV3()
-  const { user } = useUser()
-  const [formValues, setFormValues] = React.useState<Record<string, any>>({})
-  
-  // Check for step override
-  if (currentStepId && stepOverrides?.[currentStepId]) {
-    const OverrideComponent = stepOverrides[currentStepId]
-    return <OverrideComponent />
-  }
-  
-  if (!currentStep) {
+  const flowData = useOnboardingFlowV3();
+
+  // Early return if hook is not ready
+  if (!flowData) {
     return (
       <BaseOnboardingScreenV3>
-        <Text>Loading step...</Text>
+        <View className="flex-1 items-center justify-center">
+          <Text>Loading...</Text>
+        </View>
       </BaseOnboardingScreenV3>
-    )
+    );
   }
-  
-  // Generate schema for validation
-  const schema = generateSchema(currentStep)
-  
-  // Get default values from user profile
+
+  const { currentStep, currentStepId, isLoading } = flowData;
+  const { user } = useUser();
+  const [formValues, setFormValues] = React.useState<Record<string, any>>({});
+
+  // Log for debugging
+  React.useEffect(() => {
+    console.log('[GenericOnboardingScreenV3] Flow data:', {
+      isLoading,
+      currentStepId,
+      currentStep: currentStep?.id,
+      flowDataKeys: Object.keys(flowData),
+    });
+  }, [isLoading, currentStepId, currentStep, flowData]);
+
+  // Get default values from user profile - must be before any conditional returns
   const defaultValues = React.useMemo(() => {
-    const values: Record<string, any> = {}
-    currentStep.fields.forEach(field => {
+    if (!currentStep) return {};
+
+    const values: Record<string, any> = {};
+    currentStep.fields.forEach((field) => {
       if (user && (user as any)[field.name]) {
-        values[field.name] = (user as any)[field.name]
+        values[field.name] = (user as any)[field.name];
       }
-    })
-    return values
-  }, [currentStep, user])
-  
+    });
+    return values;
+  }, [currentStep, user]);
+
+  // Generate schema for validation - must be before any conditional returns
+  const schema = React.useMemo(() => {
+    if (!currentStep) return z.object({});
+    return generateSchema(currentStep);
+  }, [currentStep]);
+
+  // Check for step override
+  if (currentStepId && stepOverrides?.[currentStepId]) {
+    const OverrideComponent = stepOverrides[currentStepId];
+    return <OverrideComponent />;
+  }
+
+  if (isLoading || !currentStep) {
+    return (
+      <BaseOnboardingScreenV3>
+        <View className="items-center justify-center py-8">
+          <Text className="text-muted-foreground">
+            {isLoading ? 'Loading onboarding flow...' : 'Setting up your profile...'}
+          </Text>
+        </View>
+      </BaseOnboardingScreenV3>
+    );
+  }
+
   return (
     <BaseOnboardingScreenV3>
       <AutoSubmitFormV3
         schema={schema}
         defaultValues={defaultValues}
         autoSubmit={currentStep.autoSubmit}
-        submitDelay={currentStep.submitDelay}
-      >
+        submitDelay={currentStep.submitDelay}>
         <View className="gap-4">
-          {currentStep.fields.map(field => {
-            const config = FIELD_CONFIGS[field.name]
+          {currentStep.fields.map((field) => {
+            const config = FIELD_CONFIGS[field.name];
             if (!config) {
-              console.warn(`No field configuration found for: ${field.name}`)
-              return null
+              console.warn(`No field configuration found for: ${field.name}`);
+              return null;
             }
-            
+
             const fullConfig: FieldConfig = {
               name: field.name,
               type: 'text',
@@ -310,28 +352,23 @@ export function GenericOnboardingScreenV3({
               minItems: field.minItems,
               maxItems: field.maxItems,
               ...config,
-              customComponent: customFields?.[field.name] || config.customComponent
-            }
-            
+              customComponent: customFields?.[field.name] || config.customComponent,
+            };
+
             return (
               <View key={field.name} className="gap-2">
-                <Label>{fullConfig.label}</Label>
-                {renderField(
-                  field.name,
-                  fullConfig,
-                  formValues[field.name],
-                  (value) => setFormValues(prev => ({ ...prev, [field.name]: value }))
+                <InputLabel>{fullConfig.label}</InputLabel>
+                {renderField(field.name, fullConfig, formValues[field.name], (value) =>
+                  setFormValues((prev) => ({ ...prev, [field.name]: value }))
                 )}
-                {field.required && (
-                  <Text className="text-xs text-muted-foreground">Required</Text>
-                )}
+                {field.required && <Text className="text-xs text-muted-foreground">Required</Text>}
               </View>
-            )
+            );
           })}
         </View>
       </AutoSubmitFormV3>
     </BaseOnboardingScreenV3>
-  )
+  );
 }
 
 /**
@@ -342,8 +379,7 @@ export function OnboardingCompleteScreenV3() {
     <BaseOnboardingScreenV3
       title="Welcome!"
       description="You've completed your profile setup. Let's get started!"
-      showNavigation={false}
-    >
+      showNavigation={false}>
       <View className="items-center py-8">
         <Text variant="title2" className="text-success mb-4">
           ✓ All Set!
@@ -353,12 +389,11 @@ export function OnboardingCompleteScreenV3() {
           size="lg"
           onPress={() => {
             // Navigate to main app
-            router.replace('/app')
-          }}
-        >
+            router.replace('/app');
+          }}>
           <Text>Get Started</Text>
         </Button>
       </View>
     </BaseOnboardingScreenV3>
-  )
+  );
 }

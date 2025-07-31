@@ -9,6 +9,7 @@ import { useAppForm } from '~/components/form/appForm';
 import { BaseOnboardingScreen } from '~/components/layouts/BaseOnboardingScreen';
 import { OnboardingStepGuard } from '~/components/onboarding/OnboardingGuard';
 import { useOnboardingCursor } from '~/hooks/useOnboardingCursor';
+import { OnboardingScreenWrapper } from '~/components/onboarding/OnboardingScreenWrapper';
 
 const genderValidator = z.object({
   gender: z.enum(GENDER, {
@@ -17,6 +18,10 @@ const genderValidator = z.object({
 });
 
 export default function GenderScreen() {
+  return <OnboardingScreenWrapper v1Component={GenderScreenV1} screenName="gender" />;
+}
+
+function GenderScreenV1() {
   const updateUser = useMutation(api.users.updateMyUser);
   const user = useQuery(api.users.getMyUser);
   const cursor = useOnboardingCursor();

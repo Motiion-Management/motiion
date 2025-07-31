@@ -11,12 +11,17 @@ import { useAppForm } from '~/components/form/appForm';
 import { BaseOnboardingScreen } from '~/components/layouts/BaseOnboardingScreen';
 import { OnboardingStepGuard } from '~/components/onboarding/OnboardingGuard';
 import { useOnboardingCursor } from '~/hooks/useOnboardingCursor';
+import { OnboardingScreenWrapper } from '~/components/onboarding/OnboardingScreenWrapper';
 
 const ethnicityValidator = z.object({
   ethnicity: z.array(z.enum(ETHNICITY)).min(1, 'Please select at least one ethnicity'),
 });
 
 export default function EthnicityScreen() {
+  return <OnboardingScreenWrapper v1Component={EthnicityScreenV1} screenName="ethnicity" />;
+}
+
+function EthnicityScreenV1() {
   const updateUser = useMutation(api.users.updateMyUser);
   const cursor = useOnboardingCursor();
 

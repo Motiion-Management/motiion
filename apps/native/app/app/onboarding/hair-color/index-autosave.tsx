@@ -26,12 +26,12 @@ type HairColor = (typeof HAIRCOLOR)[number];
 export default function HairColorScreen() {
   const params = useSearchParams();
   const useV3 = params.get('v3') === 'true';
-  
+
   // Use V3 implementation if feature flag is enabled
   if (useV3) {
     return <GenericOnboardingScreenV3 />;
   }
-  
+
   // Otherwise use the original implementation
   return <HairColorScreenV1 />;
 }

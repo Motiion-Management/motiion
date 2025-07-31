@@ -9,6 +9,7 @@ import { useAppForm } from '~/components/form/appForm';
 import { BaseOnboardingScreen } from '~/components/layouts/BaseOnboardingScreen';
 import { OnboardingStepGuard } from '~/components/onboarding/OnboardingGuard';
 import { useOnboardingCursor } from '~/hooks/useOnboardingCursor';
+import { OnboardingScreenWrapper } from '~/components/onboarding/OnboardingScreenWrapper';
 
 const eyeColorValidator = z.object({
   eyeColor: z.enum(EYECOLOR, {
@@ -19,6 +20,10 @@ const eyeColorValidator = z.object({
 type EyeColor = (typeof EYECOLOR)[number];
 
 export default function EyeColorScreen() {
+  return <OnboardingScreenWrapper v1Component={EyeColorScreenV1} screenName="eye-color" />;
+}
+
+function EyeColorScreenV1() {
   const updateUser = useMutation(api.users.updateMyUser);
   const cursor = useOnboardingCursor();
 

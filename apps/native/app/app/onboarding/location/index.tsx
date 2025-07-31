@@ -6,8 +6,13 @@ import { View } from 'react-native';
 import { BaseOnboardingScreen } from '~/components/layouts/BaseOnboardingScreen';
 import { LocationPicker } from '~/components/ui/location-picker-placekit';
 import { useLocationForm } from '~/hooks/useLocationForm';
+import { OnboardingScreenWrapper } from '~/components/onboarding/OnboardingScreenWrapper';
 
 export default function LocationScreen() {
+  return <OnboardingScreenWrapper v1Component={LocationScreenV1} screenName="location" />;
+}
+
+function LocationScreenV1() {
   const updateUser = useMutation(api.users.updateMyUser);
   const user = useQuery(api.users.getMyUser);
 

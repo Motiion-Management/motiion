@@ -7,8 +7,13 @@ import { BaseOnboardingScreen } from '~/components/layouts/BaseOnboardingScreen'
 import { OnboardingStepGuard } from '~/components/onboarding/OnboardingGuard';
 import { MultiImageUpload } from '~/components/upload';
 import { trackScreen, perfLog, trackQuery } from '~/utils/performanceDebug';
+import { OnboardingScreenWrapper } from '~/components/onboarding/OnboardingScreenWrapper';
 
 export default function HeadshotsScreen() {
+  return <OnboardingScreenWrapper v1Component={HeadshotsScreenV1} screenName="headshots" />;
+}
+
+function HeadshotsScreenV1() {
   // Track screen mount
   useEffect(() => {
     trackScreen.mountStart('HeadshotsScreen');

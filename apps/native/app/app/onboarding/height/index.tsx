@@ -8,8 +8,13 @@ import { OnboardingStepGuard } from '~/components/onboarding/OnboardingGuard';
 import { Text } from '~/components/ui/text';
 import { useHeightForm } from '~/hooks/useHeightForm';
 import { useOnboardingCursor } from '~/hooks/useOnboardingCursor';
+import { OnboardingScreenWrapper } from '~/components/onboarding/OnboardingScreenWrapper';
 
 export default function HeightScreen() {
+  return <OnboardingScreenWrapper v1Component={HeightScreenV1} screenName="height" />;
+}
+
+function HeightScreenV1() {
   const heightForm = useHeightForm();
   const cursor = useOnboardingCursor();
 

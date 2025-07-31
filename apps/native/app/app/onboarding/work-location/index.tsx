@@ -7,8 +7,13 @@ import { BaseOnboardingScreen } from '~/components/layouts/BaseOnboardingScreen'
 import { OnboardingStepGuard } from '~/components/onboarding/OnboardingGuard';
 import { WorkLocationPicker } from '~/components/ui/work-location-picker';
 import { useWorkLocationForm } from '~/hooks/useWorkLocationForm';
+import { OnboardingScreenWrapper } from '~/components/onboarding/OnboardingScreenWrapper';
 
 export default function WorkLocationScreen() {
+  return <OnboardingScreenWrapper v1Component={WorkLocationScreenV1} screenName="work-location" />;
+}
+
+function WorkLocationScreenV1() {
   const updateUser = useMutation(api.users.updateMyUser);
   const user = useQuery(api.users.getMyUser);
 

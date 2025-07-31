@@ -44,7 +44,8 @@
       "mcp__convex__tables",
       "WebFetch(domain:docs.expo.dev)",
       "Bash(npx expo:*)",
-      "WebFetch(domain:stack.convex.dev)"
+      "WebFetch(domain:stack.convex.dev)",
+      "mcp__convex__runOneoffQuery"
     ]
   },
   "enableAllProjectMcpServers": false

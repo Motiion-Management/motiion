@@ -4,8 +4,13 @@ import { View } from 'react-native';
 import { BaseOnboardingScreen } from '~/components/layouts/BaseOnboardingScreen';
 import { SizingSection } from '~/components/sizing/SizingSection';
 import { useOnboardingCursor } from '~/hooks/useOnboardingCursor';
+import { OnboardingScreenWrapper } from '~/components/onboarding/OnboardingScreenWrapper';
 
 export default function SizingScreen() {
+  return <OnboardingScreenWrapper v1Component={SizingScreenV1} screenName="sizing" />;
+}
+
+function SizingScreenV1() {
   const cursor = useOnboardingCursor();
 
   return (
