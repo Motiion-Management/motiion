@@ -25,17 +25,6 @@ export default function ProfileTypeScreen() {
 
 function ProfileTypeScreenV1() {
   const updateUser = useMutation(api.users.updateMyUser);
-  const cursor = useOnboardingCursor();
-
-  // Track screen mount
-  useEffect(() => {
-    trackScreen.mountStart('ProfileTypeScreen');
-    perfLog('screen:ProfileType:mounted');
-
-    return () => {
-      trackScreen.mountComplete('ProfileTypeScreen');
-    };
-  }, []);
 
   const form = useAppForm({
     defaultValues: {

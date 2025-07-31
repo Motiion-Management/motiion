@@ -47,44 +47,44 @@ export function OnboardingStepGuard({
   requiredStep,
   fallback,
 }: OnboardingStepGuardProps) {
-  const { isLoading, isComplete } = useOnboardingStatus();
-  const { flow, getStep, isLoading: flowLoading } = useSharedOnboardingFlow();
-
-  // Track guard evaluation
-  useEffect(() => {
-    perfMark(`stepGuard:${requiredStep}:start`);
-    perfLog('stepGuard:evaluating', {
-      requiredStep,
-      isLoading,
-      flowLoading,
-      hasFlow: !!flow,
-    });
-
-    return () => {
-      perfMeasure(`stepGuard:${requiredStep}:start`, `stepGuard:${requiredStep}:end`);
-    };
-  }, [requiredStep]);
-
-  // Show loading state
-  if (isLoading || flowLoading) {
-    return (
-      fallback ?? (
-        <View className="flex-1 items-center justify-center">
-          <ActivityIndicator size="large" />
-        </View>
-      )
-    );
-  }
-
-  // If onboarding is complete, redirect to home
-  if (isComplete) {
-    return <Redirect href="/app/home" />;
-  }
-
-  // Validate that the required step exists in the flow
-  if (flow && !getStep(requiredStep)) {
-    console.warn(`Step "${requiredStep}" not found in onboarding flow`);
-  }
+  // const { isLoading, isComplete } = useOnboardingStatus();
+  // const { flow, getStep, isLoading: flowLoading } = useSharedOnboardingFlow();
+  //
+  // // Track guard evaluation
+  // useEffect(() => {
+  //   perfMark(`stepGuard:${requiredStep}:start`);
+  //   perfLog('stepGuard:evaluating', {
+  //     requiredStep,
+  //     isLoading,
+  //     flowLoading,
+  //     hasFlow: !!flow,
+  //   });
+  //
+  //   return () => {
+  //     perfMeasure(`stepGuard:${requiredStep}:start`, `stepGuard:${requiredStep}:end`);
+  //   };
+  // }, [requiredStep]);
+  //
+  // // Show loading state
+  // if (isLoading || flowLoading) {
+  //   return (
+  //     fallback ?? (
+  //       <View className="flex-1 items-center justify-center">
+  //         <ActivityIndicator size="large" />
+  //       </View>
+  //     )
+  //   );
+  // }
+  //
+  // // If onboarding is complete, redirect to home
+  // if (isComplete) {
+  //   return <Redirect href="/app/home" />;
+  // }
+  //
+  // // Validate that the required step exists in the flow
+  // if (flow && !getStep(requiredStep)) {
+  //   console.warn(`Step "${requiredStep}" not found in onboarding flow`);
+  // }
 
   // Allow access to any onboarding step - let users navigate freely
   // The backend will handle validation when they try to advance

@@ -39,9 +39,6 @@ export const DateInput = ({ label, minimumDate, maximumDate, helpText }: DateInp
         maximumDate={maximumDate}
         minimumDate={minimumDate}
         onChange={(event, selectedDate) => {
-          // if (Platform.OS === 'android') {
-          //   setShowDatePicker(false);
-          // }
           if (selectedDate) {
             field.handleChange(selectedDate);
             field.handleBlur();

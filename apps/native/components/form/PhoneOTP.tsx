@@ -58,9 +58,10 @@ export const PhoneOTP = ({ helperTextOpts }: PhoneOTPProps) => {
   return (
     <View className="flex-1 gap-4">
       <Input
+        className="tracking-widest"
         ref={models.inputRef}
         label="6-Digit Code"
-        value={formatOtpText(models.text)}
+        value={models.text}
         onChangeText={handleTextChange}
         onFocus={actions.handleFocus}
         onBlur={() => {

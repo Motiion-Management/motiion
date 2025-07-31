@@ -49,7 +49,7 @@ export function AutoSubmitFormV3<T extends Record<string, any> = Record<string, 
   const updateUser = useMutation(api.users.updateMyUser);
 
   const [saveState, setSaveState] = React.useState<SaveState>('idle');
-  const saveTimeoutRef = useRef<NodeJS.Timeout | undefined>(undefined);
+  const saveTimeoutRef = useRef<number | undefined>(undefined);
   const lastSavedDataRef = useRef<string>('');
 
   // Form configuration
@@ -105,7 +105,7 @@ export function AutoSubmitFormV3<T extends Record<string, any> = Record<string, 
         // Show saved state briefly
         saveTimeoutRef.current = setTimeout(() => {
           setSaveState('idle');
-        }, 2000) as unknown as NodeJS.Timeout;
+        }, 2000);
 
         // Handle navigation
         if (onNavigate) {
@@ -125,7 +125,7 @@ export function AutoSubmitFormV3<T extends Record<string, any> = Record<string, 
         setSaveState('error');
         saveTimeoutRef.current = setTimeout(() => {
           setSaveState('idle');
-        }, 3000) as unknown as NodeJS.Timeout;
+        }, 3000);
       }
     },
     [

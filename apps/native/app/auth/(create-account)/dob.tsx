@@ -105,7 +105,7 @@ export default function DOBScreen() {
         },
       }}>
       <ValidationModeForm form={form}>
-        <View className="min-h-12 flex-1 flex-col gap-6">
+        <View className="min-h-12 flex-1 gap-6">
           <form.AppField
             name="dob"
             children={(field) => (

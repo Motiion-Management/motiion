@@ -1,7 +1,7 @@
 import { api } from '@packages/backend/convex/_generated/api';
 import { useQuery } from 'convex/react';
 import { useRouter, useSegments, Href } from 'expo-router';
-import { useCallback, useMemo } from 'react';
+import { useEffect, useCallback, useMemo } from 'react';
 import {
   type OnboardingStepV3,
   type OnboardingFlowV3,
@@ -60,13 +60,15 @@ export function useOnboardingFlowV3(): UseOnboardingFlowV3Return {
   const profileType = user?.profileType || 'dancer';
   const flow = useQuery(api.onboardingFlowsV3.getActiveFlowV3, { profileType });
 
-  // Debug logging
-  console.log('[useOnboardingFlowV3] Data:', {
-    profileType,
-    flowId: flow?._id,
-    hasFlow: !!flow,
-    segments,
-  });
+  // Debug logging - only log on changes
+  useEffect(() => {
+    console.log('[useOnboardingFlowV3] Data:', {
+      profileType,
+      flowId: flow?._id,
+      hasFlow: !!flow,
+      segments,
+    });
+  }, [profileType, flow?._id, segments.join('/')]);
 
   // Extract current step from URL
   const currentStepId = useMemo(() => {
@@ -128,16 +130,18 @@ export function useOnboardingFlowV3(): UseOnboardingFlowV3Return {
       prevPath = flow.steps[currentStep.previousStep].path;
     }
 
-    // Debug logging
-    console.log('[useOnboardingFlowV3] Navigation paths:', {
-      currentStepId,
-      currentStepType: currentStep?.type,
-      nextStep: currentStep?.nextStep,
-      previousStep: currentStep?.previousStep,
-      nextPath,
-      prevPath,
-      flowSteps: flow?.steps ? Object.keys(flow.steps) : []
-    });
+    // Debug logging - only on changes
+    if (nextPath !== nextStepPath || prevPath !== previousStepPath) {
+      console.log('[useOnboardingFlowV3] Navigation paths:', {
+        currentStepId,
+        currentStepType: currentStep?.type,
+        nextStep: currentStep?.nextStep,
+        previousStep: currentStep?.previousStep,
+        nextPath,
+        prevPath,
+        flowSteps: flow?.steps ? Object.keys(flow.steps) : [],
+      });
+    }
 
     return {
       nextStepPath: nextPath,
