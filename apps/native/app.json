@@ -53,7 +53,7 @@
       "assetPatternsToBeBundled": ["**/*", "**/*"]
     },
     "notification": {
-      "icon": "./assets/notification-icon.png",
+      "icon": "./assets/icon.png",
       "color": "#003D37"
     },
     "ios": {

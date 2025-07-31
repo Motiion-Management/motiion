@@ -3,7 +3,6 @@ import '../global.css';
 import 'expo-dev-client';
 import { ActionSheetProvider } from '@expo/react-native-action-sheet';
 import { BottomSheetModalProvider } from '@gorhom/bottom-sheet';
-import { ThemeProvider as NavThemeProvider } from '@react-navigation/native';
 import { Stack } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import React from 'react';
@@ -15,7 +14,6 @@ import { AlertAnchor } from '~/components/ui/alert';
 import { AlertRef } from '~/components/ui/alert/types';
 import { useAuthenticated } from '~/hooks/useAuthenticated';
 import { useColorScheme, useInitialAndroidBarSync } from '~/lib/useColorScheme';
-import { NAV_THEME } from '~/theme';
 import { PortalHost } from '@rn-primitives/portal';
 
 export {
@@ -38,13 +36,11 @@ export default function RootLayout() {
         <BottomSheetModalProvider>
           <KeyboardProvider statusBarTranslucent navigationBarTranslucent>
             <ActionSheetProvider>
-              <NavThemeProvider value={NAV_THEME[colorScheme]}>
-                <ConvexClientProvider>
-                  <RootStack />
-                  <AlertAnchor ref={alertRef} />
-                  <PortalHost />
-                </ConvexClientProvider>
-              </NavThemeProvider>
+              <ConvexClientProvider>
+                <RootStack />
+                <AlertAnchor ref={alertRef} />
+                <PortalHost />
+              </ConvexClientProvider>
             </ActionSheetProvider>
           </KeyboardProvider>
         </BottomSheetModalProvider>
