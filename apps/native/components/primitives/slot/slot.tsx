@@ -17,7 +17,7 @@ import {
 
 // TODO: test the slot component
 // TODO: if all works, remove other slots
-function Slot<T extends React.ElementType>(props: React.ComponentProps<T>) {
+function Slot<T extends React.ElementType>(props: React.ComponentProps) {
   const { children, ref: forwardedRef, ...restOfProps } = props;
 
   if (!React.isValidElement(children)) {
@@ -30,7 +30,7 @@ function Slot<T extends React.ElementType>(props: React.ComponentProps<T>) {
     return null;
   }
 
-  const childrenProps = (children.props as Record<string, any>) ?? {};
+  const childrenProps = (children.props as Record) ?? {};
 
   if (children.type === React.Fragment) {
     return (
@@ -53,7 +53,7 @@ function Slot<T extends React.ElementType>(props: React.ComponentProps<T>) {
       : {
           ref: forwardedRef ? composeRefs(forwardedRef, childRef) : childRef,
         }),
-  } as unknown as Partial<React.ComponentProps<T>>);
+  } as unknown as Partial);
 }
 
 Slot.displayName = 'Slot';
@@ -65,7 +65,7 @@ const Pressable = ({
   ref: forwardedRef,
   ...props
 }: RNPressableProps & {
-  ref: React.RefObject<React.ElementRef<typeof RNPressable>>;
+  ref: React.RefObject;
 }) => {
   const { children, ...pressableSlotProps } = props;
 
@@ -74,13 +74,13 @@ const Pressable = ({
     return null;
   }
 
-  return React.cloneElement<
-    React.ComponentPropsWithoutRef<typeof RNPressable>,
-    React.Component<Omit<PressableProps & React.RefAttributes<RNView>, 'ref'>, any, any>
-  >(isTextChildren(children) ? <></> : children, {
-    ...mergeProps(pressableSlotProps, children.props as any),
-    ref: forwardedRef ? composeRefs(forwardedRef, (children as any).ref) : (children as any).ref,
-  });
+  return React.cloneElement<React.ComponentPropsWithoutRef, React.Component>(
+    isTextChildren(children) ? <></> : children,
+    {
+      ...mergeProps(pressableSlotProps, children.props as any),
+      ref: forwardedRef ? composeRefs(forwardedRef, (children as any).ref) : (children as any).ref,
+    }
+  );
 };
 
 Pressable.displayName = 'SlotPressable';
@@ -92,7 +92,7 @@ const View = ({
   ref: forwardedRef,
   ...props
 }: RNViewProps & {
-  ref: React.RefObject<React.ElementRef<typeof RNView>>;
+  ref: React.RefObject;
 }) => {
   const { children, ...viewSlotProps } = props;
 
@@ -101,13 +101,13 @@ const View = ({
     return null;
   }
 
-  return React.cloneElement<
-    React.ComponentPropsWithoutRef<typeof RNView>,
-    React.ElementRef<typeof RNView>
-  >(isTextChildren(children) ? <></> : children, {
-    ...mergeProps(viewSlotProps, children.props as any),
-    ref: forwardedRef ? composeRefs(forwardedRef, (children as any).ref) : (children as any).ref,
-  });
+  return React.cloneElement<React.ComponentPropsWithoutRef, React.ElementRef>(
+    isTextChildren(children) ? <></> : children,
+    {
+      ...mergeProps(viewSlotProps, children.props as any),
+      ref: forwardedRef ? composeRefs(forwardedRef, (children as any).ref) : (children as any).ref,
+    }
+  );
 };
 
 View.displayName = 'SlotView';
@@ -119,7 +119,7 @@ const Text = ({
   ref: forwardedRef,
   ...props
 }: RNTextProps & {
-  ref: React.RefObject<React.ElementRef<typeof RNText>>;
+  ref: React.RefObject;
 }) => {
   const { children, ...textSlotProps } = props;
 
@@ -128,13 +128,13 @@ const Text = ({
     return null;
   }
 
-  return React.cloneElement<
-    React.ComponentPropsWithoutRef<typeof RNText>,
-    React.ElementRef<typeof RNText>
-  >(isTextChildren(children) ? <></> : children, {
-    ...mergeProps(textSlotProps, children.props as any),
-    ref: forwardedRef ? composeRefs(forwardedRef, (children as any).ref) : (children as any).ref,
-  });
+  return React.cloneElement<React.ComponentPropsWithoutRef, React.ElementRef>(
+    isTextChildren(children) ? <></> : children,
+    {
+      ...mergeProps(textSlotProps, children.props as any),
+      ref: forwardedRef ? composeRefs(forwardedRef, (children as any).ref) : (children as any).ref,
+    }
+  );
 };
 
 Text.displayName = 'SlotText';
@@ -150,7 +150,7 @@ const Image = ({
   ref: forwardedRef,
   ...props
 }: ImageSlotProps & {
-  ref: React.RefObject<React.ElementRef<typeof RNImage>>;
+  ref: React.RefObject;
 }) => {
   const { children, ...imageSlotProps } = props;
 
@@ -159,13 +159,13 @@ const Image = ({
     return null;
   }
 
-  return React.cloneElement<
-    React.ComponentPropsWithoutRef<typeof RNImage>,
-    React.ElementRef<typeof RNImage>
-  >(isTextChildren(children) ? <></> : children, {
-    ...mergeProps(imageSlotProps, children.props as any),
-    ref: forwardedRef ? composeRefs(forwardedRef, (children as any).ref) : (children as any).ref,
-  });
+  return React.cloneElement<React.ComponentPropsWithoutRef, React.ElementRef>(
+    isTextChildren(children) ? <></> : children,
+    {
+      ...mergeProps(imageSlotProps, children.props as any),
+      ref: forwardedRef ? composeRefs(forwardedRef, (children as any).ref) : (children as any).ref,
+    }
+  );
 };
 
 Image.displayName = 'SlotImage';
@@ -176,18 +176,18 @@ export { Slot, Image, Pressable, Text, View };
 // The code is licensed under the MIT License.
 // https://github.com/radix-ui/primitives/tree/main
 
-function composeRefs<T>(...refs: (React.Ref<T> | undefined)[]) {
+function composeRefs<T>(...refs: (React.Ref | undefined)[]) {
   return (node: T) =>
     refs.forEach((ref) => {
       if (typeof ref === 'function') {
         ref(node);
       } else if (ref != null) {
-        (ref as React.RefObject<T>).current = node;
+        (ref as React.RefObject).current = node;
       }
     });
 }
 
-type AnyProps = Record<string, any>;
+type AnyProps = Record;
 
 function mergeProps(slotProps: AnyProps, childProps: AnyProps) {
   // all child props should override
@@ -223,7 +223,7 @@ function mergeProps(slotProps: AnyProps, childProps: AnyProps) {
 }
 
 type PressableStyle = RNPressableProps['style'];
-type ImageStyle = StyleProp<RNImageStyle>;
+type ImageStyle = StyleProp;
 type Style = PressableStyle | ImageStyle;
 
 function combineStyles(slotStyle?: Style, childValue?: Style) {

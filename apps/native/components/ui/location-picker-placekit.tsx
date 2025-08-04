@@ -177,17 +177,15 @@ export function LocationPicker({
         helperTextProps={
           showHelperText
             ? {
-                message:
-                  'This is your primary city of residence. Local work locations can be provided on the next screen.',
-              }
+              message:
+                'This is your primary city of residence. Local work locations can be provided on the next screen.',
+            }
             : undefined
         }
         bottomSlot={
           /* Dropdown Results */
           isOpen && searchResults.length > 0 ? (
-            <View
-              className="absolute left-0 right-0 top-full -mt-px max-h-60 rounded-b-[29px] border border-border-default border-t-border-low bg-surface-high"
-              style={{ zIndex: 99999, elevation: 10 }}>
+            <View className="absolute left-0 right-0 top-full -mt-px max-h-60 rounded-b-[29px] border border-border-default border-t-border-low bg-surface-high">
               <ScrollView keyboardShouldPersistTaps="handled" showsVerticalScrollIndicator={false}>
                 {searchResults.map((result, index) => (
                   <Pressable

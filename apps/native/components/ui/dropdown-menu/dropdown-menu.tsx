@@ -84,7 +84,7 @@ DropdownMenuSubContent.displayName = DropdownMenuPrimitive.SubContent.displayNam
 const DropdownMenuContent = React.forwardRef<
   DropdownMenuPrimitive.ContentRef,
   DropdownMenuPrimitive.ContentProps & {
-    overlayStyle?: StyleProp<ViewStyle>;
+    overlayStyle?: StyleProp;
     overlayClassName?: string;
     portalHost?: string;
   }
@@ -100,8 +100,8 @@ const DropdownMenuContent = React.forwardRef<
                 overlayStyle,
               ])
             : Platform.OS !== 'web'
-              ? StyleSheet.absoluteFill
-              : undefined
+            ? StyleSheet.absoluteFill
+            : undefined
         }
         className={overlayClassName}>
         <DropdownMenuPrimitive.Content

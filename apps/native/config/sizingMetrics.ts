@@ -19,7 +19,7 @@ import {
 
 import { SizingMetricConfig } from '~/types/sizing';
 
-export const sizingMetrics: Record<string, SizingMetricConfig> = {
+export const sizingMetrics: Record = {
   // General metrics
   waist: {
     section: 'general',

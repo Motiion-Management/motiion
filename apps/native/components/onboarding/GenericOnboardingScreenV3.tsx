@@ -25,16 +25,16 @@ interface FieldConfig {
   type: FieldType;
   label: string;
   placeholder?: string;
-  options?: Array<{ value: string; label: string }>;
-  validation?: z.ZodSchema<any>;
+  options?: Array;
+  validation?: z.ZodSchema;
   required?: boolean;
   minItems?: number;
   maxItems?: number;
-  customComponent?: React.ComponentType<any>;
+  customComponent?: React.ComponentType;
 }
 
 // Map of field names to their configurations
-const FIELD_CONFIGS: Record<string, Partial<FieldConfig>> = {
+const FIELD_CONFIGS: Record = {
   profileType: {
     type: 'radio',
     label: 'I am a',
@@ -169,8 +169,8 @@ const FIELD_CONFIGS: Record<string, Partial<FieldConfig>> = {
 };
 
 // Generate schema from step fields
-function generateSchema(step: OnboardingStepV3): z.ZodObject<any> {
-  const schemaFields: Record<string, z.ZodSchema<any>> = {};
+function generateSchema(step: OnboardingStepV3): z.ZodObject {
+  const schemaFields: Record = {};
 
   step.fields.forEach((field) => {
     const config = FIELD_CONFIGS[field.name];
@@ -206,8 +206,8 @@ function renderField(
             fieldConfig.type === 'email'
               ? 'email-address'
               : fieldConfig.type === 'phone'
-                ? 'phone-pad'
-                : 'default'
+              ? 'phone-pad'
+              : 'default'
           }
         />
       );
@@ -250,9 +250,9 @@ function renderField(
 
 interface GenericOnboardingScreenV3Props {
   // Optional custom field components
-  customFields?: Record<string, React.ComponentType<any>>;
+  customFields?: Record;
   // Optional override for specific steps
-  stepOverrides?: Record<string, React.ComponentType>;
+  stepOverrides?: Record;
 }
 
 /**
@@ -280,7 +280,7 @@ export function GenericOnboardingScreenV3({
 
   const { currentStep, currentStepId, isLoading } = flowData;
   const { user } = useUser();
-  const [formValues, setFormValues] = React.useState<Record<string, any>>({});
+  const [formValues, setFormValues] = React.useState<Record>({});
 
   // Log for debugging
   React.useEffect(() => {
@@ -296,7 +296,7 @@ export function GenericOnboardingScreenV3({
   const defaultValues = React.useMemo(() => {
     if (!currentStep) return {};
 
-    const values: Record<string, any> = {};
+    const values: Record = {};
     currentStep.fields.forEach((field) => {
       if (user && (user as any)[field.name]) {
         values[field.name] = (user as any)[field.name];

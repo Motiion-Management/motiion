@@ -28,7 +28,7 @@ const FormConfigContext = createContext<FormConfig>(defaultFormConfig);
 
 interface FormConfigProviderProps {
   children: React.ReactNode;
-  config?: Partial<FormConfig>;
+  config?: Partial;
 }
 
 export const FormConfigProvider = ({ children, config }: FormConfigProviderProps) => {

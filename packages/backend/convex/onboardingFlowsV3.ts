@@ -1,10 +1,7 @@
 import { query, mutation, internalMutation } from './_generated/server'
 import { v } from 'convex/values'
 import { internal } from './_generated/api'
-import {
-  type OnboardingStepV3,
-  type OnboardingFlowV3
-} from './validators/onboardingFlowsV3'
+import { type OnboardingStepV3 } from './validators/onboardingFlowsV3'
 
 // Helper function to generate step path
 const generateStepPath = (stepId: string): string => {
@@ -303,18 +300,18 @@ export const fixV3FlowPaths = mutation({
 
     // Make the migrated flows (v2_v3) the default
     const profileTypes = ['dancer', 'choreographer', 'guest'] as const
-    
+
     for (const profileType of profileTypes) {
       const migratedFlow = await ctx.db
         .query('onboardingFlowsV3')
-        .filter((q) => 
+        .filter((q) =>
           q.and(
             q.eq(q.field('version'), 'v2_v3'),
             q.eq(q.field('profileType'), profileType)
           )
         )
         .first()
-      
+
       if (migratedFlow) {
         await ctx.db.patch(migratedFlow._id, { isDefault: true })
       }

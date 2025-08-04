@@ -13,10 +13,7 @@ interface OnboardingV3ErrorBoundaryProps {
   fallback: React.ComponentType;
 }
 
-export class OnboardingV3ErrorBoundary extends React.Component<
-  OnboardingV3ErrorBoundaryProps,
-  ErrorBoundaryState
-> {
+export class OnboardingV3ErrorBoundary extends React.Component {
   constructor(props: OnboardingV3ErrorBoundaryProps) {
     super(props);
     this.state = { hasError: false, error: null };

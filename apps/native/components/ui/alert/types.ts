@@ -5,20 +5,20 @@ type AlertInputValue = { login: string; password: string } | string;
 
 type AlertProps = {
   title: string;
-  buttons: (Omit<AlertButton, 'onPress'> & { onPress?: (text: AlertInputValue) => void })[];
+  buttons: (Omit & { onPress?: (text: AlertInputValue) => void })[];
   message?: string | undefined;
   prompt?: {
-    type?: Exclude<AlertType, 'default'> | undefined;
+    type?: Exclude | undefined;
     defaultValue?: string | undefined;
     keyboardType?: KeyboardType | undefined;
   };
   materialPortalHost?: string;
-  materialIcon?: Pick<IconProps<'material'>, 'color' | 'size'> & { name: MaterialIconName };
+  materialIcon?: Pick & { name: MaterialIconName };
   materialWidth?: number;
   children?: React.ReactNode;
 };
 
-type AlertRef = React.ElementRef<typeof View> & {
+type AlertRef = React.ElementRef & {
   show: () => void;
   prompt: (args: AlertProps & { prompt: AlertProps['prompt'] }) => void;
   alert: (args: AlertProps) => void;

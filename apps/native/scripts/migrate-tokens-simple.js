@@ -196,7 +196,10 @@ class SimpleTokenMigrator {
           fs.writeFileSync(filePath, modifiedContent, 'utf8');
         }
         console.log(
-          `${this.dryRun ? '📝' : '✅'} ${path.relative(process.cwd(), filePath)} (${fileChanges} changes)`
+          `${this.dryRun ? '📝' : '✅'} ${path.relative(
+            process.cwd(),
+            filePath
+          )} (${fileChanges} changes)`
         );
         this.totalChanges += fileChanges;
       }

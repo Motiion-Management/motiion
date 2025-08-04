@@ -18,7 +18,10 @@ export function OnboardingScreenWrapperHybrid({
 
   // Log which mode is being used
   React.useEffect(() => {
-    console.log(`[OnboardingScreenWrapperHybrid] ${screenName || 'Screen'} using`, useV3 ? 'V3 navigation with V1 UI' : 'V1 only');
+    console.log(
+      `[OnboardingScreenWrapperHybrid] ${screenName || 'Screen'} using`,
+      useV3 ? 'V3 navigation with V1 UI' : 'V1 only'
+    );
   }, [useV3, screenName]);
 
   // For now, always use V1 component

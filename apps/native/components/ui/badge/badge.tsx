@@ -37,7 +37,7 @@ const badgeTextVariants = cva('text-xs font-semibold ', {
   },
 });
 
-type BadgeProps = SlottableViewProps & VariantProps<typeof badgeVariants>;
+type BadgeProps = SlottableViewProps & VariantProps;
 
 function Badge({ className, variant, asChild, ...props }: BadgeProps) {
   const Component = asChild ? Slot : View;

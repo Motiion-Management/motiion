@@ -18,7 +18,10 @@ export function OnboardingScreenWrapper({
 
   // Log which version is being used
   React.useEffect(() => {
-    console.log(`[OnboardingScreenWrapper] ${screenName || 'Screen'} using V1 component with`, useV3 ? 'V3 navigation' : 'V1 navigation');
+    console.log(
+      `[OnboardingScreenWrapper] ${screenName || 'Screen'} using V1 component with`,
+      useV3 ? 'V3 navigation' : 'V1 navigation'
+    );
   }, [useV3, screenName]);
 
   // Always use V1 component - it will internally handle V3 logic via useHybridOnboarding

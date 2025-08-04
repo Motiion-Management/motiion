@@ -14,7 +14,7 @@ export function DatePicker({
   materialTimeLabel,
   materialTimeLabelClassName,
   ...props
-}: React.ComponentProps<typeof DateTimePicker> & {
+}: React.ComponentProps & {
   mode: 'date' | 'time' | 'datetime';
 } & {
   materialDateClassName?: string;

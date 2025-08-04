@@ -20,12 +20,8 @@ export interface WheelPickerData<T = any> {
   label: string;
 }
 
-export interface WheelPickerProps<T = any>
-  extends Omit<
-    React.ComponentPropsWithoutRef<typeof InteropWheelPicker>,
-    'data' | 'value' | 'onValueChanged'
-  > {
-  data: WheelPickerData<T>[];
+export interface WheelPickerProps<T = any> extends Omit {
+  data: WheelPickerData[];
   value: T;
   onValueChange: (value: T) => void;
   label?: string;
@@ -47,7 +43,7 @@ export function WheelPicker<T = any>({
   contentContainerClassName,
   width,
   ...props
-}: WheelPickerProps<T>) {
+}: WheelPickerProps) {
   const handleValueChange = (event: { item: { value: T; label?: string } }) => {
     onValueChange(event.item.value);
   };

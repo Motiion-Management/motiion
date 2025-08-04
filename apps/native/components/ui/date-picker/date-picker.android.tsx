@@ -6,7 +6,7 @@ import { Text } from '~/components/ui/text';
 import { cn } from '~/lib/cn';
 
 export function DatePicker(
-  props: React.ComponentProps<typeof DateTimePicker> & {
+  props: React.ComponentProps & {
     mode: 'date' | 'time' | 'datetime';
   } & {
     materialDateClassName?: string;

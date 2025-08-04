@@ -7,7 +7,7 @@ import { Id } from '@packages/backend/convex/_generated/dataModel';
  * Hook that loads image URLs progressively
  * Returns immediately with placeholder, then loads actual URL
  */
-export function useProgressiveImage(storageId: Id<'_storage'> | undefined) {
+export function useProgressiveImage(storageId: Id | undefined) {
   const [imageUrl, setImageUrl] = useState<string | null>(null);
   const url = useQuery(
     api.users.headshotsOptimized.getHeadshotUrl,

@@ -12,7 +12,7 @@ export type HelperTextProps = {
 };
 export const HelperText = ({ message, action }: HelperTextProps) => {
   return (
-    <View className="mx-6 flex-row items-center gap-4">
+    <View className="z-0 mx-6 flex-row items-center gap-4">
       <Text variant="bodyXs" className="text-text-low">
         {message}
       </Text>

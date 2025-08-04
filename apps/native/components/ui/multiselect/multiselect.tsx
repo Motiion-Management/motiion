@@ -28,7 +28,7 @@ export interface MultiselectProps {
   children: React.ReactNode;
 }
 
-const Multiselect = React.forwardRef<React.ElementRef<typeof View>, MultiselectProps>(
+const Multiselect = React.forwardRef<React.ElementRef, MultiselectProps>(
   ({ values, onValueChange, disabled, className, children, ...props }, ref) => {
     const contextValue = React.useMemo(
       () => ({ values, onValueChange, disabled }),
@@ -52,45 +52,44 @@ export interface MultiselectItemProps {
   description?: string;
 }
 
-const MultiselectItem = React.forwardRef<
-  React.ElementRef<typeof SelectionCard>,
-  MultiselectItemProps
->(({ value, label, description }, ref) => {
-  const { values, onValueChange, disabled } = useMultiselectContext();
+const MultiselectItem = React.forwardRef<React.ElementRef, MultiselectItemProps>(
+  ({ value, label, description }, ref) => {
+    const { values, onValueChange, disabled } = useMultiselectContext();
 
-  const handleSelect = React.useCallback(
-    (itemValue: string, selected: boolean) => {
-      const currentValues = values || [];
+    const handleSelect = React.useCallback(
+      (itemValue: string, selected: boolean) => {
+        const currentValues = values || [];
 
-      let newValues: string[];
-      if (selected) {
-        newValues = currentValues.includes(itemValue)
-          ? currentValues
-          : [...currentValues, itemValue];
-      } else {
-        newValues = currentValues.filter((v) => v !== itemValue);
-      }
+        let newValues: string[];
+        if (selected) {
+          newValues = currentValues.includes(itemValue)
+            ? currentValues
+            : [...currentValues, itemValue];
+        } else {
+          newValues = currentValues.filter((v) => v !== itemValue);
+        }
 
-      onValueChange(newValues);
-    },
-    [values, onValueChange]
-  );
+        onValueChange(newValues);
+      },
+      [values, onValueChange]
+    );
 
-  const isSelected = values?.includes(value) || false;
+    const isSelected = values?.includes(value) || false;
 
-  return (
-    <SelectionCard
-      ref={ref}
-      variant="checkbox"
-      value={value}
-      label={label}
-      description={description}
-      selected={isSelected}
-      onSelect={handleSelect}
-      disabled={disabled}
-    />
-  );
-});
+    return (
+      <SelectionCard
+        ref={ref}
+        variant="checkbox"
+        value={value}
+        label={label}
+        description={description}
+        selected={isSelected}
+        onSelect={handleSelect}
+        disabled={disabled}
+      />
+    );
+  }
+);
 MultiselectItem.displayName = 'MultiselectItem';
 
 export { Multiselect, MultiselectItem };

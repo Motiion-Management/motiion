@@ -35,7 +35,7 @@ export default function AgencySelectionScreen() {
   const [selectedAgencies, setSelectedAgencies] = useState<string[]>([]);
   const [agencyInputs, setAgencyInputs] = useState<string[]>(['']);
   const [showNewAgencyTooltip, setShowNewAgencyTooltip] = useState<number | null>(null);
-  const searchTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const searchTimeoutRef = useRef<ReturnType | null>(null);
 
   const form = useAppForm({
     defaultValues: {

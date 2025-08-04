@@ -71,4 +71,4 @@ export const sizingValidator = z.object({
     .optional(),
 });
 
-export type SizingFormData = z.infer<typeof sizingValidator>;
+export type SizingFormData = z.infer;

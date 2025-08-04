@@ -3,7 +3,7 @@ import { useQuery } from 'convex/react';
 import React, { createContext, useContext, ReactNode } from 'react';
 
 interface SharedUserContextValue {
-  user: ReturnType<typeof useQuery<typeof api.users.getMyUser>>;
+  user: ReturnType;
   isLoading: boolean;
 }
 

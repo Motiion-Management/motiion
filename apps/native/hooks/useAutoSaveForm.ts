@@ -8,14 +8,14 @@ export interface AutoSaveConfig {
   onSaveStart?: () => void;
   onSaveSuccess?: () => void;
   onSaveError?: (error: Error) => void;
-  fieldMapping?: Record<string, string>;
+  fieldMapping?: Record;
 }
 
 export interface AutoSaveState {
   isSaving: boolean;
   lastSaved: Date | null;
   error: Error | null;
-  dirtyFields: Set<string>;
+  dirtyFields: Set;
 }
 
 /**
@@ -33,8 +33,8 @@ export function useAutoSaveForm(config: AutoSaveConfig = {}) {
     dirtyFields: new Set(),
   });
 
-  const pendingSaves = useRef<Record<string, any>>({});
-  const saveTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const pendingSaves = useRef<Record>({});
+  const saveTimeoutRef = useRef<ReturnType | null>(null);
 
   // Debounced save function
   const performSave = useCallback(async () => {
@@ -48,7 +48,7 @@ export function useAutoSaveForm(config: AutoSaveConfig = {}) {
 
     try {
       // Transform flat fields into nested structure for Convex
-      const updatePayload: Record<string, any> = {};
+      const updatePayload: Record = {};
 
       Object.entries(fieldsToSave).forEach(([key, value]) => {
         if (fieldMapping[key]) {
@@ -116,7 +116,7 @@ export function useAutoSaveForm(config: AutoSaveConfig = {}) {
 
   // Save multiple fields at once
   const saveFields = useCallback(
-    (fields: Record<string, any>) => {
+    (fields: Record) => {
       Object.assign(pendingSaves.current, fields);
       setSaveState((prev) => ({
         ...prev,

@@ -17,12 +17,7 @@ interface SizingPickerSheetProps {
   onOpenChange: (isOpen: boolean) => void;
 }
 
-export const SizingPickerSheet: React.FC<SizingPickerSheetProps> = ({
-  metric,
-  initialValue,
-  isOpen,
-  onOpenChange,
-}) => {
+export const SizingPickerSheet: React.FC = ({ metric, initialValue, isOpen, onOpenChange }) => {
   const updateSizingField = useMutation(api.users.updateMySizingField);
   // Initialize with initialValue or first available value
   const defaultValue = initialValue || metric.values[0];

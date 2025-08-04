@@ -5,17 +5,17 @@
 interface PerformanceMark {
   name: string;
   timestamp: number;
-  metadata?: Record<string, any>;
+  metadata?: Record;
 }
 
 class PerformanceDebugger {
-  private marks: Map<string, PerformanceMark> = new Map();
+  private marks: Map = new Map();
   private enabled = __DEV__; // Only in development
 
   /**
    * Start a performance measurement
    */
-  mark(name: string, metadata?: Record<string, any>) {
+  mark(name: string, metadata?: Record) {
     if (!this.enabled) return;
 
     const timestamp = performance.now();
@@ -27,7 +27,7 @@ class PerformanceDebugger {
   /**
    * End a performance measurement and log the duration
    */
-  measure(startMark: string, endMark?: string, metadata?: Record<string, any>) {
+  measure(startMark: string, endMark?: string, metadata?: Record) {
     if (!this.enabled) return;
 
     const start = this.marks.get(startMark);
@@ -59,7 +59,7 @@ class PerformanceDebugger {
   /**
    * Log a single event with timestamp
    */
-  log(event: string, metadata?: Record<string, any>) {
+  log(event: string, metadata?: Record) {
     if (!this.enabled) return;
 
     console.log(`[PERF] ${this.formatTimestamp()} ${event}`, metadata || '');
@@ -77,7 +77,13 @@ class PerformanceDebugger {
    */
   private formatTimestamp(): string {
     const now = new Date();
-    return `${now.getHours().toString().padStart(2, '0')}:${now.getMinutes().toString().padStart(2, '0')}:${now.getSeconds().toString().padStart(2, '0')}.${now.getMilliseconds().toString().padStart(3, '0')}`;
+    return `${now.getHours().toString().padStart(2, '0')}:${now
+      .getMinutes()
+      .toString()
+      .padStart(2, '0')}:${now.getSeconds().toString().padStart(2, '0')}.${now
+      .getMilliseconds()
+      .toString()
+      .padStart(3, '0')}`;
   }
 
   /**
@@ -96,15 +102,13 @@ class PerformanceDebugger {
 export const perfDebug = new PerformanceDebugger();
 
 // Convenience functions
-export const perfMark = (name: string, metadata?: Record<string, any>) =>
-  perfDebug.mark(name, metadata);
-export const perfMeasure = (startMark: string, endMark?: string, metadata?: Record<string, any>) =>
+export const perfMark = (name: string, metadata?: Record) => perfDebug.mark(name, metadata);
+export const perfMeasure = (startMark: string, endMark?: string, metadata?: Record) =>
   perfDebug.measure(startMark, endMark, metadata);
-export const perfLog = (event: string, metadata?: Record<string, any>) =>
-  perfDebug.log(event, metadata);
+export const perfLog = (event: string, metadata?: Record) => perfDebug.log(event, metadata);
 
 // React component lifecycle helpers
-export const usePerfTracking = (componentName: string, props?: Record<string, any>) => {
+export const usePerfTracking = (componentName: string, props?: Record) => {
   // Track mount
   React.useEffect(() => {
     perfMark(`${componentName}:mount`, props);

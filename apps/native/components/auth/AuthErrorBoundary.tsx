@@ -15,10 +15,7 @@ interface AuthErrorBoundaryState {
   isAuthError: boolean;
 }
 
-export class AuthErrorBoundary extends React.Component<
-  AuthErrorBoundaryProps,
-  AuthErrorBoundaryState
-> {
+export class AuthErrorBoundary extends React.Component {
   constructor(props: AuthErrorBoundaryProps) {
     super(props);
     this.state = { hasError: false, isAuthError: false };

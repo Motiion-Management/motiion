@@ -1,15 +1,12 @@
 import { api } from '@packages/backend/convex/_generated/api';
-import { useMutation } from 'convex/react';
-import React, { useEffect } from 'react';
+import { useMutation, useQuery } from 'convex/react';
+import React from 'react';
 import * as z from 'zod';
 
 import { ValidationModeForm } from '~/components/form/ValidationModeForm';
 import { useAppForm } from '~/components/form/appForm';
 import { BaseOnboardingScreen } from '~/components/layouts/BaseOnboardingScreen';
 import { OnboardingStepGuard } from '~/components/onboarding/OnboardingGuard';
-import { useOnboardingCursor } from '~/hooks/useOnboardingCursor';
-import { trackScreen, perfLog } from '~/utils/performanceDebug';
-import { OnboardingScreenWrapper } from '~/components/onboarding/OnboardingScreenWrapper';
 
 const profileTypeValidator = z.object({
   profileType: z.enum(['dancer', 'choreographer'], {
@@ -17,18 +14,13 @@ const profileTypeValidator = z.object({
   }),
 });
 
-type ProfileType = 'dancer' | 'choreographer' | 'guest';
-
 export default function ProfileTypeScreen() {
-  return <OnboardingScreenWrapper v1Component={ProfileTypeScreenV1} screenName="profile-type" />;
-}
-
-function ProfileTypeScreenV1() {
+  const user = useQuery(api.users.getMyUser);
   const updateUser = useMutation(api.users.updateMyUser);
 
   const form = useAppForm({
     defaultValues: {
-      profileType: undefined as ProfileType | undefined,
+      profileType: user?.profileType,
     },
     validators: {
       onChange: profileTypeValidator,

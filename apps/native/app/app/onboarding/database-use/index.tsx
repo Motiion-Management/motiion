@@ -1,50 +1,65 @@
-import { useRouter } from 'expo-router';
+import { api } from '@packages/backend/convex/_generated/api';
+import { useMutation, useQuery } from 'convex/react';
 import React from 'react';
-import { View, Text } from 'react-native';
+import { toast } from 'sonner-native';
+import * as z from 'zod';
 
+import { ValidationModeForm } from '~/components/form/ValidationModeForm';
+import { useAppForm } from '~/components/form/appForm';
 import { BaseOnboardingScreen } from '~/components/layouts/BaseOnboardingScreen';
 import { OnboardingStepGuard } from '~/components/onboarding/OnboardingGuard';
-import { useOnboardingNavigation, useOnboardingStatus } from '~/hooks/useOnboardingStatus';
+
+const databaseUseValidator = z.object({
+  databaseUse: z.string().min(1, 'Please describe how you will use the database'),
+});
 
 export default function DatabaseUseScreen() {
-  const router = useRouter();
-  const { getStepTitle } = useOnboardingStatus();
-  const { advanceToNextStep } = useOnboardingNavigation();
+  const updateUser = useMutation(api.users.updateMyUser);
+  const user = useQuery(api.users.getMyUser);
 
-  const handleContinue = async () => {
-    try {
-      // TODO: Implement database use form logic
-      console.log('Database use step - implement form logic');
+  const form = useAppForm({
+    defaultValues: {
+      databaseUse: user?.databaseUse || '',
+    },
+    validators: {
+      onChange: databaseUseValidator,
+    },
+    onSubmit: async ({ value }) => {
+      if (!value.databaseUse) return;
 
-      // Navigate to the next step
-      const result = await advanceToNextStep();
-      if (result.route) {
-        router.push(result.route);
-      } else {
-        // If no next step, onboarding is complete
-        router.push('/app/home');
+      try {
+        await updateUser({
+          databaseUse: value.databaseUse,
+        });
+      } catch (error) {
+        console.error('Error updating database use:', error);
+        toast.error('Failed to update database use. Please try again.');
       }
-    } catch (error) {
-      console.error('Error in database use step:', error);
-    }
-  };
+    },
+  });
+
+  const isFormReady = form.state.canSubmit && !form.state.isSubmitting;
 
   return (
     <OnboardingStepGuard requiredStep="database-use">
       <BaseOnboardingScreen
-        title={getStepTitle()}
-        description="How will you use this database?"
-        canProgress={false} // TODO: Set to true when form is filled
+        title="How will you use this database?"
+        description="Tell us about your intended use"
+        canProgress={isFormReady}
         primaryAction={{
-          onPress: handleContinue,
-          disabled: true, // TODO: Enable when form is valid
+          onPress: () => form.handleSubmit(),
         }}>
-        <View className="flex-1 items-center justify-center">
-          <Text className="text-lg text-gray-500">Database use form will be implemented here</Text>
-          <Text className="mt-2 text-sm text-gray-400">
-            This will include database usage purpose and access requirements
-          </Text>
-        </View>
+        <ValidationModeForm form={form}>
+          <form.AppField
+            name="databaseUse"
+            children={(field) => (
+              <field.TextAreaField
+                placeholder="Describe how you plan to use the database..."
+                rows={4}
+              />
+            )}
+          />
+        </ValidationModeForm>
       </BaseOnboardingScreen>
     </OnboardingStepGuard>
   );

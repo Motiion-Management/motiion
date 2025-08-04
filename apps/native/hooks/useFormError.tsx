@@ -1,7 +1,7 @@
 import React, { createContext, useCallback, useContext, useState } from 'react';
 
 interface FormErrorContextValue {
-  externalErrors: Record<string, string>;
+  externalErrors: Record;
   setExternalError: (field: string, error: string | null) => void;
   clearExternalErrors: () => void;
   clearExternalError: (field: string) => void;
@@ -10,7 +10,7 @@ interface FormErrorContextValue {
 const FormErrorContext = createContext<FormErrorContextValue | null>(null);
 
 export const FormErrorProvider = ({ children }: { children: React.ReactNode }) => {
-  const [externalErrors, setExternalErrors] = useState<Record<string, string>>({});
+  const [externalErrors, setExternalErrors] = useState<Record>({});
 
   const setExternalError = useCallback((field: string, error: string | null) => {
     setExternalErrors((prev) => {

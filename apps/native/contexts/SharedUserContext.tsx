@@ -2,7 +2,7 @@ import React, { createContext, useContext, ReactNode } from 'react';
 import { api } from '@packages/backend/convex/_generated/api';
 import { useQuery } from 'convex/react';
 
-type User = ReturnType<typeof useQuery<typeof api.users.getMyUser>>;
+type User = ReturnType;
 
 export interface SharedUserContextValue {
   user: User;

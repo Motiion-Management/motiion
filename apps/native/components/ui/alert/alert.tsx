@@ -67,7 +67,7 @@ const Alert = React.forwardRef<AlertRef, AlertProps>(
       };
     });
 
-    function promptAlert(args: AlertProps & { prompt: Required<AlertProps['prompt']> }) {
+    function promptAlert(args: AlertProps & { prompt: Required }) {
       setText(args.prompt?.defaultValue ?? '');
       setPassword('');
       setProps(args);

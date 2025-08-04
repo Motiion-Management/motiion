@@ -5,7 +5,7 @@ import { FormErrorProvider } from '~/hooks/useFormError';
 
 interface FormProviderProps {
   children: React.ReactNode;
-  config?: Partial<FormConfig>;
+  config?: Partial;
 }
 
 export const FormProvider = ({ children, config }: FormProviderProps) => {

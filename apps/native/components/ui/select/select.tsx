@@ -11,7 +11,7 @@ export function Picker<T>({
   dropdownIconRippleColor,
   className,
   ...props
-}: React.ComponentPropsWithoutRef<typeof RNPicker<T>>) {
+}: React.ComponentPropsWithoutRef) {
   const { colors } = useColorScheme();
   return (
     <View

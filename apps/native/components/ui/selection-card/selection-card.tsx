@@ -16,7 +16,7 @@ export interface SelectionCardProps {
   disabled?: boolean;
 }
 
-const SelectionCard = React.forwardRef<React.ElementRef<typeof Pressable>, SelectionCardProps>(
+const SelectionCard = React.forwardRef<React.ElementRef, SelectionCardProps>(
   ({ variant, value, label, description, selected, onSelect, disabled }, ref) => {
     const handlePress = () => {
       if (!disabled) {

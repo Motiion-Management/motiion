@@ -223,7 +223,10 @@ class FigmaTokenMigrator {
 
         const totalFileChanges = fileChanges.reduce((sum, change) => sum + change.count, 0);
         console.log(
-          `${this.dryRun ? '📝' : '✅'} ${path.relative(process.cwd(), filePath)} (${totalFileChanges} changes)`
+          `${this.dryRun ? '📝' : '✅'} ${path.relative(
+            process.cwd(),
+            filePath
+          )} (${totalFileChanges} changes)`
         );
 
         this.changesLog.push({

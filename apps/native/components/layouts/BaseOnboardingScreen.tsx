@@ -6,10 +6,10 @@ import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context'
 import { BackgroundGradientView } from '~/components/ui/background-gradient-view';
 import { Button } from '~/components/ui/button';
 import { Text } from '~/components/ui/text';
-import { useOnboardingCursor } from '~/hooks/useOnboardingCursor';
+import { useSimpleOnboardingFlow } from '~/hooks/useSimpleOnboardingFlow';
 import ChevronLeft from '~/lib/icons/ChevronLeft';
 import ChevronRight from '~/lib/icons/ChevronRight';
-import { perfLog, perfMeasure } from '~/utils/performanceDebug';
+import { perfLog } from '~/utils/performanceDebug';
 
 export const BaseOnboardingScreen = ({
   title,
@@ -36,10 +36,9 @@ export const BaseOnboardingScreen = ({
   };
 }) => {
   const insets = useSafeAreaInsets();
-  const cursor = useOnboardingCursor();
+  const onboardingFlow = useSimpleOnboardingFlow();
+  console.log('onboardingFlow', onboardingFlow);
   const [isNavigating, setIsNavigating] = useState(false);
-
-  // Prefetch next step route for better performance
 
   return (
     <BackgroundGradientView>
@@ -90,28 +89,27 @@ export const BaseOnboardingScreen = ({
               )}
             </View>
 
-            {cursor.canGoPrevious && (
+            {onboardingFlow.canGoPrevious && (
               <Button
                 size="icon"
                 variant="plain"
                 onPress={() => {
                   perfLog('button:previousPressed', { title });
-                  // setIsNavigating(true);
-                  cursor.goToPreviousStep();
-                  // setTimeout(() => setIsNavigating(false), 300);
+                  setIsNavigating(true);
+                  onboardingFlow.navigatePrevious();
+                  setTimeout(() => setIsNavigating(false), 300);
                 }}
-                disabled={isNavigating}>
+                disabled={onboardingFlow.isLoading}>
                 <ChevronLeft size={24} className="color-icon-accent" />
               </Button>
             )}
             {/* Continue Button */}
             <Button
-              disabled={!canProgress || !cursor.canGoNext || isNavigating}
+              disabled={!canProgress || !onboardingFlow.canGoNext}
               size="icon"
               variant="accent"
               onPress={async () => {
                 // Show immediate feedback
-                setIsNavigating(true);
 
                 try {
                   // Execute primary action first (validation, etc.)
@@ -119,13 +117,12 @@ export const BaseOnboardingScreen = ({
                     primaryAction.onPress();
                   }
                   // Only navigate if primary action doesn't handle navigation
-                  if (cursor.canGoNext && !primaryAction?.handlesNavigation) {
-                    cursor.goToNextStep();
+                  if (onboardingFlow.canGoNext && !primaryAction?.handlesNavigation) {
+                    onboardingFlow.navigateNext();
                   }
                 } finally {
-                  perfMeasure('button:handleNext');
                   // Reset state after a brief delay to prevent flicker
-                  // setTimeout(() => setIsNavigating(false), 300);
+                  setTimeout(() => setIsNavigating(false), 300);
                 }
               }}>
               {isNavigating ? (

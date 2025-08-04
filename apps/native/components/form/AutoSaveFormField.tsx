@@ -6,7 +6,7 @@ import { useAutoSaveForm, AutoSaveConfig } from '~/hooks/useAutoSaveForm';
 import { cn } from '~/lib/utils';
 
 interface AutoSaveFormFieldProps {
-  children: React.ReactElement<{ value?: any; onValueChange?: (value: any) => void }>;
+  children: React.ReactElement;
   fieldName: string;
   value: any;
   onValueChange?: (value: any) => void;

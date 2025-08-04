@@ -94,7 +94,7 @@ const BORDER_CURVE: ViewStyle = {
   borderCurve: 'continuous',
 };
 
-type ButtonVariantProps = VariantProps<typeof buttonVariants>;
+type ButtonVariantProps = VariantProps;
 type ButtonVariant = ButtonVariantProps['variant'];
 
 type AndroidOnlyButtonProps = {
@@ -108,7 +108,7 @@ type ButtonProps = PressableProps & ButtonVariantProps & AndroidOnlyButtonProps;
 
 const Root = Platform.OS === 'android' ? View : Slot;
 
-const Button = React.forwardRef<React.ElementRef<typeof Pressable>, ButtonProps>(
+const Button = React.forwardRef<React.ElementRef, ButtonProps>(
   (
     { className, variant = 'primary', size, style = BORDER_CURVE, androidRootClassName, ...props },
     ref

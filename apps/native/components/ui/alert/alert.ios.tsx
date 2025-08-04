@@ -20,7 +20,7 @@ const Alert = React.forwardRef<AlertRef, AlertProps>(
       deps: [prompt],
     });
 
-    function promptAlert(args: AlertProps & { prompt: Required<AlertProps['prompt']> }) {
+    function promptAlert(args: AlertProps & { prompt: Required }) {
       RNAlert.prompt(
         args.title,
         args.message,
@@ -41,7 +41,7 @@ const Alert = React.forwardRef<AlertRef, AlertProps>(
           title,
           message,
           buttons,
-          prompt: prompt as Required<AlertProps['prompt']>,
+          prompt: prompt as Required,
         });
         return;
       }

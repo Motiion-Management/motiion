@@ -9,7 +9,7 @@ export interface WorkLocationFormData {
 export interface WorkLocationFormOptions {
   primaryLocation?: PlaceKitLocation | null;
   existingWorkLocations?: PlaceKitLocation[];
-  onSubmit?: (data: WorkLocationFormData) => Promise<void> | void;
+  onSubmit?: (data: WorkLocationFormData) => Promise | void;
 }
 
 export interface WorkLocationFormState {
@@ -25,7 +25,7 @@ export interface WorkLocationFormActions {
   setLocation: (index: number, location: PlaceKitLocation | null) => void;
   addLocation: () => void;
   removeLocation: (index: number) => void;
-  submit: () => Promise<void>;
+  submit: () => Promise;
   reset: () => void;
   validate: () => boolean;
 }
@@ -41,8 +41,8 @@ export function useWorkLocationForm(options: WorkLocationFormOptions = {}) {
       existingWorkLocations.length > 0
         ? existingWorkLocations
         : primaryLocation
-          ? [primaryLocation]
-          : [null];
+        ? [primaryLocation]
+        : [null];
 
     return {
       data: {
@@ -177,8 +177,8 @@ export function useWorkLocationForm(options: WorkLocationFormOptions = {}) {
       existingWorkLocations.length > 0
         ? existingWorkLocations
         : primaryLocation
-          ? [primaryLocation]
-          : [null];
+        ? [primaryLocation]
+        : [null];
 
     setState({
       data: {

@@ -50,7 +50,7 @@ export function useOnboardingStatus(overrideStep?: string) {
     (step: string, profileType: string) => {
       const steps = getAllSteps(profileType);
       const index = steps.findIndex((s) => s === step);
-      return index >= 0 ? index : (status?.currentStepIndex ?? 0);
+      return index >= 0 ? index : status?.currentStepIndex ?? 0;
     },
     [getAllSteps, status]
   );
@@ -58,7 +58,7 @@ export function useOnboardingStatus(overrideStep?: string) {
   const profileType = user?.profileType || 'dancer';
   const currentStepIndex = overrideStep
     ? getStepIndex(overrideStep, profileType)
-    : (status?.currentStepIndex ?? 0);
+    : status?.currentStepIndex ?? 0;
 
   return {
     // Loading state - include auth loading state, but not when we know user doesn't exist

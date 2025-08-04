@@ -11,11 +11,11 @@ import { CheckCircle2, Loader2 } from 'lucide-react-native';
 import { Text } from '~/components/ui/text';
 import { cn } from '~/lib/utils';
 
-interface AutoSubmitFormV3Props<T extends Record<string, any> = Record<string, any>> {
+interface AutoSubmitFormV3Props<T extends Record = Record> {
   children: ReactNode;
-  schema?: z.ZodSchema<T>;
-  defaultValues?: Partial<T>;
-  onSubmit?: (data: T) => Promise<void> | void;
+  schema?: z.ZodSchema;
+  defaultValues?: Partial;
+  onSubmit?: (data: T) => Promise | void;
   className?: string;
   showSaveIndicator?: boolean;
   // Override auto-submit behavior
@@ -33,7 +33,7 @@ type SaveState = 'idle' | 'saving' | 'saved' | 'error';
  * - Handles decision-based navigation
  * - Shows save state indicators
  */
-export function AutoSubmitFormV3<T extends Record<string, any> = Record<string, any>>({
+export function AutoSubmitFormV3<T extends Record = Record>({
   children,
   schema,
   defaultValues,
@@ -43,7 +43,7 @@ export function AutoSubmitFormV3<T extends Record<string, any> = Record<string, 
   autoSubmit: autoSubmitOverride,
   submitDelay: submitDelayOverride,
   onNavigate,
-}: AutoSubmitFormV3Props<T>) {
+}: AutoSubmitFormV3Props) {
   const { currentStep, navigateNext, flow } = useOnboardingFlowV3();
   const { navigateBasedOnDecision, decisionField } = useDecisionNavigation(currentStep, flow);
   const updateUser = useMutation(api.users.updateMyUser);
@@ -188,7 +188,7 @@ export function AutoSubmitFormV3<T extends Record<string, any> = Record<string, 
 /**
  * Hook to access the auto-submit form context
  */
-export function useAutoSubmitForm<T extends Record<string, any> = Record<string, any>>() {
+export function useAutoSubmitForm<T extends Record = Record>() {
   const form = useForm<T>();
   const { currentStep } = useOnboardingFlowV3();
 

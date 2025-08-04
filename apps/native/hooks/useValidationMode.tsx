@@ -1,7 +1,7 @@
 import { useCallback, useState, createContext, useContext, ReactNode } from 'react';
 
 interface ValidationModeState {
-  hasBlurred: Set<string>;
+  hasBlurred: Set;
   hasSubmitted: boolean;
 }
 
