@@ -16,6 +16,7 @@ const ONBOARDING_FLOWS = {
     'location',
     'work-location',
     'representation',
+    'agency',
     'resume',
     'experiences',
     'training',
@@ -28,6 +29,7 @@ const ONBOARDING_FLOWS = {
     'headshots',
     'location',
     'representation',
+    'agency',
     'resume',
     'experiences',
     'complete',
@@ -71,7 +73,7 @@ export function useSimpleOnboardingFlow(): UseSimpleOnboardingFlowReturn {
   // Extract current step from URL
   const currentStepId = useMemo(() => {
     if (segments.length >= 3 && segments[1] === 'onboarding') {
-      return segments[2];
+      return segments[2] as (typeof ONBOARDING_FLOWS)[keyof typeof ONBOARDING_FLOWS][number] | null;
     }
     return null;
   }, [segments]);
@@ -102,6 +104,7 @@ export function useSimpleOnboardingFlow(): UseSimpleOnboardingFlowReturn {
   // Calculate current index
   const currentIndex = useMemo(() => {
     if (!currentStepId) return 0;
+    // @ts-ignore
     const index = activeFlow.indexOf(currentStepId);
     return index >= 0 ? index : 0;
   }, [activeFlow, currentStepId]);
@@ -118,12 +121,20 @@ export function useSimpleOnboardingFlow(): UseSimpleOnboardingFlowReturn {
       if (targetFlow && targetFlow.length > 1) {
         nextPath = `/app/onboarding/${targetFlow[1]}`;
       }
+    } else if (currentStepId === 'representation' && user?.representationStatus !== 'represented') {
+      // Skip agency step if already represented
+      nextPath = `/app/onboarding/${activeFlow[currentIndex + 2]}`;
     } else if (currentIndex < activeFlow.length - 1) {
       nextPath = `/app/onboarding/${activeFlow[currentIndex + 1]}`;
     }
 
     if (currentIndex > 0) {
       prevPath = `/app/onboarding/${activeFlow[currentIndex - 1]}`;
+    }
+
+    if (user?.representationStatus !== 'represented' && prevPath === '/app/onboarding/agency') {
+      // Skip agency step if already represented
+      prevPath = `/app/onboarding/representation`;
     }
 
     return { nextStepPath: nextPath, previousStepPath: prevPath };
