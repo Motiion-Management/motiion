@@ -1,0 +1,90 @@
+import { authMutation, authQuery, notEmpty } from '../util'
+import { v } from 'convex/values'
+import { ExperiencesCommercials } from '../validators/experiencesCommercials'
+import { getAll } from 'convex-helpers/server/relationships'
+import { query } from '../_generated/server'
+import { crud } from 'convex-helpers/server'
+
+// Basic CRUD operations
+export const { read } = crud(ExperiencesCommercials, query, authMutation)
+export const { create, update, destroy } = crud(
+  ExperiencesCommercials,
+  authQuery,
+  authMutation
+)
+
+// Add Commercial experience to user's resume
+export const addMyExperience = authMutation({
+  args: ExperiencesCommercials.withoutSystemFields,
+  returns: v.null(),
+  handler: async (ctx, experience) => {
+    const expId = await ctx.db.insert('experiencesCommercials', experience)
+    await ctx.db.patch(ctx.user._id, {
+      resume: {
+        ...ctx.user.resume,
+        experiencesCommercials: [...(ctx.user?.resume?.experiencesCommercials || []), expId]
+      }
+    })
+    return null
+  }
+})
+
+// Remove Commercial experience from user's resume
+export const removeMyExperience = authMutation({
+  args: { experienceId: v.id('experiencesCommercials') },
+  returns: v.null(),
+  handler: async (ctx, args) => {
+    await ctx.db.patch(ctx.user._id, {
+      resume: {
+        ...ctx.user.resume,
+        experiencesCommercials: (ctx.user.resume?.experiencesCommercials || []).filter(
+          (id) => id !== args.experienceId
+        )
+      }
+    })
+    await ctx.db.delete(args.experienceId)
+    return null
+  }
+})
+
+// Get user's Commercial experiences
+export const getMyExperiences = authQuery({
+  args: {},
+  returns: v.array(v.any()),
+  handler: async (ctx) => {
+    if (!ctx.user?.resume?.experiencesCommercials) return []
+
+    const experienceIds = ctx.user.resume.experiencesCommercials
+    const experiences = await getAll(ctx.db, experienceIds)
+    return experiences
+      .filter(notEmpty)
+      .sort((a, b) => {
+        // Sort by start date descending
+        const dateA = new Date(a.startDate).getTime()
+        const dateB = new Date(b.startDate).getTime()
+        return dateB - dateA
+      })
+  }
+})
+
+// Get public Commercial experiences for a user
+export const getUserPublicExperiences = query({
+  args: { userId: v.id('users') },
+  returns: v.array(v.any()),
+  handler: async (ctx, args) => {
+    const user = await ctx.db.get(args.userId)
+    if (!user?.resume?.experiencesCommercials) return []
+    
+    const experienceIds = user.resume.experiencesCommercials
+    const experiences = await getAll(ctx.db, experienceIds)
+
+    return experiences
+      .filter(notEmpty)
+      .filter((exp) => !exp?.private)
+      .sort((a, b) => {
+        const dateA = new Date(a.startDate).getTime()
+        const dateB = new Date(b.startDate).getTime()
+        return dateB - dateA
+      })
+  }
+})

@@ -21,7 +21,13 @@ export const representationObj = {
 export const zRepresentation = z.object(representationObj)
 
 export const resume = {
+  // Legacy field - kept for migration
   experiences: z.array(zid('experiences')).optional(),
+  // New experience fields
+  experiencesTvFilm: z.array(zid('experiencesTvFilm')).optional(),
+  experiencesMusicVideos: z.array(zid('experiencesMusicVideos')).optional(),
+  experiencesLivePerformances: z.array(zid('experiencesLivePerformances')).optional(),
+  experiencesCommercials: z.array(zid('experiencesCommercials')).optional(),
   uploads: zFileUploadObjectArray.optional(),
   skills: zSkills.optional()
 }
@@ -93,7 +99,7 @@ export const users = {
   sagAftraId: z.string().optional(),
   companyName: z.string().optional(),
   workLocation: z.array(z.string()).optional(), // Work location preferences
-  training: z.array(zid('experiences')).optional(), // Training experiences
+  training: z.array(zid('training')).optional(), // Training items (separate from experiences)
   databaseUse: z.string().optional(), // How user intends to use the database
   representationStatus: z
     .enum(['represented', 'seeking', 'independent'])
