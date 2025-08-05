@@ -90,6 +90,7 @@ export const users = {
 
   // onboarding-specific fields
   unionStatus: z.enum(['union', 'non-union', 'pending']).optional(),
+  sagAftraId: z.string().optional(),
   companyName: z.string().optional(),
   workLocation: z.array(z.string()).optional(), // Work location preferences
   training: z.array(zid('experiences')).optional(), // Training experiences

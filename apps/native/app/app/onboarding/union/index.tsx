@@ -1,51 +1,54 @@
-import { useRouter } from 'expo-router';
 import React from 'react';
 import { View, Text } from 'react-native';
 
 import { BaseOnboardingScreen } from '~/components/layouts/BaseOnboardingScreen';
-import { OnboardingStepGuard } from '~/components/onboarding/OnboardingGuard';
-import { useOnboardingNavigation, useOnboardingStatus } from '~/hooks/useOnboardingStatus';
+import { useMutation, useQuery } from 'convex/react';
+import { useAppForm } from '~/components/form/appForm';
+import { ValidationModeForm } from '~/components/form/ValidationModeForm';
+import { useUser } from '~/hooks/useUser';
+import { api } from '@packages/backend/convex/_generated/api';
+import * as z from 'zod';
+
+const unionValidator = z.object({
+  sag: z.string().optional(),
+});
 
 export default function UnionScreen() {
-  const router = useRouter();
-  const { getStepTitle } = useOnboardingStatus();
-  const { advanceToNextStep } = useOnboardingNavigation();
+  const user = useQuery(api.users.getMyUser);
+  const updateUser = useMutation(api.users.updateMyUser);
 
-  const handleContinue = async () => {
-    try {
-      // TODO: Implement union status form logic
-      console.log('Union step - implement form logic');
+  const form = useAppForm({
+    defaultValues: {
+      sag: user,
+    },
+    validators: {
+      onChange: unionValidator,
+    },
+    onSubmit: async ({ value }) => {
+      if (!value.sag) return;
 
-      // Navigate to the next step
-      const result = await advanceToNextStep();
-      if (result.route) {
-        router.push(result.route);
-      } else {
-        // If no next step, onboarding is complete
-        router.push('/app/home');
-      }
-    } catch (error) {
-      console.error('Error in union step:', error);
-    }
-  };
+      // Save the representation status
+      await updateUser({
+        sag: value.sag,
+      });
+    },
+  });
 
   return (
-    <OnboardingStepGuard requiredStep="union">
-      <BaseOnboardingScreen
-        title={getStepTitle()}
-        description="What's your union membership status?"
-        canProgress={false} // TODO: Set to true when form is filled
-        primaryAction={{
-          onPress: handleContinue,
-          disabled: true, // TODO: Enable when form is valid
-        }}>
-        <View className="flex-1 items-center justify-center">
-          <Text className="text-lg text-gray-500">Union status form will be implemented here</Text>
-          <Text className="mt-2 text-sm text-gray-400">
-            This will include union membership status and relevant details
-          </Text>
-        </View>
-      </BaseOnboardingScreen>
-    </OnboardingStepGuard>
+    <BaseOnboardingScreen
+      title="Are you a member of SAG-AFTRA?"
+      description="Enter your member ID. Please skip if you are not a member."
+      canProgress={false} // TODO: Set to true when form is filled
+      primaryAction={{
+        onPress: handleContinue,
+        disabled: true, // TODO: Enable when form is valid
+      }}>
+      <View className="flex-1 items-center justify-center">
+        <Text className="text-lg text-gray-500">Union status form will be implemented here</Text>
+        <Text className="mt-2 text-sm text-gray-400">
+          This will include union membership status and relevant details
+        </Text>
+      </View>
+    </BaseOnboardingScreen>
   );
 }

@@ -1,18 +1,17 @@
 import React, { createContext, useContext, ReactNode } from 'react';
 import { api } from '@packages/backend/convex/_generated/api';
 import { useQuery } from 'convex/react';
-
-type User = ReturnType;
+import { UserDoc } from '@packages/backend/convex/validators/users';
 
 export interface SharedUserContextValue {
-  user: User;
+  user: UserDoc | undefined;
   isLoading: boolean;
 }
 
 export const SharedUserContext = createContext<SharedUserContextValue | undefined>(undefined);
 
 export function SharedUserProvider({ children }: { children: ReactNode }) {
-  const user = useQuery(api.users.getMyUser);
+  const user = useQuery(api.users.getMyUser) || undefined;
   const isLoading = user === undefined;
 
   return (

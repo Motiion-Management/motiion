@@ -37,6 +37,12 @@ export default function RepresentationScreen() {
       await updateUser({
         representationStatus: value.representationStatus,
       });
+
+      if (value.representationStatus === 'represented') {
+        router.push('/app/onboarding/agency');
+      } else {
+        router.push('/app/onboarding/resume');
+      }
     },
   });
 
@@ -44,11 +50,14 @@ export default function RepresentationScreen() {
     <BaseOnboardingScreen
       title="Are you represented by an agent?"
       description="Select one"
-      helpText="Requires Verification"
       canProgress={form.state.canSubmit && !form.state.isSubmitting}
       primaryAction={{
         onPress: () => form.handleSubmit(),
         handlesNavigation: true,
+      }}
+      secondaryAction={{
+        onPress: () => { },
+        text: 'Requires Verification',
       }}>
       <ValidationModeForm form={form}>
         <form.AppField

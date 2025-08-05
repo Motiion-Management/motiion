@@ -174,6 +174,7 @@ export const STEP_ROUTES = {
   'work-location': '/app/onboarding/work-location',
   representation: '/app/onboarding/representation',
   agency: '/app/onboarding/agency',
+  resume: '/app/onboarding/resume',
   experiences: '/app/onboarding/experiences',
   training: '/app/onboarding/training',
   skills: '/app/onboarding/skills',
