@@ -37,7 +37,6 @@ export const BaseOnboardingScreen = ({
 }) => {
   const insets = useSafeAreaInsets();
   const onboardingFlow = useSimpleOnboardingFlow();
-  console.log('onboardingFlow', onboardingFlow);
   const [isNavigating, setIsNavigating] = useState(false);
 
   return (
@@ -110,6 +109,7 @@ export const BaseOnboardingScreen = ({
               variant="accent"
               onPress={async () => {
                 // Show immediate feedback
+                setIsNavigating(true);
 
                 try {
                   // Execute primary action first (validation, etc.)

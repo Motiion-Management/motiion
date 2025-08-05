@@ -17,7 +17,12 @@ interface SizingPickerSheetProps {
   onOpenChange: (isOpen: boolean) => void;
 }
 
-export const SizingPickerSheet: React.FC = ({ metric, initialValue, isOpen, onOpenChange }) => {
+export const SizingPickerSheet: React.FC<SizingPickerSheetProps> = ({
+  metric,
+  initialValue,
+  isOpen,
+  onOpenChange,
+}) => {
   const updateSizingField = useMutation(api.users.updateMySizingField);
   // Initialize with initialValue or first available value
   const defaultValue = initialValue || metric.values[0];
@@ -70,7 +75,7 @@ export const SizingPickerSheet: React.FC = ({ metric, initialValue, isOpen, onOp
         {/* Header */}
         <View className="flex-row items-center justify-between px-4 py-4">
           <Text variant="header4" className="text-text-default">
-            {`<${metric.label}>`}
+            {metric.label}
           </Text>
           <Pressable onPress={handleClose} className="p-2">
             <X className="h-6 w-6 color-icon-default" />

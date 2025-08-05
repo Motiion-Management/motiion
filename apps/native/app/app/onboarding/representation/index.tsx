@@ -7,7 +7,6 @@ import * as z from 'zod';
 import { ValidationModeForm } from '~/components/form/ValidationModeForm';
 import { useAppForm } from '~/components/form/appForm';
 import { BaseOnboardingScreen } from '~/components/layouts/BaseOnboardingScreen';
-import { OnboardingStepGuard } from '~/components/onboarding/OnboardingGuard';
 
 const representationStatusOptions = [
   { value: 'represented', label: "Yes, I'm represented" },
@@ -23,7 +22,6 @@ const representationValidator = z.object({
 
 export default function RepresentationScreen() {
   const updateUser = useMutation(api.users.updateMyUser);
-  const advanceStep = useMutation(api.onboarding.advanceOnboardingStep);
   const user = useQuery(api.users.getMyUser);
 
   const form = useAppForm({
@@ -36,41 +34,28 @@ export default function RepresentationScreen() {
     onSubmit: async ({ value }) => {
       if (!value.representationStatus) return;
 
-      try {
-        // Save the representation status
-        await updateUser({
-          representationStatus: value.representationStatus,
-        });
-
-        // Advance to next step using backend logic
-        const result = await advanceStep();
-
-        // Navigate to the route determined by backend
-        router.push(result.route as any);
-      } catch (error) {
-        console.error('Error updating representation status:', error);
-      }
+      await updateUser({
+        representationStatus: value.representationStatus,
+      });
     },
   });
 
   return (
-    <OnboardingStepGuard requiredStep="representation">
-      <BaseOnboardingScreen
-        title="Are you represented by an agent?"
-        description="Select one"
-        helpText="Requires Verification"
-        canProgress={form.state.canSubmit && !form.state.isSubmitting}
-        primaryAction={{
-          onPress: () => form.handleSubmit(),
-          handlesNavigation: true,
-        }}>
-        <ValidationModeForm form={form}>
-          <form.AppField
-            name="representationStatus"
-            children={(field) => <field.RadioGroupField options={representationStatusOptions} />}
-          />
-        </ValidationModeForm>
-      </BaseOnboardingScreen>
-    </OnboardingStepGuard>
+    <BaseOnboardingScreen
+      title="Are you represented by an agent?"
+      description="Select one"
+      helpText="Requires Verification"
+      canProgress={form.state.canSubmit && !form.state.isSubmitting}
+      primaryAction={{
+        onPress: () => form.handleSubmit(),
+        handlesNavigation: true,
+      }}>
+      <ValidationModeForm form={form}>
+        <form.AppField
+          name="representationStatus"
+          children={(field) => <field.RadioGroupField options={representationStatusOptions} />}
+        />
+      </ValidationModeForm>
+    </BaseOnboardingScreen>
   );
 }

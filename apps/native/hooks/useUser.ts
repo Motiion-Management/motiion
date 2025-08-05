@@ -7,7 +7,7 @@ import { SharedUserContext, SharedUserContextValue } from '~/contexts/SharedUser
  * Hook that uses SharedUserContext if available, otherwise falls back to direct query
  * This prevents issues when used outside of SharedUserProvider
  */
-export function useUser(): SharedUserContextValue {
+export function useUser() {
   const context = useContext(SharedUserContext);
 
   // If we're inside SharedUserProvider, use the shared value

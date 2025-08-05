@@ -17,18 +17,16 @@ const eyeColorValidator = z.object({
   }),
 });
 
-type EyeColor = (typeof EYECOLOR)[number];
-
 export default function EyeColorScreen() {
   const updateUser = useMutation(api.users.updateMyUser);
   const { user } = useUser();
 
   // Get existing value from user
-  const existingEyeColor = user?.attributes?.eyeColor as EyeColor | undefined;
+  const existingEyeColor = user?.attributes?.eyeColor;
 
   const form = useAppForm({
     defaultValues: {
-      eyeColor: existingEyeColor || undefined,
+      eyeColor: existingEyeColor,
     },
     validators: {
       onChange: eyeColorValidator,
@@ -39,6 +37,7 @@ export default function EyeColorScreen() {
       try {
         await updateUser({
           attributes: {
+            ...user.attributes,
             eyeColor: value.eyeColor,
           },
         });

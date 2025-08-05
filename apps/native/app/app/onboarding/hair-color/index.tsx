@@ -17,18 +17,16 @@ const hairColorValidator = z.object({
   }),
 });
 
-type HairColor = (typeof HAIRCOLOR)[number];
-
 export default function HairColorScreen() {
   const updateUser = useMutation(api.users.updateMyUser);
   const { user } = useUser();
 
   // Get existing value from user
-  const existingHairColor = user?.attributes?.hairColor as HairColor | undefined;
+  const existingHairColor = user?.attributes?.hairColor;
 
   const form = useAppForm({
     defaultValues: {
-      hairColor: existingHairColor || undefined,
+      hairColor: existingHairColor,
     },
     validators: {
       onChange: hairColorValidator,
@@ -39,6 +37,7 @@ export default function HairColorScreen() {
       try {
         await updateUser({
           attributes: {
+            ...user.attributes,
             hairColor: value.hairColor,
           },
         });

@@ -2,11 +2,9 @@ import React from 'react';
 import { View } from 'react-native';
 import { router } from 'expo-router';
 import { BaseOnboardingScreen } from '~/components/layouts/BaseOnboardingScreen';
-import { BaseOnboardingScreenV3 } from '~/components/layouts/BaseOnboardingScreenV3';
 import { Button } from '~/components/ui/button';
 import { Text } from '~/components/ui/text';
 import { OnboardingScreenWrapper } from '~/components/onboarding/OnboardingScreenWrapper';
-import { useIsV3Onboarding } from '../_layout';
 import { CheckCircle2 } from 'lucide-react-native';
 
 export default function CompleteScreen() {

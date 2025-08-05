@@ -17,18 +17,16 @@ const genderValidator = z.object({
   }),
 });
 
-type Gender = (typeof GENDER)[number];
-
 export default function GenderScreen() {
   const updateUser = useMutation(api.users.updateMyUser);
   const { user } = useUser();
 
   // Get existing value from user
-  const existingGender = user?.attributes?.gender as Gender | undefined;
+  const existingGender = user?.attributes?.gender;
 
   const form = useAppForm({
     defaultValues: {
-      gender: existingGender || undefined,
+      gender: existingGender,
     },
     validators: {
       onChange: genderValidator,
@@ -39,6 +37,7 @@ export default function GenderScreen() {
       try {
         await updateUser({
           attributes: {
+            ...user.attributes,
             gender: value.gender,
           },
         });

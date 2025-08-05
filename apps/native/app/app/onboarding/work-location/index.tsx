@@ -4,7 +4,6 @@ import React from 'react';
 import { View, ScrollView, Pressable, Keyboard } from 'react-native';
 
 import { BaseOnboardingScreen } from '~/components/layouts/BaseOnboardingScreen';
-import { OnboardingStepGuard } from '~/components/onboarding/OnboardingGuard';
 import { WorkLocationPicker } from '~/components/ui/work-location-picker';
 import { useWorkLocationForm } from '~/hooks/useWorkLocationForm';
 import { OnboardingScreenWrapper } from '~/components/onboarding/OnboardingScreenWrapper';
@@ -20,11 +19,11 @@ function WorkLocationScreenV1() {
   // Get primary location from previous step
   const primaryLocation = user?.location
     ? {
-        city: user.location.city || '',
-        state: user.location.state || '',
-        stateCode: user.location.state || '',
-        country: user.location.country || 'United States',
-      }
+      city: user.location.city || '',
+      state: user.location.state || '',
+      stateCode: user.location.state || '',
+      country: user.location.country || 'United States',
+    }
     : null;
 
   // Convert existing work locations back to PlaceKitLocation format
@@ -55,51 +54,47 @@ function WorkLocationScreenV1() {
   });
 
   return (
-    <OnboardingStepGuard requiredStep="work-location">
-      <BaseOnboardingScreen
-        title="Where can you work as a local?"
-        canProgress={workLocationForm.isValid}
-        primaryAction={{
-          onPress: workLocationForm.actions.submit,
-          disabled: !workLocationForm.isValid || workLocationForm.isSubmitting,
-        }}
-        secondaryAction={
-          workLocationForm.canAddMore
-            ? {
-                text: 'Add a location',
-                onPress: workLocationForm.actions.addLocation,
-              }
-            : undefined
-        }>
-        <Pressable className="w-full flex-1" onPress={Keyboard.dismiss}>
-          <ScrollView
-            className="w-full flex-1"
-            showsVerticalScrollIndicator={false}
-            keyboardShouldPersistTaps="handled"
-            nestedScrollEnabled={true}
-            contentContainerStyle={{ paddingBottom: 300 }}
-            style={{ overflow: 'visible' }}>
-            <View className="gap-6" style={{ overflow: 'visible' }}>
-              {/* Location inputs */}
-              {workLocationForm.data.locations.map((location, index) => (
-                <WorkLocationPicker
-                  key={index}
-                  index={index}
-                  value={location}
-                  onValueChange={(newLocation) =>
-                    workLocationForm.actions.setLocation(index, newLocation)
-                  }
-                  onRemove={() => workLocationForm.actions.removeLocation(index)}
-                  excludeLocations={workLocationForm.selectedLocations.filter(
-                    (_, i) => i !== index
-                  )}
-                  error={workLocationForm.errors.locations?.[index]}
-                />
-              ))}
-            </View>
-          </ScrollView>
-        </Pressable>
-      </BaseOnboardingScreen>
-    </OnboardingStepGuard>
+    <BaseOnboardingScreen
+      title="Where can you work as a local?"
+      canProgress={workLocationForm.isValid}
+      primaryAction={{
+        onPress: workLocationForm.actions.submit,
+        disabled: !workLocationForm.isValid || workLocationForm.isSubmitting,
+      }}
+      secondaryAction={
+        workLocationForm.canAddMore
+          ? {
+            text: 'Add a location',
+            onPress: workLocationForm.actions.addLocation,
+          }
+          : undefined
+      }>
+      <Pressable className="w-full flex-1" onPress={Keyboard.dismiss}>
+        <ScrollView
+          className="w-full flex-1"
+          showsVerticalScrollIndicator={false}
+          keyboardShouldPersistTaps="handled"
+          nestedScrollEnabled={true}
+          contentContainerStyle={{ paddingBottom: 300 }}
+          style={{ overflow: 'visible' }}>
+          <View className="gap-6" style={{ overflow: 'visible' }}>
+            {/* Location inputs */}
+            {workLocationForm.data.locations.map((location, index) => (
+              <WorkLocationPicker
+                key={index}
+                index={index}
+                value={location}
+                onValueChange={(newLocation) =>
+                  workLocationForm.actions.setLocation(index, newLocation)
+                }
+                onRemove={() => workLocationForm.actions.removeLocation(index)}
+                excludeLocations={workLocationForm.selectedLocations.filter((_, i) => i !== index)}
+                error={workLocationForm.errors.locations?.[index]}
+              />
+            ))}
+          </View>
+        </ScrollView>
+      </Pressable>
+    </BaseOnboardingScreen>
   );
 }
