@@ -50,10 +50,7 @@
     },
     "updates": {
       "url": "https://u.expo.dev/26b62811-8f3e-4bab-9548-9ab85dfa7cb2",
-      "assetPatternsToBeBundled": [
-        "**/*",
-        "**/*"
-      ]
+      "assetPatternsToBeBundled": ["**/*", "**/*"]
     },
     "notification": {
       "icon": "./assets/icon.png",
@@ -72,12 +69,7 @@
         "com.apple.developer.authentication-services.autofill-credential-provider": true,
         "com.apple.developer.usernotifications.communication": true,
         "aps-environment": "production",
-        "com.apple.developer.applesignin": [
-          "Default",
-          "Default",
-          "Default",
-          "Default"
-        ],
+        "com.apple.developer.applesignin": ["Default", "Default", "Default", "Default"],
         "com.apple.developer.usernotifications.time-sensitive": true
       },
       "infoPlist": {

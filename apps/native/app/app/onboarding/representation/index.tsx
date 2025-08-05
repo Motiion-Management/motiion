@@ -56,7 +56,7 @@ export default function RepresentationScreen() {
         handlesNavigation: true,
       }}
       secondaryAction={{
-        onPress: () => { },
+        onPress: () => {},
         text: 'Requires Verification',
       }}>
       <ValidationModeForm form={form}>

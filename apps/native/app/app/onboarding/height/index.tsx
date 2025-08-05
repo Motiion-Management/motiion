@@ -27,7 +27,7 @@ export default function HeightScreen() {
           onPress: handleSubmit,
         }}
         secondaryAction={{
-          onPress: () => { }, // No action needed, just display
+          onPress: () => {}, // No action needed, just display
           text: heightForm.models.formattedHeight,
         }}>
         <HeightPicker value={heightForm.models.height} onChange={heightForm.actions.setHeight} />

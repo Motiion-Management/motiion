@@ -10,7 +10,7 @@ export default function SizingScreen() {
       description="Optional - Not all sizing metrics may apply to you. Only input what is relevant to you."
       canProgress // Always true - all fields are optional
       primaryAction={{
-        onPress: () => { },
+        onPress: () => {},
       }}>
       <SizingSection title="General" metrics={['waist', 'inseam', 'glove', 'hat']} />
       <SizingSection

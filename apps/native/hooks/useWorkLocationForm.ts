@@ -41,8 +41,8 @@ export function useWorkLocationForm(options: WorkLocationFormOptions = {}) {
       existingWorkLocations.length > 0
         ? existingWorkLocations
         : primaryLocation
-        ? [primaryLocation]
-        : [null];
+          ? [primaryLocation]
+          : [null];
 
     return {
       data: {
@@ -177,8 +177,8 @@ export function useWorkLocationForm(options: WorkLocationFormOptions = {}) {
       existingWorkLocations.length > 0
         ? existingWorkLocations
         : primaryLocation
-        ? [primaryLocation]
-        : [null];
+          ? [primaryLocation]
+          : [null];
 
     setState({
       data: {

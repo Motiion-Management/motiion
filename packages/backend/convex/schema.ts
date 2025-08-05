@@ -14,7 +14,6 @@ import { ExperiencesLivePerformances } from './validators/experiencesLivePerform
 import { ExperiencesCommercials } from './validators/experiencesCommercials'
 import { Training } from './validators/training'
 import { OnboardingFlows } from './validators/onboardingFlows'
-import { OnboardingFlowsV3 } from './validators/onboardingFlowsV3'
 
 export default defineSchema({
   // global
@@ -32,13 +31,20 @@ export default defineSchema({
   }),
   // resume data - legacy table (kept for migration)
   experiences: Experiences.table.index('userId', ['userId']),
-  
+
   // new experience tables
   experiencesTvFilm: ExperiencesTvFilm.table.index('by_userId', ['userId']),
-  experiencesMusicVideos: ExperiencesMusicVideos.table.index('by_userId', ['userId']),
-  experiencesLivePerformances: ExperiencesLivePerformances.table.index('by_userId', ['userId']),
-  experiencesCommercials: ExperiencesCommercials.table.index('by_userId', ['userId']),
-  
+  experiencesMusicVideos: ExperiencesMusicVideos.table.index('by_userId', [
+    'userId'
+  ]),
+  experiencesLivePerformances: ExperiencesLivePerformances.table.index(
+    'by_userId',
+    ['userId']
+  ),
+  experiencesCommercials: ExperiencesCommercials.table.index('by_userId', [
+    'userId'
+  ]),
+
   // training (separate from experiences)
   training: Training.table.index('by_userId', ['userId']),
 
@@ -49,11 +55,7 @@ export default defineSchema({
   // onboarding
   onboardingFlows: OnboardingFlows.table
     .index('by_version_and_profileType', ['version', 'profileType'])
-    .index('by_isActive', ['isActive']),
-  onboardingFlowsV3: OnboardingFlowsV3.table
-    .index('by_version_and_profileType', ['version', 'profileType'])
     .index('by_isActive', ['isActive'])
-    .index('by_isDefault', ['isDefault'])
   // },
   // {
   //   // ONLY ENABLE WHEN DOING SCHEMA MIGRATION

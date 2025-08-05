@@ -100,8 +100,8 @@ const DropdownMenuContent = React.forwardRef<
                 overlayStyle,
               ])
             : Platform.OS !== 'web'
-            ? StyleSheet.absoluteFill
-            : undefined
+              ? StyleSheet.absoluteFill
+              : undefined
         }
         className={overlayClassName}>
         <DropdownMenuPrimitive.Content

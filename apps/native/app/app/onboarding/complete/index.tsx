@@ -37,5 +37,3 @@ function CompleteScreenV1() {
     </BaseOnboardingScreen>
   );
 }
-
-// V3 version is handled by GenericOnboardingScreenV3 with the complete step configuration

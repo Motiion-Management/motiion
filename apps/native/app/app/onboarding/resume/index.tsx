@@ -9,7 +9,7 @@ import { Text } from '~/components/ui/text';
 import { router } from 'expo-router';
 
 export default function ResumeScreen() {
-  const handleUploadResume = async () => { };
+  const handleUploadResume = async () => {};
 
   const handleSkip = async () => {
     router.push('/app/onboarding/experiences');
