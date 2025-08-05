@@ -69,6 +69,7 @@
     "convex": "^1.25.4",
     "date-fns": "^4.1.0",
     "expo": "53.0.20",
+    "expo-asset": "~11.1.7",
     "expo-camera": "16.1.11",
     "expo-constants": "~17.1.7",
     "expo-crypto": "~14.1.5",

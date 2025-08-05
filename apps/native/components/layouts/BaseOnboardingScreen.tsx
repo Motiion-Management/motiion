@@ -19,6 +19,7 @@ export const BaseOnboardingScreen = ({
   canProgress = false,
   primaryAction,
   secondaryAction,
+  bottomActionSlot,
 }: {
   title: string;
   description?: string;
@@ -34,6 +35,7 @@ export const BaseOnboardingScreen = ({
     onPress: () => void;
     text: string;
   };
+  bottomActionSlot?: React.ReactNode;
 }) => {
   const insets = useSafeAreaInsets();
   const onboardingFlow = useSimpleOnboardingFlow();
@@ -80,57 +82,61 @@ export const BaseOnboardingScreen = ({
           <SafeAreaView
             edges={['bottom', 'left', 'right']}
             className="absolute bottom-0 right-0 flex-row items-center justify-between gap-4 px-4 pb-2">
-            <View className="flex-1 flex-row justify-start">
-              {secondaryAction && (
-                <Button variant="plain" onPress={secondaryAction.onPress}>
-                  <Text className="text-sm text-text-default">{secondaryAction.text}</Text>
+            {bottomActionSlot || (
+              <>
+                <View className="flex-1 flex-row justify-start">
+                  {secondaryAction && (
+                    <Button variant="plain" onPress={secondaryAction.onPress}>
+                      <Text className="text-sm text-text-default">{secondaryAction.text}</Text>
+                    </Button>
+                  )}
+                </View>
+
+                {onboardingFlow.canGoPrevious && (
+                  <Button
+                    size="icon"
+                    variant="plain"
+                    onPress={() => {
+                      perfLog('button:previousPressed', { title });
+                      setIsNavigating(true);
+                      onboardingFlow.navigatePrevious();
+                      setTimeout(() => setIsNavigating(false), 300);
+                    }}
+                    disabled={onboardingFlow.isLoading}>
+                    <ChevronLeft size={24} className="color-icon-accent" />
+                  </Button>
+                )}
+                {/* Continue Button */}
+                <Button
+                  disabled={!canProgress || !onboardingFlow.canGoNext}
+                  size="icon"
+                  variant="accent"
+                  onPress={async () => {
+                    // Show immediate feedback
+                    setIsNavigating(true);
+
+                    try {
+                      // Execute primary action first (validation, etc.)
+                      if (primaryAction?.onPress) {
+                        primaryAction.onPress();
+                      }
+                      // Only navigate if primary action doesn't handle navigation
+                      if (onboardingFlow.canGoNext && !primaryAction?.handlesNavigation) {
+                        onboardingFlow.navigateNext();
+                      }
+                    } finally {
+                      // Reset state after a brief delay to prevent flicker
+                      setTimeout(() => setIsNavigating(false), 300);
+                    }
+                  }}>
+                  {isNavigating ? (
+                    <ActivityIndicator size="small" color="#fff" />
+                  ) : (
+                    <ChevronRight size={24} className="color-icon-accent" />
+                  )}
                 </Button>
-              )}
-            </View>
-
-            {onboardingFlow.canGoPrevious && (
-              <Button
-                size="icon"
-                variant="plain"
-                onPress={() => {
-                  perfLog('button:previousPressed', { title });
-                  setIsNavigating(true);
-                  onboardingFlow.navigatePrevious();
-                  setTimeout(() => setIsNavigating(false), 300);
-                }}
-                disabled={onboardingFlow.isLoading}>
-                <ChevronLeft size={24} className="color-icon-accent" />
-              </Button>
+              </>
             )}
-            {/* Continue Button */}
-            <Button
-              disabled={!canProgress || !onboardingFlow.canGoNext}
-              size="icon"
-              variant="accent"
-              onPress={async () => {
-                // Show immediate feedback
-                setIsNavigating(true);
-
-                try {
-                  // Execute primary action first (validation, etc.)
-                  if (primaryAction?.onPress) {
-                    primaryAction.onPress();
-                  }
-                  // Only navigate if primary action doesn't handle navigation
-                  if (onboardingFlow.canGoNext && !primaryAction?.handlesNavigation) {
-                    onboardingFlow.navigateNext();
-                  }
-                } finally {
-                  // Reset state after a brief delay to prevent flicker
-                  setTimeout(() => setIsNavigating(false), 300);
-                }
-              }}>
-              {isNavigating ? (
-                <ActivityIndicator size="small" color="#fff" />
-              ) : (
-                <ChevronRight size={24} className="color-icon-accent" />
-              )}
-            </Button>
           </SafeAreaView>
         </KeyboardStickyView>
       </View>

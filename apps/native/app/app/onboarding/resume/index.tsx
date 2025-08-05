@@ -1,52 +1,44 @@
-import { useRouter } from 'expo-router';
 import React from 'react';
-import { View, Text } from 'react-native';
+import { View } from 'react-native';
+import { Image } from 'expo-image';
 
 import { BaseOnboardingScreen } from '~/components/layouts/BaseOnboardingScreen';
 import { OnboardingStepGuard } from '~/components/onboarding/OnboardingGuard';
-import { useOnboardingNavigation, useOnboardingStatus } from '~/hooks/useOnboardingStatus';
+import { Button } from '~/components/ui/button';
+import { Text } from '~/components/ui/text';
+import { router } from 'expo-router';
 
 export default function ResumeScreen() {
-  const router = useRouter();
-  const { getStepTitle } = useOnboardingStatus();
-  const { advanceToNextStep } = useOnboardingNavigation();
+  const handleUploadResume = async () => { };
 
-  const handleContinue = async () => {
-    try {
-      // TODO: Implement resume form logic
-      console.log('Resume step - implement form logic');
-
-      // Navigate to the next step
-      const result = await advanceToNextStep();
-      if (result.route) {
-        router.push(result.route);
-      } else {
-        // If no next step, onboarding is complete
-        router.push('/app/home');
-      }
-    } catch (error) {
-      console.error('Error in resume step:', error);
-    }
+  const handleSkip = async () => {
+    router.push('/app/onboarding/experiences');
   };
 
   return (
     <OnboardingStepGuard requiredStep="resume">
       <BaseOnboardingScreen
-        title={getStepTitle()}
-        description="Share your professional experience and training."
+        title="Import your resume"
         canProgress={false} // TODO: Set to true when form is filled
         primaryAction={{
-          onPress: handleContinue,
+          onPress: handleSkip,
           disabled: true, // TODO: Enable when form is valid
-        }}>
-        <View className="flex-1 items-center justify-center">
-          <Text className="text-lg text-gray-500">
-            Resume and experience form will be implemented here
-          </Text>
-          <Text className="mt-2 text-sm text-gray-400">
-            This will include professional experience, training, skills, and credits
-          </Text>
-        </View>
+        }}
+        bottomActionSlot={
+          <View className="w-full gap-3">
+            <Button size="lg" className="w-full" onPress={handleUploadResume}>
+              <Text>Import</Text>
+            </Button>
+            <Button size="lg" variant="secondary" className="w-full" onPress={handleSkip}>
+              <Text>Enter Manually</Text>
+            </Button>
+          </View>
+        }>
+        <Image
+          width={350}
+          height={350}
+          source={require('../../../../assets/images/onboarding/resume.png')}
+        />
       </BaseOnboardingScreen>
     </OnboardingStepGuard>
   );

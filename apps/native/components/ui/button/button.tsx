@@ -1,3 +1,4 @@
+import { PressableRef } from '@rn-primitives/types';
 import { cva, type VariantProps } from 'class-variance-authority';
 import * as React from 'react';
 import { Platform, Pressable, PressableProps, View, ViewStyle } from 'react-native';
@@ -94,7 +95,7 @@ const BORDER_CURVE: ViewStyle = {
   borderCurve: 'continuous',
 };
 
-type ButtonVariantProps = VariantProps;
+type ButtonVariantProps = VariantProps<typeof buttonVariants>;
 type ButtonVariant = ButtonVariantProps['variant'];
 
 type AndroidOnlyButtonProps = {
@@ -108,7 +109,7 @@ type ButtonProps = PressableProps & ButtonVariantProps & AndroidOnlyButtonProps;
 
 const Root = Platform.OS === 'android' ? View : Slot;
 
-const Button = React.forwardRef<React.ElementRef, ButtonProps>(
+const Button = React.forwardRef<PressableRef, ButtonProps>(
   (
     { className, variant = 'primary', size, style = BORDER_CURVE, androidRootClassName, ...props },
     ref
