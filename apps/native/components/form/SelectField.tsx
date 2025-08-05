@@ -41,9 +41,9 @@ export const SelectField = ({ label, placeholder = 'Select...', options }: Selec
 
   const currentValue = field.state.value
     ? {
-      value: field.state.value,
-      label: options.find((o) => o.value === field.state.value)?.label || field.state.value,
-    }
+        value: field.state.value,
+        label: options.find((o) => o.value === field.state.value)?.label || field.state.value,
+      }
     : undefined;
 
   return (

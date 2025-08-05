@@ -91,7 +91,7 @@ export function TvFilmForm({ initialData = {}, onChange }: TvFilmFormProps) {
         children={(fieldApi) => (
           <fieldContext.Provider value={fieldApi}>
             <SelectField
-              label="Studio/Network"
+              label="Studio"
               placeholder="Select or enter studio"
               options={studioOptions}
             />
