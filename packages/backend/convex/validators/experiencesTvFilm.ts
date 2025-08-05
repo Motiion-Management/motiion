@@ -6,7 +6,6 @@ import { Doc } from '../_generated/dataModel'
 export const experiencesTvFilm = {
   userId: zid('users'),
   private: z.boolean().optional(),
-  projectType: z.enum(['television', 'film']),
   title: z.string(),
   studio: z.string(),
   startDate: z.string(), // ISO date
@@ -21,6 +20,9 @@ export const experiencesTvFilm = {
 
 export const zExperiencesTvFilm = z.object(experiencesTvFilm)
 
-export const ExperiencesTvFilm = Table('experiencesTvFilm', zodToConvexFields(experiencesTvFilm))
+export const ExperiencesTvFilm = Table(
+  'experiencesTvFilm',
+  zodToConvexFields(experiencesTvFilm)
+)
 
 export type ExperienceTvFilmDoc = Doc<'experiencesTvFilm'>

@@ -20,6 +20,9 @@ export const experiencesMusicVideos = {
 
 export const zExperiencesMusicVideos = z.object(experiencesMusicVideos)
 
-export const ExperiencesMusicVideos = Table('experiencesMusicVideos', zodToConvexFields(experiencesMusicVideos))
+export const ExperiencesMusicVideos = Table(
+  'experiencesMusicVideos',
+  zodToConvexFields(experiencesMusicVideos)
+)
 
 export type ExperienceMusicVideoDoc = Doc<'experiencesMusicVideos'>

@@ -22,7 +22,10 @@ export const addMyExperience = authMutation({
     await ctx.db.patch(ctx.user._id, {
       resume: {
         ...ctx.user.resume,
-        experiencesLivePerformances: [...(ctx.user?.resume?.experiencesLivePerformances || []), expId]
+        experiencesLivePerformances: [
+          ...(ctx.user?.resume?.experiencesLivePerformances || []),
+          expId
+        ]
       }
     })
     return null
@@ -37,9 +40,9 @@ export const removeMyExperience = authMutation({
     await ctx.db.patch(ctx.user._id, {
       resume: {
         ...ctx.user.resume,
-        experiencesLivePerformances: (ctx.user.resume?.experiencesLivePerformances || []).filter(
-          (id) => id !== args.experienceId
-        )
+        experiencesLivePerformances: (
+          ctx.user.resume?.experiencesLivePerformances || []
+        ).filter((id) => id !== args.experienceId)
       }
     })
     await ctx.db.delete(args.experienceId)
@@ -56,20 +59,20 @@ export const getMyExperiences = authQuery({
 
     const experienceIds = ctx.user.resume.experiencesLivePerformances
     const experiences = await getAll(ctx.db, experienceIds)
-    return experiences
-      .filter(notEmpty)
-      .sort((a, b) => {
-        // Sort by start date descending
-        const dateA = new Date(a.startDate).getTime()
-        const dateB = new Date(b.startDate).getTime()
-        return dateB - dateA
-      })
+    return experiences.filter(notEmpty).sort((a, b) => {
+      // Sort by start date descending
+      const dateA = new Date(a.startDate).getTime()
+      const dateB = new Date(b.startDate).getTime()
+      return dateB - dateA
+    })
   }
 })
 
 // Get user's Live Performance experiences by event type
 export const getMyExperiencesByType = authQuery({
-  args: { eventType: ExperiencesLivePerformances.withoutSystemFields.eventType },
+  args: {
+    eventType: ExperiencesLivePerformances.withoutSystemFields.eventType
+  },
   returns: v.array(v.any()),
   handler: async (ctx, args) => {
     if (!ctx.user?.resume?.experiencesLivePerformances) return []
@@ -94,7 +97,7 @@ export const getUserPublicExperiences = query({
   handler: async (ctx, args) => {
     const user = await ctx.db.get(args.userId)
     if (!user?.resume?.experiencesLivePerformances) return []
-    
+
     const experienceIds = user.resume.experiencesLivePerformances
     const experiences = await getAll(ctx.db, experienceIds)
 
@@ -111,7 +114,7 @@ export const getUserPublicExperiences = query({
 
 // Get public Live Performance experiences by event type
 export const getUserPublicExperiencesByType = query({
-  args: { 
+  args: {
     userId: v.id('users'),
     eventType: ExperiencesLivePerformances.withoutSystemFields.eventType
   },
@@ -119,7 +122,7 @@ export const getUserPublicExperiencesByType = query({
   handler: async (ctx, args) => {
     const user = await ctx.db.get(args.userId)
     if (!user?.resume?.experiencesLivePerformances) return []
-    
+
     const experienceIds = user.resume.experiencesLivePerformances
     const experiences = await getAll(ctx.db, experienceIds)
 

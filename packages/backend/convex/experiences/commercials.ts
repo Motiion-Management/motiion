@@ -22,7 +22,10 @@ export const addMyExperience = authMutation({
     await ctx.db.patch(ctx.user._id, {
       resume: {
         ...ctx.user.resume,
-        experiencesCommercials: [...(ctx.user?.resume?.experiencesCommercials || []), expId]
+        experiencesCommercials: [
+          ...(ctx.user?.resume?.experiencesCommercials || []),
+          expId
+        ]
       }
     })
     return null
@@ -37,9 +40,9 @@ export const removeMyExperience = authMutation({
     await ctx.db.patch(ctx.user._id, {
       resume: {
         ...ctx.user.resume,
-        experiencesCommercials: (ctx.user.resume?.experiencesCommercials || []).filter(
-          (id) => id !== args.experienceId
-        )
+        experiencesCommercials: (
+          ctx.user.resume?.experiencesCommercials || []
+        ).filter((id) => id !== args.experienceId)
       }
     })
     await ctx.db.delete(args.experienceId)
@@ -56,14 +59,12 @@ export const getMyExperiences = authQuery({
 
     const experienceIds = ctx.user.resume.experiencesCommercials
     const experiences = await getAll(ctx.db, experienceIds)
-    return experiences
-      .filter(notEmpty)
-      .sort((a, b) => {
-        // Sort by start date descending
-        const dateA = new Date(a.startDate).getTime()
-        const dateB = new Date(b.startDate).getTime()
-        return dateB - dateA
-      })
+    return experiences.filter(notEmpty).sort((a, b) => {
+      // Sort by start date descending
+      const dateA = new Date(a.startDate).getTime()
+      const dateB = new Date(b.startDate).getTime()
+      return dateB - dateA
+    })
   }
 })
 
@@ -74,7 +75,7 @@ export const getUserPublicExperiences = query({
   handler: async (ctx, args) => {
     const user = await ctx.db.get(args.userId)
     if (!user?.resume?.experiencesCommercials) return []
-    
+
     const experienceIds = user.resume.experiencesCommercials
     const experiences = await getAll(ctx.db, experienceIds)
 

@@ -22,7 +22,10 @@ export const addMyExperience = authMutation({
     await ctx.db.patch(ctx.user._id, {
       resume: {
         ...ctx.user.resume,
-        experiencesTvFilm: [...(ctx.user?.resume?.experiencesTvFilm || []), expId]
+        experiencesTvFilm: [
+          ...(ctx.user?.resume?.experiencesTvFilm || []),
+          expId
+        ]
       }
     })
     return null
@@ -56,14 +59,12 @@ export const getMyExperiences = authQuery({
 
     const experienceIds = ctx.user.resume.experiencesTvFilm
     const experiences = await getAll(ctx.db, experienceIds)
-    return experiences
-      .filter(notEmpty)
-      .sort((a, b) => {
-        // Sort by start date descending
-        const dateA = new Date(a.startDate).getTime()
-        const dateB = new Date(b.startDate).getTime()
-        return dateB - dateA
-      })
+    return experiences.filter(notEmpty).sort((a, b) => {
+      // Sort by start date descending
+      const dateA = new Date(a.startDate).getTime()
+      const dateB = new Date(b.startDate).getTime()
+      return dateB - dateA
+    })
   }
 })
 
@@ -74,7 +75,7 @@ export const getUserPublicExperiences = query({
   handler: async (ctx, args) => {
     const user = await ctx.db.get(args.userId)
     if (!user?.resume?.experiencesTvFilm) return []
-    
+
     const experienceIds = user.resume.experiencesTvFilm
     const experiences = await getAll(ctx.db, experienceIds)
 

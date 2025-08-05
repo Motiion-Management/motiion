@@ -39,12 +39,12 @@ export default function RootLayout() {
               <ConvexClientProvider>
                 <RootStack />
                 <AlertAnchor ref={alertRef} />
-                <PortalHost />
               </ConvexClientProvider>
             </ActionSheetProvider>
           </KeyboardProvider>
         </BottomSheetModalProvider>
       </GestureHandlerRootView>
+      <PortalHost />
     </>
   );
 }

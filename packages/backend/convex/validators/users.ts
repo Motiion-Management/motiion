@@ -26,7 +26,9 @@ export const resume = {
   // New experience fields
   experiencesTvFilm: z.array(zid('experiencesTvFilm')).optional(),
   experiencesMusicVideos: z.array(zid('experiencesMusicVideos')).optional(),
-  experiencesLivePerformances: z.array(zid('experiencesLivePerformances')).optional(),
+  experiencesLivePerformances: z
+    .array(zid('experiencesLivePerformances'))
+    .optional(),
   experiencesCommercials: z.array(zid('experiencesCommercials')).optional(),
   uploads: zFileUploadObjectArray.optional(),
   skills: zSkills.optional()

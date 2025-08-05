@@ -1,10 +1,10 @@
-import React from 'react'
-import { View } from 'react-native'
+import React from 'react';
+import { View } from 'react-native';
 
-import { BaseOnboardingScreen } from '~/components/layouts/BaseOnboardingScreen'
-import { ExperienceSection } from '~/components/experiences/ExperienceSection'
-import { ExperienceEditSheet } from '~/components/experiences/ExperienceEditSheet'
-import { useExperiences } from '~/hooks/useExperiences'
+import { BaseOnboardingScreen } from '~/components/layouts/BaseOnboardingScreen';
+import { ExperienceSection } from '~/components/experiences/ExperienceSection';
+import { ExperienceEditSheet } from '~/components/experiences/ExperienceEditSheet';
+import { useExperiences } from '~/hooks/useExperiences';
 
 export default function ExperiencesScreen() {
   const {
@@ -18,17 +18,17 @@ export default function ExperiencesScreen() {
     saveToBackend,
     getCurrentExperience,
     canProgress,
-    isNewExperience
-  } = useExperiences()
+    isNewExperience,
+  } = useExperiences();
 
   const handleContinue = async () => {
     try {
-      await saveToBackend()
-      console.log('Experiences saved successfully')
+      await saveToBackend();
+      console.log('Experiences saved successfully');
     } catch (error) {
-      console.error('Error saving experiences:', error)
+      console.error('Error saving experiences:', error);
     }
-  }
+  };
 
   return (
     <BaseOnboardingScreen
@@ -55,5 +55,5 @@ export default function ExperiencesScreen() {
         isNew={isNewExperience}
       />
     </BaseOnboardingScreen>
-  )
+  );
 }

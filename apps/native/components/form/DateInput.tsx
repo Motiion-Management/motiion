@@ -8,6 +8,7 @@ import { Text } from '~/components/ui/text';
 import { useFieldError } from '~/hooks/useFieldError';
 import { useValidationModeContextSafe } from '~/hooks/useValidationMode';
 import { cn } from '~/lib/cn';
+import { InputLabel } from '../ui/label';
 
 export interface DateInputProps {
   label: string;
@@ -27,9 +28,7 @@ export const DateInput = ({ label, minimumDate, maximumDate, helpText }: DateInp
     <View className="flex-1">
       {label && (
         <View className="mb-2">
-          <Text variant="labelXs" className="uppercase text-text-disabled">
-            {label}
-          </Text>
+          <InputLabel>{label}</InputLabel>
         </View>
       )}
 

@@ -1,36 +1,36 @@
-import { 
-  ExperienceTypeConfig, 
+import {
+  ExperienceTypeConfig,
   ExperienceFieldConfig,
-  LivePerformanceEventType 
-} from '~/types/experiences'
+  LivePerformanceEventType,
+} from '~/types/experiences';
 
 export const EXPERIENCE_TYPES: ExperienceTypeConfig[] = [
   {
     label: 'Television & Film',
     value: 'tv-film',
-    description: 'TV shows and movies'
+    description: 'TV shows and movies',
   },
   {
     label: 'Music Videos',
     value: 'music-video',
-    description: 'Music video productions'
+    description: 'Music video productions',
   },
   {
     label: 'Live/Stage Performance',
     value: 'live-performance',
-    description: 'Tours, festivals, concerts, and more'
+    description: 'Tours, festivals, concerts, and more',
   },
   {
     label: 'Print/Commercial',
     value: 'commercial',
-    description: 'Commercial and print work'
-  }
-]
+    description: 'Commercial and print work',
+  },
+];
 
 export const PROJECT_TYPES = [
   { label: 'Television', value: 'television' },
-  { label: 'Film', value: 'film' }
-]
+  { label: 'Film', value: 'film' },
+];
 
 export const LIVE_EVENT_TYPES = [
   { label: 'Festival', value: 'festival' },
@@ -39,8 +39,8 @@ export const LIVE_EVENT_TYPES = [
   { label: 'Corporate', value: 'corporate' },
   { label: 'Award Show', value: 'award-show' },
   { label: 'Theater Production', value: 'theater' },
-  { label: 'Other', value: 'other' }
-]
+  { label: 'Other', value: 'other' },
+];
 
 export const DURATION_OPTIONS = [
   { label: '1 day', value: '1 day' },
@@ -52,8 +52,8 @@ export const DURATION_OPTIONS = [
   { label: '3 months', value: '3 months' },
   { label: '6 months', value: '6 months' },
   { label: '1 year', value: '1 year' },
-  { label: 'Current', value: 'Current' }
-]
+  { label: 'Current', value: 'Current' },
+];
 
 export const COMMON_ROLES = [
   'Principal Dancer',
@@ -65,8 +65,8 @@ export const COMMON_ROLES = [
   'Movement Director',
   'Dance Captain',
   'Swing',
-  'Understudy'
-]
+  'Understudy',
+];
 
 export const COMMON_STUDIOS = [
   'Netflix',
@@ -81,8 +81,8 @@ export const COMMON_STUDIOS = [
   'MGM',
   'Lionsgate',
   'A24',
-  'Focus Features'
-]
+  'Focus Features',
+];
 
 // Field configurations for different experience types
 export const EXPERIENCE_FIELDS: ExperienceFieldConfig[] = [
@@ -93,7 +93,7 @@ export const EXPERIENCE_FIELDS: ExperienceFieldConfig[] = [
     type: 'select',
     options: PROJECT_TYPES,
     required: true,
-    showForTypes: ['tv-film']
+    showForTypes: ['tv-film'],
   },
   {
     name: 'title',
@@ -101,17 +101,17 @@ export const EXPERIENCE_FIELDS: ExperienceFieldConfig[] = [
     type: 'text',
     placeholder: 'Enter project title',
     required: true,
-    showForTypes: ['tv-film']
+    showForTypes: ['tv-film'],
   },
   {
     name: 'studio',
     label: 'Studio',
     type: 'select',
-    options: COMMON_STUDIOS.map(s => ({ label: s, value: s })),
+    options: COMMON_STUDIOS.map((s) => ({ label: s, value: s })),
     required: true,
-    showForTypes: ['tv-film']
+    showForTypes: ['tv-film'],
   },
-  
+
   // Music Video fields
   {
     name: 'songTitle',
@@ -119,7 +119,7 @@ export const EXPERIENCE_FIELDS: ExperienceFieldConfig[] = [
     type: 'text',
     placeholder: 'Enter song title',
     required: true,
-    showForTypes: ['music-video']
+    showForTypes: ['music-video'],
   },
   {
     name: 'artists',
@@ -127,9 +127,9 @@ export const EXPERIENCE_FIELDS: ExperienceFieldConfig[] = [
     type: 'chips',
     placeholder: 'Add artist names',
     required: true,
-    showForTypes: ['music-video']
+    showForTypes: ['music-video'],
   },
-  
+
   // Live Performance fields
   {
     name: 'eventType',
@@ -137,7 +137,7 @@ export const EXPERIENCE_FIELDS: ExperienceFieldConfig[] = [
     type: 'select',
     options: LIVE_EVENT_TYPES,
     required: true,
-    showForTypes: ['live-performance']
+    showForTypes: ['live-performance'],
   },
   {
     name: 'festivalTitle',
@@ -146,7 +146,7 @@ export const EXPERIENCE_FIELDS: ExperienceFieldConfig[] = [
     placeholder: 'Enter festival name',
     required: true,
     showForTypes: ['live-performance'],
-    showForEventTypes: ['festival']
+    showForEventTypes: ['festival'],
   },
   {
     name: 'tourName',
@@ -155,7 +155,7 @@ export const EXPERIENCE_FIELDS: ExperienceFieldConfig[] = [
     placeholder: 'Enter tour name',
     required: true,
     showForTypes: ['live-performance'],
-    showForEventTypes: ['tour']
+    showForEventTypes: ['tour'],
   },
   {
     name: 'tourArtist',
@@ -164,7 +164,7 @@ export const EXPERIENCE_FIELDS: ExperienceFieldConfig[] = [
     placeholder: 'Enter artist name',
     required: true,
     showForTypes: ['live-performance'],
-    showForEventTypes: ['tour']
+    showForEventTypes: ['tour'],
   },
   {
     name: 'companyName',
@@ -173,7 +173,7 @@ export const EXPERIENCE_FIELDS: ExperienceFieldConfig[] = [
     placeholder: 'Enter company name',
     required: true,
     showForTypes: ['live-performance', 'commercial'],
-    showForEventTypes: ['corporate']
+    showForEventTypes: ['corporate'],
   },
   {
     name: 'eventName',
@@ -182,7 +182,7 @@ export const EXPERIENCE_FIELDS: ExperienceFieldConfig[] = [
     placeholder: 'Enter event name',
     required: true,
     showForTypes: ['live-performance'],
-    showForEventTypes: ['corporate', 'other']
+    showForEventTypes: ['corporate', 'other'],
   },
   {
     name: 'awardShowName',
@@ -191,7 +191,7 @@ export const EXPERIENCE_FIELDS: ExperienceFieldConfig[] = [
     placeholder: 'Enter award show name',
     required: true,
     showForTypes: ['live-performance'],
-    showForEventTypes: ['award-show']
+    showForEventTypes: ['award-show'],
   },
   {
     name: 'productionTitle',
@@ -200,7 +200,7 @@ export const EXPERIENCE_FIELDS: ExperienceFieldConfig[] = [
     placeholder: 'Enter production title',
     required: true,
     showForTypes: ['live-performance'],
-    showForEventTypes: ['theater']
+    showForEventTypes: ['theater'],
   },
   {
     name: 'venue',
@@ -208,9 +208,9 @@ export const EXPERIENCE_FIELDS: ExperienceFieldConfig[] = [
     type: 'text',
     placeholder: 'Enter venue name',
     showForTypes: ['live-performance'],
-    showForEventTypes: ['concert', 'theater']
+    showForEventTypes: ['concert', 'theater'],
   },
-  
+
   // Commercial fields
   {
     name: 'campaignTitle',
@@ -218,7 +218,7 @@ export const EXPERIENCE_FIELDS: ExperienceFieldConfig[] = [
     type: 'text',
     placeholder: 'Enter campaign title',
     required: true,
-    showForTypes: ['commercial']
+    showForTypes: ['commercial'],
   },
   {
     name: 'productionCompany',
@@ -226,16 +226,16 @@ export const EXPERIENCE_FIELDS: ExperienceFieldConfig[] = [
     type: 'text',
     placeholder: 'Enter production company',
     required: true,
-    showForTypes: ['commercial']
+    showForTypes: ['commercial'],
   },
-  
+
   // Common fields
   {
     name: 'startDate',
     label: 'Start Date',
     type: 'date',
     required: true,
-    showForTypes: ['tv-film', 'music-video', 'live-performance', 'commercial']
+    showForTypes: ['tv-film', 'music-video', 'live-performance', 'commercial'],
   },
   {
     name: 'duration',
@@ -243,25 +243,25 @@ export const EXPERIENCE_FIELDS: ExperienceFieldConfig[] = [
     type: 'select',
     options: DURATION_OPTIONS,
     required: true,
-    showForTypes: ['tv-film', 'music-video', 'live-performance', 'commercial']
+    showForTypes: ['tv-film', 'music-video', 'live-performance', 'commercial'],
   },
   {
     name: 'link',
     label: 'Link',
     type: 'text',
     placeholder: 'Paste link for project visual',
-    showForTypes: ['tv-film', 'music-video', 'live-performance', 'commercial']
+    showForTypes: ['tv-film', 'music-video', 'live-performance', 'commercial'],
   },
   {
     name: 'roles',
     label: 'Role',
     type: 'multiselect',
-    options: COMMON_ROLES.map(r => ({ label: r, value: r })),
+    options: COMMON_ROLES.map((r) => ({ label: r, value: r })),
     placeholder: 'Select your role(s)',
     required: true,
-    showForTypes: ['tv-film', 'music-video', 'live-performance', 'commercial']
-  }
-]
+    showForTypes: ['tv-film', 'music-video', 'live-performance', 'commercial'],
+  },
+];
 
 // Team fields (shown in Team tab)
 export const TEAM_FIELDS: ExperienceFieldConfig[] = [
@@ -270,78 +270,78 @@ export const TEAM_FIELDS: ExperienceFieldConfig[] = [
     label: 'Main Talent',
     type: 'chips',
     placeholder: 'Add talent names',
-    showForTypes: ['tv-film', 'music-video', 'live-performance', 'commercial']
+    showForTypes: ['tv-film', 'music-video', 'live-performance', 'commercial'],
   },
   {
     name: 'choreographers',
     label: 'Choreographer(s)',
     type: 'chips',
     placeholder: 'Add choreographer names',
-    showForTypes: ['tv-film', 'music-video', 'live-performance', 'commercial']
+    showForTypes: ['tv-film', 'music-video', 'live-performance', 'commercial'],
   },
   {
     name: 'associateChoreographers',
     label: 'Assoc. Choreographer(s)',
     type: 'chips',
     placeholder: 'Add associate choreographer names',
-    showForTypes: ['tv-film', 'music-video', 'live-performance', 'commercial']
-  }
-]
+    showForTypes: ['tv-film', 'music-video', 'live-performance', 'commercial'],
+  },
+];
 
 // Helper function to get display title for an experience
 export const getExperienceDisplayTitle = (experience: any): string => {
   switch (experience.type) {
     case 'tv-film':
-      return experience.title || 'Untitled Project'
+      return experience.title || 'Untitled Project';
     case 'music-video':
-      return experience.songTitle || 'Untitled Song'
+      return experience.songTitle || 'Untitled Song';
     case 'live-performance':
       switch (experience.eventType) {
         case 'festival':
-          return experience.festivalTitle || 'Festival'
+          return experience.festivalTitle || 'Festival';
         case 'tour':
-          return experience.tourName || 'Tour'
+          return experience.tourName || 'Tour';
         case 'theater':
-          return experience.productionTitle || 'Theater Production'
+          return experience.productionTitle || 'Theater Production';
         case 'award-show':
-          return experience.awardShowName || 'Award Show'
+          return experience.awardShowName || 'Award Show';
         case 'corporate':
         case 'other':
-          return experience.eventName || 'Event'
+          return experience.eventName || 'Event';
         case 'concert':
-          return experience.venue || 'Concert'
+          return experience.venue || 'Concert';
         default:
-          return 'Performance'
+          return 'Performance';
       }
     case 'commercial':
-      return experience.campaignTitle || 'Commercial'
+      return experience.campaignTitle || 'Commercial';
     default:
-      return 'Experience'
+      return 'Experience';
   }
-}
+};
 
 // Helper function to get display subtitle for an experience
 export const getExperienceDisplaySubtitle = (experience: any): string => {
   switch (experience.type) {
     case 'tv-film':
-      return experience.studio || ''
+      return experience.studio || '';
     case 'music-video':
-      return experience.artists?.join(', ') || ''
+      return experience.artists?.join(', ') || '';
     case 'live-performance':
       switch (experience.eventType) {
         case 'tour':
-          return experience.tourArtist || ''
+          return experience.tourArtist || '';
         case 'corporate':
-          return experience.companyName || ''
+          return experience.companyName || '';
         case 'theater':
         case 'concert':
-          return experience.venue || ''
+          return experience.venue || '';
         default:
-          return ''
+          return '';
       }
     case 'commercial':
-      return experience.companyName || ''
+      return experience.companyName || '';
     default:
-      return ''
+      return '';
   }
-}
+};

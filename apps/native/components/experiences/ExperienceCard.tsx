@@ -1,22 +1,27 @@
-import React from 'react'
-import { TouchableOpacity, View } from 'react-native'
+import React from 'react';
+import { TouchableOpacity, View } from 'react-native';
 
-import { Text } from '~/components/ui/text'
-import { cn } from '~/lib/cn'
-import Check from '~/lib/icons/Check'
-import { getExperienceDisplayTitle, getExperienceDisplaySubtitle } from '~/config/experienceTypes'
+import { Text } from '~/components/ui/text';
+import { cn } from '~/lib/cn';
+import Check from '~/lib/icons/Check';
+import { getExperienceDisplayTitle, getExperienceDisplaySubtitle } from '~/config/experienceTypes';
 
 interface ExperienceCardProps {
-  experience?: any
-  placeholder: string
-  onPress: () => void
-  className?: string
+  experience?: any;
+  placeholder: string;
+  onPress: () => void;
+  className?: string;
 }
 
-export function ExperienceCard({ experience, placeholder, onPress, className }: ExperienceCardProps) {
-  const hasExperience = !!experience
-  const displayTitle = hasExperience ? getExperienceDisplayTitle(experience) : placeholder
-  const displaySubtitle = hasExperience ? getExperienceDisplaySubtitle(experience) : null
+export function ExperienceCard({
+  experience,
+  placeholder,
+  onPress,
+  className,
+}: ExperienceCardProps) {
+  const hasExperience = !!experience;
+  const displayTitle = hasExperience ? getExperienceDisplayTitle(experience) : placeholder;
+  const displaySubtitle = hasExperience ? getExperienceDisplaySubtitle(experience) : null;
 
   return (
     <TouchableOpacity
@@ -44,5 +49,5 @@ export function ExperienceCard({ experience, placeholder, onPress, className }: 
         </View>
       )}
     </TouchableOpacity>
-  )
+  );
 }

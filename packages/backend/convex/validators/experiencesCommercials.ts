@@ -21,6 +21,9 @@ export const experiencesCommercials = {
 
 export const zExperiencesCommercials = z.object(experiencesCommercials)
 
-export const ExperiencesCommercials = Table('experiencesCommercials', zodToConvexFields(experiencesCommercials))
+export const ExperiencesCommercials = Table(
+  'experiencesCommercials',
+  zodToConvexFields(experiencesCommercials)
+)
 
 export type ExperienceCommercialDoc = Doc<'experiencesCommercials'>

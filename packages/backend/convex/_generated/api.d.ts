@@ -31,7 +31,6 @@ import type * as onboarding from "../onboarding.js";
 import type * as onboardingAnalysis from "../onboardingAnalysis.js";
 import type * as onboardingConfig from "../onboardingConfig.js";
 import type * as onboardingFlows from "../onboardingFlows.js";
-import type * as onboardingFlowsV3 from "../onboardingFlowsV3.js";
 import type * as rewards from "../rewards.js";
 import type * as seedOnboardingFlows from "../seedOnboardingFlows.js";
 import type * as training from "../training.js";
@@ -58,7 +57,6 @@ import type * as validators_experiencesTvFilm from "../validators/experiencesTvF
 import type * as validators_featuredContent from "../validators/featuredContent.js";
 import type * as validators_featuredMembers from "../validators/featuredMembers.js";
 import type * as validators_onboardingFlows from "../validators/onboardingFlows.js";
-import type * as validators_onboardingFlowsV3 from "../validators/onboardingFlowsV3.js";
 import type * as validators_rewards from "../validators/rewards.js";
 import type * as validators_sizing from "../validators/sizing.js";
 import type * as validators_training from "../validators/training.js";
@@ -91,7 +89,6 @@ declare const fullApi: ApiFromModules<{
   onboardingAnalysis: typeof onboardingAnalysis;
   onboardingConfig: typeof onboardingConfig;
   onboardingFlows: typeof onboardingFlows;
-  onboardingFlowsV3: typeof onboardingFlowsV3;
   rewards: typeof rewards;
   seedOnboardingFlows: typeof seedOnboardingFlows;
   training: typeof training;
@@ -118,7 +115,6 @@ declare const fullApi: ApiFromModules<{
   "validators/featuredContent": typeof validators_featuredContent;
   "validators/featuredMembers": typeof validators_featuredMembers;
   "validators/onboardingFlows": typeof validators_onboardingFlows;
-  "validators/onboardingFlowsV3": typeof validators_onboardingFlowsV3;
   "validators/rewards": typeof validators_rewards;
   "validators/sizing": typeof validators_sizing;
   "validators/training": typeof validators_training;

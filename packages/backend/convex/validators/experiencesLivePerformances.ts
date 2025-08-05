@@ -23,7 +23,7 @@ export const experiencesLivePerformances = {
   link: z.string().optional(),
   media: z.union([zid('_storage'), z.string()]).optional(),
   roles: z.array(z.string()),
-  
+
   // Type-specific fields (all optional, used based on eventType)
   festivalTitle: z.string().optional(), // For festivals
   tourName: z.string().optional(), // For tours
@@ -33,15 +33,20 @@ export const experiencesLivePerformances = {
   awardShowName: z.string().optional(), // For award shows
   productionTitle: z.string().optional(), // For theater
   venue: z.string().optional(), // For concerts/theater
-  
+
   // Team fields
   mainTalent: z.array(z.string()).optional(),
   choreographers: z.array(z.string()).optional(),
   associateChoreographers: z.array(z.string()).optional()
 }
 
-export const zExperiencesLivePerformances = z.object(experiencesLivePerformances)
+export const zExperiencesLivePerformances = z.object(
+  experiencesLivePerformances
+)
 
-export const ExperiencesLivePerformances = Table('experiencesLivePerformances', zodToConvexFields(experiencesLivePerformances))
+export const ExperiencesLivePerformances = Table(
+  'experiencesLivePerformances',
+  zodToConvexFields(experiencesLivePerformances)
+)
 
 export type ExperienceLivePerformanceDoc = Doc<'experiencesLivePerformances'>

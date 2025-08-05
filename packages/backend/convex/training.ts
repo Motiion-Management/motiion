@@ -23,15 +23,18 @@ export const addMyTraining = authMutation({
       .query('training')
       .withIndex('by_userId', (q) => q.eq('userId', ctx.user._id))
       .collect()
-    
-    const maxOrderIndex = Math.max(0, ...existingTraining.map(t => t.orderIndex || 0))
-    
+
+    const maxOrderIndex = Math.max(
+      0,
+      ...existingTraining.map((t) => t.orderIndex || 0)
+    )
+
     const trainingId = await ctx.db.insert('training', {
       ...training,
       userId: ctx.user._id,
-      orderIndex: training.orderIndex ?? (maxOrderIndex + 1)
+      orderIndex: training.orderIndex ?? maxOrderIndex + 1
     })
-    
+
     await ctx.db.patch(ctx.user._id, {
       training: [...(ctx.user?.training || []), trainingId]
     })
@@ -45,9 +48,7 @@ export const removeMyTraining = authMutation({
   returns: v.null(),
   handler: async (ctx, args) => {
     await ctx.db.patch(ctx.user._id, {
-      training: (ctx.user.training || []).filter(
-        (id) => id !== args.trainingId
-      )
+      training: (ctx.user.training || []).filter((id) => id !== args.trainingId)
     })
     await ctx.db.delete(args.trainingId)
     return null
@@ -87,7 +88,7 @@ export const getMyTrainingByType = authQuery({
 
 // Reorder training items
 export const reorderMyTraining = authMutation({
-  args: { 
+  args: {
     trainingIds: v.array(v.id('training'))
   },
   returns: v.null(),
@@ -109,7 +110,7 @@ export const getUserPublicTraining = query({
   handler: async (ctx, args) => {
     const user = await ctx.db.get(args.userId)
     if (!user?.training) return []
-    
+
     const trainingIds = user.training
     const training = await getAll(ctx.db, trainingIds)
 

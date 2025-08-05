@@ -24,7 +24,9 @@ type UnifiedExperience = {
 }
 
 // Helper to format experiences into unified format
-const formatTvFilmExperience = (exp: Doc<'experiencesTvFilm'>): UnifiedExperience => ({
+const formatTvFilmExperience = (
+  exp: Doc<'experiencesTvFilm'>
+): UnifiedExperience => ({
   _id: exp._id,
   _creationTime: exp._creationTime,
   type: 'tv-film',
@@ -40,7 +42,9 @@ const formatTvFilmExperience = (exp: Doc<'experiencesTvFilm'>): UnifiedExperienc
   data: exp
 })
 
-const formatMusicVideoExperience = (exp: Doc<'experiencesMusicVideos'>): UnifiedExperience => ({
+const formatMusicVideoExperience = (
+  exp: Doc<'experiencesMusicVideos'>
+): UnifiedExperience => ({
   _id: exp._id,
   _creationTime: exp._creationTime,
   type: 'music-video',
@@ -56,10 +60,12 @@ const formatMusicVideoExperience = (exp: Doc<'experiencesMusicVideos'>): Unified
   data: exp
 })
 
-const formatLivePerformanceExperience = (exp: Doc<'experiencesLivePerformances'>): UnifiedExperience => {
+const formatLivePerformanceExperience = (
+  exp: Doc<'experiencesLivePerformances'>
+): UnifiedExperience => {
   let displayTitle = ''
   let displaySubtitle = ''
-  
+
   switch (exp.eventType) {
     case 'festival':
       displayTitle = exp.festivalTitle || ''
@@ -90,7 +96,7 @@ const formatLivePerformanceExperience = (exp: Doc<'experiencesLivePerformances'>
       displaySubtitle = 'Other'
       break
   }
-  
+
   return {
     _id: exp._id,
     _creationTime: exp._creationTime,
@@ -108,7 +114,9 @@ const formatLivePerformanceExperience = (exp: Doc<'experiencesLivePerformances'>
   }
 }
 
-const formatCommercialExperience = (exp: Doc<'experiencesCommercials'>): UnifiedExperience => ({
+const formatCommercialExperience = (
+  exp: Doc<'experiencesCommercials'>
+): UnifiedExperience => ({
   _id: exp._id,
   _creationTime: exp._creationTime,
   type: 'commercial',
@@ -130,31 +138,50 @@ export const getMyAllExperiences = authQuery({
   returns: v.array(v.any()),
   handler: async (ctx) => {
     const experiences: UnifiedExperience[] = []
-    
+
     // Fetch TV/Film experiences
     if (ctx.user?.resume?.experiencesTvFilm) {
       const tvFilmExps = await getAll(ctx.db, ctx.user.resume.experiencesTvFilm)
-      experiences.push(...tvFilmExps.filter(notEmpty).map(formatTvFilmExperience))
+      experiences.push(
+        ...tvFilmExps.filter(notEmpty).map(formatTvFilmExperience)
+      )
     }
-    
+
     // Fetch Music Video experiences
     if (ctx.user?.resume?.experiencesMusicVideos) {
-      const musicVideoExps = await getAll(ctx.db, ctx.user.resume.experiencesMusicVideos)
-      experiences.push(...musicVideoExps.filter(notEmpty).map(formatMusicVideoExperience))
+      const musicVideoExps = await getAll(
+        ctx.db,
+        ctx.user.resume.experiencesMusicVideos
+      )
+      experiences.push(
+        ...musicVideoExps.filter(notEmpty).map(formatMusicVideoExperience)
+      )
     }
-    
+
     // Fetch Live Performance experiences
     if (ctx.user?.resume?.experiencesLivePerformances) {
-      const livePerformanceExps = await getAll(ctx.db, ctx.user.resume.experiencesLivePerformances)
-      experiences.push(...livePerformanceExps.filter(notEmpty).map(formatLivePerformanceExperience))
+      const livePerformanceExps = await getAll(
+        ctx.db,
+        ctx.user.resume.experiencesLivePerformances
+      )
+      experiences.push(
+        ...livePerformanceExps
+          .filter(notEmpty)
+          .map(formatLivePerformanceExperience)
+      )
     }
-    
+
     // Fetch Commercial experiences
     if (ctx.user?.resume?.experiencesCommercials) {
-      const commercialExps = await getAll(ctx.db, ctx.user.resume.experiencesCommercials)
-      experiences.push(...commercialExps.filter(notEmpty).map(formatCommercialExperience))
+      const commercialExps = await getAll(
+        ctx.db,
+        ctx.user.resume.experiencesCommercials
+      )
+      experiences.push(
+        ...commercialExps.filter(notEmpty).map(formatCommercialExperience)
+      )
     }
-    
+
     // Sort by start date descending
     return experiences.sort((a, b) => {
       if (!a.startDate || !b.startDate) return 0
@@ -172,53 +199,62 @@ export const getUserPublicAllExperiences = query({
   handler: async (ctx, args) => {
     const user = await ctx.db.get(args.userId)
     if (!user) return []
-    
+
     const experiences: UnifiedExperience[] = []
-    
+
     // Fetch TV/Film experiences
     if (user?.resume?.experiencesTvFilm) {
       const tvFilmExps = await getAll(ctx.db, user.resume.experiencesTvFilm)
       experiences.push(
         ...tvFilmExps
           .filter(notEmpty)
-          .filter(exp => !exp.private)
+          .filter((exp) => !exp.private)
           .map(formatTvFilmExperience)
       )
     }
-    
+
     // Fetch Music Video experiences
     if (user?.resume?.experiencesMusicVideos) {
-      const musicVideoExps = await getAll(ctx.db, user.resume.experiencesMusicVideos)
+      const musicVideoExps = await getAll(
+        ctx.db,
+        user.resume.experiencesMusicVideos
+      )
       experiences.push(
         ...musicVideoExps
           .filter(notEmpty)
-          .filter(exp => !exp.private)
+          .filter((exp) => !exp.private)
           .map(formatMusicVideoExperience)
       )
     }
-    
+
     // Fetch Live Performance experiences
     if (user?.resume?.experiencesLivePerformances) {
-      const livePerformanceExps = await getAll(ctx.db, user.resume.experiencesLivePerformances)
+      const livePerformanceExps = await getAll(
+        ctx.db,
+        user.resume.experiencesLivePerformances
+      )
       experiences.push(
         ...livePerformanceExps
           .filter(notEmpty)
-          .filter(exp => !exp.private)
+          .filter((exp) => !exp.private)
           .map(formatLivePerformanceExperience)
       )
     }
-    
+
     // Fetch Commercial experiences
     if (user?.resume?.experiencesCommercials) {
-      const commercialExps = await getAll(ctx.db, user.resume.experiencesCommercials)
+      const commercialExps = await getAll(
+        ctx.db,
+        user.resume.experiencesCommercials
+      )
       experiences.push(
         ...commercialExps
           .filter(notEmpty)
-          .filter(exp => !exp.private)
+          .filter((exp) => !exp.private)
           .map(formatCommercialExperience)
       )
     }
-    
+
     // Sort by start date descending
     return experiences.sort((a, b) => {
       if (!a.startDate || !b.startDate) return 0
@@ -243,13 +279,18 @@ export const getMyExperienceCounts = authQuery({
     const counts = {
       tvFilm: ctx.user?.resume?.experiencesTvFilm?.length || 0,
       musicVideos: ctx.user?.resume?.experiencesMusicVideos?.length || 0,
-      livePerformances: ctx.user?.resume?.experiencesLivePerformances?.length || 0,
+      livePerformances:
+        ctx.user?.resume?.experiencesLivePerformances?.length || 0,
       commercials: ctx.user?.resume?.experiencesCommercials?.length || 0,
       total: 0
     }
-    
-    counts.total = counts.tvFilm + counts.musicVideos + counts.livePerformances + counts.commercials
-    
+
+    counts.total =
+      counts.tvFilm +
+      counts.musicVideos +
+      counts.livePerformances +
+      counts.commercials
+
     return counts
   }
 })
