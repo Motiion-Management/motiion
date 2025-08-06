@@ -26,6 +26,7 @@ export interface BottomSheetPickerProps<T = any> {
   pickerLabel?: string;
   errorMessage?: string;
   disabled?: boolean;
+  onSearch?: (searchTerm: string, data: ComboboxItem<T>[]) => ComboboxItem<T>[];
 }
 
 export function BottomSheetCombobox<T = any>({
@@ -39,9 +40,11 @@ export function BottomSheetCombobox<T = any>({
   defaultValue,
   errorMessage,
   disabled,
+  onSearch,
 }: BottomSheetPickerProps<T>) {
   const sheetState = useSheetState();
   const [tempValue, setTempValue] = useState<T>(value || defaultValue || data?.[0]?.value);
+  const [searchTerm, setSearchTerm] = useState('');
 
   const handleSave = useCallback(() => {
     onChange?.(tempValue);
@@ -51,6 +54,7 @@ export function BottomSheetCombobox<T = any>({
   const handleSheetOpen = useCallback(() => {
     if (disabled) return;
     setTempValue(value || defaultValue || data?.[0]?.value);
+    setSearchTerm('');
     sheetState.open();
   }, [value, defaultValue, data, sheetState, disabled]);
 
@@ -70,11 +74,22 @@ export function BottomSheetCombobox<T = any>({
     return selectedItem?.label || '';
   }, [value, data, formatValue]);
 
+  const filteredData = useMemo(() => {
+    if (!searchTerm) return data;
+
+    if (onSearch) {
+      return onSearch(searchTerm, data);
+    }
+
+    // Default search: case-insensitive filter by label
+    return data.filter((item) => item.label.toLowerCase().includes(searchTerm.toLowerCase()));
+  }, [searchTerm, data, onSearch]);
+
   const renderSearchItem = ({ item }: { item: ComboboxItem<T> }) => {
     return (
       <Pressable onPress={() => setTempValue(item.value)}>
         <Text
-          className={cn('p-4', data[0] !== item && 'border-t border-t-border')}
+          className={cn('p-4', filteredData[0] !== item && 'border-t border-t-border')}
           variant="bodyLg">
           {item.label}
         </Text>
@@ -110,16 +125,14 @@ export function BottomSheetCombobox<T = any>({
           <View className="flex-1">
             <Input
               autoFocus
-              label={label}
-              placeholder={placeholder}
-              value={displayValue}
-              onBlur={onBlur}
-              errorMessage={errorMessage}
+              placeholder="Search..."
+              value={searchTerm}
+              onChangeText={setSearchTerm}
               rightView={
                 <Search className="pointer-events-none text-text-default opacity-50" size={20} />
               }
             />
-            <FlatList data={data} renderItem={renderSearchItem} />
+            <FlatList data={filteredData} renderItem={renderSearchItem} />
           </View>
 
           <Button onPress={handleSave} className="w-full">
