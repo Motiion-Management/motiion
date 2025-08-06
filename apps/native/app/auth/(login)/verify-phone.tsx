@@ -36,18 +36,23 @@ export default function VerifyPhoneScreen() {
       setIsVerifying(true);
       setVerificationError(null);
 
+      console.log('Attempting to verify OTP:', value.otp);
       try {
         // Attempt to verify the phone number with the provided OTP
         const result = await signIn.attemptFirstFactor({
           strategy: 'phone_code',
           code: value.otp,
         });
+        console.log('Verification result:', result);
 
         // Check if sign-in is complete
         if (result.status === 'complete') {
           await setActive({ session: result.createdSessionId });
+          console.log('Sign-in complete, session created:', result.createdSessionId);
+
           // Navigate to the main app
           router.replace('/app/home');
+          console.log('Navigated to home screen');
         } else {
           setVerificationError('Sign-in incomplete. Please try again.');
         }

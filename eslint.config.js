@@ -49,7 +49,9 @@ export default [
       '@typescript-eslint': tseslint
     },
     rules: {
-      '@typescript-eslint/no-explicit-any': 'off'
+      '@typescript-eslint/no-explicit-any': 'off',
+      'no-unused-vars': 'off', // Disable the base rule
+      '@typescript-eslint/no-unused-vars': 'warn' // Enable the TS-aware rule
     },
     settings: {
       'import/extensions': [

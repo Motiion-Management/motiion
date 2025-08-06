@@ -20,7 +20,7 @@ export interface WheelPickerData<T = any> {
   label: string;
 }
 
-export interface WheelPickerProps<T = any> extends Omit {
+export interface WheelPickerProps<T = any> {
   data: WheelPickerData[];
   value: T;
   onValueChange: (value: T) => void;
@@ -28,6 +28,10 @@ export interface WheelPickerProps<T = any> extends Omit {
   labelClassName?: string;
   enableFeedback?: boolean;
   width?: number;
+  className?: string;
+  itemTextClassName?: string;
+  overlayItemClassName?: string;
+  contentContainerClassName?: string;
 }
 
 export function WheelPicker<T = any>({
@@ -66,7 +70,9 @@ export function WheelPicker<T = any>({
         contentContainerClassName={cn('', contentContainerClassName)}
         renderItem={({ item }) => (
           <View className="flex-1 items-center justify-center">
-            <Text variant="header3" className="text-center text-text-default">
+            <Text
+              variant="header3"
+              className={cn('text-center text-text-default', itemTextClassName)}>
               {item.label}
             </Text>
           </View>

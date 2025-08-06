@@ -1,5 +1,5 @@
 import React, { useState, useCallback, useEffect } from 'react';
-import { View, Pressable, Platform } from 'react-native';
+import { View, Platform } from 'react-native';
 import { KeyboardAwareScrollView, KeyboardStickyView } from 'react-native-keyboard-controller';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
@@ -10,7 +10,6 @@ import { Sheet } from '~/components/ui/sheet';
 import { Text } from '~/components/ui/text';
 import { Tabs, TabPanel } from '~/components/ui/tabs/tabs';
 
-import X from '~/lib/icons/X';
 import { ExperienceType, Experience, ExperienceFormState } from '~/types/experiences';
 import { EXPERIENCE_TYPES } from '~/config/experienceTypes';
 import { BottomSheetPicker } from '../ui/bottom-sheet-picker';
@@ -140,18 +139,8 @@ export function ExperienceEditSheet({
   };
 
   return (
-    <Sheet isOpened={isOpen} onIsOpenedChange={onOpenChange}>
+    <Sheet isOpened={isOpen} label={getTitle()} onIsOpenedChange={onOpenChange}>
       <View className="h-[82vh]">
-        {/* Header */}
-        <View className="flex-row items-center justify-between px-4 py-4">
-          <Text variant="header4" className="text-text-default">
-            {getTitle()}
-          </Text>
-          <Pressable onPress={handleClose} className="p-2">
-            <X className="h-6 w-6 color-icon-default" />
-          </Pressable>
-        </View>
-
         {/* Tabs */}
         <Tabs tabs={TABS} activeTab={activeTab} onTabChange={setActiveTab} />
 

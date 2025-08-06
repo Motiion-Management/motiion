@@ -12,6 +12,7 @@ import { DateInput } from '~/components/form/DateInput';
 import { debounce } from '~/lib/debounce';
 import { DURATION_OPTIONS, COMMON_STUDIOS, COMMON_ROLES } from '~/config/experienceTypes';
 import { Experience } from '~/types/experiences';
+import { BottomSheetCombobox } from '~/components/ui/bottom-sheet-combobox';
 
 interface TvFilmFormProps {
   initialData?: Partial<Experience>;
@@ -79,6 +80,12 @@ export function TvFilmForm({ initialData = {}, onChange }: TvFilmFormProps) {
         )}
       />
 
+      <BottomSheetCombobox
+        label="Studio"
+        placeholder="Select or enter studio"
+        data={studioOptions}
+        onChange={(value) => form.setFieldValue('studio', value)}
+      />
       <form.Field
         name="studio"
         children={(fieldApi) => (

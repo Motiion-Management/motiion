@@ -1,6 +1,6 @@
 import { api } from '@packages/backend/convex/_generated/api';
 import { useQuery } from 'convex/react';
-import React, { useState, useCallback } from 'react';
+import React, { useCallback } from 'react';
 import { View } from 'react-native';
 
 import { useSheetState } from '~/components/ui/sheet';
@@ -21,7 +21,7 @@ export function SizingMetric({ metric, className }: SizingMetricProps) {
   // Get current value from user data
   const currentValue =
     user?.sizing?.[metric.section]?.[
-      metric.field as keyof (typeof user.sizing)[typeof metric.section]
+    metric.field as keyof (typeof user.sizing)[typeof metric.section]
     ];
 
   const handleCardPress = () => {

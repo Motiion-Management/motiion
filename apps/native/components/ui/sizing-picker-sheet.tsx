@@ -1,13 +1,12 @@
 import { api } from '@packages/backend/convex/_generated/api';
 import { useMutation } from 'convex/react';
 import React, { useCallback, useState, useEffect } from 'react';
-import { View, Pressable } from 'react-native';
+import { View } from 'react-native';
 
 import { Button } from '~/components/ui/button';
 import { Sheet } from '~/components/ui/sheet';
 import { Text } from '~/components/ui/text';
 import { WheelPicker, WheelPickerData } from '~/components/ui/wheel-picker';
-import X from '~/lib/icons/X';
 import { SizingMetricConfig } from '~/types/sizing';
 
 interface SizingPickerSheetProps {
@@ -56,10 +55,6 @@ export const SizingPickerSheet: React.FC<SizingPickerSheetProps> = ({
     }
   }, [selectedValue, updateSizingField, metric.section, metric.field, onOpenChange]);
 
-  const handleClose = useCallback(() => {
-    onOpenChange(false);
-  }, [onOpenChange]);
-
   const handleValueChange = useCallback((value: string) => {
     setSelectedValue(value);
   }, []);
@@ -70,18 +65,8 @@ export const SizingPickerSheet: React.FC<SizingPickerSheetProps> = ({
   }));
 
   return (
-    <Sheet isOpened={isOpen} onIsOpenedChange={onOpenChange}>
+    <Sheet isOpened={isOpen} label={metric.label} onIsOpenedChange={onOpenChange}>
       <View className="z-10">
-        {/* Header */}
-        <View className="flex-row items-center justify-between px-4 py-4">
-          <Text variant="header4" className="text-text-default">
-            {metric.label}
-          </Text>
-          <Pressable onPress={handleClose} className="p-2">
-            <X className="h-6 w-6 color-icon-default" />
-          </Pressable>
-        </View>
-
         {/* Picker */}
         <View className="items-center justify-center py-4">
           <View className="h-[178px] w-full overflow-hidden rounded-lg">

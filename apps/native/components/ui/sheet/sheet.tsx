@@ -5,15 +5,17 @@ import {
   BottomSheetBackdrop,
 } from '@gorhom/bottom-sheet';
 import React, { useRef, useImperativeHandle, forwardRef, useCallback, useEffect } from 'react';
-import { View } from 'react-native';
+import { Pressable, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { Button } from '../button';
 import { Text } from '../text';
 
 import { cn } from '~/lib/cn';
+import X from '~/lib/icons/X';
 
 interface SheetProps extends BottomSheetModalProps {
+  label?: string;
   isOpened: boolean;
   onIsOpenedChange: (isOpen: boolean) => void;
   children: React.ReactNode;
@@ -56,6 +58,7 @@ const BottomSheetHandle = ({ className }: BottomSheetHandleProps) => {
 const SheetContent = forwardRef<SheetRef, SheetProps>(
   (
     {
+      label,
       isOpened,
       onIsOpenedChange,
       children,
@@ -119,6 +122,10 @@ const SheetContent = forwardRef<SheetRef, SheetProps>(
       [handleClassName]
     );
 
+    const handleClose = useCallback(() => {
+      bottomSheetModalRef.current?.dismiss();
+    }, []);
+
     return (
       <BottomSheetModal
         ref={bottomSheetModalRef}
@@ -133,6 +140,14 @@ const SheetContent = forwardRef<SheetRef, SheetProps>(
         {...rest}>
         <BottomSheetView>
           <SafeAreaView edges={['bottom']} className={className}>
+            <View className="flex-row items-center justify-between px-4 pb-4">
+              <Text variant="header4" className="text-text-default">
+                {label}
+              </Text>
+              <Pressable onPress={handleClose} className="p-2 pr-0">
+                <X className="h-6 w-6 color-icon-default" />
+              </Pressable>
+            </View>
             {children}
           </SafeAreaView>
         </BottomSheetView>

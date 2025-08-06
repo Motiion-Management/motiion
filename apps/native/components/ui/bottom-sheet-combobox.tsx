@@ -1,19 +1,23 @@
 import React, { useState, useCallback, useMemo } from 'react';
-import { Pressable, View } from 'react-native';
+import { FlatList, Pressable, View } from 'react-native';
 
 import { Input } from '~/components/ui/input';
 import { Sheet, useSheetState } from '~/components/ui/sheet';
-import { WheelPicker, WheelPickerData } from '~/components/ui/wheel-picker';
 import { Button } from '~/components/ui/button';
 import { Text } from '~/components/ui/text';
-import ChevronDown from '~/lib/icons/ChevronDown';
-import X from '~/lib/icons/X';
+import Search from '~/lib/icons/Search';
+import { cn } from '~/lib/cn';
+
+export interface ComboboxItem<T = any> {
+  value: T;
+  label: string;
+}
 
 export interface BottomSheetPickerProps<T = any> {
   value?: T;
   onChange?: (value: T) => void;
   onBlur?: () => void;
-  data: WheelPickerData<T>[];
+  data: ComboboxItem<T>[];
   label?: string;
   placeholder?: string;
   formatValue?: (value: T) => string;
@@ -24,7 +28,7 @@ export interface BottomSheetPickerProps<T = any> {
   disabled?: boolean;
 }
 
-export function BottomSheetPicker<T = any>({
+export function BottomSheetCombobox<T = any>({
   value,
   onChange,
   onBlur,
@@ -33,13 +37,11 @@ export function BottomSheetPicker<T = any>({
   placeholder,
   formatValue,
   defaultValue,
-  width,
-  pickerLabel,
   errorMessage,
   disabled,
 }: BottomSheetPickerProps<T>) {
   const sheetState = useSheetState();
-  const [tempValue, setTempValue] = useState<T>(value || defaultValue || data[0]?.value);
+  const [tempValue, setTempValue] = useState<T>(value || defaultValue || data?.[0]?.value);
 
   const handleSave = useCallback(() => {
     onChange?.(tempValue);
@@ -48,9 +50,13 @@ export function BottomSheetPicker<T = any>({
 
   const handleSheetOpen = useCallback(() => {
     if (disabled) return;
-    setTempValue(value || defaultValue || data[0]?.value);
+    setTempValue(value || defaultValue || data?.[0]?.value);
     sheetState.open();
   }, [value, defaultValue, data, sheetState, disabled]);
+
+  const handleClose = useCallback(() => {
+    sheetState.close();
+  }, [sheetState]);
 
   const displayValue = useMemo(() => {
     console.log('displayValue', { value, data, formatValue });
@@ -64,49 +70,56 @@ export function BottomSheetPicker<T = any>({
     return selectedItem?.label || '';
   }, [value, data, formatValue]);
 
+  const renderSearchItem = ({ item }: { item: ComboboxItem<T> }) => {
+    return (
+      <Pressable onPress={() => setTempValue(item.value)}>
+        <Text
+          className={cn('p-4', data[0] !== item && 'border-t border-t-border')}
+          variant="bodyLg">
+          {item.label}
+        </Text>
+      </Pressable>
+    );
+  };
   return (
     <>
       <Pressable onPress={handleSheetOpen} disabled={disabled}>
         <Input
+          readOnly
           label={label}
           placeholder={placeholder}
           value={displayValue}
-          readOnly={true}
           onBlur={onBlur}
           errorMessage={errorMessage}
           rightView={
-            <ChevronDown className="pointer-events-none text-text-default opacity-50" size={20} />
+            <Search className="pointer-events-none text-text-default opacity-50" size={20} />
           }
         />
       </Pressable>
 
       <Sheet
         isOpened={sheetState.isOpen}
-        label={label}
         stackBehavior="push"
+        label={label}
         onIsOpenedChange={(isOpen) => {
           if (!isOpen) {
             sheetState.close();
           }
         }}>
-        <View className="px-4">
-          <View className="mb-6 overflow-hidden rounded-lg border border-border-low">
-            <View className="relative h-[178px]">
-              {/* Highlight region */}
-              <View className="absolute left-0 right-0 top-1/2 h-14 -translate-y-1/2 border-b border-t border-border-accent bg-surface-high" />
-
-              {/* Picker */}
-              <View className="h-full items-center justify-center">
-                <WheelPicker
-                  data={data}
-                  value={tempValue}
-                  onValueChange={setTempValue}
-                  label={pickerLabel}
-                  width={width}
-                  itemTextClassName="text-h4"
-                />
-              </View>
-            </View>
+        <View className="h-[82vh] px-4">
+          <View className="flex-1">
+            <Input
+              autoFocus
+              label={label}
+              placeholder={placeholder}
+              value={displayValue}
+              onBlur={onBlur}
+              errorMessage={errorMessage}
+              rightView={
+                <Search className="pointer-events-none text-text-default opacity-50" size={20} />
+              }
+            />
+            <FlatList data={data} renderItem={renderSearchItem} />
           </View>
 
           <Button onPress={handleSave} className="w-full">
