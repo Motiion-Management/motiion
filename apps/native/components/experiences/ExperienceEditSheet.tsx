@@ -180,11 +180,11 @@ export function ExperienceEditSheet({
                     value={
                       experienceType
                         ? {
-                          value: experienceType,
-                          label:
-                            EXPERIENCE_TYPES.find((t) => t.value === experienceType)?.label ||
-                            experienceType,
-                        }
+                            value: experienceType,
+                            label:
+                              EXPERIENCE_TYPES.find((t) => t.value === experienceType)?.label ||
+                              experienceType,
+                          }
                         : undefined
                     }
                     onValueChange={handleExperienceTypeChange}>
@@ -237,7 +237,7 @@ export function ExperienceEditSheet({
             closed: 0,
             opened: Platform.select({ ios: insets.bottom, default: insets.bottom }),
           }}>
-          <View className="gap-2 border-t border-t-border-low px-4 pb-8 pt-4 bg-surface-default">
+          <View className="gap-2 border-t border-t-border-low bg-surface-default px-4 pb-8 pt-4">
             {activeTab === 'details' ? (
               <Button onPress={handleNext} disabled={!experienceType} className="w-full">
                 <Text>Next</Text>

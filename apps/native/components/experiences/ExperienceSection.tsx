@@ -25,6 +25,30 @@ export function ExperienceSection({
     return `Project ${index + 1}`;
   };
 
+  const getCardVariant = (index: number): 'completed' | 'default' | 'disabled' => {
+    const experience = experienceSlots[index];
+
+    // If this slot has an experience, it's completed
+    if (experience?.data) {
+      return 'completed';
+    }
+
+    // Find the index of the first empty slot
+    const firstEmptyIndex = experienceSlots.findIndex((exp) => !exp?.data);
+
+    // If this is the first empty slot, it's default (active)
+    if (index === firstEmptyIndex) {
+      return 'default';
+    }
+
+    // All other empty slots are disabled
+    return 'disabled';
+  };
+
+  const isCardDisabled = (index: number): boolean => {
+    return getCardVariant(index) === 'disabled';
+  };
+
   return (
     <View className="gap-3">
       {experienceSlots.slice(0, maxExperiences).map((experience, index) => (
@@ -32,6 +56,8 @@ export function ExperienceSection({
           key={index}
           experience={experience?.data}
           placeholder={getPlaceholder(index)}
+          variant={getCardVariant(index)}
+          disabled={isCardDisabled(index)}
           onPress={() => onExperiencePress(index)}
         />
       ))}
