@@ -1,5 +1,7 @@
 import { createFormHook } from '@tanstack/react-form';
 
+import { BottomSheetComboboxField } from './BottomSheetComboboxField';
+import { BottomSheetPickerField } from './BottomSheetPickerField';
 import { CheckboxGroupField } from './CheckboxGroupField';
 import { ChipsField } from './ChipsField';
 import { DateInput } from './DateInput';
@@ -23,6 +25,8 @@ const { useAppForm } = createFormHook({
     DateInput,
     SelectField,
     ChipsField,
+    BottomSheetPickerField,
+    BottomSheetComboboxField,
   },
   formComponents: {},
 });

@@ -4,15 +4,9 @@ import { useStore } from '@tanstack/react-form';
 import * as z from 'zod';
 
 import { useAppForm } from '~/components/form/appForm';
-import { fieldContext } from '~/components/form/context';
-import { TextInput } from '~/components/form/TextInput';
-import { SelectField } from '~/components/form/SelectField';
-import { ChipsField } from '~/components/form/ChipsField';
-import { DateInput } from '~/components/form/DateInput';
 import { debounce } from '~/lib/debounce';
 import { DURATION_OPTIONS, COMMON_STUDIOS, COMMON_ROLES } from '~/config/experienceTypes';
 import { Experience } from '~/types/experiences';
-import { BottomSheetCombobox } from '~/components/ui/bottom-sheet-combobox';
 
 interface TvFilmFormProps {
   initialData?: Partial<Experience>;
@@ -71,81 +65,61 @@ export function TvFilmForm({ initialData = {}, onChange }: TvFilmFormProps) {
 
   return (
     <View className="gap-4">
-      <form.Field
+      <form.AppField
         name="title"
-        children={(fieldApi) => (
-          <fieldContext.Provider value={fieldApi}>
-            <TextInput label="Title" placeholder="Enter project title" />
-          </fieldContext.Provider>
+        children={(field) => (
+          <field.TextInput label="Title" placeholder="Enter project title" />
         )}
       />
 
-      <BottomSheetCombobox
-        label="Studio"
-        placeholder="Select or enter studio"
-        data={studioOptions}
-        onChange={(value) => form.setFieldValue('studio', value)}
-      />
-      <form.Field
+      <form.AppField
         name="studio"
-        children={(fieldApi) => (
-          <fieldContext.Provider value={fieldApi}>
-            <SelectField
-              label="Studio"
-              placeholder="Select or enter studio"
-              options={studioOptions}
-            />
-          </fieldContext.Provider>
+        children={(field) => (
+          <field.BottomSheetComboboxField
+            label="Studio"
+            placeholder="Select or enter studio"
+            data={studioOptions}
+          />
         )}
       />
 
       <View className="flex-row gap-4">
         <View className="flex-1">
-          <form.Field
+          <form.AppField
             name="startDate"
-            children={(fieldApi) => (
-              <fieldContext.Provider value={fieldApi}>
-                <DateInput label="Start Date" />
-              </fieldContext.Provider>
-            )}
+            children={(field) => <field.DateInput label="Start Date" />}
           />
         </View>
 
         <View className="flex-1">
-          <form.Field
+          <form.AppField
             name="duration"
-            children={(fieldApi) => (
-              <fieldContext.Provider value={fieldApi}>
-                <SelectField
-                  label="Duration"
-                  placeholder="Select duration"
-                  options={DURATION_OPTIONS}
-                />
-              </fieldContext.Provider>
+            children={(field) => (
+              <field.SelectField
+                label="Duration"
+                placeholder="Select duration"
+                options={DURATION_OPTIONS}
+              />
             )}
           />
         </View>
       </View>
 
-      <form.Field
+      <form.AppField
         name="link"
-        children={(fieldApi) => (
-          <fieldContext.Provider value={fieldApi}>
-            <TextInput label="Link (Optional)" placeholder="Paste link for project visual" />
-          </fieldContext.Provider>
+        children={(field) => (
+          <field.TextInput label="Link (Optional)" placeholder="Paste link for project visual" />
         )}
       />
 
-      <form.Field
+      <form.AppField
         name="roles"
-        children={(fieldApi) => (
-          <fieldContext.Provider value={fieldApi}>
-            <ChipsField
-              label="Your Role(s)"
-              placeholder="Enter roles separated by commas"
-              helpText={`Common roles: ${COMMON_ROLES.slice(0, 3).join(', ')}...`}
-            />
-          </fieldContext.Provider>
+        children={(field) => (
+          <field.ChipsField
+            label="Your Role(s)"
+            placeholder="Enter roles separated by commas"
+            helpText={`Common roles: ${COMMON_ROLES.slice(0, 3).join(', ')}...`}
+          />
         )}
       />
     </View>

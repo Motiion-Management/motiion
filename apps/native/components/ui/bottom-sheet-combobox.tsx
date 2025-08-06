@@ -1,4 +1,4 @@
-import React, { useState, useCallback, useMemo } from 'react';
+import React, { useState, useCallback, useMemo, useRef } from 'react';
 import { FlatList, Pressable, View } from 'react-native';
 
 import { Input } from '~/components/ui/input';
@@ -43,36 +43,44 @@ export function BottomSheetCombobox<T = any>({
   onSearch,
 }: BottomSheetPickerProps<T>) {
   const sheetState = useSheetState();
+  const searchInputRef = useRef<any>(null);
   const [tempValue, setTempValue] = useState<T>(value || defaultValue || data?.[0]?.value);
   const [searchTerm, setSearchTerm] = useState('');
+  // Internal state for uncontrolled mode
+  const [internalValue, setInternalValue] = useState<T | undefined>(value || defaultValue);
 
   const handleSave = useCallback(() => {
+    setInternalValue(tempValue);
     onChange?.(tempValue);
     sheetState.close();
   }, [tempValue, onChange, sheetState]);
 
   const handleSheetOpen = useCallback(() => {
     if (disabled) return;
-    setTempValue(value || defaultValue || data?.[0]?.value);
+    // Use prop value if provided, otherwise use internal state
+    const currentValue = value !== undefined ? value : internalValue;
+    setTempValue(currentValue || defaultValue || data?.[0]?.value);
     setSearchTerm('');
     sheetState.open();
-  }, [value, defaultValue, data, sheetState, disabled]);
+  }, [value, internalValue, defaultValue, data, sheetState, disabled]);
 
   const handleClose = useCallback(() => {
     sheetState.close();
   }, [sheetState]);
 
   const displayValue = useMemo(() => {
-    console.log('displayValue', { value, data, formatValue });
-    if (!value) return '';
+    // Use prop value if provided, otherwise use internal state
+    const currentValue = value !== undefined ? value : internalValue;
+    console.log('displayValue', { value: currentValue, data, formatValue });
+    if (!currentValue) return '';
 
     if (formatValue) {
-      return formatValue(value);
+      return formatValue(currentValue);
     }
 
-    const selectedItem = data.find((item) => item.value === value);
+    const selectedItem = data.find((item) => item.value === currentValue);
     return selectedItem?.label || '';
-  }, [value, data, formatValue]);
+  }, [value, internalValue, data, formatValue]);
 
   const filteredData = useMemo(() => {
     if (!searchTerm) return data;
@@ -86,10 +94,20 @@ export function BottomSheetCombobox<T = any>({
   }, [searchTerm, data, onSearch]);
 
   const renderSearchItem = ({ item }: { item: ComboboxItem<T> }) => {
+    const isSelected = item.value === tempValue;
     return (
-      <Pressable onPress={() => setTempValue(item.value)}>
+      <Pressable
+        onPress={() => {
+          setTempValue(item.value);
+          setSearchTerm(item.label);
+          searchInputRef.current?.blur();
+        }}>
         <Text
-          className={cn('p-4', filteredData[0] !== item && 'border-t border-t-border')}
+          className={cn(
+            'p-4',
+            filteredData[0] !== item && 'border-t border-t-border',
+            isSelected && 'text-tonal'
+          )}
           variant="bodyLg">
           {item.label}
         </Text>
@@ -124,12 +142,16 @@ export function BottomSheetCombobox<T = any>({
         <View className="h-[82vh] px-4">
           <View className="flex-1">
             <Input
+              ref={searchInputRef}
               autoFocus
               placeholder="Search..."
               value={searchTerm}
               onChangeText={setSearchTerm}
               rightView={
-                <Search className="pointer-events-none text-text-default opacity-50" size={20} />
+                <Search
+                  className="pointer-events-none mr-2 text-text-default opacity-50"
+                  size={20}
+                />
               }
             />
             <FlatList data={filteredData} renderItem={renderSearchItem} />
