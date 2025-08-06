@@ -1,5 +1,7 @@
 import React, { useState, useCallback, useEffect } from 'react';
-import { View, Pressable, ScrollView } from 'react-native';
+import { View, Pressable, Platform } from 'react-native';
+import { KeyboardAwareScrollView, KeyboardStickyView } from 'react-native-keyboard-controller';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { ExperienceForm } from './ExperienceForm';
 import { ExperienceTeamForm } from './ExperienceTeamForm';
@@ -40,6 +42,7 @@ export function ExperienceEditSheet({
   onDelete,
   isNew = false,
 }: ExperienceEditSheetProps) {
+  const insets = useSafeAreaInsets();
   const [activeTab, setActiveTab] = useState('details');
   const [experienceType, setExperienceType] = useState<ExperienceType | null>(
     experience?.type || null
@@ -160,7 +163,13 @@ export function ExperienceEditSheet({
         {/* Tab Content */}
         <View className="flex-1">
           <TabPanel isActive={activeTab === 'details'}>
-            <ScrollView className="flex-1" showsVerticalScrollIndicator={false}>
+            <KeyboardAwareScrollView
+              bounces={false}
+              disableScrollOnKeyboardHide
+              contentInsetAdjustmentBehavior="never"
+              keyboardDismissMode="interactive"
+              keyboardShouldPersistTaps="handled"
+              showsVerticalScrollIndicator={false}>
               <View className="gap-4 px-4 pb-4 pt-4">
                 {/* Experience Type Selector */}
                 <View>
@@ -204,36 +213,48 @@ export function ExperienceEditSheet({
                   />
                 )}
               </View>
-            </ScrollView>
+            </KeyboardAwareScrollView>
           </TabPanel>
 
           <TabPanel isActive={activeTab === 'team'}>
-            <ScrollView className="flex-1" showsVerticalScrollIndicator={false}>
+            <KeyboardAwareScrollView
+              bounces={false}
+              disableScrollOnKeyboardHide
+              contentInsetAdjustmentBehavior="never"
+              keyboardDismissMode="interactive"
+              keyboardShouldPersistTaps="handled"
+              showsVerticalScrollIndicator={false}>
               <View className="px-4 pb-4 pt-4">
                 <ExperienceTeamForm initialData={teamData} onChange={handleTeamChange} />
               </View>
-            </ScrollView>
+            </KeyboardAwareScrollView>
           </TabPanel>
         </View>
 
         {/* Actions */}
-        <View className="gap-2 border-t border-t-border-low px-4 pb-8 pt-4">
-          {activeTab === 'details' ? (
-            <Button onPress={handleNext} disabled={!experienceType} className="w-full">
-              <Text>Next</Text>
-            </Button>
-          ) : (
-            <Button onPress={handleSave} disabled={!experienceType} className="w-full">
-              <Text>Save</Text>
-            </Button>
-          )}
+        <KeyboardStickyView
+          offset={{
+            closed: 0,
+            opened: Platform.select({ ios: insets.bottom, default: insets.bottom }),
+          }}>
+          <View className="gap-2 border-t border-t-border-low px-4 pb-8 pt-4 bg-surface-default">
+            {activeTab === 'details' ? (
+              <Button onPress={handleNext} disabled={!experienceType} className="w-full">
+                <Text>Next</Text>
+              </Button>
+            ) : (
+              <Button onPress={handleSave} disabled={!experienceType} className="w-full">
+                <Text>Save</Text>
+              </Button>
+            )}
 
-          {!isNew && onDelete && (
-            <Button variant="secondary" onPress={onDelete} className="w-full">
-              <Text className="text-red-600">Delete</Text>
-            </Button>
-          )}
-        </View>
+            {!isNew && onDelete && (
+              <Button variant="secondary" onPress={onDelete} className="w-full">
+                <Text className="text-red-600">Delete</Text>
+              </Button>
+            )}
+          </View>
+        </KeyboardStickyView>
       </View>
     </Sheet>
   );
