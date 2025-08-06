@@ -168,6 +168,7 @@ const Input = React.forwardRef<InputRef, InputProps>(
               readOnly={readOnly}
               className={cn(
                 'flex-1 bg-transparent py-3 text-[16px] text-text-default placeholder:text-text-default/40',
+                readOnly && 'pointer-events-none',
                 invalid && 'text-text-error',
                 leftView && 'pl-2',
                 hasRightContent && 'pr-2',

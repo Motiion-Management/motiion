@@ -1,4 +1,9 @@
-import { BottomSheetModal, BottomSheetView, BottomSheetBackdrop } from '@gorhom/bottom-sheet';
+import {
+  BottomSheetModal,
+  BottomSheetModalProps,
+  BottomSheetView,
+  BottomSheetBackdrop,
+} from '@gorhom/bottom-sheet';
 import React, { useRef, useImperativeHandle, forwardRef, useCallback, useEffect } from 'react';
 import { View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -8,7 +13,7 @@ import { Text } from '../text';
 
 import { cn } from '~/lib/cn';
 
-interface SheetProps {
+interface SheetProps extends BottomSheetModalProps {
   isOpened: boolean;
   onIsOpenedChange: (isOpen: boolean) => void;
   children: React.ReactNode;
@@ -60,6 +65,7 @@ const SheetContent = forwardRef<SheetRef, SheetProps>(
       handleIndicatorStyle,
       enableCustomHandle = true,
       borderRadius = 'xl',
+      ...rest
     },
     ref
   ) => {
@@ -123,7 +129,8 @@ const SheetContent = forwardRef<SheetRef, SheetProps>(
         backgroundComponent={renderBackground}
         handleComponent={enableCustomHandle ? renderHandle : undefined}
         handleIndicatorStyle={!enableCustomHandle ? handleIndicatorStyle : undefined}
-        enablePanDownToClose>
+        enablePanDownToClose
+        {...rest}>
         <BottomSheetView>
           <SafeAreaView edges={['bottom']} className={className}>
             {children}

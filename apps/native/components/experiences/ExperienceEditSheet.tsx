@@ -9,16 +9,11 @@ import { Button } from '~/components/ui/button';
 import { Sheet } from '~/components/ui/sheet';
 import { Text } from '~/components/ui/text';
 import { Tabs, TabPanel } from '~/components/ui/tabs/tabs';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '~/components/ui/select';
+
 import X from '~/lib/icons/X';
 import { ExperienceType, Experience, ExperienceFormState } from '~/types/experiences';
 import { EXPERIENCE_TYPES } from '~/config/experienceTypes';
+import { BottomSheetPicker } from '../ui/bottom-sheet-picker';
 
 interface ExperienceEditSheetProps {
   isOpen: boolean;
@@ -44,8 +39,8 @@ export function ExperienceEditSheet({
 }: ExperienceEditSheetProps) {
   const insets = useSafeAreaInsets();
   const [activeTab, setActiveTab] = useState('details');
-  const [experienceType, setExperienceType] = useState<ExperienceType | null>(
-    experience?.type || null
+  const [experienceType, setExperienceType] = useState<ExperienceType | undefined>(
+    experience?.type
   );
   const [formData, setFormData] = useState<Partial<Experience>>(experience?.data || {});
   const [teamData, setTeamData] = useState<Partial<Experience>>({
@@ -58,7 +53,7 @@ export function ExperienceEditSheet({
   useEffect(() => {
     if (isOpen) {
       setActiveTab('details');
-      setExperienceType(experience?.type || null);
+      setExperienceType(experience?.type);
       setFormData(experience?.data || {});
       setTeamData({
         mainTalent: experience?.data?.mainTalent || [],
@@ -70,13 +65,13 @@ export function ExperienceEditSheet({
 
   // Handle experience type change
   const handleExperienceTypeChange = useCallback(
-    (value: { value: string; label: string } | undefined) => {
+    (value: ExperienceType | undefined) => {
+      console.log('Selected experience type:', value);
       if (value) {
-        const newType = value.value as ExperienceType;
-        setExperienceType(newType);
+        setExperienceType(value);
         // Clear form data when changing type for new experiences
         if (isNew) {
-          setFormData({ type: newType });
+          setFormData({ type: value });
         }
       }
     },
@@ -161,47 +156,24 @@ export function ExperienceEditSheet({
         <Tabs tabs={TABS} activeTab={activeTab} onTabChange={setActiveTab} />
 
         {/* Tab Content */}
-        <View className="flex-1">
-          <TabPanel isActive={activeTab === 'details'}>
-            <KeyboardAwareScrollView
-              bounces={false}
-              disableScrollOnKeyboardHide
-              contentInsetAdjustmentBehavior="never"
-              keyboardDismissMode="interactive"
-              keyboardShouldPersistTaps="handled"
-              showsVerticalScrollIndicator={false}>
+        <KeyboardAwareScrollView
+          bounces={false}
+          disableScrollOnKeyboardHide
+          contentInsetAdjustmentBehavior="never"
+          keyboardDismissMode="interactive"
+          keyboardShouldPersistTaps="handled"
+          showsVerticalScrollIndicator={false}>
+          <View className="flex-1 pt-2">
+            <TabPanel isActive={activeTab === 'details'}>
               <View className="gap-4 px-4 pb-4 pt-4">
                 {/* Experience Type Selector */}
-                <View>
-                  <Text variant="labelSm" className="mb-2 uppercase tracking-[0.6px] text-text-low">
-                    Experience Type
-                  </Text>
-                  <Select
-                    value={
-                      experienceType
-                        ? {
-                            value: experienceType,
-                            label:
-                              EXPERIENCE_TYPES.find((t) => t.value === experienceType)?.label ||
-                              experienceType,
-                          }
-                        : undefined
-                    }
-                    onValueChange={handleExperienceTypeChange}>
-                    <SelectTrigger className="h-12 rounded-[29px] border-border-default bg-surface-high">
-                      <SelectValue
-                        className="text-text-default"
-                        placeholder="Select experience type..."
-                      />
-                    </SelectTrigger>
-                    <SelectContent className="rounded-2xl">
-                      {EXPERIENCE_TYPES.map((type) => (
-                        <SelectItem key={type.value} value={type.value} label={type.label}>
-                          {type.label}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
+                <View className="gap-4">
+                  <BottomSheetPicker
+                    onChange={handleExperienceTypeChange}
+                    label="Experience Type"
+                    value={experienceType}
+                    data={EXPERIENCE_TYPES}
+                  />
                 </View>
 
                 {/* Experience Form - Only render when type is selected */}
@@ -213,23 +185,15 @@ export function ExperienceEditSheet({
                   />
                 )}
               </View>
-            </KeyboardAwareScrollView>
-          </TabPanel>
+            </TabPanel>
 
-          <TabPanel isActive={activeTab === 'team'}>
-            <KeyboardAwareScrollView
-              bounces={false}
-              disableScrollOnKeyboardHide
-              contentInsetAdjustmentBehavior="never"
-              keyboardDismissMode="interactive"
-              keyboardShouldPersistTaps="handled"
-              showsVerticalScrollIndicator={false}>
+            <TabPanel isActive={activeTab === 'team'}>
               <View className="px-4 pb-4 pt-4">
                 <ExperienceTeamForm initialData={teamData} onChange={handleTeamChange} />
               </View>
-            </KeyboardAwareScrollView>
-          </TabPanel>
-        </View>
+            </TabPanel>
+          </View>
+        </KeyboardAwareScrollView>
 
         {/* Actions */}
         <KeyboardStickyView

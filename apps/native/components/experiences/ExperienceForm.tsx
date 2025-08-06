@@ -17,11 +17,6 @@ export function ExperienceForm({
   initialData = {},
   onChange,
 }: ExperienceFormProps) {
-  console.log('===============');
-  console.log('EXPERIENCE TYPE');
-  console.log(experienceType);
-  console.log('===============');
-  // Route to the appropriate form based on experience type
   switch (experienceType) {
     case 'tv-film':
       return <TvFilmForm initialData={initialData} onChange={onChange} />;

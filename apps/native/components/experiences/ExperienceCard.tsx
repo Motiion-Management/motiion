@@ -5,6 +5,7 @@ import { cva, type VariantProps } from 'class-variance-authority';
 import { Text } from '~/components/ui/text';
 import { cn } from '~/lib/cn';
 import Check from '~/lib/icons/Check';
+import Plus from '~/lib/icons/Plus';
 import { getExperienceDisplayTitle, getExperienceDisplaySubtitle } from '~/config/experienceTypes';
 
 const experienceCardVariants = cva(
@@ -65,11 +66,13 @@ export function ExperienceCard({
           </Text>
         )}
       </View>
-      {variant === 'completed' && (
-        <View className="ml-3">
+      <View className="ml-3">
+        {variant === 'completed' ? (
           <Check className="h-5 w-5 color-icon-accent" />
-        </View>
-      )}
+        ) : (
+          <Plus className="h-5 w-5 color-icon-low" />
+        )}
+      </View>
     </TouchableOpacity>
   );
 }

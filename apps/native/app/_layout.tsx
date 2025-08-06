@@ -33,16 +33,16 @@ export default function RootLayout() {
         style={isDarkColorScheme ? 'light' : 'dark'}
       />
       <GestureHandlerRootView style={{ flex: 1 }}>
-        <BottomSheetModalProvider>
-          <KeyboardProvider statusBarTranslucent navigationBarTranslucent>
+        <KeyboardProvider statusBarTranslucent navigationBarTranslucent>
+          <BottomSheetModalProvider>
             <ActionSheetProvider>
               <ConvexClientProvider>
                 <RootStack />
                 <AlertAnchor ref={alertRef} />
               </ConvexClientProvider>
             </ActionSheetProvider>
-          </KeyboardProvider>
-        </BottomSheetModalProvider>
+          </BottomSheetModalProvider>
+        </KeyboardProvider>
       </GestureHandlerRootView>
       <PortalHost />
     </>

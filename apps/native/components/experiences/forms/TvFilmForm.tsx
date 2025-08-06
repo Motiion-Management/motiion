@@ -10,12 +10,7 @@ import { SelectField } from '~/components/form/SelectField';
 import { ChipsField } from '~/components/form/ChipsField';
 import { DateInput } from '~/components/form/DateInput';
 import { debounce } from '~/lib/debounce';
-import {
-  PROJECT_TYPES,
-  DURATION_OPTIONS,
-  COMMON_STUDIOS,
-  COMMON_ROLES,
-} from '~/config/experienceTypes';
+import { DURATION_OPTIONS, COMMON_STUDIOS, COMMON_ROLES } from '~/config/experienceTypes';
 import { Experience } from '~/types/experiences';
 
 interface TvFilmFormProps {
@@ -37,8 +32,6 @@ const tvFilmSchema = z.object({
 type TvFilmFormValues = z.infer<typeof tvFilmSchema>;
 
 export function TvFilmForm({ initialData = {}, onChange }: TvFilmFormProps) {
-  console.log('===============');
-  console.log('TV FILM FORM');
   const form = useAppForm({
     defaultValues: {
       type: 'tv-film' as const,
