@@ -5,8 +5,10 @@ import { BaseOnboardingScreen } from '~/components/layouts/BaseOnboardingScreen'
 import { ExperienceSection } from '~/components/experiences/ExperienceSection';
 import { ExperienceEditSheet } from '~/components/experiences/ExperienceEditSheet';
 import { useExperiences } from '~/hooks/useExperiences';
+import { useSimpleOnboardingFlow } from '~/hooks/useSimpleOnboardingFlow';
 
 export default function ExperiencesScreen() {
+  const onboarding = useSimpleOnboardingFlow();
   const {
     experiences,
     currentEditingIndex,
@@ -37,6 +39,10 @@ export default function ExperiencesScreen() {
       canProgress={canProgress()}
       primaryAction={{
         onPress: handleContinue,
+      }}
+      secondaryAction={{
+        text: 'Skip for now',
+        onPress: () => onboarding.navigateNext(),
       }}>
       <View className="flex-1">
         <ExperienceSection
