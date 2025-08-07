@@ -31,7 +31,7 @@ Complete Form (ConvexDynamicForm.tsx)
 ### 1. Import Your Convex Schema
 
 ```typescript
-import { zExperiencesTvFilm } from '@packages/backend/convex/validators/experiencesTvFilm'
+import { zExperiencesTvFilm } from '@packages/backend/convex/validators/experiencesTvFilm';
 ```
 
 ### 2. Define UI Metadata (Optional)
@@ -41,13 +41,13 @@ const metadata = {
   studio: {
     component: 'combobox',
     placeholder: 'Select or enter studio',
-    suggestions: ['Netflix', 'HBO', 'Disney+']
+    suggestions: ['Netflix', 'HBO', 'Disney+'],
   },
   startDate: {
     component: 'date',
-    format: 'yyyy-MM-dd'
-  }
-}
+    format: 'yyyy-MM-dd',
+  },
+};
 ```
 
 ### 3. Render the Form
@@ -66,17 +66,17 @@ const metadata = {
 
 The system automatically maps Zod types to form components:
 
-| Zod Type | Form Component | Notes |
-|----------|---------------|-------|
-| `z.string()` | TextInput | Email detection via validators |
-| `z.number()` | NumberInput | With min/max support |
-| `z.boolean()` | Checkbox | Single checkbox |
-| `z.enum()` | Select or Radio | Based on option count |
-| `z.array(z.string())` | ChipsField | Multi-value input |
-| `z.date()` | DateInput | Date picker |
-| `z.object()` | Form Section | Nested fields |
-| `zid('table')` | RelationshipPicker | Convex relationships |
-| `zid('_storage')` | FileUpload | File storage |
+| Zod Type              | Form Component     | Notes                          |
+| --------------------- | ------------------ | ------------------------------ |
+| `z.string()`          | TextInput          | Email detection via validators |
+| `z.number()`          | NumberInput        | With min/max support           |
+| `z.boolean()`         | Checkbox           | Single checkbox                |
+| `z.enum()`            | Select or Radio    | Based on option count          |
+| `z.array(z.string())` | ChipsField         | Multi-value input              |
+| `z.date()`            | DateInput          | Date picker                    |
+| `z.object()`          | Form Section       | Nested fields                  |
+| `zid('table')`        | RelationshipPicker | Convex relationships           |
+| `zid('_storage')`     | FileUpload         | File storage                   |
 
 ## Advanced Features
 
@@ -89,13 +89,13 @@ const schema = z.discriminatedUnion('eventType', [
   z.object({
     eventType: z.literal('tour'),
     tourName: z.string(),
-    tourArtist: z.string()
+    tourArtist: z.string(),
   }),
   z.object({
     eventType: z.literal('festival'),
-    festivalTitle: z.string()
-  })
-])
+    festivalTitle: z.string(),
+  }),
+]);
 ```
 
 ### Field Overrides
@@ -123,9 +123,9 @@ Register custom field components:
 const metadata = {
   location: {
     component: 'custom',
-    renderer: CustomLocationPicker
-  }
-}
+    renderer: CustomLocationPicker,
+  },
+};
 ```
 
 ## Migration Guide
@@ -133,13 +133,14 @@ const metadata = {
 ### From Static Forms to Dynamic
 
 Before (400+ lines):
+
 ```typescript
 export function TvFilmForm({ initialData, onChange }) {
   const form = useAppForm({
     defaultValues: { /* ... */ },
     validators: { /* ... */ }
   })
-  
+
   return (
     <View>
       <form.Field name="title">
@@ -155,6 +156,7 @@ export function TvFilmForm({ initialData, onChange }) {
 ```
 
 After (20 lines):
+
 ```typescript
 export function TvFilmForm({ initialData, onChange }) {
   return (
@@ -194,9 +196,9 @@ export const formMetadata = {
     suggestions: ['Option 1', 'Option 2'],
     format: 'yyyy-MM-dd',
     multiline: true,
-    rows: 4
-  }
-}
+    rows: 4,
+  },
+};
 ```
 
 ## Best Practices
@@ -213,15 +215,15 @@ export const formMetadata = {
 
 ```typescript
 interface ConvexDynamicFormProps {
-  schema: z.ZodObject<any>      // Convex Zod schema
-  metadata?: FormMetadata        // UI enhancements
-  initialData?: Record<string, any>
-  onChange?: (data: any) => void
-  onSubmit?: (data: any) => void
-  exclude?: string[]             // Fields to exclude
-  include?: string[]             // Fields to include (whitelist)
-  overrides?: Record<string, Partial<FormFieldConfig>>
-  debounceMs?: number           // Debounce onChange (default: 300)
+  schema: z.ZodObject<any>; // Convex Zod schema
+  metadata?: FormMetadata; // UI enhancements
+  initialData?: Record<string, any>;
+  onChange?: (data: any) => void;
+  onSubmit?: (data: any) => void;
+  exclude?: string[]; // Fields to exclude
+  include?: string[]; // Fields to include (whitelist)
+  overrides?: Record<string, Partial<FormFieldConfig>>;
+  debounceMs?: number; // Debounce onChange (default: 300)
 }
 ```
 
@@ -229,16 +231,16 @@ interface ConvexDynamicFormProps {
 
 ```typescript
 // Convert schema to form configuration
-convexSchemaToFormConfig(schema, options)
+convexSchemaToFormConfig(schema, options);
 
 // Map Zod type to field type
-mapZodTypeToFieldType(schema)
+mapZodTypeToFieldType(schema);
 
 // Check if field is required
-isRequired(schema)
+isRequired(schema);
 
 // Extract enum values
-getEnumValues(schema)
+getEnumValues(schema);
 ```
 
 ## Examples

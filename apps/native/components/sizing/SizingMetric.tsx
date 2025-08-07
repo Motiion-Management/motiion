@@ -21,7 +21,7 @@ export function SizingMetric({ metric, className }: SizingMetricProps) {
   // Get current value from user data
   const currentValue =
     user?.sizing?.[metric.section]?.[
-    metric.field as keyof (typeof user.sizing)[typeof metric.section]
+      metric.field as keyof (typeof user.sizing)[typeof metric.section]
     ];
 
   const handleCardPress = () => {

@@ -22,6 +22,7 @@ import type * as experiences_commercials from "../experiences/commercials.js";
 import type * as experiences_liveperformances from "../experiences/liveperformances.js";
 import type * as experiences_musicvideos from "../experiences/musicvideos.js";
 import type * as experiences_tvfilm from "../experiences/tvfilm.js";
+import type * as experiences_tvfilmForms from "../experiences/tvfilmForms.js";
 import type * as experiences from "../experiences.js";
 import type * as featuredContent from "../featuredContent.js";
 import type * as featuredMembers from "../featuredMembers.js";
@@ -80,6 +81,7 @@ declare const fullApi: ApiFromModules<{
   "experiences/liveperformances": typeof experiences_liveperformances;
   "experiences/musicvideos": typeof experiences_musicvideos;
   "experiences/tvfilm": typeof experiences_tvfilm;
+  "experiences/tvfilmForms": typeof experiences_tvfilmForms;
   experiences: typeof experiences;
   featuredContent: typeof featuredContent;
   featuredMembers: typeof featuredMembers;

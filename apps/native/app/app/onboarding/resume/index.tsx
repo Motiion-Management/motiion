@@ -10,7 +10,7 @@ import { router } from 'expo-router';
 import { useSimpleOnboardingFlow } from '~/hooks/useSimpleOnboardingFlow';
 
 export default function ResumeScreen() {
-  const handleUploadResume = async () => { };
+  const handleUploadResume = async () => {};
   const nav = useSimpleOnboardingFlow();
 
   const handleSkip = async () => {

@@ -67,9 +67,7 @@ export function TvFilmForm({ initialData = {}, onChange }: TvFilmFormProps) {
     <View className="gap-4">
       <form.AppField
         name="title"
-        children={(field) => (
-          <field.TextInput label="Title" placeholder="Enter project title" />
-        )}
+        children={(field) => <field.TextInput label="Title" placeholder="Enter project title" />}
       />
 
       <form.AppField

@@ -1,21 +1,21 @@
-import React, { useCallback } from 'react'
+import React, { useCallback } from 'react';
 
-import { useFieldContext } from './context'
+import { useFieldContext } from './context';
 
-import { BottomSheetCombobox, ComboboxItem } from '~/components/ui/bottom-sheet-combobox'
-import { useFieldError } from '~/hooks/useFieldError'
-import { useValidationModeContextSafe } from '~/hooks/useValidationMode'
+import { BottomSheetCombobox, ComboboxItem } from '~/components/ui/bottom-sheet-combobox';
+import { useFieldError } from '~/hooks/useFieldError';
+import { useValidationModeContextSafe } from '~/hooks/useValidationMode';
 
 export interface BottomSheetComboboxFieldProps<T = any> {
-  label: string
-  placeholder?: string
-  data: ComboboxItem<T>[]
-  formatValue?: (value: T) => string
-  defaultValue?: T
-  width?: number
-  pickerLabel?: string
-  disabled?: boolean
-  onSearch?: (searchTerm: string, data: ComboboxItem<T>[]) => ComboboxItem<T>[]
+  label: string;
+  placeholder?: string;
+  data: ComboboxItem<T>[];
+  formatValue?: (value: T) => string;
+  defaultValue?: T;
+  width?: number;
+  pickerLabel?: string;
+  disabled?: boolean;
+  onSearch?: (searchTerm: string, data: ComboboxItem<T>[]) => ComboboxItem<T>[];
 }
 
 export function BottomSheetComboboxField<T = any>({
@@ -29,18 +29,18 @@ export function BottomSheetComboboxField<T = any>({
   disabled,
   onSearch,
 }: BottomSheetComboboxFieldProps<T>) {
-  const field = useFieldContext<T>()
-  const validationModeContext = useValidationModeContextSafe()
+  const field = useFieldContext<T>();
+  const validationModeContext = useValidationModeContextSafe();
   const { errorMessage } = useFieldError(field, {
     fieldName: field.name,
-  })
+  });
 
   const handleBlur = useCallback(() => {
-    field.handleBlur()
+    field.handleBlur();
     if (validationModeContext) {
-      validationModeContext.markFieldBlurred(field.name)
+      validationModeContext.markFieldBlurred(field.name);
     }
-  }, [field, validationModeContext])
+  }, [field, validationModeContext]);
 
   return (
     <BottomSheetCombobox
@@ -58,5 +58,5 @@ export function BottomSheetComboboxField<T = any>({
       disabled={disabled}
       onSearch={onSearch}
     />
-  )
+  );
 }
