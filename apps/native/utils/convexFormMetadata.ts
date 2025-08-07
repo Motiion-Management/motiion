@@ -22,6 +22,9 @@ export interface FieldMetadata {
   order?: number;
   // Grouping for tabs/sections
   group?: string | string[];
+  // Field state
+  readOnly?: boolean;
+  disabled?: boolean;
 }
 
 export type FormMetadata = Record<string, FieldMetadata>;
@@ -83,66 +86,66 @@ export const tvFilmMetadata: FormMetadata = {
   title: {
     placeholder: 'Enter the title of the TV show or film',
     helpText: 'Use the official title as it appears in credits',
-    group: ['basic', 'quick'],
-    order: 1,
+    group: ['details', 'basic', 'quick'],
+    order: 2,
   },
   studio: {
     component: 'combobox',
     placeholder: 'Select or enter production studio',
     suggestions: COMMON_STUDIOS,
     helpText: 'Major studio or production company',
-    group: ['basic', 'quick'],
-    order: 2,
+    group: ['details', 'basic', 'quick'],
+    order: 3,
   },
   startDate: {
     component: 'date',
     placeholder: 'Select start date',
     format: 'yyyy-MM-dd',
     width: 'half',
-    group: ['basic', 'dates'],
-    order: 3,
+    group: ['details', 'basic', 'dates'],
+    order: 4,
   },
   duration: {
     component: 'select',
     placeholder: 'How long did you work on this?',
     options: DURATION_OPTIONS,
     width: 'half',
-    group: ['basic', 'dates'],
-    order: 4,
+    group: ['details', 'basic', 'dates'],
+    order: 5,
   },
   link: {
     placeholder: 'https://...',
     helpText: 'Link to trailer, IMDB, or official page',
-    group: ['basic', 'media'],
-    order: 5,
+    group: ['details', 'basic', 'media'],
+    order: 6,
   },
   roles: {
     component: 'chips',
     placeholder: 'Add your roles (e.g., Principal Dancer, Choreographer)',
     helpText: `Common roles: ${COMMON_ROLES.slice(0, 3).join(', ')}...`,
     suggestions: COMMON_ROLES,
-    group: ['details', 'quick'],
-    order: 6,
+    group: ['details', 'basic', 'quick'],
+    order: 7,
   },
   mainTalent: {
     component: 'chips',
     placeholder: 'Add main cast/talent names',
     helpText: 'Principal actors, performers, or talent',
-    group: 'details',
-    order: 7,
+    group: 'team',
+    order: 8,
   },
   choreographers: {
     component: 'chips',
     placeholder: 'Add choreographer names',
     helpText: 'Lead choreographers for the production',
-    group: 'details',
-    order: 8,
+    group: 'team',
+    order: 9,
   },
   associateChoreographers: {
     component: 'chips',
     placeholder: 'Add associate/assistant choreographer names',
-    group: 'details',
-    order: 9,
+    group: 'team',
+    order: 10,
   },
 };
 

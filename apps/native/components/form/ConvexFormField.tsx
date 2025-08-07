@@ -20,6 +20,10 @@ export function ConvexFormField({ field, form }: ConvexFormFieldProps) {
   // Determine container style based on width
   const width = field.metadata?.width || 'full';
   const containerClassName = width === 'full' ? 'w-full' : 'flex-1';
+  
+  // Check if field should be read-only or disabled
+  const isReadOnly = field.metadata?.readOnly || false;
+  const isDisabled = field.metadata?.disabled || false;
 
   const renderField = () => {
     switch (field.type) {
@@ -34,6 +38,9 @@ export function ConvexFormField({ field, form }: ConvexFormFieldProps) {
                 placeholder={field.placeholder || `Enter ${field.label.toLowerCase()}`}
                 keyboardType={field.type === 'email' ? 'email-address' : 'default'}
                 autoCapitalize={field.type === 'email' ? 'none' : 'sentences'}
+                editable={!isReadOnly && !isDisabled}
+                selectTextOnFocus={!isReadOnly}
+                style={isReadOnly || isDisabled ? { opacity: 0.6 } : undefined}
               />
             )}
           />
@@ -62,6 +69,7 @@ export function ConvexFormField({ field, form }: ConvexFormFieldProps) {
                 label={field.label}
                 placeholder={field.placeholder || `Select ${field.label.toLowerCase()}`}
                 options={field.options || []}
+                disabled={isReadOnly || isDisabled}
               />
             )}
           />
@@ -124,6 +132,7 @@ export function ConvexFormField({ field, form }: ConvexFormFieldProps) {
                 label={field.label}
                 placeholder={field.placeholder || `Select or enter ${field.label.toLowerCase()}`}
                 data={field.options || []}
+                disabled={isReadOnly || isDisabled}
               />
             )}
           />
