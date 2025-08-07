@@ -53,7 +53,6 @@ export function BottomSheetPicker<T = any>({
   }, [value, defaultValue, data, sheetState, disabled]);
 
   const displayValue = useMemo(() => {
-    console.log('displayValue', { value, data, formatValue });
     if (!value) return '';
 
     if (formatValue) {
