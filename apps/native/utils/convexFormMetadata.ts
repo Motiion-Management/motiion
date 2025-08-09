@@ -5,7 +5,16 @@ import { COMMON_STUDIOS, COMMON_ROLES, DURATION_OPTIONS } from '~/config/experie
  * Metadata for enhancing form fields with UI-specific configuration
  */
 export interface FieldMetadata {
-  component?: 'text' | 'select' | 'combobox' | 'chips' | 'date' | 'picker' | 'radio' | 'checkbox' | 'number';
+  component?:
+  | 'text'
+  | 'select'
+  | 'combobox'
+  | 'chips'
+  | 'date'
+  | 'picker'
+  | 'radio'
+  | 'checkbox'
+  | 'number';
   placeholder?: string;
   helpText?: string;
   label?: string;
@@ -94,8 +103,8 @@ export function enhanceFieldsWithMetadata(
  */
 export const tvFilmMetadata: FormMetadata = {
   title: {
-    placeholder: 'Enter the title of the TV show or film',
-    helpText: 'Use the official title as it appears in credits',
+    placeholder: 'Project title',
+    // helpText: 'Use the official title as it appears in credits',
     group: ['details', 'basic', 'quick'],
     order: 2,
   },
@@ -124,15 +133,15 @@ export const tvFilmMetadata: FormMetadata = {
     order: 5,
   },
   link: {
-    placeholder: 'https://...',
+    placeholder: 'Paste link for project visual...',
     helpText: 'Link to trailer, IMDB, or official page',
     group: ['details', 'basic', 'media'],
     order: 6,
   },
   roles: {
     component: 'chips',
-    placeholder: 'Add your roles (e.g., Principal Dancer, Choreographer)',
-    helpText: `Common roles: ${COMMON_ROLES.slice(0, 3).join(', ')}...`,
+    placeholder: 'Start typing to add a role...',
+    // helpText: `Common roles: ${COMMON_ROLES.slice(0, 3).join(', ')}...`,
     suggestions: COMMON_ROLES,
     group: ['details', 'basic', 'quick'],
     order: 7,
