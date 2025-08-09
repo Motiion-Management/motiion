@@ -43,6 +43,7 @@ export const LIVE_EVENT_TYPES = [
 ];
 
 export const DURATION_OPTIONS = [
+  { label: 'Current', value: 'Current' },
   { label: '1 day', value: '1 day' },
   { label: '3 days', value: '3 days' },
   { label: '1 week', value: '1 week' },
@@ -52,7 +53,6 @@ export const DURATION_OPTIONS = [
   { label: '3 months', value: '3 months' },
   { label: '6 months', value: '6 months' },
   { label: '1 year', value: '1 year' },
-  { label: 'Current', value: 'Current' },
 ];
 
 export const COMMON_ROLES = [

@@ -58,6 +58,8 @@ export function enhanceFieldsWithMetadata(
       enhanced.type = 'combobox';
     } else if (fieldMeta.component === 'picker') {
       enhanced.type = 'select';
+    } else if (fieldMeta.component === 'date') {
+      enhanced.type = 'date';
     } else if (fieldMeta.component === 'radio') {
       enhanced.type = 'radio';
     } else if (fieldMeta.component === 'checkbox') {
@@ -112,7 +114,7 @@ export const tvFilmMetadata: FormMetadata = {
     order: 4,
   },
   duration: {
-    component: 'select',
+    component: 'picker',
     placeholder: 'How long did you work on this?',
     options: DURATION_OPTIONS,
     width: 'half',
@@ -174,7 +176,7 @@ export const musicVideoMetadata: FormMetadata = {
     format: 'yyyy-MM-dd',
   },
   duration: {
-    component: 'select',
+    component: 'picker',
     placeholder: 'Production duration',
     options: DURATION_OPTIONS,
   },
@@ -237,7 +239,7 @@ export const livePerformanceMetadata: FormMetadata = {
     format: 'yyyy-MM-dd',
   },
   duration: {
-    component: 'select',
+    component: 'picker',
     placeholder: 'Performance duration',
     options: DURATION_OPTIONS,
   },
@@ -270,7 +272,7 @@ export const commercialMetadata: FormMetadata = {
     format: 'yyyy-MM-dd',
   },
   duration: {
-    component: 'select',
+    component: 'picker',
     placeholder: 'Production duration',
     options: DURATION_OPTIONS,
   },

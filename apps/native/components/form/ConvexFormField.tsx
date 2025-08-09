@@ -64,12 +64,20 @@ export function ConvexFormField({ field, form }: ConvexFormFieldProps) {
           <form.AppField
             name={field.name}
             children={(fieldApi: any) => (
-              <fieldApi.SelectField
-                label={field.label}
-                placeholder={field.placeholder || `Select ${field.label.toLowerCase()}`}
-                options={field.options || []}
-                disabled={isReadOnly || isDisabled}
-              />
+              field.component === 'picker' ? (
+                <fieldApi.BottomSheetPickerField
+                  label={field.label}
+                  placeholder={field.placeholder || `Select ${field.label.toLowerCase()}`}
+                  data={(field.options || []) as any}
+                />
+              ) : (
+                <fieldApi.SelectField
+                  label={field.label}
+                  placeholder={field.placeholder || `Select ${field.label.toLowerCase()}`}
+                  options={field.options || []}
+                  disabled={isReadOnly || isDisabled}
+                />
+              )
             )}
           />
         );

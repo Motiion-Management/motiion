@@ -140,6 +140,15 @@ export const ConvexDynamicForm = React.memo(
     const defaultValues = useMemo(() => {
       const values: Record<string, any> = {};
       fields.forEach((field) => {
+        // Option-driven defaults: select/radio/picker default to first option
+        if (
+          (field.type === 'select' || field.type === 'radio' || field.component === 'picker') &&
+          field.options &&
+          field.options.length > 0
+        ) {
+          values[field.name] = field.options[0].value;
+          return;
+        }
         switch (field.type) {
           case 'checkbox':
             values[field.name] = false;
