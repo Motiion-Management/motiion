@@ -1,0 +1,20 @@
+import { z } from 'zod'
+import { clientZid as zid } from './clientZid'
+
+export const experiencesMusicVideos = {
+  userId: zid('users'),
+  private: z.boolean().optional(),
+  songTitle: z.string(),
+  artists: z.array(z.string()),
+  startDate: z.string(),
+  duration: z.string(),
+  link: z.string().optional(),
+  media: z.union([zid('_storage'), z.string()]).optional(),
+  roles: z.array(z.string()),
+  mainTalent: z.array(z.string()).optional(),
+  choreographers: z.array(z.string()).optional(),
+  associateChoreographers: z.array(z.string()).optional(),
+}
+
+export const zExperiencesMusicVideos = z.object(experiencesMusicVideos)
+

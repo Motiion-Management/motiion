@@ -13,10 +13,12 @@ import {
 } from '~/utils/convexFormMetadata'
 
 // Import Convex validators
-import { zExperiencesTvFilm } from '@packages/backend/convex/validators/experiencesTvFilm'
-import { zExperiencesMusicVideos } from '@packages/backend/convex/validators/experiencesMusicVideos'
-import { zExperiencesLivePerformances } from '@packages/backend/convex/validators/experiencesLivePerformances'
-import { zExperiencesCommercials } from '@packages/backend/convex/validators/experiencesCommercials'
+import {
+  zExperiencesTvFilm,
+  zExperiencesMusicVideos,
+  zExperiencesLivePerformances,
+  zExperiencesCommercials,
+} from '@packages/backend/convex/schemas'
 
 // Map experience types to schemas
 const experienceSchemas = {
@@ -167,7 +169,7 @@ export function TabbedExperienceForm({
                   
                   {mode === 'edit' && onDelete && (
                     <Button 
-                      variant="destructive"
+                      variant="outline"
                       onPress={onDelete}
                     >
                       <Text>Delete</Text>

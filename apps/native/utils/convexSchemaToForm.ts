@@ -139,6 +139,16 @@ export function mapZodTypeToFieldType(schema: z.ZodTypeAny): FormFieldType {
 
   const zodType = getZodType(schema);
 
+  // Detect Convex ID via brand or description
+  const convexIdInfo = detectConvexId(schema);
+  if (convexIdInfo.isConvexId) {
+    const tableName = convexIdInfo.tableName;
+    if (tableName === '_storage') {
+      return 'file';
+    }
+    return 'relationship';
+  }
+
   // Handle Convex ID types
   if (zodType.startsWith('convexId:')) {
     const tableName = zodType.split(':')[1];

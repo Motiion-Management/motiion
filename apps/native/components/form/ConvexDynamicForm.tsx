@@ -1,11 +1,13 @@
-import React, { useEffect, useMemo, useRef, useCallback } from 'react';
+import React, { useEffect, useMemo, useRef } from 'react';
 import { View } from 'react-native';
 import { useStore } from '@tanstack/react-form';
 import { z } from 'zod';
+import { zodValidator } from '@tanstack/zod-form-adapter';
 import { useAppForm } from './appForm';
 import { ConvexFormField } from './ConvexFormField';
 import { Text } from '~/components/ui/text';
-import { convexSchemaToFormConfig, FormFieldConfig } from '~/utils/convexSchemaToForm';
+import { convexSchemaToFormConfig, FormFieldConfig, zodObjectToFormFields, extractLabel } from '~/utils/convexSchemaToForm';
+import { getDiscriminatedUnionInfo, getTypeName } from '~/utils/zodSafeAccess';
 import { enhanceFieldsWithMetadata, FormMetadata } from '~/utils/convexFormMetadata';
 import { debounce } from '~/lib/debounce';
 
@@ -64,9 +66,60 @@ export const ConvexDynamicForm = React.memo(
     //   );
     // }
 
-    // Convert schema to form field configuration
+    // Discriminated union info
+    const duInfo = useMemo(() => getDiscriminatedUnionInfo(schema as any), [schema]);
+
+    // Track selected discriminator value (init from initialData or first option)
+    const [selectedDisc, setSelectedDisc] = React.useState<string | undefined>(() => {
+      if (!duInfo) return undefined;
+      return (initialData as any)?.[duInfo.discriminator] ?? duInfo.options[0]?.value;
+    });
+
+    useEffect(() => {
+      if (duInfo) {
+        setSelectedDisc((prev) => (prev ?? (initialData as any)?.[duInfo.discriminator] ?? duInfo.options[0]?.value));
+      } else {
+        setSelectedDisc(undefined);
+      }
+      // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [duInfo?.discriminator]);
+
+    // Convert schema (including discriminated unions) to form field configuration
     const baseFields = useMemo(() => {
       try {
+        const du = duInfo;
+        if (du && selectedDisc) {
+          // Build discriminator field first
+          const discName = du.discriminator;
+          const discOptions = du.options.map((o) => ({ label: extractLabel(o.value), value: o.value }));
+          const discField: FormFieldConfig = {
+            name: discName,
+            label: extractLabel(discName),
+            type: discOptions.length <= 3 ? 'radio' : 'select',
+            required: true,
+            options: discOptions,
+            metadata: {},
+          };
+
+          // Determine active branch via selectedDisc
+          const active = du.options.find((o) => o.value === selectedDisc) ?? du.options[0];
+          const branchFields = active ? zodObjectToFormFields(active.schema as any) : [];
+          const filteredBranch = branchFields.filter((f) => f.name !== discName);
+
+          let fields: FormFieldConfig[] = [discField, ...filteredBranch];
+          if (include) fields = fields.filter((f) => include.includes(f.name));
+          if (exclude) fields = fields.filter((f) => !exclude.includes(f.name));
+          if (overrides) {
+            fields = fields.map((f) => ({
+              ...f,
+              ...overrides[f.name],
+              metadata: { ...f.metadata, ...(overrides[f.name]?.metadata || {}) },
+              fields: overrides[f.name]?.fields || f.fields,
+            }));
+          }
+          return fields;
+        }
+
         return convexSchemaToFormConfig(schema, {
           exclude,
           include,
@@ -76,7 +129,7 @@ export const ConvexDynamicForm = React.memo(
         console.error('Error converting schema to form config:', error);
         return [];
       }
-    }, [schema, exclude, include, overrides]);
+    }, [schema, exclude, include, overrides, duInfo, selectedDisc]);
 
     // Enhance fields with metadata
     const fields = useMemo(() => {
@@ -86,44 +139,33 @@ export const ConvexDynamicForm = React.memo(
     // Build default values from schema and initial data
     const defaultValues = useMemo(() => {
       const values: Record<string, any> = {};
-
       fields.forEach((field) => {
-        const fieldName = field.name;
-
-        // Use initial data if available
-        if (initialData[fieldName] !== undefined) {
-          values[fieldName] = initialData[fieldName];
-        }
-        // Set defaults based on field type
-        else {
-          switch (field.type) {
-            case 'checkbox':
-              values[fieldName] = false;
-              break;
-            case 'chips':
-            case 'multiselect':
-              values[fieldName] = [];
-              break;
-            case 'number':
-              values[fieldName] = field.metadata?.min || 0;
-              break;
-            case 'object':
-              values[fieldName] = {};
-              break;
-            default:
-              values[fieldName] = '';
-          }
+        switch (field.type) {
+          case 'checkbox':
+            values[field.name] = false;
+            break;
+          case 'chips':
+          case 'multiselect':
+            values[field.name] = [];
+            break;
+          case 'number':
+            values[field.name] = field.metadata?.min ?? undefined;
+            break;
+          case 'object':
+            values[field.name] = {};
+            break;
+          default:
+            values[field.name] = '';
         }
       });
-
       return values;
-    }, [fields, initialData]);
+    }, [fields]);
 
     // Create form instance
     const form = useAppForm({
       defaultValues,
       validators: {
-        onChange: schema as any,
+        onChange: zodValidator(schema as any),
       },
       onSubmit: async ({ value }) => {
         if (onSubmit) {
@@ -149,20 +191,39 @@ export const ConvexDynamicForm = React.memo(
       return handler;
     }, [debounceMs]);
 
-    // Subscribe to form state changes with a selector to prevent unnecessary re-renders
+    // Initialize values from initialData once per fields shape change
+    const fieldsKey = useMemo(() => fields.map((f) => f.name).join('|'), [fields]);
+    const initializedRef = useRef<string | null>(null);
+    useEffect(() => {
+      if (initializedRef.current === fieldsKey) return;
+      // Set initial values from provided initialData without recreating the form
+      if (initialData && typeof initialData === 'object') {
+        for (const f of fields) {
+          const v = (initialData as any)[f.name];
+          if (v !== undefined) {
+            // @ts-expect-error tanstack typed generic
+            form.store.setFieldValue(f.name as any, v);
+          }
+        }
+      }
+      initializedRef.current = fieldsKey;
+    }, [fieldsKey, fields, form.store, initialData]);
+
+    // Observe values changes with useStore and debounce external onChange
+    const values = useStore(form.store, (state) => state.values);
+    // Recompute fields on discriminator change (discriminated unions)
+    useEffect(() => {
+      if (!duInfo) return;
+      const v = (values as any)[duInfo.discriminator];
+      if (v && v !== selectedDisc) setSelectedDisc(v);
+    }, [values, duInfo, selectedDisc]);
     useEffect(() => {
       if (!onChange) return;
-
-      // Subscribe directly to the store to avoid re-renders
-      const unsubscribe = form.store.subscribe((state) => {
-        debouncedOnChange(state.values);
-      });
-
+      debouncedOnChange(values);
       return () => {
-        unsubscribe();
         debouncedOnChange.cancel();
       };
-    }, [form.store, debouncedOnChange, onChange]);
+    }, [values, debouncedOnChange, onChange]);
 
     // Filter fields by groups if specified
     const filteredFields = useMemo(() => {

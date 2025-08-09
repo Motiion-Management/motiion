@@ -189,6 +189,13 @@ export function detectConvexId(schema: z.ZodTypeAny): ConvexIdInfo {
         return detectConvexId(inner);
       }
     }
+
+    // Fallback: detect via description marker e.g., 'convexId:table'
+    const desc = getDescription(schema);
+    if (desc && desc.startsWith('convexId:')) {
+      const tableName = desc.split(':')[1] || 'unknown';
+      return { isConvexId: true, tableName };
+    }
   } catch (error) {
     console.warn('Error detecting Convex ID:', error);
   }
@@ -248,6 +255,55 @@ export function getArrayElementType(schema: z.ZodTypeAny): z.ZodTypeAny | null {
   }
 
   return null;
+}
+
+/**
+ * Discriminated union helpers (safe access)
+ */
+export interface DiscriminatedUnionInfo {
+  discriminator: string;
+  options: { value: string; schema: z.ZodObject<any> }[];
+}
+
+export function getDiscriminatedUnionInfo(schema: z.ZodTypeAny): DiscriminatedUnionInfo | null {
+  try {
+    const typeName = getTypeName(schema);
+    if (typeName !== 'ZodDiscriminatedUnion') return null;
+
+    const def: any = (schema as any)._def;
+    const discriminator: string | undefined = def?.discriminator;
+    if (!discriminator) return null;
+
+    const out: DiscriminatedUnionInfo = { discriminator, options: [] };
+
+    // Zod can store options in a Map or an array depending on version
+    const opts = def?.options;
+    if (opts && typeof opts === 'object') {
+      if (opts instanceof Map) {
+        for (const [lit, sch] of opts.entries()) {
+          if (isZodSchema(sch) && getTypeName(sch) === 'ZodObject') {
+            out.options.push({ value: String(lit), schema: sch });
+          }
+        }
+      } else if (Array.isArray(opts)) {
+        for (const sch of opts) {
+          if (isZodSchema(sch) && getTypeName(sch) === 'ZodObject') {
+            const shape = getObjectShape(sch);
+            const discField = shape?.[discriminator];
+            const lit = (discField as any)?._def?.value; // ZodLiteral
+            if (lit !== undefined) {
+              out.options.push({ value: String(lit), schema: sch });
+            }
+          }
+        }
+      }
+    }
+
+    return out.options.length > 0 ? out : null;
+  } catch (e) {
+    console.warn('Error extracting discriminated union info', e);
+    return null;
+  }
 }
 
 /**

@@ -5,7 +5,7 @@ import { COMMON_STUDIOS, COMMON_ROLES, DURATION_OPTIONS } from '~/config/experie
  * Metadata for enhancing form fields with UI-specific configuration
  */
 export interface FieldMetadata {
-  component?: 'text' | 'select' | 'combobox' | 'chips' | 'date' | 'picker';
+  component?: 'text' | 'select' | 'combobox' | 'chips' | 'date' | 'picker' | 'radio' | 'checkbox' | 'number';
   placeholder?: string;
   helpText?: string;
   label?: string;
@@ -58,6 +58,12 @@ export function enhanceFieldsWithMetadata(
       enhanced.type = 'combobox';
     } else if (fieldMeta.component === 'picker') {
       enhanced.type = 'select';
+    } else if (fieldMeta.component === 'radio') {
+      enhanced.type = 'radio';
+    } else if (fieldMeta.component === 'checkbox') {
+      enhanced.type = 'checkbox';
+    } else if (fieldMeta.component === 'number') {
+      enhanced.type = 'number';
     }
 
     // Add options if provided

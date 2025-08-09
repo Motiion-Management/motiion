@@ -51,10 +51,9 @@ export function ConvexFormField({ field, form }: ConvexFormFieldProps) {
           <form.AppField
             name={field.name}
             children={(fieldApi: any) => (
-              <fieldApi.TextInput
+              <fieldApi.NumberInput
                 label={field.label}
                 placeholder={field.placeholder || `Enter ${field.label.toLowerCase()}`}
-                keyboardType="numeric"
               />
             )}
           />
@@ -105,10 +104,7 @@ export function ConvexFormField({ field, form }: ConvexFormFieldProps) {
           <form.AppField
             name={field.name}
             children={(fieldApi: any) => (
-              <fieldApi.CheckboxGroupField
-                label={field.label}
-                options={[{ label: field.label, value: true }]}
-              />
+              <fieldApi.BooleanField label={field.label} helpText={field.helpText} />
             )}
           />
         );
@@ -139,34 +135,29 @@ export function ConvexFormField({ field, form }: ConvexFormFieldProps) {
         );
 
       case 'relationship':
-        // For now, render as a select field
-        // TODO: Implement proper relationship picker
         return (
           <form.AppField
             name={field.name}
             children={(fieldApi: any) => (
-              <View>
-                <fieldApi.SelectField
-                  label={field.label}
-                  placeholder={`Select ${field.relatedTable}`}
-                  options={field.options || []}
-                />
-                <Text variant="footnote" className="mt-1 text-text-disabled">
-                  Relationship to {field.relatedTable}
-                </Text>
-              </View>
+              <fieldApi.RelationshipPickerField
+                label={field.label}
+                relatedTable={field.relatedTable}
+                placeholder={field.placeholder || `Select ${field.relatedTable}`}
+                options={field.options as any}
+                helpText={field.helpText}
+              />
             )}
           />
         );
 
       case 'file':
-        // TODO: Implement file upload component
         return (
-          <View className="rounded-lg border border-dashed border-border-default p-4">
-            <Text className="text-center text-text-disabled">
-              File upload for {field.label} (coming soon)
-            </Text>
-          </View>
+          <form.AppField
+            name={field.name}
+            children={(fieldApi: any) => (
+              <fieldApi.FileUploadField label={field.label} helpText={field.helpText} />
+            )}
+          />
         );
 
       case 'object':

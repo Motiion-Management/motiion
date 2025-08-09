@@ -1,7 +1,14 @@
 import React from 'react'
 import { View } from 'react-native'
 import { Text } from '~/components/ui/text'
-import { Select } from '~/components/ui/select'
+import { 
+  Select,
+  SelectTrigger,
+  SelectContent,
+  SelectItem,
+  SelectValue,
+  type Option,
+} from '~/components/ui/select'
 
 export interface ExperienceType {
   value: string
@@ -54,29 +61,35 @@ export function ExperienceTypeSelector({
     )
   }
   
+  const currentValue: Option | undefined = value
+    ? { value, label: selectedType?.label ?? value }
+    : undefined
+
+  const handleChange = (opt: Option | undefined) => {
+    onChange(opt?.value ?? '')
+  }
+
   return (
     <View className="gap-2">
-      <Text variant="label" className="text-text-secondary">
-        PROJECT TYPE
-      </Text>
-      <Select
-        value={value}
-        onValueChange={onChange}
-        disabled={disabled || readOnly}
-        placeholder="Select experience type"
-      >
-        {EXPERIENCE_TYPES.map(type => (
-          <Select.Item key={type.value} value={type.value}>
-            <View>
-              <Text>{type.label}</Text>
-              {type.description && (
-                <Text variant="footnote" className="text-text-secondary">
-                  {type.description}
-                </Text>
-              )}
-            </View>
-          </Select.Item>
-        ))}
+      <Text variant="label" className="text-text-secondary">PROJECT TYPE</Text>
+      <Select value={currentValue} onValueChange={handleChange} disabled={disabled || readOnly}>
+        <SelectTrigger className="h-12 rounded-[29px] border-border-default bg-surface-high">
+          <SelectValue className="text-text-default" placeholder="Select experience type" />
+        </SelectTrigger>
+        <SelectContent className="rounded-2xl">
+          {EXPERIENCE_TYPES.map((type) => (
+            <SelectItem key={type.value} value={type.value} label={type.label}>
+              <View>
+                <Text>{type.label}</Text>
+                {type.description && (
+                  <Text variant="footnote" className="text-text-secondary">
+                    {type.description}
+                  </Text>
+                )}
+              </View>
+            </SelectItem>
+          ))}
+        </SelectContent>
       </Select>
     </View>
   )

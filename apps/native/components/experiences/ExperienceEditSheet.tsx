@@ -1,18 +1,23 @@
-import React, { useState, useCallback, useEffect } from 'react';
+import React, { useState, useCallback, useEffect, useMemo } from 'react';
 import { View, Platform } from 'react-native';
 import { KeyboardAwareScrollView, KeyboardStickyView } from 'react-native-keyboard-controller';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-
-import { ExperienceForm } from './ExperienceForm';
-import { ExperienceTeamForm } from './ExperienceTeamForm';
+import { ConvexDynamicForm } from '~/components/form/ConvexDynamicForm';
+import { BottomSheetPicker } from '../ui/bottom-sheet-picker';
 import { Button } from '~/components/ui/button';
 import { Sheet } from '~/components/ui/sheet';
 import { Text } from '~/components/ui/text';
-import { Tabs, TabPanel } from '~/components/ui/tabs/tabs';
+import { Tabs } from '~/components/ui/tabs/tabs';
 
 import { ExperienceType, Experience, ExperienceFormState } from '~/types/experiences';
+import { getExperienceMetadata } from '~/utils/convexFormMetadata';
 import { EXPERIENCE_TYPES } from '~/config/experienceTypes';
-import { BottomSheetPicker } from '../ui/bottom-sheet-picker';
+import {
+  zExperiencesTvFilm,
+  zExperiencesMusicVideos,
+  zExperiencesLivePerformances,
+  zExperiencesCommercials,
+} from '@packages/backend/convex/schemas';
 
 interface ExperienceEditSheetProps {
   isOpen: boolean;
@@ -42,11 +47,7 @@ export function ExperienceEditSheet({
     experience?.type
   );
   const [formData, setFormData] = useState<Partial<Experience>>(experience?.data || {});
-  const [teamData, setTeamData] = useState<Partial<Experience>>({
-    mainTalent: experience?.data?.mainTalent || [],
-    choreographers: experience?.data?.choreographers || [],
-    associateChoreographers: experience?.data?.associateChoreographers || [],
-  });
+  // Single-form approach: all fields live in formData via ConvexDynamicForm
 
   // Reset state when sheet opens with new experience
   useEffect(() => {
@@ -54,11 +55,7 @@ export function ExperienceEditSheet({
       setActiveTab('details');
       setExperienceType(experience?.type);
       setFormData(experience?.data || {});
-      setTeamData({
-        mainTalent: experience?.data?.mainTalent || [],
-        choreographers: experience?.data?.choreographers || [],
-        associateChoreographers: experience?.data?.associateChoreographers || [],
-      });
+      // formData is authoritative; team fields are included in dynamic form
     }
   }, [isOpen, experience]);
 
@@ -85,9 +82,7 @@ export function ExperienceEditSheet({
     setFormData((prev) => ({ ...prev, ...data }));
   }, []);
 
-  const handleTeamChange = useCallback((data: Partial<Experience>) => {
-    setTeamData(data);
-  }, []);
+  // No separate team change; dynamic form updates formData for both steps
 
   const handleNext = useCallback(() => {
     if (activeTab === 'details') {
@@ -100,7 +95,6 @@ export function ExperienceEditSheet({
 
     const completeData: Experience = {
       ...formData,
-      ...teamData,
       type: experienceType,
     } as Experience;
 
@@ -116,7 +110,7 @@ export function ExperienceEditSheet({
 
     onSave(experienceToSave);
     handleClose();
-  }, [formData, teamData, experienceType, experience, onSave, handleClose]);
+  }, [formData, experienceType, experience, onSave, handleClose]);
 
   const checkExperienceComplete = (data: Partial<Experience>): boolean => {
     // Basic validation - check if key fields are filled
@@ -138,6 +132,35 @@ export function ExperienceEditSheet({
     return experience?.data ? 'Edit Experience' : 'Add Experience';
   };
 
+  // Map type -> schema and metadata
+  const schema = useMemo(() => {
+    switch (experienceType) {
+      case 'tv-film':
+      case 'television-film':
+        return zExperiencesTvFilm;
+      case 'music-video':
+      case 'music-videos':
+        return zExperiencesMusicVideos;
+      case 'live-performance':
+      case 'live-performances':
+        return zExperiencesLivePerformances;
+      case 'commercial':
+      case 'commercials':
+        return zExperiencesCommercials;
+      default:
+        return undefined;
+    }
+  }, [experienceType]);
+
+  const metadata = useMemo(() => {
+    return experienceType ? getExperienceMetadata(experienceType) : {};
+  }, [experienceType]);
+
+  // Group mapping for tabs
+  const currentGroups = useMemo(() => {
+    return activeTab === 'details' ? ['details', 'basic', 'dates', 'media'] : ['team'];
+  }, [activeTab]);
+
   return (
     <Sheet isOpened={isOpen} label={getTitle()} onIsOpenedChange={onOpenChange}>
       <View className="h-[82vh]">
@@ -153,34 +176,32 @@ export function ExperienceEditSheet({
           keyboardShouldPersistTaps="handled"
           showsVerticalScrollIndicator={false}>
           <View className="flex-1 pt-2">
-            <TabPanel isActive={activeTab === 'details'}>
-              <View className="gap-4 px-4 pb-4 pt-4">
-                {/* Experience Type Selector */}
-                <View className="gap-4">
-                  <BottomSheetPicker
-                    onChange={handleExperienceTypeChange}
-                    label="Experience Type"
-                    value={experienceType}
-                    data={EXPERIENCE_TYPES}
-                  />
-                </View>
-
-                {/* Experience Form - Only render when type is selected */}
-                {experienceType && (
-                  <ExperienceForm
-                    experienceType={experienceType}
-                    initialData={formData}
-                    onChange={handleFormChange}
-                  />
-                )}
+            {/* Type selector only on Details tab */}
+            {activeTab === 'details' && (
+              <View className="gap-4 px-4 pb-2 pt-4">
+                <BottomSheetPicker
+                  onChange={handleExperienceTypeChange}
+                  label="Experience Type"
+                  value={experienceType}
+                  data={EXPERIENCE_TYPES}
+                />
               </View>
-            </TabPanel>
+            )}
 
-            <TabPanel isActive={activeTab === 'team'}>
-              <View className="px-4 pb-4 pt-4">
-                <ExperienceTeamForm initialData={teamData} onChange={handleTeamChange} />
-              </View>
-            </TabPanel>
+            {/* Single dynamic form instance; filters fields by groups per tab */}
+            <View className="px-4 pb-4 pt-4">
+              {experienceType && schema && (
+                <ConvexDynamicForm
+                  schema={schema}
+                  metadata={metadata}
+                  initialData={formData}
+                  onChange={handleFormChange}
+                  groups={currentGroups}
+                  exclude={['userId', 'private', 'type']}
+                  debounceMs={300}
+                />
+              )}
+            </View>
           </View>
         </KeyboardAwareScrollView>
 
