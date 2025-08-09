@@ -6,7 +6,7 @@ import { HeightValue } from '~/components/form/HeightPicker';
 
 export function useHeightForm() {
   const user = useQuery(api.users.getMyUser);
-  const updateUser = useMutation(api.users.updateMyUser);
+  const patchUserAttributes = useMutation(api.users.patchUserAttributes);
 
   const [height, setHeight] = useState<HeightValue>({ feet: 5, inches: 6 });
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -61,10 +61,8 @@ export function useHeightForm() {
     setError(null);
 
     try {
-      await updateUser({
-        attributes: {
-          height,
-        },
+      await patchUserAttributes({
+        attributes: { height },
       });
 
       return true;
@@ -75,7 +73,7 @@ export function useHeightForm() {
     } finally {
       setIsSubmitting(false);
     }
-  }, [height, validateHeight, updateUser]);
+  }, [height, validateHeight, patchUserAttributes]);
 
   const formatHeight = useCallback((heightValue: HeightValue): string => {
     return `${heightValue.feet}'${heightValue.inches}"`;

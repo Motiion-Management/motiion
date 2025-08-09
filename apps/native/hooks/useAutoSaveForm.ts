@@ -26,6 +26,7 @@ export function useAutoSaveForm(config: AutoSaveConfig = {}) {
   const { debounceMs = 1000, onSaveStart, onSaveSuccess, onSaveError, fieldMapping = {} } = config;
 
   const updateUser = useMutation(api.users.updateMyUser);
+  const patchUserAttributes = useMutation(api.users.patchUserAttributes);
   const [saveState, setSaveState] = useState<AutoSaveState>({
     isSaving: false,
     lastSaved: null,
@@ -70,7 +71,16 @@ export function useAutoSaveForm(config: AutoSaveConfig = {}) {
         }
       });
 
-      await updateUser(updatePayload);
+      // If attributes are present, merge them server-side via patchUserAttributes
+      if (updatePayload.attributes && typeof updatePayload.attributes === 'object') {
+        const { attributes, ...rest } = updatePayload as any;
+        await patchUserAttributes({ attributes });
+        if (Object.keys(rest).length > 0) {
+          await updateUser(rest);
+        }
+      } else {
+        await updateUser(updatePayload);
+      }
 
       setSaveState((prev) => ({
         ...prev,
@@ -88,7 +98,7 @@ export function useAutoSaveForm(config: AutoSaveConfig = {}) {
       }));
       onSaveError?.(err);
     }
-  }, [updateUser, fieldMapping, onSaveStart, onSaveSuccess, onSaveError]);
+  }, [updateUser, patchUserAttributes, fieldMapping, onSaveStart, onSaveSuccess, onSaveError]);
 
   // Debounced save trigger
   const triggerSave = useCallback(() => {

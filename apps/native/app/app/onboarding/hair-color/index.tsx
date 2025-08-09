@@ -18,7 +18,7 @@ const hairColorValidator = z.object({
 });
 
 export default function HairColorScreen() {
-  const updateUser = useMutation(api.users.updateMyUser);
+  const patchUserAttributes = useMutation(api.users.patchUserAttributes);
   const { user } = useUser();
 
   // Get existing value from user
@@ -35,11 +35,8 @@ export default function HairColorScreen() {
       if (!value.hairColor) return;
 
       try {
-        await updateUser({
-          attributes: {
-            ...user.attributes,
-            hairColor: value.hairColor,
-          },
+        await patchUserAttributes({
+          attributes: { hairColor: value.hairColor },
         });
       } catch (error) {
         console.error('Error updating hair color:', error);

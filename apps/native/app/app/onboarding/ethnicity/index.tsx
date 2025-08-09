@@ -18,8 +18,8 @@ const ethnicityValidator = z.object({
 
 export default function EthnicityScreen() {
   const { user } = useUser();
-  console.log('EthnicityScreen user:', user.attributes);
-  const updateUser = useMutation(api.users.updateMyUser);
+  console.log('EthnicityScreen user:', user?.attributes);
+  const patchUserAttributes = useMutation(api.users.patchUserAttributes);
 
   const form = useAppForm({
     defaultValues: {
@@ -33,11 +33,8 @@ export default function EthnicityScreen() {
 
       try {
         // Update user ethnicity in attributes
-        await updateUser({
-          attributes: {
-            ...user.attributes,
-            ethnicity: value.ethnicity,
-          },
+        await patchUserAttributes({
+          attributes: { ethnicity: value.ethnicity },
         });
       } catch (error) {
         console.error('Error updating ethnicity:', error);

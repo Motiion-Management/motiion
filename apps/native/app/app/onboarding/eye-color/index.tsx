@@ -18,7 +18,7 @@ const eyeColorValidator = z.object({
 });
 
 export default function EyeColorScreen() {
-  const updateUser = useMutation(api.users.updateMyUser);
+  const patchUserAttributes = useMutation(api.users.patchUserAttributes);
   const { user } = useUser();
 
   // Get existing value from user
@@ -35,11 +35,8 @@ export default function EyeColorScreen() {
       if (!value.eyeColor) return;
 
       try {
-        await updateUser({
-          attributes: {
-            ...user.attributes,
-            eyeColor: value.eyeColor,
-          },
+        await patchUserAttributes({
+          attributes: { eyeColor: value.eyeColor },
         });
       } catch (error) {
         console.error('Error updating eye color:', error);

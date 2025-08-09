@@ -18,7 +18,7 @@ const genderValidator = z.object({
 });
 
 export default function GenderScreen() {
-  const updateUser = useMutation(api.users.updateMyUser);
+  const patchUserAttributes = useMutation(api.users.patchUserAttributes);
   const { user } = useUser();
 
   // Get existing value from user
@@ -35,11 +35,8 @@ export default function GenderScreen() {
       if (!value.gender) return;
 
       try {
-        await updateUser({
-          attributes: {
-            ...user.attributes,
-            gender: value.gender,
-          },
+        await patchUserAttributes({
+          attributes: { gender: value.gender },
         });
       } catch (error) {
         console.error('Error updating gender:', error);

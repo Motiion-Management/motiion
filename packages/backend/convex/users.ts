@@ -13,6 +13,9 @@ import { authMutation, authQuery, notEmpty } from './util'
 import { getAll, getOneFrom } from 'convex-helpers/server/relationships'
 import { crud } from 'convex-helpers/server'
 import { UserDoc, Users, clerkCreateUserFields } from './validators/users'
+import { z } from 'zod'
+import { zodToConvex } from 'convex-helpers/server/zod'
+import { attributesPlainObject } from './validators/attributes'
 import { internal } from './_generated/api'
 import { literals, partial } from 'convex-helpers/validators'
 import { NEW_USER_DEFAULTS, formatFullName } from './users/helpers'
@@ -89,6 +92,31 @@ export const updateMySizingField = authMutation({
         [section]: updatedSection
       } as any
     }
+    await ctx.scheduler.runAfter(0, internal.users.afterUpdate, updatedUser)
+  }
+})
+
+// Patch only specific fields inside `attributes`, merging with existing
+export const patchUserAttributes = authMutation({
+  args: {
+    attributes: zodToConvex(z.object(attributesPlainObject).partial())
+  },
+  async handler(ctx, { attributes }): Promise<void> {
+    const currentAttributes = (ctx.user.attributes || {}) as Record<string, unknown>
+    const mergedAttributes = {
+      ...currentAttributes,
+      ...attributes
+    } as any
+
+    await ctx.db.patch(ctx.user._id, {
+      attributes: mergedAttributes
+    })
+
+    const updatedUser = {
+      ...ctx.user,
+      attributes: mergedAttributes
+    }
+
     await ctx.scheduler.runAfter(0, internal.users.afterUpdate, updatedUser)
   }
 })

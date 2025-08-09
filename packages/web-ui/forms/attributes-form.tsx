@@ -26,7 +26,7 @@ export function AttributesForm({
 }: {
   preloadedUser: Preloaded<typeof api.users.getMyUser>
 }) {
-  const updateMyUser = useMutation(api.users.updateMyUser)
+  const patchUserAttributes = useMutation(api.users.patchUserAttributes)
 
   const { attributes } = usePreloadedQuery(preloadedUser) || ({} as UserDoc)
   const form = useForm<FormSchema>({
@@ -36,7 +36,7 @@ export function AttributesForm({
     values: attributes
   })
   async function onSubmit(attributes: FormSchema) {
-    await updateMyUser({ attributes })
+    await patchUserAttributes({ attributes })
     form.reset(attributes)
   }
 
