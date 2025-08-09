@@ -15,9 +15,19 @@ export interface DateInputProps {
   minimumDate?: Date;
   maximumDate?: Date;
   helpText?: string;
+  // Optional custom display formatters
+  formatDate?: (date: Date) => string;
+  formatTime?: (date: Date) => string;
 }
 
-export const DateInput = ({ label, minimumDate, maximumDate, helpText }: DateInputProps) => {
+export const DateInput = ({
+  label,
+  minimumDate,
+  maximumDate,
+  helpText,
+  formatDate,
+  formatTime,
+}: DateInputProps) => {
   const field = useFieldContext<Date>();
   const validationModeContext = useValidationModeContextSafe();
   const { errorMessage } = useFieldError(field, {
@@ -37,6 +47,8 @@ export const DateInput = ({ label, minimumDate, maximumDate, helpText }: DateInp
         mode="date"
         maximumDate={maximumDate}
         minimumDate={minimumDate}
+        formatDate={formatDate}
+        formatTime={formatTime}
         onChange={(event, selectedDate) => {
           if (selectedDate) {
             field.handleChange(selectedDate);
