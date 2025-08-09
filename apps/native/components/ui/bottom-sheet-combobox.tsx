@@ -27,13 +27,15 @@ export interface BottomSheetPickerProps<T = any> {
   errorMessage?: string;
   disabled?: boolean;
   onSearch?: (searchTerm: string, data: ComboboxItem<T>[]) => ComboboxItem<T>[];
+  onSearchAsync?: (searchTerm: string) => Promise<ComboboxItem<T>[]>;
+  getLabelAsync?: (value: T) => Promise<ComboboxItem<T> | string | undefined | null>;
 }
 
 export function BottomSheetCombobox<T = any>({
   value,
   onChange,
   onBlur,
-  data,
+  data = [],
   label,
   placeholder,
   formatValue,
@@ -41,6 +43,8 @@ export function BottomSheetCombobox<T = any>({
   errorMessage,
   disabled,
   onSearch,
+  onSearchAsync,
+  getLabelAsync,
 }: BottomSheetPickerProps<T>) {
   const sheetState = useSheetState();
   const searchInputRef = useRef<any>(null);
@@ -48,12 +52,18 @@ export function BottomSheetCombobox<T = any>({
   const [searchTerm, setSearchTerm] = useState('');
   // Internal state for uncontrolled mode
   const [internalValue, setInternalValue] = useState<T | undefined>(value || defaultValue);
+  const [selectedLabel, setSelectedLabel] = useState<string | undefined>(undefined);
 
   const handleSave = useCallback(() => {
     setInternalValue(tempValue);
+    // Determine label for saved value for display when data is empty
+    const source = onSearchAsync ? asyncResults : data;
+    const item = source?.find((it) => it.value === tempValue);
+    const lbl = item?.label ?? (formatValue ? formatValue(tempValue as T) : undefined);
+    setSelectedLabel(lbl);
     onChange?.(tempValue);
     sheetState.close();
-  }, [tempValue, onChange, sheetState]);
+  }, [tempValue, onChange, sheetState, onSearchAsync, asyncResults, data, formatValue]);
 
   const handleSheetOpen = useCallback(() => {
     if (disabled) return;
@@ -68,30 +78,69 @@ export function BottomSheetCombobox<T = any>({
     sheetState.close();
   }, [sheetState]);
 
+  const [asyncResults, setAsyncResults] = useState<ComboboxItem<T>[]>(data || []);
+
   const displayValue = useMemo(() => {
-    // Use prop value if provided, otherwise use internal state
     const currentValue = value !== undefined ? value : internalValue;
-    console.log('displayValue', { value: currentValue, data, formatValue });
     if (!currentValue) return '';
-
-    if (formatValue) {
-      return formatValue(currentValue);
-    }
-
+    if (formatValue) return formatValue(currentValue);
     const selectedItem = data.find((item) => item.value === currentValue);
-    return selectedItem?.label || '';
-  }, [value, internalValue, data, formatValue]);
-
+    if (selectedItem?.label) return selectedItem.label;
+    const asyncItem = asyncResults.find((item) => item.value === currentValue);
+    if (asyncItem?.label) return asyncItem.label;
+    return selectedLabel || '';
+  }, [value, internalValue, data, formatValue, asyncResults, selectedLabel]);
   const filteredData = useMemo(() => {
+    if (onSearchAsync) {
+      return asyncResults;
+    }
     if (!searchTerm) return data;
-
     if (onSearch) {
       return onSearch(searchTerm, data);
     }
-
-    // Default search: case-insensitive filter by label
     return data.filter((item) => item.label.toLowerCase().includes(searchTerm.toLowerCase()));
-  }, [searchTerm, data, onSearch]);
+  }, [searchTerm, data, onSearch, onSearchAsync, asyncResults]);
+
+  React.useEffect(() => {
+    let cancelled = false;
+    if (onSearchAsync) {
+      (async () => {
+        const term = searchTerm || '';
+        const results = await onSearchAsync(term);
+        if (!cancelled) setAsyncResults(results);
+      })();
+    }
+    return () => {
+      cancelled = true;
+    };
+  }, [searchTerm, onSearchAsync]);
+
+  // Resolve initial label when starting with a pre-filled value
+  React.useEffect(() => {
+    let cancelled = false;
+    (async () => {
+      const currentValue = value !== undefined ? value : internalValue;
+      if (!currentValue || !getLabelAsync) return;
+      // If we can already resolve label from data/asyncResults/selectedLabel, skip
+      const inData = data.find((d) => d.value === currentValue);
+      const inAsync = asyncResults.find((d) => d.value === currentValue);
+      if (inData?.label || inAsync?.label || selectedLabel) return;
+      try {
+        const result = await getLabelAsync(currentValue);
+        if (cancelled) return;
+        if (typeof result === 'string') {
+          setSelectedLabel(result);
+        } else if (result && (result as any).label) {
+          setSelectedLabel((result as any).label);
+        }
+      } catch (e) {
+        // ignore
+      }
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, [value, internalValue, getLabelAsync, data, asyncResults, selectedLabel]);
 
   const renderSearchItem = ({ item }: { item: ComboboxItem<T> }) => {
     const isSelected = item.value === tempValue;

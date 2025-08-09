@@ -16,6 +16,8 @@ export interface BottomSheetComboboxFieldProps<T = any> {
   pickerLabel?: string;
   disabled?: boolean;
   onSearch?: (searchTerm: string, data: ComboboxItem<T>[]) => ComboboxItem<T>[];
+  onSearchAsync?: (searchTerm: string) => Promise<ComboboxItem<T>[]>;
+  getLabelAsync?: (value: T) => Promise<ComboboxItem<T> | string | undefined | null>;
 }
 
 export function BottomSheetComboboxField<T = any>({
@@ -28,6 +30,8 @@ export function BottomSheetComboboxField<T = any>({
   pickerLabel,
   disabled,
   onSearch,
+  onSearchAsync,
+  getLabelAsync,
 }: BottomSheetComboboxFieldProps<T>) {
   const field = useFieldContext<T>();
   const validationModeContext = useValidationModeContextSafe();
@@ -57,6 +61,8 @@ export function BottomSheetComboboxField<T = any>({
       errorMessage={errorMessage}
       disabled={disabled}
       onSearch={onSearch}
+      onSearchAsync={onSearchAsync}
+      getLabelAsync={getLabelAsync}
     />
   );
 }

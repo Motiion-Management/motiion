@@ -66,6 +66,8 @@ export function enhanceFieldsWithMetadata(
       enhanced.type = 'checkbox';
     } else if (fieldMeta.component === 'number') {
       enhanced.type = 'number';
+    } else if (fieldMeta.component === 'chips') {
+      enhanced.type = 'chips';
     }
 
     // Add options if provided
@@ -190,6 +192,27 @@ export const musicVideoMetadata: FormMetadata = {
     helpText: 'Your roles in the production',
     suggestions: COMMON_ROLES,
   },
+  // Team
+  mainTalent: {
+    component: 'chips',
+    placeholder: 'Add main cast/talent names',
+    helpText: 'Principal performers or talent',
+    group: 'team',
+    order: 8,
+  },
+  choreographers: {
+    component: 'chips',
+    placeholder: 'Add choreographer names',
+    helpText: 'Lead choreographers for the production',
+    group: 'team',
+    order: 9,
+  },
+  associateChoreographers: {
+    component: 'chips',
+    placeholder: 'Add associate/assistant choreographer names',
+    group: 'team',
+    order: 10,
+  },
 };
 
 /**
@@ -248,6 +271,27 @@ export const livePerformanceMetadata: FormMetadata = {
     placeholder: 'Add your roles',
     suggestions: COMMON_ROLES,
   },
+  // Team
+  mainTalent: {
+    component: 'chips',
+    placeholder: 'Add main cast/talent names',
+    helpText: 'Principal performers or talent',
+    group: 'team',
+    order: 8,
+  },
+  choreographers: {
+    component: 'chips',
+    placeholder: 'Add choreographer names',
+    helpText: 'Lead choreographers for the production',
+    group: 'team',
+    order: 9,
+  },
+  associateChoreographers: {
+    component: 'chips',
+    placeholder: 'Add associate/assistant choreographer names',
+    group: 'team',
+    order: 10,
+  },
 };
 
 /**
@@ -284,6 +328,27 @@ export const commercialMetadata: FormMetadata = {
     component: 'chips',
     placeholder: 'Add your roles',
     suggestions: COMMON_ROLES,
+  },
+  // Team
+  mainTalent: {
+    component: 'chips',
+    placeholder: 'Add main cast/talent names',
+    helpText: 'Principal performers or talent',
+    group: 'team',
+    order: 8,
+  },
+  choreographers: {
+    component: 'chips',
+    placeholder: 'Add choreographer names',
+    helpText: 'Lead choreographers for the production',
+    group: 'team',
+    order: 9,
+  },
+  associateChoreographers: {
+    component: 'chips',
+    placeholder: 'Add associate/assistant choreographer names',
+    group: 'team',
+    order: 10,
   },
 };
 
