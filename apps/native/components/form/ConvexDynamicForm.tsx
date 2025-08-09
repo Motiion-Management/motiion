@@ -6,8 +6,13 @@ import { zodValidator } from '@tanstack/zod-form-adapter';
 import { useAppForm } from './appForm';
 import { ConvexFormField } from './ConvexFormField';
 import { Text } from '~/components/ui/text';
-import { convexSchemaToFormConfig, FormFieldConfig, zodObjectToFormFields, extractLabel } from '~/utils/convexSchemaToForm';
-import { getDiscriminatedUnionInfo, getTypeName } from '~/utils/zodSafeAccess';
+import {
+  convexSchemaToFormConfig,
+  FormFieldConfig,
+  zodObjectToFormFields,
+  extractLabel,
+} from '~/utils/convexSchemaToForm';
+import { getDiscriminatedUnionInfo } from '~/utils/zodSafeAccess';
 import { enhanceFieldsWithMetadata, FormMetadata } from '~/utils/convexFormMetadata';
 import { debounce } from '~/lib/debounce';
 
@@ -53,19 +58,6 @@ export const ConvexDynamicForm = React.memo(
       );
     }
 
-    // Check if schema has _def property
-    // if (!schema._def) {
-    //   console.error('ConvexDynamicForm: schema._def is undefined', schema);
-    //   return (
-    //     <View className="rounded-lg bg-destructive/10 p-4">
-    //       <Text className="text-destructive">Error: Invalid schema format</Text>
-    //       <Text className="mt-2 text-sm text-text-disabled">
-    //         The provided schema is not a valid Zod schema.
-    //       </Text>
-    //     </View>
-    //   );
-    // }
-
     // Discriminated union info
     const duInfo = useMemo(() => getDiscriminatedUnionInfo(schema as any), [schema]);
 
@@ -77,11 +69,12 @@ export const ConvexDynamicForm = React.memo(
 
     useEffect(() => {
       if (duInfo) {
-        setSelectedDisc((prev) => (prev ?? (initialData as any)?.[duInfo.discriminator] ?? duInfo.options[0]?.value));
+        setSelectedDisc(
+          (prev) => prev ?? (initialData as any)?.[duInfo.discriminator] ?? duInfo.options[0]?.value
+        );
       } else {
         setSelectedDisc(undefined);
       }
-      // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [duInfo?.discriminator]);
 
     // Convert schema (including discriminated unions) to form field configuration
@@ -91,7 +84,10 @@ export const ConvexDynamicForm = React.memo(
         if (du && selectedDisc) {
           // Build discriminator field first
           const discName = du.discriminator;
-          const discOptions = du.options.map((o) => ({ label: extractLabel(o.value), value: o.value }));
+          const discOptions = du.options.map((o) => ({
+            label: extractLabel(o.value),
+            value: o.value,
+          }));
           const discField: FormFieldConfig = {
             name: discName,
             label: extractLabel(discName),
@@ -307,78 +303,3 @@ export const ConvexDynamicForm = React.memo(
     );
   }
 );
-
-/**
- * Hook to use dynamic form with Convex schemas
- */
-// export function useConvexDynamicForm({
-//   schema,
-//   initialData = {},
-//   validators = {},
-//   onSubmit
-// }: {
-//   schema: z.ZodObject<any>
-//   initialData?: Record<string, any>
-//   validators?: any
-//   onSubmit?: (data: Record<string, any>) => void
-// }) {
-//   // Build default values from schema
-//   const defaultValues = useMemo(() => {
-//     const shape = schema._def.shape()
-//     const values: Record<string, any> = {}
-//
-//     Object.keys(shape).forEach(key => {
-//       values[key] = initialData[key] !== undefined
-//         ? initialData[key]
-//         : getDefaultValue(shape[key])
-//     })
-//
-//     return values
-//   }, [schema, initialData])
-//
-//   return useAppForm({
-//     defaultValues,
-//     validators: {
-//       onChange: schema as any,
-//       ...validators
-//     },
-//     onSubmit: async ({ value }) => {
-//       if (onSubmit) {
-//         onSubmit(value)
-//       }
-//     }
-//   })
-// }
-//
-// /**
-//  * Get default value for a Zod schema type
-//  */
-// function getDefaultValue(schema: z.ZodTypeAny): any {
-//   const typeName = schema._def.typeName
-//
-//   // Handle optional types
-//   if (typeName === 'ZodOptional' || typeName === 'ZodNullable') {
-//     return undefined
-//   }
-//
-//   // Handle default values
-//   if (typeName === 'ZodDefault') {
-//     return (schema as z.ZodDefault<any>)._def.defaultValue()
-//   }
-//
-//   // Handle basic types
-//   switch (typeName) {
-//     case 'ZodString':
-//       return ''
-//     case 'ZodNumber':
-//       return 0
-//     case 'ZodBoolean':
-//       return false
-//     case 'ZodArray':
-//       return []
-//     case 'ZodObject':
-//       return {}
-//     default:
-//       return undefined
-//   }
-// }

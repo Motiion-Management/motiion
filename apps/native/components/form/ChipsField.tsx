@@ -1,10 +1,11 @@
-import React from 'react';
+import React, { useMemo, useState, useCallback } from 'react';
 import { View } from 'react-native';
 import { useFieldContext } from './context';
 import { Input } from '~/components/ui/input';
 import { Text } from '~/components/ui/text';
 import { useFieldError } from '~/hooks/useFieldError';
 import { useValidationModeContextSafe } from '~/hooks/useValidationMode';
+import { Chips } from '~/components/ui/chips';
 
 export interface ChipsFieldProps {
   label: string;
@@ -15,42 +16,75 @@ export interface ChipsFieldProps {
 export const ChipsField = ({ label, placeholder, helpText }: ChipsFieldProps) => {
   const field = useFieldContext<string[]>();
   const validationModeContext = useValidationModeContextSafe();
-  const { errorMessage } = useFieldError(field, {
-    fieldName: field.name,
-  });
+  const { errorMessage } = useFieldError(field, { fieldName: field.name });
 
-  const handleChange = (text: string) => {
-    const items = text
-      .split(',')
-      .map((s) => s.trim())
-      .filter(Boolean);
-    field.handleChange(items);
-  };
+  const chips: string[] = useMemo(() => (Array.isArray(field.state.value) ? field.state.value : []), [
+    field.state.value,
+  ]);
+  const [buffer, setBuffer] = useState('');
+
+  const commitBuffer = useCallback(() => {
+    const value = buffer.trim();
+    if (!value) return;
+    const next = Array.from(new Set([...(chips || []), value]));
+    field.handleChange(next);
+    setBuffer('');
+    if (validationModeContext) validationModeContext.markFieldBlurred(field.name);
+  }, [buffer, chips, field, validationModeContext]);
+
+  const removeChip = useCallback(
+    (chip: string) => {
+      const next = (chips || []).filter((c) => c !== chip);
+      field.handleChange(next);
+      if (validationModeContext) validationModeContext.markFieldBlurred(field.name);
+    },
+    [chips, field, validationModeContext]
+  );
+
+  const handleKeyPress = useCallback(
+    (e: any) => {
+      if (e?.nativeEvent?.key === 'Enter') {
+        e.preventDefault?.();
+        commitBuffer();
+      }
+      // If buffer empty and backspace pressed, remove last chip
+      if (e?.nativeEvent?.key === 'Backspace' && buffer.length === 0 && chips.length > 0) {
+        removeChip(chips[chips.length - 1]);
+      }
+    },
+    [commitBuffer, buffer, chips, removeChip]
+  );
 
   const handleBlur = () => {
+    // Commit any pending text on blur
+    commitBuffer();
     field.handleBlur();
     if (validationModeContext) {
       validationModeContext.markFieldBlurred(field.name);
     }
   };
 
-  const currentValue = Array.isArray(field.state.value) ? field.state.value.join(', ') : '';
-
   return (
     <View>
       <Input
         label={label}
         placeholder={placeholder}
-        value={currentValue}
-        onChangeText={handleChange}
+        value={buffer}
+        onChangeText={setBuffer}
+        onSubmitEditing={commitBuffer}
+        onKeyPress={handleKeyPress}
         onBlur={handleBlur}
         errorMessage={errorMessage}
+        autoCapitalize="none"
+        autoCorrect={false}
+        returnKeyType="done"
       />
       {helpText && (
         <Text variant="footnote" className="mt-1 text-text-low">
           {helpText}
         </Text>
       )}
+      <Chips items={chips} onRemove={removeChip} variant="combo" />
     </View>
   );
 };

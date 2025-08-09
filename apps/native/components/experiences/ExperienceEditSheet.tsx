@@ -136,16 +136,12 @@ export function ExperienceEditSheet({
   const schema = useMemo(() => {
     switch (experienceType) {
       case 'tv-film':
-      case 'television-film':
         return zExperiencesTvFilm;
       case 'music-video':
-      case 'music-videos':
         return zExperiencesMusicVideos;
       case 'live-performance':
-      case 'live-performances':
         return zExperiencesLivePerformances;
       case 'commercial':
-      case 'commercials':
         return zExperiencesCommercials;
       default:
         return undefined;
@@ -178,7 +174,7 @@ export function ExperienceEditSheet({
           <View className="flex-1 pt-2">
             {/* Type selector only on Details tab */}
             {activeTab === 'details' && (
-              <View className="gap-4 px-4 pb-2 pt-4">
+              <View className="gap-4 px-4 pt-4">
                 <BottomSheetPicker
                   onChange={handleExperienceTypeChange}
                   label="Experience Type"
