@@ -7,12 +7,7 @@ import { Experience } from '~/types/experiences';
 import { Text } from '~/components/ui/text';
 
 // Import Convex validators - these might be undefined if server-only
-import {
-  zExperiencesTvFilm,
-  zExperiencesMusicVideos,
-  zExperiencesLivePerformances,
-  zExperiencesCommercials,
-} from '@packages/backend/convex/schemas';
+import { zExperiencesUnified } from '@packages/backend/convex/schemas';
 
 // Schemas are imported correctly
 
@@ -22,17 +17,8 @@ interface DynamicExperienceFormProps {
   onChange: (data: Partial<Experience>) => void;
 }
 
-// Map experience types to their Convex schemas
-const experienceSchemas: Record<string, z.ZodObject<any> | undefined> = {
-  'tv-film': zExperiencesTvFilm,
-  'television-film': zExperiencesTvFilm,
-  'music-video': zExperiencesMusicVideos,
-  'music-videos': zExperiencesMusicVideos,
-  'live-performance': zExperiencesLivePerformances,
-  'live-performances': zExperiencesLivePerformances,
-  commercial: zExperiencesCommercials,
-  commercials: zExperiencesCommercials,
-};
+// Use a single discriminated union schema keyed by 'type'
+const unifiedSchema: z.ZodTypeAny = zExperiencesUnified;
 
 /**
  * Dynamic experience form that uses Convex schemas
@@ -42,12 +28,11 @@ export function DynamicExperienceForm({
   initialData = {},
   onChange,
 }: DynamicExperienceFormProps) {
-  const schema = experienceSchemas[experienceType];
+  const schema = unifiedSchema;
   const metadata = useMemo(() => getExperienceMetadata(experienceType), [experienceType]);
 
   if (!schema) {
     console.error(`No schema found for experience type: ${experienceType}`);
-    console.error('Available schemas:', Object.keys(experienceSchemas));
 
     // Return error UI instead of throwing
     return (

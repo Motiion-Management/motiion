@@ -263,7 +263,7 @@ export const musicVideoMetadata: FormMetadata = {
  * Live Performance experience form metadata
  */
 export const livePerformanceMetadata: FormMetadata = {
-  eventType: {
+  subtype: {
     component: 'select',
     placeholder: 'Select event type',
     helpText: 'Type of live performance',

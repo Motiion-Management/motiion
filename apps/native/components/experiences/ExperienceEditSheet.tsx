@@ -12,12 +12,7 @@ import { Tabs } from '~/components/ui/tabs/tabs';
 import { ExperienceType, Experience, ExperienceFormState } from '~/types/experiences';
 import { getExperienceMetadata } from '~/utils/convexFormMetadata';
 import { EXPERIENCE_TYPES } from '~/config/experienceTypes';
-import {
-  zExperiencesTvFilm,
-  zExperiencesMusicVideos,
-  zExperiencesLivePerformances,
-  zExperiencesCommercials,
-} from '@packages/backend/convex/schemas';
+import { zExperiencesUnified } from '@packages/backend/convex/schemas';
 
 interface ExperienceEditSheetProps {
   isOpen: boolean;
@@ -120,7 +115,7 @@ export function ExperienceEditSheet({
       case 'music-video':
         return !!(data.songTitle && data.artists?.length && data.roles?.length);
       case 'live-performance':
-        return !!(data.eventType && data.roles?.length);
+        return !!(data.subtype && data.roles?.length);
       case 'commercial':
         return !!(data.companyName && data.campaignTitle && data.roles?.length);
       default:
@@ -133,20 +128,7 @@ export function ExperienceEditSheet({
   };
 
   // Map type -> schema and metadata
-  const schema = useMemo(() => {
-    switch (experienceType) {
-      case 'tv-film':
-        return zExperiencesTvFilm;
-      case 'music-video':
-        return zExperiencesMusicVideos;
-      case 'live-performance':
-        return zExperiencesLivePerformances;
-      case 'commercial':
-        return zExperiencesCommercials;
-      default:
-        return undefined;
-    }
-  }, [experienceType]);
+  const schema = useMemo(() => zExperiencesUnified, []);
 
   const metadata = useMemo(() => {
     return experienceType ? getExperienceMetadata(experienceType) : {};

@@ -44,7 +44,7 @@ export interface MusicVideoExperience extends BaseExperience {
 // Live Performance specific
 export interface LivePerformanceExperience extends BaseExperience {
   type: 'live-performance';
-  eventType: LivePerformanceEventType;
+  subtype: LivePerformanceEventType;
   startDate: string;
   duration: string;
   // Dynamic fields based on event type
@@ -99,5 +99,5 @@ export interface ExperienceFieldConfig {
   options?: Array<{ label: string; value: string }>;
   required?: boolean;
   showForTypes?: ExperienceType[];
-  showForEventTypes?: LivePerformanceEventType[];
+  showForSubtypes?: LivePerformanceEventType[];
 }

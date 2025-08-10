@@ -132,7 +132,7 @@ export const EXPERIENCE_FIELDS: ExperienceFieldConfig[] = [
 
   // Live Performance fields
   {
-    name: 'eventType',
+    name: 'subtype',
     label: 'Event Type',
     type: 'select',
     options: LIVE_EVENT_TYPES,
@@ -146,7 +146,7 @@ export const EXPERIENCE_FIELDS: ExperienceFieldConfig[] = [
     placeholder: 'Enter festival name',
     required: true,
     showForTypes: ['live-performance'],
-    showForEventTypes: ['festival'],
+    showForSubtypes: ['festival'],
   },
   {
     name: 'tourName',
@@ -155,7 +155,7 @@ export const EXPERIENCE_FIELDS: ExperienceFieldConfig[] = [
     placeholder: 'Enter tour name',
     required: true,
     showForTypes: ['live-performance'],
-    showForEventTypes: ['tour'],
+    showForSubtypes: ['tour'],
   },
   {
     name: 'tourArtist',
@@ -164,7 +164,7 @@ export const EXPERIENCE_FIELDS: ExperienceFieldConfig[] = [
     placeholder: 'Enter artist name',
     required: true,
     showForTypes: ['live-performance'],
-    showForEventTypes: ['tour'],
+    showForSubtypes: ['tour'],
   },
   {
     name: 'companyName',
@@ -173,7 +173,7 @@ export const EXPERIENCE_FIELDS: ExperienceFieldConfig[] = [
     placeholder: 'Enter company name',
     required: true,
     showForTypes: ['live-performance', 'commercial'],
-    showForEventTypes: ['corporate'],
+    showForSubtypes: ['corporate'],
   },
   {
     name: 'eventName',
@@ -182,7 +182,7 @@ export const EXPERIENCE_FIELDS: ExperienceFieldConfig[] = [
     placeholder: 'Enter event name',
     required: true,
     showForTypes: ['live-performance'],
-    showForEventTypes: ['corporate', 'other'],
+    showForSubtypes: ['corporate', 'other'],
   },
   {
     name: 'awardShowName',
@@ -191,7 +191,7 @@ export const EXPERIENCE_FIELDS: ExperienceFieldConfig[] = [
     placeholder: 'Enter award show name',
     required: true,
     showForTypes: ['live-performance'],
-    showForEventTypes: ['award-show'],
+    showForSubtypes: ['award-show'],
   },
   {
     name: 'productionTitle',
@@ -200,7 +200,7 @@ export const EXPERIENCE_FIELDS: ExperienceFieldConfig[] = [
     placeholder: 'Enter production title',
     required: true,
     showForTypes: ['live-performance'],
-    showForEventTypes: ['theater'],
+    showForSubtypes: ['theater'],
   },
   {
     name: 'venue',
@@ -208,7 +208,7 @@ export const EXPERIENCE_FIELDS: ExperienceFieldConfig[] = [
     type: 'text',
     placeholder: 'Enter venue name',
     showForTypes: ['live-performance'],
-    showForEventTypes: ['concert', 'theater'],
+    showForSubtypes: ['concert', 'theater'],
   },
 
   // Commercial fields
@@ -296,7 +296,7 @@ export const getExperienceDisplayTitle = (experience: any): string => {
     case 'music-video':
       return experience.songTitle || 'Untitled Song';
     case 'live-performance':
-      switch (experience.eventType) {
+      switch (experience.subtype) {
         case 'festival':
           return experience.festivalTitle || 'Festival';
         case 'tour':
@@ -328,7 +328,7 @@ export const getExperienceDisplaySubtitle = (experience: any): string => {
     case 'music-video':
       return experience.artists?.join(', ') || '';
     case 'live-performance':
-      switch (experience.eventType) {
+      switch (experience.subtype) {
         case 'tour':
           return experience.tourArtist || '';
         case 'corporate':
