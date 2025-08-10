@@ -25,6 +25,11 @@ export const removeMyExperience = authMutation({
   args: { experienceId: v.id('experiences') },
   returns: v.null(),
   handler: async (ctx, args) => {
+    const doc = await ctx.db.get(args.experienceId)
+    if (!doc || doc.userId !== ctx.user._id) {
+      // Not found or not owned by user; do nothing
+      return null
+    }
     // Detach from legacy resume list
     await ctx.db.patch(ctx.user._id, {
       resume: {
