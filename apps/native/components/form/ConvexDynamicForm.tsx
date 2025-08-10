@@ -197,22 +197,34 @@ export const ConvexDynamicForm = React.memo(
     }, [debounceMs]);
 
     // Initialize values from initialData once per fields shape change
-    const fieldsKey = useMemo(() => fields.map((f) => f.name).join('|'), [fields]);
-    const initializedRef = useRef<string | null>(null);
-    useEffect(() => {
-      if (initializedRef.current === fieldsKey) return;
-      // Set initial values from provided initialData without recreating the form
-      if (initialData && typeof initialData === 'object') {
-        for (const f of fields) {
-          const v = (initialData as any)[f.name];
-          if (v !== undefined) {
-            // @ts-expect-error tanstack typed generic
-            form.store.setFieldValue(f.name as any, v);
-          }
+  const fieldsKey = useMemo(() => fields.map((f) => f.name).join('|'), [fields]);
+  const initializedRef = useRef<string | null>(null);
+  useEffect(() => {
+    if (initializedRef.current === fieldsKey) return;
+    // Set initial values from provided initialData without recreating the form
+    if (initialData && typeof initialData === 'object') {
+      for (const f of fields) {
+        const v = (initialData as any)[f.name];
+        if (v !== undefined) {
+          // @ts-expect-error tanstack typed generic
+          (form as any).setFieldValue(f.name as any, v);
         }
       }
-      initializedRef.current = fieldsKey;
-    }, [fieldsKey, fields, form.store, initialData]);
+    }
+    initializedRef.current = fieldsKey;
+  }, [fieldsKey, fields, form, initialData]);
+
+  // Keep discriminated union branch in sync with external initialData changes (e.g., type selected outside)
+  useEffect(() => {
+    if (!duInfo) return;
+    const discName = duInfo.discriminator as string;
+    const desired = (initialData as any)?.[discName];
+    if (desired && desired !== selectedDisc) {
+      setSelectedDisc(desired);
+      // @ts-expect-error tanstack typed generic
+      (form as any).setFieldValue(discName as any, desired);
+    }
+  }, [initialData, duInfo, selectedDisc, form]);
 
     // Observe values changes with useStore and debounce external onChange
     const values = useStore(form.store, (state) => state.values);
@@ -230,18 +242,34 @@ export const ConvexDynamicForm = React.memo(
       };
     }, [values, debouncedOnChange, onChange]);
 
-    // Filter fields by groups if specified
+    // Filter fields by groups and conditional showWhen if specified
     const filteredFields = useMemo(() => {
-      if (!groups || groups.length === 0) return fields;
+      const byGroup = !groups || groups.length === 0
+        ? fields
+        : fields.filter((field) => {
+            const fieldGroups = field.metadata?.group;
+            if (!fieldGroups) return false;
+            const fieldGroupArray = Array.isArray(fieldGroups) ? fieldGroups : [fieldGroups];
+            return fieldGroupArray.some((g) => groups.includes(g));
+          });
 
-      return fields.filter((field) => {
-        const fieldGroups = field.metadata?.group;
-        if (!fieldGroups) return false;
-
-        const fieldGroupArray = Array.isArray(fieldGroups) ? fieldGroups : [fieldGroups];
-        return fieldGroupArray.some((g) => groups.includes(g));
+      // Apply conditional visibility using current form values
+      return byGroup.filter((field) => {
+        const cond = field.metadata?.showWhen;
+        if (!cond) return true;
+        const current = (values as any)?.[cond.field];
+        if (cond.equals !== undefined) {
+          if (Array.isArray(cond.equals)) {
+            return cond.equals.includes(current);
+          }
+          return current === cond.equals;
+        }
+        if (cond.in && Array.isArray(cond.in)) {
+          return cond.in.includes(current);
+        }
+        return true;
       });
-    }, [fields, groups]);
+    }, [fields, groups, values]);
 
     // Sort fields by order if specified
     const sortedFields = useMemo(() => {

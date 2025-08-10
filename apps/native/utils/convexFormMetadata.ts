@@ -1,5 +1,5 @@
 import { FormFieldConfig } from './convexSchemaToForm';
-import { COMMON_STUDIOS, COMMON_ROLES, DURATION_OPTIONS } from '~/config/experienceTypes';
+import { COMMON_STUDIOS, COMMON_ROLES, DURATION_OPTIONS, LIVE_EVENT_TYPES } from '~/config/experienceTypes';
 
 /**
  * Metadata for enhancing form fields with UI-specific configuration
@@ -31,6 +31,12 @@ export interface FieldMetadata {
   order?: number;
   // Grouping for tabs/sections
   group?: string | string[];
+  // Conditional visibility
+  showWhen?: {
+    field: string;
+    equals?: any | any[];
+    in?: any[];
+  };
   // Field state
   readOnly?: boolean;
   disabled?: boolean;
@@ -264,52 +270,61 @@ export const musicVideoMetadata: FormMetadata = {
  */
 export const livePerformanceMetadata: FormMetadata = {
   subtype: {
-    component: 'select',
+    component: 'picker',
     placeholder: 'Select event type',
     helpText: 'Type of live performance',
     group: ['details', 'basic', 'quick'],
     order: 1,
+    options: LIVE_EVENT_TYPES,
   },
   festivalTitle: {
     placeholder: 'Enter festival name',
     group: ['details', 'basic', 'quick'],
     helpText: 'e.g., Coachella, Glastonbury',
+    showWhen: { field: 'subtype', equals: 'festival' },
   },
   tourName: {
     placeholder: 'Enter tour name',
     group: ['details', 'basic', 'quick'],
     helpText: 'Official tour title',
+    showWhen: { field: 'subtype', equals: 'tour' },
   },
   tourArtist: {
     placeholder: 'Enter artist name',
     group: ['details', 'basic', 'quick'],
     helpText: 'Headlining artist for the tour',
+    showWhen: { field: 'subtype', equals: 'tour' },
   },
   companyName: {
     placeholder: 'Enter company name',
     group: ['details', 'basic', 'quick'],
     helpText: 'Corporate or production company',
+    showWhen: { field: 'subtype', equals: 'corporate' },
   },
   eventName: {
     placeholder: 'Enter event name',
     group: ['details', 'basic', 'quick'],
     helpText: 'Name of the specific event',
+    showWhen: { field: 'subtype', equals: ['corporate', 'other'] },
   },
   awardShowName: {
     label: 'Award Show Title',
     placeholder: 'Enter award show name',
     helpText: 'e.g., Grammy Awards, MTV VMAs',
     group: ['details', 'basic', 'quick'],
+    showWhen: { field: 'subtype', equals: 'award-show' },
   },
   productionTitle: {
     placeholder: 'Enter production title',
     helpText: 'Theater or stage production name',
     group: ['details', 'basic', 'quick'],
+    showWhen: { field: 'subtype', equals: 'theater' },
   },
   venue: {
     placeholder: 'Enter venue name',
     helpText: 'Performance venue or location',
     group: ['details', 'basic', 'quick'],
+    showWhen: { field: 'subtype', equals: ['concert', 'theater'] },
   },
   startDate: {
     component: 'date',
