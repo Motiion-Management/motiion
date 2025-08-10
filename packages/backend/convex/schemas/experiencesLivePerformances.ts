@@ -16,7 +16,7 @@ export const experiencesLivePerformances = {
   private: z.boolean().optional(),
   eventType: z.enum(EVENT_TYPES),
   // Common fields
-  startDate: z.string(),
+  startDate: z.string().optional(),
   duration: z.string(), // Can be "Current" for ongoing
   link: z.string().optional(),
   media: z.union([zid('_storage'), z.string()]).optional(),
@@ -36,7 +36,7 @@ export const experiencesLivePerformances = {
   mainTalent: z.array(z.string()).optional(),
   choreographers: z.array(z.string()).optional(),
   associateChoreographers: z.array(z.string()).optional(),
+  directors: z.array(z.string()).optional(),
 }
 
 export const zExperiencesLivePerformances = z.object(experiencesLivePerformances)
-

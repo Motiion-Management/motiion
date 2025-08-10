@@ -6,7 +6,7 @@ export const experiencesMusicVideos = {
   private: z.boolean().optional(),
   songTitle: z.string(),
   artists: z.array(z.string()),
-  startDate: z.string(),
+  startDate: z.string().optional(),
   duration: z.string(),
   link: z.string().optional(),
   media: z.union([zid('_storage'), z.string()]).optional(),
@@ -14,7 +14,7 @@ export const experiencesMusicVideos = {
   mainTalent: z.array(z.string()).optional(),
   choreographers: z.array(z.string()).optional(),
   associateChoreographers: z.array(z.string()).optional(),
+  directors: z.array(z.string()).optional(),
 }
 
 export const zExperiencesMusicVideos = z.object(experiencesMusicVideos)
-

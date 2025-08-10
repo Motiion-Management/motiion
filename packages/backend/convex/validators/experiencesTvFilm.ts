@@ -8,7 +8,7 @@ export const experiencesTvFilm = {
   private: z.boolean().optional(),
   title: z.string(),
   studio: z.string(),
-  startDate: z.string(), // ISO date
+  startDate: z.string().optional(), // ISO date (optional per docs)
   duration: z.string(), // e.g., "1 week", "3 months"
   link: z.string().optional(),
   media: z.union([zid('_storage'), z.string()]).optional(),
