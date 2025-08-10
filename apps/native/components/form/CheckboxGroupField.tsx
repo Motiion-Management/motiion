@@ -5,6 +5,7 @@ import { useFieldContext } from './context';
 
 import { Multiselect, MultiselectItem } from '~/components/ui/multiselect';
 import { Text } from '~/components/ui/text';
+import { ErrorText } from '~/components/ui/error-text';
 import { useFieldError } from '~/hooks/useFieldError';
 import { useValidationModeContextSafe } from '~/hooks/useValidationMode';
 
@@ -56,11 +57,7 @@ export const CheckboxGroupField = forwardRef<View, CheckboxGroupFieldProps>(
           ))}
         </Multiselect>
 
-        {errorMessage && (
-          <Text variant="bodySm" className="mt-2 text-text-error">
-            {errorMessage}
-          </Text>
-        )}
+        <ErrorText>{errorMessage}</ErrorText>
       </View>
     );
   }

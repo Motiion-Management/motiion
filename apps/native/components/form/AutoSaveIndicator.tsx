@@ -3,7 +3,7 @@ import { View, Animated } from 'react-native';
 import { CheckCircle2, Loader2, AlertCircle } from 'lucide-react-native';
 import { Text } from '~/components/ui/text';
 import { AutoSaveState } from '~/hooks/useAutoSaveForm';
-import { cn } from '~/lib/utils';
+import { cn } from '~/lib/cn';
 
 interface AutoSaveIndicatorProps {
   saveState: AutoSaveState;

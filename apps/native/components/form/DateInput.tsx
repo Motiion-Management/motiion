@@ -5,10 +5,11 @@ import { useFieldContext } from './context';
 
 import { DatePicker } from '~/components/ui/date-picker';
 import { Text } from '~/components/ui/text';
+import { ErrorText } from '~/components/ui/error-text';
 import { useFieldError } from '~/hooks/useFieldError';
 import { useValidationModeContextSafe } from '~/hooks/useValidationMode';
 import { cn } from '~/lib/cn';
-import { InputLabel } from '../ui/label';
+import { InputLabel } from '~/components/ui/label';
 
 export interface DateInputProps {
   label: string;
@@ -60,15 +61,14 @@ export const DateInput = ({
           }
         }}
       />
-      {(helpText || errorMessage) && (
+      {helpText && (
         <View className="mt-1 px-4">
-          <Text
-            variant="bodyXs"
-            className={cn('text-text-disabled', errorMessage && 'text-text-error')}>
-            {errorMessage || helpText}
+          <Text variant="bodyXs" className="text-text-disabled">
+            {helpText}
           </Text>
         </View>
       )}
+      <ErrorText>{errorMessage}</ErrorText>
     </View>
   );
 };

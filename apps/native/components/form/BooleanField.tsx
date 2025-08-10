@@ -2,6 +2,7 @@ import React from 'react';
 import { View } from 'react-native';
 import { useFieldContext } from './context';
 import { Text } from '~/components/ui/text';
+import { ErrorText } from '~/components/ui/error-text';
 import { Checkbox } from '~/components/ui/checkbox';
 import { useValidationModeContextSafe } from '~/hooks/useValidationMode';
 import { useFieldError } from '~/hooks/useFieldError';
@@ -35,13 +36,8 @@ export const BooleanField = ({ label, helpText }: BooleanFieldProps) => {
             {helpText}
           </Text>
         )}
-        {errorMessage && (
-          <Text variant="footnote" className="text-destructive">
-            {errorMessage}
-          </Text>
-        )}
+        <ErrorText>{errorMessage}</ErrorText>
       </View>
     </View>
   );
 };
-

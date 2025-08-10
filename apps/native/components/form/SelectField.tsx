@@ -8,10 +8,10 @@ import {
   SelectTrigger,
   SelectValue,
 } from '~/components/ui/select';
-import { Text } from '~/components/ui/text';
+import { ErrorText } from '~/components/ui/error-text';
 import { useFieldError } from '~/hooks/useFieldError';
 import { useValidationModeContextSafe } from '~/hooks/useValidationMode';
-import { InputLabel } from '../ui/label';
+import { InputLabel } from '~/components/ui/label';
 
 export interface SelectFieldProps {
   label: string;
@@ -63,11 +63,7 @@ export const SelectField = ({ label, placeholder = 'Select...', options }: Selec
           ))}
         </SelectContent>
       </Select>
-      {errorMessage && (
-        <Text variant="footnote" className="mt-1 text-destructive">
-          {errorMessage}
-        </Text>
-      )}
+      <ErrorText>{errorMessage}</ErrorText>
     </View>
   );
 };

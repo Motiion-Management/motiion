@@ -5,6 +5,7 @@ import { useFieldContext } from './context';
 
 import { RadioGroup, RadioGroupItemCard } from '~/components/ui/radio-group';
 import { Text } from '~/components/ui/text';
+import { ErrorText } from '~/components/ui/error-text';
 import { useFieldError } from '~/hooks/useFieldError';
 import { useValidationModeContextSafe } from '~/hooks/useValidationMode';
 
@@ -56,11 +57,7 @@ export const RadioGroupField = forwardRef<View, RadioGroupFieldProps>(
           ))}
         </RadioGroup>
 
-        {errorMessage && (
-          <Text variant="bodySm" className="mt-2 text-text-error">
-            {errorMessage}
-          </Text>
-        )}
+        <ErrorText>{errorMessage}</ErrorText>
       </View>
     );
   }

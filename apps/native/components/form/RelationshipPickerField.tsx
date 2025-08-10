@@ -2,6 +2,7 @@ import React from 'react';
 import { View } from 'react-native';
 import { useFieldContext } from './context';
 import { Text } from '~/components/ui/text';
+import { ErrorText } from '~/components/ui/error-text';
 import { Input } from '~/components/ui/input';
 import { BottomSheetComboboxField } from './BottomSheetComboboxField';
 import { useFieldError } from '~/hooks/useFieldError';
@@ -63,4 +64,3 @@ export const RelationshipPickerField = ({
     </View>
   );
 };
-
