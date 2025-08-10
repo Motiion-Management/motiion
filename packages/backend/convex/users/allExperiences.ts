@@ -112,21 +112,30 @@ export const getMyExperienceCounts = authQuery({
     total: v.number()
   }),
   handler: async (ctx) => {
-    const counts = {
-      tvFilm: ctx.user?.resume?.experiencesTvFilm?.length || 0,
-      musicVideos: ctx.user?.resume?.experiencesMusicVideos?.length || 0,
-      livePerformances:
-        ctx.user?.resume?.experiencesLivePerformances?.length || 0,
-      commercials: ctx.user?.resume?.experiencesCommercials?.length || 0,
-      total: 0
-    }
-
-    counts.total =
-      counts.tvFilm +
-      counts.musicVideos +
-      counts.livePerformances +
-      counts.commercials
-
-    return counts
+    const res = await ctx.db
+      .query('experiences')
+      .withIndex('userId', (q) => q.eq('userId', ctx.user._id))
+      .collect()
+    const byType = res.reduce(
+      (acc, e) => {
+        switch (e.type) {
+          case 'tv-film':
+            acc.tvFilm++
+            break
+          case 'music-video':
+            acc.musicVideos++
+            break
+          case 'live-performance':
+            acc.livePerformances++
+            break
+          case 'commercial':
+            acc.commercials++
+            break
+        }
+        return acc
+      },
+      { tvFilm: 0, musicVideos: 0, livePerformances: 0, commercials: 0 }
+    )
+    return { ...byType, total: res.length }
   }
 })

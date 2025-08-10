@@ -19,7 +19,6 @@ import type * as clerk from "../clerk.js";
 import type * as eventTypes from "../eventTypes.js";
 import type * as events from "../events.js";
 import type * as experiences_commercials from "../experiences/commercials.js";
-import type * as experiences_experiences from "../experiences/experiences.js";
 import type * as experiences_liveperformances from "../experiences/liveperformances.js";
 import type * as experiences_musicvideos from "../experiences/musicvideos.js";
 import type * as experiences_tvfilm from "../experiences/tvfilm.js";
@@ -86,7 +85,6 @@ declare const fullApi: ApiFromModules<{
   eventTypes: typeof eventTypes;
   events: typeof events;
   "experiences/commercials": typeof experiences_commercials;
-  "experiences/experiences": typeof experiences_experiences;
   "experiences/liveperformances": typeof experiences_liveperformances;
   "experiences/musicvideos": typeof experiences_musicvideos;
   "experiences/tvfilm": typeof experiences_tvfilm;

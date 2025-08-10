@@ -16,11 +16,8 @@ export function useExperiences() {
   const [currentEditingIndex, setCurrentEditingIndex] = useState<number | null>(null);
   const [isSheetOpen, setIsSheetOpen] = useState(false);
 
-  // Convex mutations for different experience types
-  const addTvFilm = useMutation(api.experiences.tvfilm.addMyExperience);
-  const addMusicVideo = useMutation(api.experiences.musicvideos.addMyExperience);
-  const addLivePerformance = useMutation(api.experiences.liveperformances.addMyExperience);
-  const addCommercial = useMutation(api.experiences.commercials.addMyExperience);
+  // User-scoped experiences action (server injects userId from session)
+  const addExperience = useMutation(api["users/experiences"].addMyExperience);
 
   const handleExperiencePress = useCallback((index: number) => {
     setCurrentEditingIndex(index);
@@ -84,68 +81,56 @@ export function useExperiences() {
           mainTalent: exp.data.mainTalent,
           choreographers: exp.data.choreographers,
           associateChoreographers: exp.data.associateChoreographers,
+          directors: (exp.data as any).directors,
+        } as Record<string, any>;
+
+        // Normalize payload into unified table shape
+        const payload: Record<string, any> = {
+          ...baseData,
+          type: exp.type,
         };
 
-        switch (exp.type) {
-          case 'tv-film':
-            const tvFilmData = exp.data as TvFilmExperience;
-            await addTvFilm({
-              ...baseData,
-              projectType: tvFilmData.projectType,
-              title: tvFilmData.title,
-              studio: tvFilmData.studio,
-              startDate: tvFilmData.startDate,
-              duration: tvFilmData.duration,
-            });
-            break;
-
-          case 'music-video':
-            const musicVideoData = exp.data as MusicVideoExperience;
-            await addMusicVideo({
-              ...baseData,
-              songTitle: musicVideoData.songTitle,
-              artists: musicVideoData.artists,
-              startDate: musicVideoData.startDate,
-              duration: musicVideoData.duration,
-            });
-            break;
-
-          case 'live-performance':
-            const liveData = exp.data as LivePerformanceExperience;
-            await addLivePerformance({
-              ...baseData,
-              eventType: liveData.eventType,
-              startDate: liveData.startDate,
-              duration: liveData.duration,
-              festivalTitle: liveData.festivalTitle,
-              tourName: liveData.tourName,
-              tourArtist: liveData.tourArtist,
-              companyName: liveData.companyName,
-              eventName: liveData.eventName,
-              awardShowName: liveData.awardShowName,
-              productionTitle: liveData.productionTitle,
-              venue: liveData.venue,
-            });
-            break;
-
-          case 'commercial':
-            const commercialData = exp.data as CommercialExperience;
-            await addCommercial({
-              ...baseData,
-              companyName: commercialData.companyName,
-              campaignTitle: commercialData.campaignTitle,
-              productionCompany: commercialData.productionCompany,
-              startDate: commercialData.startDate,
-              duration: commercialData.duration,
-            });
-            break;
+        if (exp.type === 'tv-film') {
+          const tv = exp.data as TvFilmExperience;
+          payload.title = tv.title;
+          payload.studio = tv.studio;
+          if (tv.startDate) payload.startDate = tv.startDate;
+          if (tv.duration) payload.duration = tv.duration;
+        } else if (exp.type === 'music-video') {
+          const mv = exp.data as MusicVideoExperience;
+          payload.songTitle = mv.songTitle;
+          payload.artists = mv.artists;
+          if (mv.startDate) payload.startDate = mv.startDate;
+          if (mv.duration) payload.duration = mv.duration;
+        } else if (exp.type === 'live-performance') {
+          const live = exp.data as LivePerformanceExperience;
+          payload.subtype = (live as any).subtype || (live as any).eventType; // tolerate older field name
+          if (live.startDate) payload.startDate = live.startDate;
+          if (live.duration) payload.duration = live.duration;
+          payload.festivalTitle = live.festivalTitle;
+          payload.tourName = live.tourName;
+          payload.tourArtist = live.tourArtist;
+          payload.companyName = live.companyName;
+          payload.eventName = live.eventName;
+          payload.awardShowName = live.awardShowName;
+          payload.productionTitle = live.productionTitle;
+          payload.venue = live.venue;
+        } else if (exp.type === 'commercial') {
+          const c = exp.data as CommercialExperience;
+          payload.companyName = c.companyName;
+          payload.campaignTitle = c.campaignTitle;
+          payload.productionCompany = c.productionCompany;
+          if (c.startDate) payload.startDate = c.startDate;
+          if (c.duration) payload.duration = c.duration;
         }
+
+        await addExperience(payload as any);
       } catch (error) {
         console.error('Error saving experience:', error);
         throw error;
       }
     }
-  }, [experiences, addTvFilm, addMusicVideo, addLivePerformance, addCommercial]);
+  }, [experiences, addExperience]);
 
   const getCurrentExperience = useCallback((): ExperienceFormState | null => {
     if (currentEditingIndex === null) return null;

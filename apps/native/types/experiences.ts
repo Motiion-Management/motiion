@@ -20,16 +20,16 @@ export interface BaseExperience {
   mainTalent?: string[];
   choreographers?: string[];
   associateChoreographers?: string[];
+  directors?: string[];
 }
 
 // TV/Film specific
 export interface TvFilmExperience extends BaseExperience {
   type: 'tv-film';
-  projectType: 'television' | 'film';
   title: string;
   studio: string;
-  startDate: string;
-  duration: string;
+  startDate?: string;
+  duration?: string;
 }
 
 // Music Video specific
@@ -37,16 +37,16 @@ export interface MusicVideoExperience extends BaseExperience {
   type: 'music-video';
   songTitle: string;
   artists: string[];
-  startDate: string;
-  duration: string;
+  startDate?: string;
+  duration?: string;
 }
 
 // Live Performance specific
 export interface LivePerformanceExperience extends BaseExperience {
   type: 'live-performance';
   subtype: LivePerformanceEventType;
-  startDate: string;
-  duration: string;
+  startDate?: string;
+  duration?: string;
   // Dynamic fields based on event type
   festivalTitle?: string;
   tourName?: string;
@@ -64,8 +64,8 @@ export interface CommercialExperience extends BaseExperience {
   companyName: string;
   campaignTitle: string;
   productionCompany: string;
-  startDate: string;
-  duration: string;
+  startDate?: string;
+  duration?: string;
 }
 
 // Union type for all experiences
