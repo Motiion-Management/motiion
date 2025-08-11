@@ -26,3 +26,9 @@ export function useSharedUser() {
   }
   return context;
 }
+
+// Backwards-compatible helper to access only the user
+export function useCurrentUser() {
+  const { user } = useSharedUser();
+  return user;
+}

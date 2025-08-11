@@ -22,6 +22,6 @@ export function useProgressiveImage(storageId: Id<'_storage'> | undefined) {
 
   return {
     url: imageUrl,
-    isLoading: storageId && !imageUrl,
+    isLoading: !!storageId && !imageUrl,
   };
 }

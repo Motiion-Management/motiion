@@ -1,6 +1,7 @@
 import { type ClassValue, clsx } from 'clsx';
 import { toDate, differenceInYears, endOfToday } from 'date-fns';
-import { toast } from 'sonner';
+// Use native toast library in RN; avoid web-only 'sonner'
+import { toast } from 'sonner-native';
 import { extendTailwindMerge } from 'tailwind-merge';
 
 import { customFontSizes } from '~/lib/theme/fontSizes';
@@ -60,21 +61,18 @@ export function notEmpty<TValue>(value: TValue | null | undefined): value is TVa
 }
 
 export async function shareLink(shareTitle: string, shareText: string, link: string) {
-  const shareData = {
-    title: shareTitle,
-    text: shareText,
-    url: new URL(link.includes('://') ? link : `${window.location.origin}${link}`).toString(),
-  };
-
-  console.log('shareData', shareData);
   try {
-    if (navigator?.share && navigator.canShare(shareData)) {
-      await navigator.share(shareData);
-    } else {
-      throw new Error('Web Share API not supported');
-    }
-  } catch (e: any) {
-    toast.error(e.message || 'Failed to share link');
+    // Prefer React Native Share API when available to avoid window/navigator usage
+    // Dynamically import to keep this util portable
+    const { Share } = await import('react-native');
+    await Share.share({
+      title: shareTitle,
+      message: `${shareText} ${link}`.trim(),
+      url: link,
+    });
+  } catch (e: unknown) {
+    const message = e instanceof Error ? e.message : 'Failed to share link';
+    toast.error(message);
     console.error(e);
   }
 }

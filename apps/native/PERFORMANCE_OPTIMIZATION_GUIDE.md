@@ -8,7 +8,7 @@
 
 ```tsx
 // app/_layout.tsx or app/app/_layout.tsx
-import { SharedUserProvider } from '~/hooks/useSharedUser';
+import { SharedUserProvider } from '~/contexts/SharedUserContext';
 
 export default function AppLayout() {
   return <SharedUserProvider>{/* Your existing layout content */}</SharedUserProvider>;
@@ -19,7 +19,7 @@ export default function AppLayout() {
 
 ```tsx
 // In useOnboardingStatus.ts
-import { useSharedUser } from './useSharedUser';
+import { useSharedUser } from '~/contexts/SharedUserContext';
 
 export function useOnboardingStatus(overrideStep?: string) {
   const { isLoading: authLoading } = useAuthenticated();
@@ -31,7 +31,7 @@ export function useOnboardingStatus(overrideStep?: string) {
 
 ```tsx
 // In useOnboardingCursor.ts
-import { useSharedUser } from './useSharedUser';
+import { useSharedUser } from '~/contexts/SharedUserContext';
 
 export function useOnboardingCursor() {
   const segments = useSegments();
