@@ -23,13 +23,6 @@ export const zRepresentation = z.object(representationObj)
 export const resume = {
   // Legacy field - kept for migration
   experiences: z.array(zid('experiences')).optional(),
-  // New experience fields
-  experiencesTvFilm: z.array(zid('experiencesTvFilm')).optional(),
-  experiencesMusicVideos: z.array(zid('experiencesMusicVideos')).optional(),
-  experiencesLivePerformances: z
-    .array(zid('experiencesLivePerformances'))
-    .optional(),
-  experiencesCommercials: z.array(zid('experiencesCommercials')).optional(),
   uploads: zFileUploadObjectArray.optional(),
   skills: zSkills.optional()
 }

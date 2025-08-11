@@ -1,6 +1,15 @@
 import { z } from 'zod'
 import { clientZid as zid } from './clientZid'
-import { EVENT_TYPES as LIVE_EVENT_TYPES } from './experiencesLivePerformances'
+// Local enum of live performance subtypes to avoid per-type schema imports
+export const LIVE_EVENT_TYPES = [
+  'festival',
+  'tour',
+  'concert',
+  'corporate',
+  'award-show',
+  'theater',
+  'other'
+] as const
 
 // Discriminated union for client-side forms keyed by 'type'.
 
@@ -96,4 +105,3 @@ export const zExperiencesUnified = z.discriminatedUnion('type', [
   livePerformance,
   commercial
 ])
-

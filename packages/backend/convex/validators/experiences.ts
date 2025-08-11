@@ -12,6 +12,13 @@ export const EXPERIENCE_TYPES = [
   'commercial'
 ] as const
 
+export const EXPERIENCE_TITLE_MAP: Record<(typeof EXPERIENCE_TYPES)[number], string> = {
+  'tv-film': 'Television & Film',
+  'music-video': 'Music Videos',
+  'live-performance': 'Live Performances',
+  'commercial': 'Commercials'
+}
+
 export const LIVE_EVENT_SUBTYPES = [
   'festival',
   'tour',

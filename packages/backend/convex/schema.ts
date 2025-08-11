@@ -8,10 +8,6 @@ import { Rewards } from './validators/rewards'
 import { Agencies } from './validators/agencies'
 import { Agents } from './validators/agents'
 import { Experiences } from './validators/experiences'
-import { ExperiencesTvFilm } from './validators/experiencesTvFilm'
-import { ExperiencesMusicVideos } from './validators/experiencesMusicVideos'
-import { ExperiencesLivePerformances } from './validators/experiencesLivePerformances'
-import { ExperiencesCommercials } from './validators/experiencesCommercials'
 import { Training } from './validators/training'
 import { OnboardingFlows } from './validators/onboardingFlows'
 
@@ -29,21 +25,8 @@ export default defineSchema({
   users: Users.table.index('tokenId', ['tokenId']).searchIndex('search_user', {
     searchField: 'searchPattern'
   }),
-  // resume data - legacy table (kept for migration)
+  // unified experiences table
   experiences: Experiences.table.index('userId', ['userId']),
-
-  // new experience tables
-  experiencesTvFilm: ExperiencesTvFilm.table.index('by_userId', ['userId']),
-  experiencesMusicVideos: ExperiencesMusicVideos.table.index('by_userId', [
-    'userId'
-  ]),
-  experiencesLivePerformances: ExperiencesLivePerformances.table.index(
-    'by_userId',
-    ['userId']
-  ),
-  experiencesCommercials: ExperiencesCommercials.table.index('by_userId', [
-    'userId'
-  ]),
 
   // training (separate from experiences)
   training: Training.table.index('by_userId', ['userId']),
