@@ -1,5 +1,10 @@
 import { FormFieldConfig } from './convexSchemaToForm';
-import { COMMON_STUDIOS, COMMON_ROLES, DURATION_OPTIONS, LIVE_EVENT_TYPES } from '~/config/experienceTypes';
+import {
+  COMMON_STUDIOS,
+  COMMON_ROLES,
+  DURATION_OPTIONS,
+  LIVE_EVENT_TYPES,
+} from '~/config/experienceTypes';
 
 /**
  * Metadata for enhancing form fields with UI-specific configuration
@@ -116,6 +121,38 @@ export function enhanceFieldsWithMetadata(
   });
 }
 
+// Shared base metadata for Experiences; specific types can extend/override
+const baseExperienceMetadata: FormMetadata = {
+  startDate: {
+    component: 'date',
+    format: 'yyyy-MM-dd',
+    width: 'half',
+    group: ['details', 'basic', 'dates'],
+  },
+  endDate: {
+    component: 'date',
+    label: 'End Date',
+    placeholder: 'Select end date',
+    format: 'yyyy-MM-dd',
+    width: 'half',
+    group: ['details', 'basic', 'dates'],
+    disabledWhen: { field: 'startDate', isEmpty: true },
+  },
+  duration: {
+    component: 'picker',
+    helpText: 'Total time rehearsing & performing.',
+    options: DURATION_OPTIONS,
+    width: 'full',
+    group: ['details', 'basic', 'dates'],
+  },
+  roles: {
+    component: 'chips',
+    label: 'Role',
+    suggestions: COMMON_ROLES,
+    group: ['details', 'basic', 'quick'],
+  },
+};
+
 /**
  * TV/Film experience form metadata
  */
@@ -135,22 +172,14 @@ export const tvFilmMetadata: FormMetadata = {
     order: 6,
   },
   startDate: {
-    component: 'date',
+    ...baseExperienceMetadata.startDate,
     label: 'Premier Date',
     placeholder: 'Select start date',
-    format: 'yyyy-MM-dd',
-    width: 'half',
-    group: ['details', 'basic', 'dates'],
     order: 3,
   },
   duration: {
-    component: 'picker',
-    helpText:
-      'This is the total time you worked on this project, including rehearsals',
+    ...baseExperienceMetadata.duration,
     placeholder: 'How long did you work on this?',
-    options: DURATION_OPTIONS,
-    width: 'full',
-    group: ['details', 'basic', 'dates'],
     order: 2,
   },
   link: {
@@ -160,12 +189,8 @@ export const tvFilmMetadata: FormMetadata = {
     order: 8,
   },
   roles: {
-    component: 'chips',
-    label: 'Role',
+    ...baseExperienceMetadata.roles,
     placeholder: 'Start typing to add a role...',
-    // helpText: `Common roles: ${COMMON_ROLES.slice(0, 3).join(', ')}...`,
-    suggestions: COMMON_ROLES,
-    group: ['details', 'basic', 'quick'],
     order: 9,
   },
   mainTalent: {
@@ -215,22 +240,14 @@ export const musicVideoMetadata: FormMetadata = {
     helpText: 'All featured artists on the track',
   },
   startDate: {
-    component: 'date',
+    ...baseExperienceMetadata.startDate,
     label: 'Premier Date',
     placeholder: 'Select premier date',
-    format: 'yyyy-MM-dd',
-    width: 'half',
-    group: ['details', 'basic', 'dates'],
     order: 3,
   },
   duration: {
-    component: 'picker',
-    helpText:
-      'This is the total time you worked on this project, including rehearsals',
+    ...baseExperienceMetadata.duration,
     placeholder: 'Production duration',
-    options: DURATION_OPTIONS,
-    width: 'full',
-    group: ['details', 'basic', 'dates'],
     order: 2,
   },
   link: {
@@ -240,12 +257,9 @@ export const musicVideoMetadata: FormMetadata = {
     order: 7,
   },
   roles: {
-    component: 'chips',
-    label: 'Role',
+    ...baseExperienceMetadata.roles,
     placeholder: 'Add your roles',
     helpText: 'Your roles in the production',
-    suggestions: COMMON_ROLES,
-    group: ['details', 'basic', 'quick'],
     order: 8,
   },
   // Team
@@ -283,8 +297,8 @@ export const musicVideoMetadata: FormMetadata = {
 export const livePerformanceMetadata: FormMetadata = {
   subtype: {
     component: 'picker',
+    label: 'Event Type',
     placeholder: 'Select event type',
-    helpText: 'Type of live performance',
     group: ['details', 'basic', 'quick'],
     order: 1,
     options: LIVE_EVENT_TYPES,
@@ -345,42 +359,28 @@ export const livePerformanceMetadata: FormMetadata = {
     order: 2,
   },
   startDate: {
-    component: 'date',
+    ...baseExperienceMetadata.startDate,
     label: 'Start Date',
     labelWhen: { field: 'subtype', equals: 'award-show', label: 'Date' },
     placeholder: 'Select start date',
-    format: 'yyyy-MM-dd',
-    width: 'half',
-    group: ['details', 'basic', 'dates'],
     order: 4,
   },
   endDate: {
-    component: 'date',
-    label: 'End Date',
-    placeholder: 'Select end date',
-    format: 'yyyy-MM-dd',
-    width: 'half',
-    group: ['details', 'basic', 'dates'],
+    ...baseExperienceMetadata.endDate,
     order: 5,
-    disabledWhen: { field: 'startDate', isEmpty: true },
-    showWhen: { field: 'subtype', in: ['festival', 'tour', 'concert', 'corporate', 'theater', 'other'] },
+    showWhen: {
+      field: 'subtype',
+      in: ['festival', 'tour', 'concert', 'corporate', 'theater', 'other'],
+    },
   },
   duration: {
-    component: 'picker',
-    helpText:
-      'This is the total time you worked on this project, including rehearsals',
+    ...baseExperienceMetadata.duration,
     placeholder: 'Performance duration',
-    options: DURATION_OPTIONS,
-    width: 'full',
-    group: ['details', 'basic', 'dates'],
     order: 3,
   },
   roles: {
-    component: 'chips',
-    label: 'Role',
+    ...baseExperienceMetadata.roles,
     placeholder: 'Add your roles',
-    suggestions: COMMON_ROLES,
-    group: ['details', 'basic', 'quick'],
     order: 6,
   },
   // Team
@@ -427,22 +427,14 @@ export const commercialMetadata: FormMetadata = {
     helpText: 'Company that produced the commercial',
   },
   startDate: {
-    component: 'date',
+    ...baseExperienceMetadata.startDate,
     label: 'Premier Date',
     placeholder: 'Select premier date',
-    format: 'yyyy-MM-dd',
-    width: 'half',
-    group: ['details', 'basic', 'dates'],
     order: 3,
   },
   duration: {
-    component: 'picker',
-    helpText:
-      'This is the total time you worked on this project, including rehearsals',
+    ...baseExperienceMetadata.duration,
     placeholder: 'Production duration',
-    options: DURATION_OPTIONS,
-    width: 'full',
-    group: ['details', 'basic', 'dates'],
     order: 2,
   },
   link: {
@@ -452,11 +444,8 @@ export const commercialMetadata: FormMetadata = {
     order: 7,
   },
   roles: {
-    component: 'chips',
-    label: 'Role',
+    ...baseExperienceMetadata.roles,
     placeholder: 'Add your roles',
-    suggestions: COMMON_ROLES,
-    group: ['details', 'basic', 'quick'],
     order: 7,
   },
   // Team
