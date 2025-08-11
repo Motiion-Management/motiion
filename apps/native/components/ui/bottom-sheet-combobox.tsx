@@ -1,5 +1,5 @@
 import React, { useState, useCallback, useMemo, useRef } from 'react';
-import { FlatList, Pressable, View } from 'react-native';
+import { FlatList, Keyboard, Pressable, View } from 'react-native';
 
 import { Input } from '~/components/ui/input';
 import { Sheet, useSheetState } from '~/components/ui/sheet';
@@ -69,6 +69,8 @@ export function BottomSheetCombobox<T = any>({
 
   const handleSheetOpen = useCallback(() => {
     if (disabled) return;
+    // Ensure any focused TextInput is blurred before opening the sheet
+    Keyboard.dismiss();
     // Use prop value if provided, otherwise use internal state
     const currentValue = value !== undefined ? value : internalValue;
     setTempValue(currentValue || defaultValue || data?.[0]?.value);

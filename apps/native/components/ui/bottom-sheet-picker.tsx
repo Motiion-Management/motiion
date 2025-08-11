@@ -1,5 +1,5 @@
 import React, { useState, useCallback, useMemo } from 'react';
-import { Pressable, View } from 'react-native';
+import { Keyboard, Pressable, View } from 'react-native';
 
 import { Input } from '~/components/ui/input';
 import { Sheet, useSheetState } from '~/components/ui/sheet';
@@ -48,6 +48,8 @@ export function BottomSheetPicker<T = any>({
 
   const handleSheetOpen = useCallback(() => {
     if (disabled) return;
+    // Ensure any focused TextInput is blurred before opening
+    Keyboard.dismiss();
     setTempValue(value || defaultValue || data[0]?.value);
     sheetState.open();
   }, [value, defaultValue, data, sheetState, disabled]);
