@@ -2,7 +2,7 @@ import { useRef, useCallback, useEffect } from 'react';
 
 interface SyncTask {
   id: string;
-  action: () => Promise;
+  action: () => Promise<void>;
   retries: number;
   maxRetries: number;
 }
@@ -55,7 +55,7 @@ export function useBackgroundSync() {
 
   // Queue a background task
   const queueTask = useCallback(
-    (action: () => Promise, options: { id?: string; maxRetries?: number } = {}) => {
+    (action: () => Promise<void>, options: { id?: string; maxRetries?: number } = {}) => {
       const task: SyncTask = {
         id: options.id || `task-${Date.now()}`,
         action,

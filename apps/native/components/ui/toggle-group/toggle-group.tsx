@@ -7,11 +7,12 @@ import { TextClassContext } from '~/components/ui/text';
 import { toggleTextVariants, toggleVariants } from '~/components/ui/toggle';
 import { cn } from '~/lib/utils';
 
-const ToggleGroupContext = React.createContext<VariantProps | null>(null);
+type ToggleVariantProps = VariantProps<typeof toggleVariants>;
+const ToggleGroupContext = React.createContext<ToggleVariantProps | null>(null);
 
 const ToggleGroup = React.forwardRef<
   ToggleGroupPrimitive.RootRef,
-  ToggleGroupPrimitive.RootProps & VariantProps
+  ToggleGroupPrimitive.RootProps & ToggleVariantProps
 >(({ className, variant, size, children, ...props }, ref) => (
   <ToggleGroupPrimitive.Root
     ref={ref}
@@ -35,7 +36,7 @@ function useToggleGroupContext() {
 
 const ToggleGroupItem = React.forwardRef<
   ToggleGroupPrimitive.ItemRef,
-  ToggleGroupPrimitive.ItemProps & VariantProps
+  ToggleGroupPrimitive.ItemProps & ToggleVariantProps
 >(({ className, children, variant, size, ...props }, ref) => {
   const context = useToggleGroupContext();
   const { value } = ToggleGroupPrimitive.useRootContext();
@@ -68,13 +69,13 @@ const ToggleGroupItem = React.forwardRef<
 
 ToggleGroupItem.displayName = ToggleGroupPrimitive.Item.displayName;
 
+type LucideIconProps = LucideIcon extends (props: infer P) => any ? P : never;
+
 function ToggleGroupIcon({
   className,
   icon: Icon,
   ...props
-}: React.ComponentPropsWithoutRef & {
-  icon: LucideIcon;
-}) {
+}: LucideIconProps & { icon: LucideIcon }) {
   const textClass = React.useContext(TextClassContext);
   return <Icon className={cn(textClass, className)} {...props} />;
 }

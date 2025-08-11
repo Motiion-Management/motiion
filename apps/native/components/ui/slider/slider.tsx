@@ -9,7 +9,7 @@ function Slider({
   minimumTrackTintColor,
   maximumTrackTintColor,
   ...props
-}: React.ComponentPropsWithoutRef) {
+}: React.ComponentPropsWithoutRef<typeof RNSlider>) {
   const { colors } = useColorScheme();
   return (
     <RNSlider

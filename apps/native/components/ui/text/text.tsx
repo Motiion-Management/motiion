@@ -53,7 +53,8 @@ const textVariants = cva('text-text-default font-sans', {
 
 const TextClassContext = React.createContext<string | undefined>(undefined);
 
-export type TextProps = React.ComponentPropsWithoutRef & VariantProps;
+export type TextProps = React.ComponentPropsWithoutRef<typeof UITextView> &
+  VariantProps<typeof textVariants>;
 
 function Text({ className, variant, color, ...props }: TextProps) {
   const textClassName = React.useContext(TextClassContext);

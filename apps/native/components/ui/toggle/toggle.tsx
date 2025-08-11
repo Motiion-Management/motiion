@@ -45,9 +45,10 @@ const toggleTextVariants = cva('text-sm font-medium text-foreground web:transiti
   },
 });
 
-type ToggleProps = React.ComponentPropsWithoutRef & VariantProps;
+type ToggleProps = React.ComponentPropsWithoutRef<typeof Pressable> &
+  VariantProps<typeof toggleVariants>;
 
-const Toggle = React.forwardRef<React.ElementRef, ToggleProps>(
+const Toggle = React.forwardRef<React.ElementRef<typeof Pressable>, ToggleProps>(
   ({ className, variant, size, ...props }, ref) => {
     return (
       <TextClassContext.Provider

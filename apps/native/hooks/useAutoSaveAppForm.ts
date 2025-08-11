@@ -5,20 +5,22 @@ import { api } from '@packages/backend/convex/_generated/api';
 import { useMutation, useQuery } from 'convex/react';
 import { useUser } from './useUser';
 
-type UseAppFormOptions = Parameters[0];
+type UseAppFormOptions = Parameters<typeof useAppForm>[0];
 
 interface AutoSaveAppFormOptions<T> extends UseAppFormOptions {
   autoSave?: boolean | AutoSaveConfig;
   saveDebounceMs?: number;
   showSaveIndicators?: boolean;
-  fieldMapping?: Record;
+  fieldMapping?: Record<string, string>;
 }
 
 /**
  * Enhanced version of useAppForm with auto-save functionality
  * Automatically saves form data to Convex as users type
  */
-export function useAutoSaveAppForm<T extends Record>(options: AutoSaveAppFormOptions) {
+export function useAutoSaveAppForm<T extends Record<string, any>>(
+  options: AutoSaveAppFormOptions<T>
+) {
   const {
     autoSave = true,
     saveDebounceMs = 1000,
@@ -74,7 +76,7 @@ export function useAutoSaveAppForm<T extends Record>(options: AutoSaveAppFormOpt
     if (!autoSave) return;
 
     const currentValues = form.state.values as T;
-    const changedFields: Record = {};
+    const changedFields: Record<string, any> = {};
 
     // Find changed fields
     Object.keys(currentValues).forEach((key) => {
@@ -106,8 +108,8 @@ export function useAutoSaveAppForm<T extends Record>(options: AutoSaveAppFormOpt
  * Extract form-relevant values from user object
  * Maps nested attributes to flat form fields
  */
-function extractFormValues(user: any, fieldNames: string[]): Record {
-  const values: Record = {};
+function extractFormValues(user: any, fieldNames: string[]): Record<string, any> {
+  const values: Record<string, any> = {};
 
   fieldNames.forEach((fieldName) => {
     // Check top-level fields

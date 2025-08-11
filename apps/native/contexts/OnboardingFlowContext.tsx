@@ -24,7 +24,7 @@ export interface OnboardingStep {
 export interface DecisionPoint {
   stepId: string;
   field: string;
-  branches: Array;
+  branches: Array<{ value: string; nextStep: string }>;
 }
 
 export interface OnboardingFlow {
@@ -38,11 +38,11 @@ interface OnboardingFlowHelpers {
   getStepRoute: (stepId: string) => string | undefined;
   getStepIdFromRoute: (route: string) => string | undefined;
   getStepIndex: (stepId: string) => number;
-  getNextStep: (currentStepId: string, userData: Record) => OnboardingStep | null;
+  getNextStep: (currentStepId: string, userData: Record<string, any>) => OnboardingStep | null;
   getPreviousStep: (currentStepId: string) => OnboardingStep | null;
-  isStepVisible: (step: OnboardingStep, userData: Record) => boolean;
-  getVisibleSteps: (userData: Record) => OnboardingStep[];
-  calculateProgress: (currentStepId: string, userData: Record) => number;
+  isStepVisible: (step: OnboardingStep, userData: Record<string, any>) => boolean;
+  getVisibleSteps: (userData: Record<string, any>) => OnboardingStep[];
+  calculateProgress: (currentStepId: string, userData: Record<string, any>) => number;
 }
 
 interface OnboardingFlowContextValue extends OnboardingFlowHelpers {
@@ -129,7 +129,10 @@ export function OnboardingFlowProvider({
       return flow?.steps.findIndex((step) => step.id === stepId) ?? -1;
     };
 
-    const getNextStep = (currentStepId: string, userData: Record): OnboardingStep | null => {
+    const getNextStep = (
+      currentStepId: string,
+      userData: Record<string, any>
+    ): OnboardingStep | null => {
       if (!flow) return null;
 
       const currentIndex = flow.steps.findIndex((step) => step.id === currentStepId);
@@ -158,19 +161,22 @@ export function OnboardingFlowProvider({
       return flow.steps[currentIndex - 1];
     };
 
-    const isStepVisible = (step: OnboardingStep, userData: Record): boolean => {
+    const isStepVisible = (step: OnboardingStep, userData: Record<string, any>): boolean => {
       if (!step.conditional) return true;
 
       const fieldValue = userData[step.conditional.field];
       return fieldValue === step.conditional.value ? step.conditional.show : !step.conditional.show;
     };
 
-    const getVisibleSteps = (userData: Record): OnboardingStep[] => {
+    const getVisibleSteps = (userData: Record<string, any>): OnboardingStep[] => {
       if (!flow) return [];
       return flow.steps.filter((step) => isStepVisible(step, userData));
     };
 
-    const calculateProgress = (currentStepId: string, userData: Record): number => {
+    const calculateProgress = (
+      currentStepId: string,
+      userData: Record<string, any>
+    ): number => {
       const visibleSteps = getVisibleSteps(userData);
       const currentIndex = visibleSteps.findIndex((step) => step.id === currentStepId);
       if (currentIndex === -1 || visibleSteps.length === 0) return 0;

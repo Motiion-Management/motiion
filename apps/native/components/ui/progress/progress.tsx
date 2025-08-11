@@ -13,8 +13,8 @@ import { cn } from '~/lib/cn';
 const DEFAULT_MAX = 100;
 
 const ProgressIndicator = React.forwardRef<
-  React.ElementRef,
-  React.ComponentPropsWithoutRef & {
+  React.ElementRef<typeof View>,
+  React.ComponentPropsWithoutRef<typeof View> & {
     value?: number;
     max?: number;
     getValueLabel?: (value: number, max: number) => string;
