@@ -124,7 +124,7 @@ export const tvFilmMetadata: FormMetadata = {
     placeholder: 'Project title',
     // helpText: 'Use the official title as it appears in credits',
     group: ['details', 'basic', 'quick'],
-    order: 2,
+    order: 1,
   },
   studio: {
     component: 'combobox',
@@ -132,7 +132,7 @@ export const tvFilmMetadata: FormMetadata = {
     suggestions: COMMON_STUDIOS,
     helpText: 'Major studio or production company',
     group: ['details', 'basic', 'quick'],
-    order: 3,
+    order: 6,
   },
   startDate: {
     component: 'date',
@@ -141,7 +141,7 @@ export const tvFilmMetadata: FormMetadata = {
     format: 'yyyy-MM-dd',
     width: 'half',
     group: ['details', 'basic', 'dates'],
-    order: 4,
+    order: 3,
   },
   duration: {
     component: 'picker',
@@ -151,13 +151,13 @@ export const tvFilmMetadata: FormMetadata = {
     options: DURATION_OPTIONS,
     width: 'full',
     group: ['details', 'basic', 'dates'],
-    order: 6,
+    order: 2,
   },
   link: {
     placeholder: 'Paste link for project visual...',
     helpText: 'Link to trailer, IMDB, or official page',
     group: ['details', 'basic', 'media'],
-    order: 6,
+    order: 8,
   },
   roles: {
     component: 'chips',
@@ -166,7 +166,7 @@ export const tvFilmMetadata: FormMetadata = {
     // helpText: `Common roles: ${COMMON_ROLES.slice(0, 3).join(', ')}...`,
     suggestions: COMMON_ROLES,
     group: ['details', 'basic', 'quick'],
-    order: 7,
+    order: 9,
   },
   mainTalent: {
     component: 'chips',
@@ -203,14 +203,14 @@ export const tvFilmMetadata: FormMetadata = {
 export const musicVideoMetadata: FormMetadata = {
   songTitle: {
     group: ['details', 'basic', 'quick'],
-    order: 2,
+    order: 1,
     placeholder: 'Enter the song title',
     helpText: 'Official song name',
   },
   artists: {
     component: 'chips',
     group: ['details', 'basic', 'quick'],
-    order: 3,
+    order: 6,
     placeholder: 'Add artist names',
     helpText: 'All featured artists on the track',
   },
@@ -221,7 +221,7 @@ export const musicVideoMetadata: FormMetadata = {
     format: 'yyyy-MM-dd',
     width: 'half',
     group: ['details', 'basic', 'dates'],
-    order: 4,
+    order: 3,
   },
   duration: {
     component: 'picker',
@@ -231,13 +231,13 @@ export const musicVideoMetadata: FormMetadata = {
     options: DURATION_OPTIONS,
     width: 'full',
     group: ['details', 'basic', 'dates'],
-    order: 6,
+    order: 2,
   },
   link: {
     placeholder: 'YouTube, Vevo, or official link',
     helpText: 'Link to the music video',
     group: ['details', 'basic', 'media'],
-    order: 6,
+    order: 7,
   },
   roles: {
     component: 'chips',
@@ -246,7 +246,7 @@ export const musicVideoMetadata: FormMetadata = {
     helpText: 'Your roles in the production',
     suggestions: COMMON_ROLES,
     group: ['details', 'basic', 'quick'],
-    order: 7,
+    order: 8,
   },
   // Team
   mainTalent: {
@@ -294,12 +294,14 @@ export const livePerformanceMetadata: FormMetadata = {
     group: ['details', 'basic', 'quick'],
     helpText: 'e.g., Coachella, Glastonbury',
     showWhen: { field: 'subtype', equals: 'festival' },
+    order: 2,
   },
   tourName: {
     placeholder: 'Enter tour name',
     group: ['details', 'basic', 'quick'],
     helpText: 'Official tour title',
     showWhen: { field: 'subtype', equals: 'tour' },
+    order: 2,
   },
   tourArtist: {
     placeholder: 'Enter artist name',
@@ -318,6 +320,7 @@ export const livePerformanceMetadata: FormMetadata = {
     group: ['details', 'basic', 'quick'],
     helpText: 'Name of the specific event',
     showWhen: { field: 'subtype', equals: ['corporate', 'other'] },
+    order: 2,
   },
   awardShowName: {
     label: 'Award Show Title',
@@ -325,18 +328,21 @@ export const livePerformanceMetadata: FormMetadata = {
     helpText: 'e.g., Grammy Awards, MTV VMAs',
     group: ['details', 'basic', 'quick'],
     showWhen: { field: 'subtype', equals: 'award-show' },
+    order: 2,
   },
   productionTitle: {
     placeholder: 'Enter production title',
     helpText: 'Theater or stage production name',
     group: ['details', 'basic', 'quick'],
     showWhen: { field: 'subtype', equals: 'theater' },
+    order: 2,
   },
   venue: {
     placeholder: 'Enter venue name',
     helpText: 'Performance venue or location',
     group: ['details', 'basic', 'quick'],
     showWhen: { field: 'subtype', equals: ['concert', 'theater'] },
+    order: 2,
   },
   startDate: {
     component: 'date',
@@ -367,7 +373,7 @@ export const livePerformanceMetadata: FormMetadata = {
     options: DURATION_OPTIONS,
     width: 'full',
     group: ['details', 'basic', 'dates'],
-    order: 6,
+    order: 3,
   },
   roles: {
     component: 'chips',
@@ -413,6 +419,7 @@ export const commercialMetadata: FormMetadata = {
     placeholder: 'Enter campaign or commercial title',
     group: ['details', 'basic', 'quick'],
     helpText: 'Campaign name or commercial title',
+    order: 1,
   },
   productionCompany: {
     placeholder: 'Enter production company',
@@ -426,7 +433,7 @@ export const commercialMetadata: FormMetadata = {
     format: 'yyyy-MM-dd',
     width: 'half',
     group: ['details', 'basic', 'dates'],
-    order: 4,
+    order: 3,
   },
   duration: {
     component: 'picker',
@@ -436,13 +443,13 @@ export const commercialMetadata: FormMetadata = {
     options: DURATION_OPTIONS,
     width: 'full',
     group: ['details', 'basic', 'dates'],
-    order: 6,
+    order: 2,
   },
   link: {
     placeholder: 'Link to commercial',
     helpText: 'YouTube or official commercial link',
     group: ['details', 'basic', 'media'],
-    order: 6,
+    order: 7,
   },
   roles: {
     component: 'chips',
