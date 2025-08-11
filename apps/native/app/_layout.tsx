@@ -23,7 +23,7 @@ export {
 
 export default function RootLayout() {
   useInitialAndroidBarSync();
-  const { colorScheme, isDarkColorScheme } = useColorScheme();
+  const { isDarkColorScheme } = useColorScheme();
   const alertRef = React.useRef<AlertRef>(null);
 
   return (

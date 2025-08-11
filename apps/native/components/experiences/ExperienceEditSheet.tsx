@@ -148,7 +148,7 @@ export function ExperienceEditSheet({
 
   return (
     <Sheet isOpened={isOpen} label={getTitle()} onIsOpenedChange={onOpenChange}>
-      <View className="h-[82vh]">
+      <View className="h-[80vh]">
         {/* Tabs */}
         <Tabs tabs={TABS} activeTab={activeTab} onTabChange={setActiveTab} />
 

@@ -82,8 +82,6 @@ export function BottomSheetCombobox<T = any>({
     sheetState.close();
   }, [sheetState]);
 
-  
-
   const displayValue = useMemo(() => {
     const currentValue = value !== undefined ? value : internalValue;
     if (!currentValue) return '';
@@ -192,7 +190,7 @@ export function BottomSheetCombobox<T = any>({
             sheetState.close();
           }
         }}>
-        <View className="h-[82vh] px-4">
+        <View className="h-[80vh] px-4">
           <View className="flex-1">
             <Input
               ref={searchInputRef}
