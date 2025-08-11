@@ -1,4 +1,4 @@
-import React, { useState, useCallback, useEffect, useMemo } from 'react';
+import React, { useState, useCallback, useEffect, useMemo, useRef } from 'react';
 import { View, Platform } from 'react-native';
 import { KeyboardAwareScrollView, KeyboardStickyView } from 'react-native-keyboard-controller';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -41,15 +41,15 @@ export function ExperienceEditSheet({
   const [experienceType, setExperienceType] = useState<ExperienceType | undefined>(
     experience?.type
   );
-  const [formData, setFormData] = useState<Partial<Experience>>(experience?.data || {});
-  // Single-form approach: all fields live in formData via ConvexDynamicForm
+  const formDataRef = useRef<Partial<Experience>>(experience?.data || {});
+  // Single-form approach: form data buffered in ref to avoid parent re-renders
 
   // Reset state when sheet opens with new experience
   useEffect(() => {
     if (isOpen) {
       setActiveTab('details');
       setExperienceType(experience?.type);
-      setFormData(experience?.data || {});
+      formDataRef.current = experience?.data || {};
       // formData is authoritative; team fields are included in dynamic form
     }
   }, [isOpen, experience]);
@@ -62,7 +62,7 @@ export function ExperienceEditSheet({
         setExperienceType(value);
         // Clear form data when changing type for new experiences
         if (isNew) {
-          setFormData({ type: value });
+          formDataRef.current = { type: value } as Partial<Experience>;
         }
       }
     },
@@ -74,7 +74,7 @@ export function ExperienceEditSheet({
   }, [onOpenChange]);
 
   const handleFormChange = useCallback((data: Partial<Experience>) => {
-    setFormData((prev) => ({ ...prev, ...data }));
+    formDataRef.current = { ...formDataRef.current, ...data };
   }, []);
 
   // No separate team change; dynamic form updates formData for both steps
@@ -89,7 +89,7 @@ export function ExperienceEditSheet({
     if (!experienceType) return;
 
     const completeData: Experience = {
-      ...formData,
+      ...formDataRef.current,
       type: experienceType,
     } as Experience;
 
@@ -105,7 +105,7 @@ export function ExperienceEditSheet({
 
     onSave(experienceToSave);
     handleClose();
-  }, [formData, experienceType, experience, onSave, handleClose]);
+  }, [experienceType, experience, onSave, handleClose]);
 
   const checkExperienceComplete = (data: Partial<Experience>): boolean => {
     // Basic validation - check if key fields are filled
@@ -138,6 +138,13 @@ export function ExperienceEditSheet({
   const currentGroups = useMemo(() => {
     return activeTab === 'details' ? ['details', 'basic', 'dates', 'media'] : ['team'];
   }, [activeTab]);
+
+  // Stable memoized initial data for the dynamic form (must not be created conditionally)
+  const initialFormData = useMemo(
+    () => ({ ...formDataRef.current, type: experienceType }),
+    [isOpen, experienceType, experience?.id]
+  );
+  const resetKey = `${isOpen}|${experience?.id ?? 'new'}|${experienceType ?? ''}`;
 
   return (
     <Sheet isOpened={isOpen} label={getTitle()} onIsOpenedChange={onOpenChange}>
@@ -172,7 +179,8 @@ export function ExperienceEditSheet({
                 <ConvexDynamicForm
                   schema={schema}
                   metadata={metadata}
-                  initialData={formData}
+                  initialData={initialFormData}
+                  resetKey={resetKey}
                   onChange={handleFormChange}
                   groups={currentGroups}
                   exclude={['userId', 'private', 'type']}

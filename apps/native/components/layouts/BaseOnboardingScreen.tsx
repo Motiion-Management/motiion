@@ -47,7 +47,6 @@ export const BaseOnboardingScreen = ({
         {/* Logout button in top right */}
 
         <KeyboardAwareScrollView
-          // bottomOffset={Platform.select({ ios: 8 })}
           bounces={false}
           disableScrollOnKeyboardHide
           contentInsetAdjustmentBehavior="never"

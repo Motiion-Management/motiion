@@ -27,6 +27,11 @@ interface ConvexDynamicFormProps {
   overrides?: Record<string, Partial<FormFieldConfig>>;
   debounceMs?: number;
   groups?: string[]; // Filter fields by group
+  /**
+   * When this key changes, the form re-applies initialData even if fields shape is the same.
+   * Useful for reopening sheets or switching between items of the same type.
+   */
+  resetKey?: string | number | boolean;
 }
 
 /**
@@ -44,6 +49,7 @@ export const ConvexDynamicForm = React.memo(
     overrides,
     debounceMs = 300,
     groups,
+    resetKey,
   }: ConvexDynamicFormProps) => {
     // Safety check for undefined schema
     if (!schema) {
@@ -196,23 +202,24 @@ export const ConvexDynamicForm = React.memo(
       return handler;
     }, [debounceMs]);
 
-    // Initialize values from initialData once per fields shape change
-  const fieldsKey = useMemo(() => fields.map((f) => f.name).join('|'), [fields]);
-  const initializedRef = useRef<string | null>(null);
-  useEffect(() => {
-    if (initializedRef.current === fieldsKey) return;
-    // Set initial values from provided initialData without recreating the form
-    if (initialData && typeof initialData === 'object') {
-      for (const f of fields) {
-        const v = (initialData as any)[f.name];
-        if (v !== undefined) {
-          // @ts-ignore tanstack typed generic
-          (form as any).setFieldValue(f.name as any, v);
+    // Initialize values from initialData once per fields shape or resetKey change
+    const fieldsKey = useMemo(() => fields.map((f) => f.name).join('|'), [fields]);
+    const initializedRef = useRef<string | null>(null);
+    useEffect(() => {
+      const key = `${fieldsKey}|${String(resetKey ?? '')}`;
+      if (initializedRef.current === key) return;
+      // Set initial values from provided initialData without recreating the form
+      if (initialData && typeof initialData === 'object') {
+        for (const f of fields) {
+          const v = (initialData as any)[f.name];
+          if (v !== undefined) {
+            // @ts-ignore tanstack typed generic
+            (form as any).setFieldValue(f.name as any, v);
+          }
         }
       }
-    }
-    initializedRef.current = fieldsKey;
-  }, [fieldsKey, fields, form, initialData]);
+      initializedRef.current = key;
+    }, [fieldsKey, fields, form, initialData, resetKey]);
 
   // Keep discriminated union branch in sync with external initialData changes (e.g., type selected outside)
   useEffect(() => {
