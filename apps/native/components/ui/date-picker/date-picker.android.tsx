@@ -11,6 +11,7 @@ type AndroidDatePickerProps = React.ComponentProps<typeof DateTimePicker> & {
   // Optional custom display formatters
   formatDate?: (date: Date) => string
   formatTime?: (date: Date) => string
+  disabled?: boolean
   // Deprecated material label props kept for backward compatibility (no-op now)
   materialDateClassName?: string
   materialDateLabel?: string
@@ -22,6 +23,7 @@ type AndroidDatePickerProps = React.ComponentProps<typeof DateTimePicker> & {
 
 export function DatePicker(props: AndroidDatePickerProps) {
   const show = (currentMode: 'time' | 'date') => () => {
+    if (props.disabled) return
     DateTimePickerAndroid.open({
       value: props.value,
       onChange: props.onChange,
@@ -53,10 +55,11 @@ export function DatePicker(props: AndroidDatePickerProps) {
     <View className="flex-row gap-2.5">
       {props.mode.includes('date') && (
         <View className={cn('flex-1', props.materialDateClassName)}>
-          <Pressable onPress={show('date')}>
+          <Pressable onPress={show('date')} disabled={props.disabled}>
             <Input
               value={formatDate(props.value as Date)}
               readOnly
+              editable={!props.disabled}
               rightView={<Calendar className="text-text-default opacity-50" size={20} />}
             />
           </Pressable>
@@ -64,10 +67,11 @@ export function DatePicker(props: AndroidDatePickerProps) {
       )}
       {props.mode.includes('time') && (
         <View className={cn('flex-1', props.materialTimeClassName)}>
-          <Pressable onPress={show('time')}>
+          <Pressable onPress={show('time')} disabled={props.disabled}>
             <Input
               value={formatTime(props.value as Date)}
               readOnly
+              editable={!props.disabled}
               rightView={<Calendar className="text-text-default opacity-50" size={20} />}
             />
           </Pressable>

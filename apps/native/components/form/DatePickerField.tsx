@@ -16,6 +16,7 @@ export interface DatePickerFieldProps {
   minimumDate?: Date;
   maximumDate?: Date;
   helpText?: string;
+  disabled?: boolean;
   // Optional custom display formatters
   formatDate?: (date: Date) => string;
   formatTime?: (date: Date) => string;
@@ -26,6 +27,7 @@ export const DatePickerField = ({
   minimumDate,
   maximumDate,
   helpText,
+  disabled,
   formatDate,
   formatTime,
 }: DatePickerFieldProps) => {
@@ -46,6 +48,7 @@ export const DatePickerField = ({
       <DatePicker
         value={field.state.value || new Date()}
         mode="date"
+        disabled={disabled}
         maximumDate={maximumDate}
         minimumDate={minimumDate}
         formatDate={formatDate}

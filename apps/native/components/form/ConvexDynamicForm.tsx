@@ -261,7 +261,7 @@ export const ConvexDynamicForm = React.memo(
           });
 
       // Apply conditional visibility using current form values
-      return byGroup.filter((field) => {
+      const visible = byGroup.filter((field) => {
         const cond = field.metadata?.showWhen;
         if (!cond) return true;
         const current = (values as any)?.[cond.field];
@@ -276,7 +276,68 @@ export const ConvexDynamicForm = React.memo(
         }
         return true;
       });
+
+      // Apply conditional disabling via metadata.disabledWhen and conditional label via labelWhen
+      return visible.map((field) => {
+        const disabledWhen = (field.metadata as any)?.disabledWhen;
+        const labelWhen = (field.metadata as any)?.labelWhen;
+        let shouldDisable = false;
+        if (disabledWhen) {
+          const current = (values as any)?.[disabledWhen.field];
+          if (disabledWhen.isEmpty) {
+            shouldDisable = current == null || current === '';
+          } else if (disabledWhen.equals !== undefined) {
+            if (Array.isArray(disabledWhen.equals)) {
+              shouldDisable = !disabledWhen.equals.includes(current);
+            } else {
+              shouldDisable = current !== disabledWhen.equals;
+            }
+          }
+        }
+
+        const labelOverridden = (() => {
+          if (!labelWhen) return undefined;
+          const labelCurrent = (values as any)?.[labelWhen.field];
+          if (labelWhen.equals !== undefined) {
+            if (Array.isArray(labelWhen.equals)) {
+              if (labelWhen.equals.includes(labelCurrent)) return labelWhen.label;
+            } else if (labelCurrent === labelWhen.equals) {
+              return labelWhen.label;
+            }
+          }
+          return undefined;
+        })();
+
+        return {
+          ...field,
+          metadata: {
+            ...(field.metadata as any),
+            disabled: shouldDisable ? true : field.metadata?.disabled,
+          } as any,
+          label: labelOverridden ?? field.label,
+        } as any;
+      });
     }, [fields, groups, values]);
+
+    // Ensure endDate is not before startDate and default endDate to startDate when empty
+    useEffect(() => {
+      const names = filteredFields.map((f) => f.name);
+      if (!names.includes('startDate') || !names.includes('endDate')) return;
+      const sd: any = (values as any)?.startDate;
+      const ed: any = (values as any)?.endDate;
+      if (!sd) return;
+      const sdDate = sd instanceof Date ? sd : new Date(sd);
+      if (!ed) {
+        // @ts-ignore tanstack typed generic
+        (form as any).setFieldValue('endDate' as any, sdDate);
+        return;
+      }
+      const edDate = ed instanceof Date ? ed : new Date(ed);
+      if (edDate < sdDate) {
+        // @ts-ignore tanstack typed generic
+        (form as any).setFieldValue('endDate' as any, sdDate);
+      }
+    }, [filteredFields, values, form]);
 
     // Sort fields by order if specified
     const sortedFields = useMemo(() => {

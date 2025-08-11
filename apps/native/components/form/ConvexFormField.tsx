@@ -69,6 +69,7 @@ export function ConvexFormField({ field, form }: ConvexFormFieldProps) {
                   label={field.label}
                   placeholder={field.placeholder || `Select ${field.label.toLowerCase()}`}
                   data={(field.options || []) as any}
+                  helpText={field.helpText}
                 />
               ) : (
                 <fieldApi.SelectField
@@ -134,7 +135,11 @@ export function ConvexFormField({ field, form }: ConvexFormFieldProps) {
           <form.AppField
             name={field.name}
             children={(fieldApi: any) => (
-              <fieldApi.DatePickerField label={field.label} placeholder={field.placeholder} />
+              <fieldApi.DatePickerField
+                label={field.label}
+                placeholder={field.placeholder}
+                disabled={isReadOnly || isDisabled}
+              />
             )}
           />
         );

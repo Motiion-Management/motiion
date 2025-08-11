@@ -40,6 +40,18 @@ export interface FieldMetadata {
   // Field state
   readOnly?: boolean;
   disabled?: boolean;
+  // Conditional disabling based on other field values
+  disabledWhen?: {
+    field: string;
+    isEmpty?: boolean;
+    equals?: any | any[];
+  };
+  // Conditional label override
+  labelWhen?: {
+    field: string;
+    equals?: any | any[];
+    label: string;
+  };
 }
 
 export type FormMetadata = Record<string, FieldMetadata>;
@@ -137,9 +149,9 @@ export const tvFilmMetadata: FormMetadata = {
       'This is the total time you worked on this project, including rehearsals',
     placeholder: 'How long did you work on this?',
     options: DURATION_OPTIONS,
-    width: 'half',
+    width: 'full',
     group: ['details', 'basic', 'dates'],
-    order: 5,
+    order: 6,
   },
   link: {
     placeholder: 'Paste link for project visual...',
@@ -217,9 +229,9 @@ export const musicVideoMetadata: FormMetadata = {
       'This is the total time you worked on this project, including rehearsals',
     placeholder: 'Production duration',
     options: DURATION_OPTIONS,
-    width: 'half',
+    width: 'full',
     group: ['details', 'basic', 'dates'],
-    order: 5,
+    order: 6,
   },
   link: {
     placeholder: 'YouTube, Vevo, or official link',
@@ -328,11 +340,24 @@ export const livePerformanceMetadata: FormMetadata = {
   },
   startDate: {
     component: 'date',
+    label: 'Start Date',
+    labelWhen: { field: 'subtype', equals: 'award-show', label: 'Date' },
     placeholder: 'Select start date',
     format: 'yyyy-MM-dd',
     width: 'half',
     group: ['details', 'basic', 'dates'],
     order: 4,
+  },
+  endDate: {
+    component: 'date',
+    label: 'End Date',
+    placeholder: 'Select end date',
+    format: 'yyyy-MM-dd',
+    width: 'half',
+    group: ['details', 'basic', 'dates'],
+    order: 5,
+    disabledWhen: { field: 'startDate', isEmpty: true },
+    showWhen: { field: 'subtype', in: ['festival', 'tour', 'concert', 'corporate', 'theater', 'other'] },
   },
   duration: {
     component: 'picker',
@@ -340,9 +365,9 @@ export const livePerformanceMetadata: FormMetadata = {
       'This is the total time you worked on this project, including rehearsals',
     placeholder: 'Performance duration',
     options: DURATION_OPTIONS,
-    width: 'half',
+    width: 'full',
     group: ['details', 'basic', 'dates'],
-    order: 5,
+    order: 6,
   },
   roles: {
     component: 'chips',
@@ -409,9 +434,9 @@ export const commercialMetadata: FormMetadata = {
       'This is the total time you worked on this project, including rehearsals',
     placeholder: 'Production duration',
     options: DURATION_OPTIONS,
-    width: 'half',
+    width: 'full',
     group: ['details', 'basic', 'dates'],
-    order: 5,
+    order: 6,
   },
   link: {
     placeholder: 'Link to commercial',

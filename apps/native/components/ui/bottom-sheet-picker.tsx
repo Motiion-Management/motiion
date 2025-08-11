@@ -22,6 +22,7 @@ export interface BottomSheetPickerProps<T = any> {
   pickerLabel?: string;
   errorMessage?: string;
   disabled?: boolean;
+  helpText?: string;
 }
 
 export function BottomSheetPicker<T = any>({
@@ -37,6 +38,7 @@ export function BottomSheetPicker<T = any>({
   pickerLabel,
   errorMessage,
   disabled,
+  helpText,
 }: BottomSheetPickerProps<T>) {
   const sheetState = useSheetState();
   const [tempValue, setTempValue] = useState<T>(value || defaultValue || data[0]?.value);
@@ -75,6 +77,7 @@ export function BottomSheetPicker<T = any>({
           readOnly={true}
           onBlur={onBlur}
           errorMessage={errorMessage}
+          helperTextProps={helpText ? { message: helpText } : undefined}
           rightView={
             <ChevronDown className="pointer-events-none text-text-default opacity-50" size={20} />
           }

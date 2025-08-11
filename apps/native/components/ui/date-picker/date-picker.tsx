@@ -19,6 +19,7 @@ type IOSDatePickerProps = React.ComponentProps<typeof DateTimePicker> & {
   // Custom display formatters for the trigger field
   formatDate?: (date: Date) => string;
   formatTime?: (date: Date) => string;
+  disabled?: boolean;
   // Deprecated material props kept for backward compatibility
   materialDateClassName?: string;
   materialDateLabel?: string;
@@ -128,10 +129,11 @@ export function DatePicker(props: IOSDatePickerProps) {
     <View className="flex-row gap-2.5">
       {props.mode.includes('date') && (
         <View ref={dateAnchorRef} className={cn('flex-1', props.materialDateClassName)}>
-          <Pressable onPress={openDate}>
+          <Pressable onPress={openDate} disabled={props.disabled}>
             <Input
               value={formatDate(props.value as Date)}
               readOnly
+              editable={!props.disabled}
               rightView={<Calendar className="text-text-default opacity-50" size={20} />}
             />
           </Pressable>
@@ -172,10 +174,11 @@ export function DatePicker(props: IOSDatePickerProps) {
 
       {props.mode.includes('time') && (
         <View ref={timeAnchorRef} className={cn('flex-1', props.materialTimeClassName)}>
-          <Pressable onPress={openTime}>
+          <Pressable onPress={openTime} disabled={props.disabled}>
             <Input
               value={formatTime(props.value as Date)}
               readOnly
+              editable={!props.disabled}
               rightView={<Calendar className="text-text-default opacity-50" size={20} />}
             />
           </Pressable>
