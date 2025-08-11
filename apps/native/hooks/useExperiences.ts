@@ -17,7 +17,11 @@ export function useExperiences() {
   const [isSheetOpen, setIsSheetOpen] = useState(false);
 
   // User-scoped experiences action (server injects userId from session)
-  const addExperience = useMutation(api["users/experiences"].addMyExperience);
+  // Note: Convex codegen exposes this module as "users/experiences".
+  // Some environments may not have the key typed; narrow with bracket access.
+  const addExperience = useMutation(
+    (api as any)["users/experiences"].addMyExperience
+  );
 
   const handleExperiencePress = useCallback((index: number) => {
     setCurrentEditingIndex(index);

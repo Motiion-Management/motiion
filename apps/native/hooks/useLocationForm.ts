@@ -8,7 +8,7 @@ export interface LocationFormData {
 
 export interface LocationFormOptions {
   initialValue?: PlaceKitLocation | null;
-  onSubmit?: (data: LocationFormData) => Promise | void;
+  onSubmit?: (data: LocationFormData) => Promise<void> | void;
   validateLocation?: (location: PlaceKitLocation | null) => string | null;
 }
 
@@ -23,7 +23,7 @@ export interface LocationFormState {
 
 export interface LocationFormActions {
   setLocation: (location: PlaceKitLocation | null) => void;
-  submit: () => Promise;
+  submit: () => Promise<void>;
   reset: () => void;
   validate: () => boolean;
 }

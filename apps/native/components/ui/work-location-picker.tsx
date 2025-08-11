@@ -12,7 +12,7 @@ export function WorkLocationPicker({ index, onRemove, ...rest }: WorkLocationPic
   const label = `Location ${index + 1}`;
   const placeholder = index === 0 ? 'Primary work location...' : 'Additional work location...';
 
-  const additionalLocationProps: Partial =
+  const additionalLocationProps: Partial<LocationPickerProps> =
     index > 0
       ? {
           clearButtonMode: 'always',

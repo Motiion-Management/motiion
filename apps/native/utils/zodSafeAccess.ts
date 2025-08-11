@@ -282,7 +282,7 @@ export function getDiscriminatedUnionInfo(schema: z.ZodTypeAny): DiscriminatedUn
       if (opts instanceof Map) {
         for (const [lit, sch] of opts.entries()) {
           if (isZodSchema(sch) && getTypeName(sch) === 'ZodObject') {
-            out.options.push({ value: String(lit), schema: sch });
+            out.options.push({ value: String(lit), schema: sch as z.ZodObject<any> });
           }
         }
       } else if (Array.isArray(opts)) {
@@ -292,7 +292,7 @@ export function getDiscriminatedUnionInfo(schema: z.ZodTypeAny): DiscriminatedUn
             const discField = shape?.[discriminator];
             const lit = (discField as any)?._def?.value; // ZodLiteral
             if (lit !== undefined) {
-              out.options.push({ value: String(lit), schema: sch });
+              out.options.push({ value: String(lit), schema: sch as z.ZodObject<any> });
             }
           }
         }

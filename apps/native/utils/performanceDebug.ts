@@ -5,17 +5,17 @@
 interface PerformanceMark {
   name: string;
   timestamp: number;
-  metadata?: Record;
+  metadata?: Record<string, any>;
 }
 
 class PerformanceDebugger {
-  private marks: Map = new Map();
+  private marks: Map<string, PerformanceMark> = new Map();
   private enabled = __DEV__; // Only in development
 
   /**
    * Start a performance measurement
    */
-  mark(name: string, metadata?: Record) {
+  mark(name: string, metadata?: Record<string, any>) {
     if (!this.enabled) return;
 
     const timestamp = performance.now();
@@ -27,7 +27,7 @@ class PerformanceDebugger {
   /**
    * End a performance measurement and log the duration
    */
-  measure(startMark: string, endMark?: string, metadata?: Record) {
+  measure(startMark: string, endMark?: string, metadata?: Record<string, any>) {
     if (!this.enabled) return;
 
     const start = this.marks.get(startMark);
@@ -59,7 +59,7 @@ class PerformanceDebugger {
   /**
    * Log a single event with timestamp
    */
-  log(event: string, metadata?: Record) {
+  log(event: string, metadata?: Record<string, any>) {
     if (!this.enabled) return;
 
     console.log(`[PERF] ${this.formatTimestamp()} ${event}`, metadata || '');
@@ -102,13 +102,19 @@ class PerformanceDebugger {
 export const perfDebug = new PerformanceDebugger();
 
 // Convenience functions
-export const perfMark = (name: string, metadata?: Record) => perfDebug.mark(name, metadata);
-export const perfMeasure = (startMark: string, endMark?: string, metadata?: Record) =>
+export const perfMark = (name: string, metadata?: Record<string, any>) =>
+  perfDebug.mark(name, metadata);
+export const perfMeasure = (
+  startMark: string,
+  endMark?: string,
+  metadata?: Record<string, any>
+) =>
   perfDebug.measure(startMark, endMark, metadata);
-export const perfLog = (event: string, metadata?: Record) => perfDebug.log(event, metadata);
+export const perfLog = (event: string, metadata?: Record<string, any>) =>
+  perfDebug.log(event, metadata);
 
 // React component lifecycle helpers
-export const usePerfTracking = (componentName: string, props?: Record) => {
+export const usePerfTracking = (componentName: string, props?: Record<string, any>) => {
   // Track mount
   React.useEffect(() => {
     perfMark(`${componentName}:mount`, props);

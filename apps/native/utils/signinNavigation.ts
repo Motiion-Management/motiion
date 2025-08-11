@@ -115,7 +115,7 @@ export function getSigninProgressText(signIn: SignInResource | null | undefined)
     return 'Sign-in complete';
   }
 
-  const stepNames: Record = {
+  const stepNames: Record<SigninStep, string> = {
     phone: 'Enter phone number',
     'verify-phone': 'Verify phone number',
     complete: 'Complete',

@@ -16,7 +16,7 @@ export function useUser(): SharedUserContextValue {
   }
 
   // Otherwise, make the query directly
-  const user = useQuery(api.users.getMyUser);
+  const user = useQuery(api.users.getMyUser) || undefined;
   return {
     user,
     isLoading: user === undefined,

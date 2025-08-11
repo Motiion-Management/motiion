@@ -182,7 +182,7 @@ export function getSignupProgressText(signUp: SignUpResource | null | undefined)
     return 'Account setup complete';
   }
 
-  const stepNames: Record = {
+  const stepNames: Record<SignupStep, string> = {
     phone: 'Enter phone number',
     'verify-phone': 'Verify phone number',
     name: 'Enter your name',
