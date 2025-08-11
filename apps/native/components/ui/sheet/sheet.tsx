@@ -131,6 +131,9 @@ const SheetContent = forwardRef<SheetRef, SheetProps>(
         ref={bottomSheetModalRef}
         index={0}
         enableDynamicSizing
+        keyboardBehavior="interactive"
+        keyboardBlurBehavior="restore"
+        android_keyboardInputMode="adjustResize"
         onChange={handleSheetChanges}
         backdropComponent={renderBackdrop}
         backgroundComponent={renderBackground}

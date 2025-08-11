@@ -42,6 +42,9 @@ export function ExperienceEditSheet({
     experience?.type
   );
   const formDataRef = useRef<Partial<Experience>>(experience?.data || {});
+  const [actionsHeight, setActionsHeight] = useState(0);
+  const bottomSafeInset = insets.bottom || 0;
+  const bottomCompensation = actionsHeight + bottomSafeInset + 8; // small cushion for caret
   // Single-form approach: form data buffered in ref to avoid parent re-renders
 
   // Reset state when sheet opens with new experience
@@ -159,6 +162,7 @@ export function ExperienceEditSheet({
           contentInsetAdjustmentBehavior="never"
           keyboardDismissMode="interactive"
           keyboardShouldPersistTaps="handled"
+          bottomOffset={bottomCompensation}
           showsVerticalScrollIndicator={false}>
           <View className="flex-1 pt-2">
             {/* Type selector only on Details tab */}
@@ -197,7 +201,9 @@ export function ExperienceEditSheet({
             closed: 0,
             opened: Platform.select({ ios: insets.bottom, default: insets.bottom }),
           }}>
-          <View className="gap-2 border-t border-t-border-low bg-surface-default px-4 pb-8 pt-4">
+          <View
+            className="gap-2 border-t border-t-border-low bg-surface-default px-4 pb-8 pt-4"
+            onLayout={(e) => setActionsHeight(e.nativeEvent.layout.height)}>
             {activeTab === 'details' ? (
               <Button onPress={handleNext} disabled={!experienceType} className="w-full">
                 <Text>Next</Text>
