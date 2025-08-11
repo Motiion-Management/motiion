@@ -39,6 +39,7 @@ export const experiences = {
 
   // Common fields
   startDate: z.string().optional(),
+  endDate: z.string().optional(),
   duration: z.string().optional(),
   link: z.string().optional(),
   media: z.union([zid('_storage'), z.string()]).optional(),

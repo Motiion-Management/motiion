@@ -1,42 +1,30 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { View } from 'react-native';
 
 import { BaseOnboardingScreen } from '~/components/layouts/BaseOnboardingScreen';
-import { ExperienceSection } from '~/components/experiences/ExperienceSection';
-import { ExperienceEditSheet } from '~/components/experiences/ExperienceEditSheet';
-import { useExperiences } from '~/hooks/useExperiences';
+import { ExperienceCard } from '~/components/experiences/ExperienceCard';
 import { useSimpleOnboardingFlow } from '~/hooks/useSimpleOnboardingFlow';
+import { useQuery } from 'convex/react';
+import { api } from '@packages/backend/convex/_generated/api';
 
 export default function ExperiencesScreen() {
   const onboarding = useSimpleOnboardingFlow();
-  const {
-    experiences,
-    currentEditingIndex,
-    isSheetOpen,
-    handleExperiencePress,
-    handleSheetOpenChange,
-    handleSaveExperience,
-    handleDeleteExperience,
-    saveToBackend,
-    getCurrentExperience,
-    canProgress,
-    isNewExperience,
-  } = useExperiences();
+  const experiences = useQuery(api.users.experiences.getMyExperiences, {});
 
-  const handleContinue = async () => {
-    try {
-      await saveToBackend();
-      console.log('Experiences saved successfully');
-    } catch (error) {
-      console.error('Error saving experiences:', error);
-    }
-  };
+  const slots = useMemo(() => {
+    const docs = experiences || [];
+    return [docs[0] || null, docs[1] || null, docs[2] || null] as (any | null)[];
+  }, [experiences]);
+
+  const firstEmptyIndex = useMemo(() => slots.findIndex((s) => !s), [slots]);
+
+  const handleContinue = async () => {};
 
   return (
     <BaseOnboardingScreen
       title="Add your experience"
       description="Add up to 3 projects you've worked on that you would like displayed on your profile."
-      canProgress={canProgress()}
+      canProgress
       primaryAction={{
         onPress: handleContinue,
       }}
@@ -44,22 +32,27 @@ export default function ExperiencesScreen() {
         text: 'Skip for now',
         onPress: () => onboarding.navigateNext(),
       }}>
-      <View className="flex-1">
-        <ExperienceSection
-          experiences={experiences}
-          onExperiencePress={handleExperiencePress}
-          maxExperiences={3}
-        />
+      <View className="flex-1 gap-3">
+        {slots.map((exp, index) => {
+          const isCompleted = !!exp;
+          const isDisabled = !exp && firstEmptyIndex !== -1 && index !== firstEmptyIndex;
+          const variant: 'completed' | 'default' | 'disabled' = isCompleted
+            ? 'completed'
+            : isDisabled
+              ? 'disabled'
+              : 'default';
+          return (
+            <ExperienceCard
+              key={exp?._id ?? `slot-${index}`}
+              experience={exp || undefined}
+              experienceId={exp?._id}
+              placeholder={`Project ${index + 1}`}
+              variant={variant}
+              disabled={isDisabled}
+            />
+          );
+        })}
       </View>
-
-      <ExperienceEditSheet
-        isOpen={isSheetOpen}
-        onOpenChange={handleSheetOpenChange}
-        experience={getCurrentExperience()}
-        onSave={handleSaveExperience}
-        onDelete={currentEditingIndex !== null ? handleDeleteExperience : undefined}
-        isNew={isNewExperience}
-      />
     </BaseOnboardingScreen>
   );
 }

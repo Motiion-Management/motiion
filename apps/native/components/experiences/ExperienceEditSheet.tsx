@@ -9,18 +9,17 @@ import { Sheet } from '~/components/ui/sheet';
 import { Text } from '~/components/ui/text';
 import { Tabs } from '~/components/ui/tabs/tabs';
 
-import { ExperienceType, Experience, ExperienceFormState } from '~/types/experiences';
+import { ExperienceType, Experience } from '~/types/experiences';
 import { getExperienceMetadata } from '~/utils/convexFormMetadata';
 import { EXPERIENCE_TYPES } from '~/config/experienceTypes';
 import { zExperiencesUnified } from '@packages/backend/convex/schemas';
+import { api } from '@packages/backend/convex/_generated/api';
+import { useMutation, useQuery } from 'convex/react';
 
 interface ExperienceEditSheetProps {
   isOpen: boolean;
   onOpenChange: (isOpen: boolean) => void;
-  experience?: ExperienceFormState | null;
-  onSave: (experience: ExperienceFormState) => void;
-  onDelete?: () => void;
-  isNew?: boolean;
+  experienceId?: string;
 }
 
 const TABS = [
@@ -31,31 +30,42 @@ const TABS = [
 export function ExperienceEditSheet({
   isOpen,
   onOpenChange,
-  experience,
-  onSave,
-  onDelete,
-  isNew = false,
+  experienceId,
 }: ExperienceEditSheetProps) {
   const insets = useSafeAreaInsets();
   const [activeTab, setActiveTab] = useState('details');
-  const [experienceType, setExperienceType] = useState<ExperienceType | undefined>(
-    experience?.type
-  );
-  const formDataRef = useRef<Partial<Experience>>(experience?.data || {});
+  const [experienceType, setExperienceType] = useState<ExperienceType | undefined>(undefined);
+  const formDataRef = useRef<Partial<Experience>>({});
   const [actionsHeight, setActionsHeight] = useState(0);
+  const [isSaving, setIsSaving] = useState(false);
   const bottomSafeInset = insets.bottom || 0;
   const bottomCompensation = actionsHeight + bottomSafeInset + 8; // small cushion for caret
   // Single-form approach: form data buffered in ref to avoid parent re-renders
 
-  // Reset state when sheet opens with new experience
+  // Convex mutation to persist an experience for the current user
+  const addMyExperience = useMutation(api.users.experiences.addMyExperience);
+  const updateExperience = useMutation(api.experiences.update);
+
+  // Load the experience when editing
+  const existingExperience = useQuery(
+    (api as any).experiences.read,
+    experienceId ? { id: experienceId as any } : 'skip'
+  ) as any | undefined;
+
+  // Reset state when sheet opens; if editing, seed from backend doc
   useEffect(() => {
     if (isOpen) {
       setActiveTab('details');
-      setExperienceType(experience?.type);
-      formDataRef.current = experience?.data || {};
+      if (experienceId && existingExperience) {
+        setExperienceType(existingExperience.type as ExperienceType);
+        formDataRef.current = existingExperience as Partial<Experience>;
+      } else {
+        setExperienceType(undefined);
+        formDataRef.current = {};
+      }
       // formData is authoritative; team fields are included in dynamic form
     }
-  }, [isOpen, experience]);
+  }, [isOpen, experienceId, existingExperience]);
 
   // Handle experience type change
   const handleExperienceTypeChange = useCallback(
@@ -64,12 +74,12 @@ export function ExperienceEditSheet({
       if (value) {
         setExperienceType(value);
         // Clear form data when changing type for new experiences
-        if (isNew) {
+        if (!experienceId) {
           formDataRef.current = { type: value } as Partial<Experience>;
         }
       }
     },
-    [isNew]
+    [experienceId]
   );
 
   const handleClose = useCallback(() => {
@@ -88,7 +98,7 @@ export function ExperienceEditSheet({
     }
   }, [activeTab]);
 
-  const handleSave = useCallback(() => {
+  const handleSave = useCallback(async () => {
     if (!experienceType) return;
 
     const completeData: Experience = {
@@ -99,16 +109,22 @@ export function ExperienceEditSheet({
     // Check if required fields are filled
     const isComplete = checkExperienceComplete(completeData);
 
-    const experienceToSave: ExperienceFormState = {
-      id: experience?.id || `temp-${Date.now()}`,
-      type: experienceType,
-      data: completeData,
-      isComplete,
-    };
-
-    onSave(experienceToSave);
-    handleClose();
-  }, [experienceType, experience, onSave, handleClose]);
+    try {
+      setIsSaving(true);
+      if (experienceId) {
+        // Update existing
+        await updateExperience({ id: experienceId as any, patch: completeData as any });
+      } else {
+        // Create new; server returns new id
+        await addMyExperience(completeData as any);
+      }
+      handleClose();
+    } catch (err) {
+      console.error('Failed to save experience:', err);
+    } finally {
+      setIsSaving(false);
+    }
+  }, [experienceType, experienceId, handleClose, addMyExperience, updateExperience]);
 
   const checkExperienceComplete = (data: Partial<Experience>): boolean => {
     // Basic validation - check if key fields are filled
@@ -127,7 +143,7 @@ export function ExperienceEditSheet({
   };
 
   const getTitle = () => {
-    return experience?.data ? 'Edit Experience' : 'Add Experience';
+    return experienceId ? 'Edit Experience' : 'Add Experience';
   };
 
   // Map type -> schema and metadata
@@ -145,9 +161,9 @@ export function ExperienceEditSheet({
   // Stable memoized initial data for the dynamic form (must not be created conditionally)
   const initialFormData = useMemo(
     () => ({ ...formDataRef.current, type: experienceType }),
-    [isOpen, experienceType, experience?.id]
+    [isOpen, experienceType, experienceId, existingExperience?._id]
   );
-  const resetKey = `${isOpen}|${experience?.id ?? 'new'}|${experienceType ?? ''}`;
+  const resetKey = `${isOpen}|${experienceId ?? 'new'}|${experienceType ?? ''}`;
 
   return (
     <Sheet isOpened={isOpen} label={getTitle()} onIsOpenedChange={onOpenChange}>
@@ -209,16 +225,15 @@ export function ExperienceEditSheet({
                 <Text>Next</Text>
               </Button>
             ) : (
-              <Button onPress={handleSave} disabled={!experienceType} className="w-full">
-                <Text>Save</Text>
+              <Button
+                onPress={handleSave}
+                disabled={!experienceType || isSaving}
+                className="w-full">
+                <Text>{isSaving ? 'Saving…' : 'Save'}</Text>
               </Button>
             )}
 
-            {!isNew && onDelete && (
-              <Button variant="secondary" onPress={onDelete} className="w-full">
-                <Text className="text-red-600">Delete</Text>
-              </Button>
-            )}
+            {/* Delete action removed; handled by parent flows if needed */}
           </View>
         </KeyboardStickyView>
       </View>
