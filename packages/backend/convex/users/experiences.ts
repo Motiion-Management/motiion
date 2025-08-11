@@ -49,6 +49,7 @@ export const getMyExperiences = authQuery({
   args: {},
   returns: v.array(v.any()),
   handler: async (ctx) => {
+    if (!ctx.user) return []
     const exps = await ctx.db
       .query('experiences')
       .withIndex('userId', (q) => q.eq('userId', ctx.user._id))
@@ -64,6 +65,7 @@ export const getMyExperiencesByType = authQuery({
   args: { type: v.union(v.literal('tv-film'), v.literal('music-video'), v.literal('live-performance'), v.literal('commercial')) },
   returns: v.array(v.any()),
   handler: async (ctx, args) => {
+    if (!ctx.user) return []
     const exps = await ctx.db
       .query('experiences')
       .withIndex('userId', (q) => q.eq('userId', ctx.user._id))

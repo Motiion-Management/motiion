@@ -67,6 +67,7 @@ export const getMyAllExperiences = authQuery({
   args: {},
   returns: v.array(v.any()),
   handler: async (ctx) => {
+    if (!ctx.user) return []
     const res = await ctx.db
       .query('experiences')
       .withIndex('userId', (q) => q.eq('userId', ctx.user._id))
@@ -112,6 +113,14 @@ export const getMyExperienceCounts = authQuery({
     total: v.number()
   }),
   handler: async (ctx) => {
+    if (!ctx.user)
+      return {
+        tvFilm: 0,
+        musicVideos: 0,
+        livePerformances: 0,
+        commercials: 0,
+        total: 0
+      }
     const res = await ctx.db
       .query('experiences')
       .withIndex('userId', (q) => q.eq('userId', ctx.user._id))
