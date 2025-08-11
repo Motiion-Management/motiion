@@ -3,7 +3,7 @@ import { Input as TextField } from '~/components/ui/input';
 import { useFieldError } from '~/hooks/useFieldError';
 import { useValidationModeContextSafe } from '~/hooks/useValidationMode';
 
-export interface NumberInputProps {
+export interface NumberInputFieldProps {
   label: string;
   placeholder?: string;
   min?: number;
@@ -11,7 +11,7 @@ export interface NumberInputProps {
   step?: number;
 }
 
-export const NumberInput = ({ label, placeholder }: NumberInputProps) => {
+export const NumberInputField = ({ label, placeholder }: NumberInputFieldProps) => {
   const field = useFieldContext<number | null | undefined>();
   const validationModeContext = useValidationModeContextSafe();
   const { errorMessage } = useFieldError(field, {
@@ -52,4 +52,3 @@ export const NumberInput = ({ label, placeholder }: NumberInputProps) => {
     />
   );
 };
-

@@ -33,7 +33,7 @@ export function ConvexFormField({ field, form }: ConvexFormFieldProps) {
           <form.AppField
             name={field.name}
             children={(fieldApi: any) => (
-              <fieldApi.TextInput
+              <fieldApi.InputField
                 label={field.label}
                 placeholder={field.placeholder || `Enter ${field.label.toLowerCase()}`}
                 keyboardType={field.type === 'email' ? 'email-address' : 'default'}
@@ -51,7 +51,7 @@ export function ConvexFormField({ field, form }: ConvexFormFieldProps) {
           <form.AppField
             name={field.name}
             children={(fieldApi: any) => (
-              <fieldApi.NumberInput
+              <fieldApi.NumberInputField
                 label={field.label}
                 placeholder={field.placeholder || `Enter ${field.label.toLowerCase()}`}
               />
@@ -93,6 +93,18 @@ export function ConvexFormField({ field, form }: ConvexFormFieldProps) {
         );
 
       case 'multiselect':
+        return (
+          <form.AppField
+            name={field.name}
+            children={(fieldApi: any) => (
+              <fieldApi.MultiselectField
+                label={field.label}
+                options={field.options || []}
+              />
+            )}
+          />
+        );
+
       case 'chips':
         return (
           <form.AppField
@@ -112,7 +124,7 @@ export function ConvexFormField({ field, form }: ConvexFormFieldProps) {
           <form.AppField
             name={field.name}
             children={(fieldApi: any) => (
-              <fieldApi.BooleanField label={field.label} helpText={field.helpText} />
+              <fieldApi.CheckboxField label={field.label} helpText={field.helpText} />
             )}
           />
         );
@@ -122,7 +134,7 @@ export function ConvexFormField({ field, form }: ConvexFormFieldProps) {
           <form.AppField
             name={field.name}
             children={(fieldApi: any) => (
-              <fieldApi.DateInput label={field.label} placeholder={field.placeholder} />
+              <fieldApi.DatePickerField label={field.label} placeholder={field.placeholder} />
             )}
           />
         );

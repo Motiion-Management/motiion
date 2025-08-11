@@ -2,7 +2,7 @@ import { api } from '@packages/backend/convex/_generated/api';
 import { useMutation, useQuery } from 'convex/react';
 import { useState, useCallback, useEffect } from 'react';
 
-import { HeightValue } from '~/components/form/HeightPicker';
+import { HeightValue } from '~/components/ui/height-picker';
 
 export function useHeightForm() {
   const user = useQuery(api.users.getMyUser);

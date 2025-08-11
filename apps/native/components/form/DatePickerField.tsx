@@ -11,7 +11,7 @@ import { useValidationModeContextSafe } from '~/hooks/useValidationMode';
 import { cn } from '~/lib/cn';
 import { InputLabel } from '~/components/ui/label';
 
-export interface DateInputProps {
+export interface DatePickerFieldProps {
   label: string;
   minimumDate?: Date;
   maximumDate?: Date;
@@ -21,14 +21,14 @@ export interface DateInputProps {
   formatTime?: (date: Date) => string;
 }
 
-export const DateInput = ({
+export const DatePickerField = ({
   label,
   minimumDate,
   maximumDate,
   helpText,
   formatDate,
   formatTime,
-}: DateInputProps) => {
+}: DatePickerFieldProps) => {
   const field = useFieldContext<Date>();
   const validationModeContext = useValidationModeContextSafe();
   const { errorMessage } = useFieldError(field, {

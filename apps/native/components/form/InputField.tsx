@@ -4,7 +4,7 @@ import { Input as TextField } from '~/components/ui/input';
 import { useFieldError } from '~/hooks/useFieldError';
 import { useValidationModeContextSafe } from '~/hooks/useValidationMode';
 
-export interface TextInputProps {
+export interface InputFieldProps {
   label: string;
   placeholder?: string;
   autoCapitalize?: 'none' | 'sentences' | 'words' | 'characters';
@@ -25,7 +25,7 @@ export interface TextInputProps {
   keyboardType?: 'default' | 'numeric' | 'email-address' | 'phone-pad';
 }
 
-export const TextInput = ({ label, placeholder, ...props }: TextInputProps) => {
+export const InputField = ({ label, placeholder, ...props }: InputFieldProps) => {
   const field = useFieldContext<string>();
   const validationModeContext = useValidationModeContextSafe();
   const { errorMessage } = useFieldError(field, {

@@ -33,7 +33,7 @@ function MyScreen() {
 // All form components now use unified error logic
 <form.AppField
   name="firstName"
-  children={(field) => <field.TextInput label="First Name" placeholder="Enter first name" />}
+  children={(field) => <field.InputField label="First Name" placeholder="Enter first name" />}
 />
 ```
 

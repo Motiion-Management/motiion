@@ -2,16 +2,16 @@ import { createFormHook } from '@tanstack/react-form';
 
 import { BottomSheetComboboxField } from './BottomSheetComboboxField';
 import { BottomSheetPickerField } from './BottomSheetPickerField';
-import { CheckboxGroupField } from './CheckboxGroupField';
+import { MultiselectField } from './MultiselectField';
 import { ChipsField } from './ChipsField';
-import { BooleanField } from './BooleanField';
-import { NumberInput } from './NumberInput';
-import { DateInput } from './DateInput';
-import { PhoneNumber } from './PhoneNumber';
-import { PhoneOTP } from './PhoneOTP';
+import { CheckboxField } from './CheckboxField';
+import { NumberInputField } from './NumberInputField';
+import { DatePickerField } from './DatePickerField';
+import { PhoneNumberField } from './PhoneNumberField';
+import { PhoneOtpField } from './PhoneOtpField';
 import { RadioGroupField } from './RadioGroupField';
 import { SelectField } from './SelectField';
-import { TextInput } from './TextInput';
+import { InputField } from './InputField';
 import { RelationshipPickerField } from './RelationshipPickerField';
 import { FileUploadField } from './FileUploadField';
 import { fieldContext, formContext } from './context';
@@ -21,14 +21,14 @@ const { useAppForm } = createFormHook({
   formContext,
   // We'll learn more about these options later
   fieldComponents: {
-    PhoneNumber,
-    PhoneOTP,
+    PhoneNumberField,
+    PhoneOtpField,
     RadioGroupField,
-    CheckboxGroupField,
-    BooleanField,
-    TextInput,
-    NumberInput,
-    DateInput,
+    MultiselectField,
+    CheckboxField,
+    InputField,
+    NumberInputField,
+    DatePickerField,
     SelectField,
     ChipsField,
     BottomSheetPickerField,

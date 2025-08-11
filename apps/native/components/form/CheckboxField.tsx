@@ -7,12 +7,12 @@ import { Checkbox } from '~/components/ui/checkbox';
 import { useValidationModeContextSafe } from '~/hooks/useValidationMode';
 import { useFieldError } from '~/hooks/useFieldError';
 
-export interface BooleanFieldProps {
+export interface CheckboxFieldProps {
   label: string;
   helpText?: string;
 }
 
-export const BooleanField = ({ label, helpText }: BooleanFieldProps) => {
+export const CheckboxField = ({ label, helpText }: CheckboxFieldProps) => {
   const field = useFieldContext<boolean>();
   const validationModeContext = useValidationModeContextSafe();
   const { errorMessage } = useFieldError(field, { fieldName: field.name });

@@ -110,7 +110,7 @@ export default function UsernameScreen() {
           <form.AppField
             name="username"
             children={(field) => (
-              <field.TextInput
+              <field.InputField
                 label="Preferred Name"
                 placeholder="Enter your preferred name"
                 autoCapitalize="words"

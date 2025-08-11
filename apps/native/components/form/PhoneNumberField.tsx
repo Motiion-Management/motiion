@@ -17,12 +17,12 @@ import { usePhoneInput } from '~/hooks/usePhoneInput';
 import { useValidationModeContextSafe } from '~/hooks/useValidationMode';
 import ChevronDown from '~/lib/icons/ChevronDown';
 
-export interface PhoneNumberProps {
+export interface PhoneNumberFieldProps {
   autoFocus?: boolean;
   helpText?: string;
 }
 
-export const PhoneNumber = ({ autoFocus = false, helpText }: PhoneNumberProps) => {
+export const PhoneNumberField = ({ autoFocus = false, helpText }: PhoneNumberFieldProps) => {
   const field = useFieldContext<{ fullNumber: string; countryCode: CountryCode }>();
   const validationModeContext = useValidationModeContextSafe();
   const { errorMessage } = useFieldError(field, {

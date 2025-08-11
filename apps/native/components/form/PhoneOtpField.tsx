@@ -8,7 +8,7 @@ import { Input } from '~/components/ui/input';
 import { useFieldError } from '~/hooks/useFieldError';
 import { useValidationModeContextSafe } from '~/hooks/useValidationMode';
 
-export interface PhoneOTPProps {
+export interface PhoneOtpFieldProps {
   helperTextOpts?: HelperTextProps;
 }
 
@@ -25,7 +25,7 @@ export const cleanOtpText = (text: string) => {
   return text.replace(/\s/g, '');
 };
 
-export const PhoneOTP = ({ helperTextOpts }: PhoneOTPProps) => {
+export const PhoneOtpField = ({ helperTextOpts }: PhoneOtpFieldProps) => {
   const field = useFieldContext<string>();
   const validationModeContext = useValidationModeContextSafe();
   const { errorMessage } = useFieldError(field, {

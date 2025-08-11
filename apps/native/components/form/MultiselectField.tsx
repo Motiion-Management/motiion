@@ -9,19 +9,19 @@ import { ErrorText } from '~/components/ui/error-text';
 import { useFieldError } from '~/hooks/useFieldError';
 import { useValidationModeContextSafe } from '~/hooks/useValidationMode';
 
-export interface CheckboxGroupFieldOption {
+export interface MultiselectFieldOption {
   value: string;
   label: string;
   description?: string;
 }
 
-export interface CheckboxGroupFieldProps {
-  options: CheckboxGroupFieldOption[];
+export interface MultiselectFieldProps {
+  options: MultiselectFieldOption[];
   label?: string;
   className?: string;
 }
 
-export const CheckboxGroupField = forwardRef<View, CheckboxGroupFieldProps>(
+export const MultiselectField = forwardRef<View, MultiselectFieldProps>(
   ({ options, label, className, ...props }, ref) => {
     const field = useFieldContext<string[]>();
     const validationModeContext = useValidationModeContextSafe();
@@ -63,4 +63,4 @@ export const CheckboxGroupField = forwardRef<View, CheckboxGroupFieldProps>(
   }
 );
 
-CheckboxGroupField.displayName = 'CheckboxGroupField';
+MultiselectField.displayName = 'MultiselectField';

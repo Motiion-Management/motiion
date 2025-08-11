@@ -96,7 +96,7 @@ export default function NameScreen() {
           <form.AppField
             name="firstName"
             children={(field) => (
-              <field.TextInput
+              <field.InputField
                 label="First"
                 placeholder="Enter first name"
                 autoCapitalize="words"
@@ -108,7 +108,7 @@ export default function NameScreen() {
           <form.AppField
             name="lastName"
             children={(field) => (
-              <field.TextInput
+              <field.InputField
                 label="Last"
                 placeholder="Enter last name"
                 autoCapitalize="words"

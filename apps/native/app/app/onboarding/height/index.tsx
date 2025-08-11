@@ -1,7 +1,7 @@
 import React from 'react';
 import { View } from 'react-native';
 
-import { HeightPicker } from '~/components/form/HeightPicker';
+import { HeightPicker } from '~/components/ui/height-picker';
 import { BaseOnboardingScreen } from '~/components/layouts/BaseOnboardingScreen';
 import { OnboardingStepGuard } from '~/components/onboarding/OnboardingGuard';
 import { Text } from '~/components/ui/text';

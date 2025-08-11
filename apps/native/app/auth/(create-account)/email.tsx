@@ -78,7 +78,7 @@ export default function EmailScreen() {
           <form.AppField
             name="email"
             children={(field) => (
-              <field.TextInput
+              <field.InputField
                 label="Email"
                 placeholder="Enter your email"
                 autoCapitalize="none"
