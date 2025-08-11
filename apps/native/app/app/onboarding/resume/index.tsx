@@ -44,8 +44,7 @@ export default function ResumeScreen() {
           </View>
         }>
         <Image
-          width={350}
-          height={350}
+          style={{ width: 350, height: 350 }}
           source={require('../../../../assets/images/onboarding/resume.png')}
         />
       </BaseOnboardingScreen>

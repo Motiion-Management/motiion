@@ -54,6 +54,8 @@ export function BottomSheetCombobox<T = any>({
   const [internalValue, setInternalValue] = useState<T | undefined>(value || defaultValue);
   const [selectedLabel, setSelectedLabel] = useState<string | undefined>(undefined);
 
+  const [asyncResults, setAsyncResults] = useState<ComboboxItem<T>[]>(data || []);
+
   const handleSave = useCallback(() => {
     setInternalValue(tempValue);
     // Determine label for saved value for display when data is empty
@@ -78,7 +80,7 @@ export function BottomSheetCombobox<T = any>({
     sheetState.close();
   }, [sheetState]);
 
-  const [asyncResults, setAsyncResults] = useState<ComboboxItem<T>[]>(data || []);
+  
 
   const displayValue = useMemo(() => {
     const currentValue = value !== undefined ? value : internalValue;

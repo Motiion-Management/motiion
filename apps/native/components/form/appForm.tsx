@@ -21,12 +21,18 @@ const { useAppForm } = createFormHook({
   formContext,
   // We'll learn more about these options later
   fieldComponents: {
+    // Aliases for convenience/backward-compatibility
+    PhoneNumber: PhoneNumberField,
     PhoneNumberField,
+    PhoneOTP: PhoneOtpField,
     PhoneOtpField,
+    DateInput: DatePickerField,
     RadioGroupField,
+    CheckboxGroupField: MultiselectField,
     MultiselectField,
     CheckboxField,
     InputField,
+    TextAreaField: InputField,
     NumberInputField,
     DatePickerField,
     SelectField,

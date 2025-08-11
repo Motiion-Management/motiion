@@ -54,6 +54,7 @@ export default function DatabaseUseScreen() {
             name="databaseUse"
             children={(field) => (
               <field.TextAreaField
+                label="How will you use the database?"
                 placeholder="Describe how you plan to use the database..."
                 rows={4}
               />

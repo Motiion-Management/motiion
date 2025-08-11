@@ -28,7 +28,7 @@ export interface MultiselectProps {
   children: React.ReactNode;
 }
 
-const Multiselect = React.forwardRef<React.ElementRef, MultiselectProps>(
+const Multiselect = React.forwardRef<React.ElementRef<typeof View>, MultiselectProps>(
   ({ values, onValueChange, disabled, className, children, ...props }, ref) => {
     const contextValue = React.useMemo(
       () => ({ values, onValueChange, disabled }),
@@ -52,7 +52,7 @@ export interface MultiselectItemProps {
   description?: string;
 }
 
-const MultiselectItem = React.forwardRef<React.ElementRef, MultiselectItemProps>(
+const MultiselectItem = React.forwardRef<React.ElementRef<typeof View>, MultiselectItemProps>(
   ({ value, label, description }, ref) => {
     const { values, onValueChange, disabled } = useMultiselectContext();
 

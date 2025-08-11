@@ -157,7 +157,7 @@ export function DatePicker(props: IOSDatePickerProps) {
                 className="rounded-2xl border border-border-low bg-surface-high p-2 shadow-lg"
                 onLayout={(e) => setDateContentWidth(e.nativeEvent.layout.width)}>
                 <DateTimePicker
-                  {...props}
+                  {...(props as any)}
                   mode="date"
                   display="inline"
                   value={props.value as Date}
@@ -201,7 +201,7 @@ export function DatePicker(props: IOSDatePickerProps) {
                 className="rounded-2xl border border-border-low bg-surface-high p-2 shadow-lg"
                 onLayout={(e) => setTimeContentWidth(e.nativeEvent.layout.width)}>
                 <DateTimePicker
-                  {...props}
+                  {...(props as any)}
                   mode="time"
                   display="inline"
                   value={props.value as Date}

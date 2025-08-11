@@ -12,7 +12,7 @@ import type {
 
 const RadioGroupContext = React.createContext<RootProps | null>(null)
 
-const Root = React.forwardRef<RootRef, RootProps>(
+const RootInner = React.forwardRef<RootRef, RootProps>(
   ({ asChild, value, onValueChange, disabled = false, ...viewProps }, ref) => {
     const Component = asChild ? Slot.View : View
     return (
@@ -28,6 +28,7 @@ const Root = React.forwardRef<RootRef, RootProps>(
     )
   }
 )
+const Root = RootInner as any
 
 Root.displayName = 'RootRadioGroup'
 
@@ -47,7 +48,7 @@ interface RadioItemContext {
 
 const RadioItemContext = React.createContext<RadioItemContext | null>(null)
 
-const Item = React.forwardRef<ItemRef, ItemProps>(
+const ItemInner = React.forwardRef<ItemRef, ItemProps>(
   (
     {
       asChild,
@@ -89,6 +90,7 @@ const Item = React.forwardRef<ItemRef, ItemProps>(
     )
   }
 )
+const Item = ItemInner as any
 
 Item.displayName = 'ItemRadioGroup'
 
@@ -102,7 +104,7 @@ function useRadioItemContext() {
   return context
 }
 
-const Indicator = React.forwardRef<IndicatorRef, IndicatorProps>(
+const IndicatorInner = React.forwardRef<IndicatorRef, IndicatorProps>(
   ({ asChild, forceMount, ...props }, ref) => {
     const { value } = useRadioGroupContext()
     const { itemValue } = useRadioItemContext()
@@ -116,6 +118,7 @@ const Indicator = React.forwardRef<IndicatorRef, IndicatorProps>(
     return <Component ref={ref} role="presentation" {...props} />
   }
 )
+const Indicator = IndicatorInner as any
 
 Indicator.displayName = 'IndicatorRadioGroup'
 

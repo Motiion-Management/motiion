@@ -1,26 +1,34 @@
-import { IconProps, MaterialIconName } from '@roninoss/icons';
-import { AlertButton, AlertType, KeyboardType, View } from 'react-native';
+import type { IconProps, MaterialIconName } from '@roninoss/icons';
+import type { KeyboardType } from 'react-native';
 
 type AlertInputValue = { login: string; password: string } | string;
 
+type AlertButtonLike = {
+  text: string;
+  onPress?: (value: AlertInputValue) => void;
+  style?: 'default' | 'cancel' | 'destructive';
+};
+
+type AlertPrompt = {
+  type?: 'plain-text' | 'secure-text' | 'login-password';
+  defaultValue?: string;
+  keyboardType?: KeyboardType;
+};
+
 type AlertProps = {
   title: string;
-  buttons: (Omit & { onPress?: (text: AlertInputValue) => void })[];
-  message?: string | undefined;
-  prompt?: {
-    type?: Exclude | undefined;
-    defaultValue?: string | undefined;
-    keyboardType?: KeyboardType | undefined;
-  };
+  buttons: AlertButtonLike[];
+  message?: string;
+  prompt?: AlertPrompt;
   materialPortalHost?: string;
-  materialIcon?: Pick & { name: MaterialIconName };
+  materialIcon?: IconProps<any> & { name: MaterialIconName };
   materialWidth?: number;
   children?: React.ReactNode;
 };
 
-type AlertRef = React.ElementRef & {
+type AlertRef = {
   show: () => void;
-  prompt: (args: AlertProps & { prompt: AlertProps['prompt'] }) => void;
+  prompt: (args: AlertProps & { prompt: NonNullable<AlertProps['prompt']> }) => void;
   alert: (args: AlertProps) => void;
 };
 

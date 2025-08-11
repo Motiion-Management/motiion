@@ -206,7 +206,7 @@ export const ConvexDynamicForm = React.memo(
       for (const f of fields) {
         const v = (initialData as any)[f.name];
         if (v !== undefined) {
-          // @ts-expect-error tanstack typed generic
+          // @ts-ignore tanstack typed generic
           (form as any).setFieldValue(f.name as any, v);
         }
       }
@@ -221,7 +221,7 @@ export const ConvexDynamicForm = React.memo(
     const desired = (initialData as any)?.[discName];
     if (desired && desired !== selectedDisc) {
       setSelectedDisc(desired);
-      // @ts-expect-error tanstack typed generic
+      // @ts-ignore tanstack typed generic
       (form as any).setFieldValue(discName as any, desired);
     }
   }, [initialData, duInfo, selectedDisc, form]);

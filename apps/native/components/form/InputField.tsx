@@ -23,9 +23,12 @@ export interface InputFieldProps {
     | 'family-name';
   autoFocus?: boolean;
   keyboardType?: 'default' | 'numeric' | 'email-address' | 'phone-pad';
+  // Text area support
+  rows?: number;
+  multiline?: boolean;
 }
 
-export const InputField = ({ label, placeholder, ...props }: InputFieldProps) => {
+export const InputField = ({ label, placeholder, rows, multiline, ...props }: InputFieldProps) => {
   const field = useFieldContext<string>();
   const validationModeContext = useValidationModeContextSafe();
   const { errorMessage } = useFieldError(field, {
@@ -48,6 +51,8 @@ export const InputField = ({ label, placeholder, ...props }: InputFieldProps) =>
       onChangeText={field.handleChange}
       onBlur={handleBlur}
       errorMessage={errorMessage}
+      numberOfLines={rows}
+      multiline={multiline ?? (rows != null)}
       {...props}
     />
   );

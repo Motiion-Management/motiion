@@ -23,10 +23,10 @@ type FormSectionProps = ViewProps & {
     title: string;
     titleClassName?: string;
   };
-  materialIconProps?: Omit;
+  materialIconProps?: IconProps<any>;
 };
 
-const FormSection = React.forwardRef<React.ElementRef, FormSectionProps>(
+const FormSection = React.forwardRef<any, FormSectionProps>(
   (
     {
       rootClassName,
@@ -75,7 +75,7 @@ const FormSection = React.forwardRef<React.ElementRef, FormSectionProps>(
         )}
         {!!materialIconProps && (
           <View className="ios:hidden pt-0.5">
-            <Icon color={colors.grey} size={24} {...(materialIconProps as IconProps)} />
+            <Icon color={colors.grey} size={24} {...(materialIconProps as IconProps<any>)} />
           </View>
         )}
         <View className="flex-1">

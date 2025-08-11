@@ -67,7 +67,9 @@ const Alert = React.forwardRef<AlertRef, AlertProps>(
       };
     });
 
-    function promptAlert(args: AlertProps & { prompt: Required }) {
+    function promptAlert(
+      args: AlertProps & { prompt: NonNullable<AlertProps['prompt']> }
+    ) {
       setText(args.prompt?.defaultValue ?? '');
       setPassword('');
       setProps(args);
@@ -90,7 +92,7 @@ const Alert = React.forwardRef<AlertRef, AlertProps>(
     }
 
     return (
-      <AlertDialogPrimitive.Root ref={augmentedRef} open={open} onOpenChange={onOpenChange}>
+      <AlertDialogPrimitive.Root ref={augmentedRef as any} open={open} onOpenChange={onOpenChange}>
         <AlertDialogPrimitive.Trigger asChild={!!children}>{children}</AlertDialogPrimitive.Trigger>
         <AlertDialogPrimitive.Portal hostName={materialPortalHost}>
           <AlertDialogPrimitive.Overlay asChild>

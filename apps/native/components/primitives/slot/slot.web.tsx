@@ -1,8 +1,7 @@
 import { Root } from '@radix-ui/react-slot';
 
-const Slot = Root as <T extends React.ElementType>(
-  props: React.ComponentProps
-) => React.JSX.Element | null;
+// Relax typing to avoid cross-React type incompatibilities in web build
+const Slot: any = Root as any;
 
 const Text = Slot;
 

@@ -20,7 +20,9 @@ const Alert = React.forwardRef<AlertRef, AlertProps>(
       deps: [prompt],
     });
 
-    function promptAlert(args: AlertProps & { prompt: Required }) {
+    function promptAlert(
+      args: AlertProps & { prompt: NonNullable<AlertProps['prompt']> }
+    ) {
       RNAlert.prompt(
         args.title,
         args.message,
@@ -41,7 +43,7 @@ const Alert = React.forwardRef<AlertRef, AlertProps>(
           title,
           message,
           buttons,
-          prompt: prompt as Required,
+          prompt: prompt as NonNullable<AlertProps['prompt']>,
         });
         return;
       }
@@ -50,7 +52,7 @@ const Alert = React.forwardRef<AlertRef, AlertProps>(
 
     const Component = !children ? Pressable : Slot;
     return (
-      <Component ref={augmentedRef} onPress={onPress}>
+      <Component ref={augmentedRef as any} onPress={onPress}>
         {children}
       </Component>
     );
