@@ -280,15 +280,50 @@ export const ConvexDynamicForm = React.memo(
       const ed = (values as any)?.endDate
       if (!sd) return
       
-      const sdDate = sd instanceof Date ? sd : new Date(sd)
+      // Normalize start/end as Date objects for comparison
+      const parseToDate = (v: any): Date | undefined => {
+        if (!v) return undefined
+        if (v instanceof Date) return v
+        if (typeof v === 'string') {
+          // Support 'yyyy-MM-dd' by constructing a local Date
+          const m = v.match(/^(\d{4})-(\d{2})-(\d{2})$/)
+          if (m) {
+            const d = new Date(Number(m[1]), Number(m[2]) - 1, Number(m[3]))
+            return isNaN(d.getTime()) ? undefined : d
+          }
+          const d = new Date(v)
+          return isNaN(d.getTime()) ? undefined : d
+        }
+        return undefined
+      }
+
+      const formatLocalDate = (date: Date): string => {
+        const y = date.getFullYear()
+        const m = String(date.getMonth() + 1).padStart(2, '0')
+        const d = String(date.getDate()).padStart(2, '0')
+        return `${y}-${m}-${d}`
+      }
+
+      const sdDate = parseToDate(sd)
+      if (!sdDate) return
+
+      const setEnd = (date: Date) => {
+        // Preserve the existing type convention: if startDate is a string, write a string; else write Date
+        if (typeof sd === 'string') {
+          ;(form as any).setFieldValue('endDate', formatLocalDate(date))
+        } else {
+          ;(form as any).setFieldValue('endDate', date)
+        }
+      }
+
       if (!ed) {
-        ;(form as any).setFieldValue('endDate', sdDate)
+        setEnd(sdDate)
         return
       }
-      
-      const edDate = ed instanceof Date ? ed : new Date(ed)
-      if (edDate < sdDate) {
-        ;(form as any).setFieldValue('endDate', sdDate)
+
+      const edDate = parseToDate(ed)
+      if (!edDate || edDate < sdDate) {
+        setEnd(sdDate)
       }
     }, [filteredFields, values, form])
 
