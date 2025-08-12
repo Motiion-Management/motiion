@@ -58,7 +58,25 @@ export function ExperienceEditSheet({
       setActiveTab('details');
       if (experienceId && existingExperience) {
         setExperienceType(existingExperience.type as ExperienceType);
-        formDataRef.current = existingExperience as Partial<Experience>;
+        // Hydrate date strings to Date objects for the form controls
+        const hydrateDates = (data: any) => {
+          const out: any = { ...data };
+          const parse = (v: any) => {
+            if (!v || typeof v !== 'string') return undefined;
+            const trimmed = v.trim();
+            if (!trimmed) return undefined;
+            const d = new Date(trimmed);
+            return isNaN(d.getTime()) ? undefined : d;
+          };
+          const sd = parse(data.startDate);
+          const ed = parse(data.endDate);
+          if (sd) out.startDate = sd;
+          else delete out.startDate;
+          if (ed) out.endDate = ed;
+          else delete out.endDate;
+          return out;
+        };
+        formDataRef.current = hydrateDates(existingExperience) as Partial<Experience>;
       } else {
         setExperienceType(undefined);
         formDataRef.current = {};
@@ -109,14 +127,40 @@ export function ExperienceEditSheet({
     // Check if required fields are filled
     const isComplete = checkExperienceComplete(completeData);
 
+    // Convert Date objects to ISO strings and drop empty strings
+    const normalizeForConvex = (obj: Record<string, any>) => {
+      const out: Record<string, any> = {};
+      for (const [key, value] of Object.entries(obj)) {
+        if (value === undefined || value === null) continue;
+        if (value instanceof Date) {
+          out[key] = value.toISOString();
+          continue;
+        }
+        if (typeof value === 'string') {
+          const trimmed = value.trim();
+          if (trimmed === '') continue;
+          out[key] = trimmed;
+          continue;
+        }
+        if (Array.isArray(value)) {
+          out[key] = value.filter((v) =>
+            !(v === undefined || v === null || (typeof v === 'string' && v.trim() === ''))
+          );
+          continue;
+        }
+        out[key] = value;
+      }
+      return out;
+    };
+
+    const payload = normalizeForConvex(completeData as any);
+
     try {
       setIsSaving(true);
       if (experienceId) {
-        // Update existing
-        await updateExperience({ id: experienceId as any, patch: completeData as any });
+        await updateExperience({ id: experienceId as any, patch: payload as any });
       } else {
-        // Create new; server returns new id
-        await addMyExperience(completeData as any);
+        await addMyExperience(payload as any);
       }
       handleClose();
     } catch (err) {
