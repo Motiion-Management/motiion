@@ -201,6 +201,8 @@ export function BottomSheetCombobox<T = any>({
               value={searchTerm}
               onChangeText={setSearchTerm}
               autoCapitalize={autoCapitalize}
+              clearButtonMode="while-editing"
+              onClear={() => setSearchTerm('')}
               rightView={
                 <Search
                   className="pointer-events-none mr-2 text-text-default opacity-50"

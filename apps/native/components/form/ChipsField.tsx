@@ -78,6 +78,8 @@ export const ChipsField = ({ label, placeholder, helpText, autoCapitalize = 'wor
         errorMessage={errorMessage}
         autoCapitalize={autoCapitalize}
         autoCorrect={false}
+        clearButtonMode="while-editing"
+        onClear={() => setBuffer('')}
         returnKeyType="done"
       />
       {helpText && (

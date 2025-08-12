@@ -47,9 +47,17 @@ export const InputField = ({ label, placeholder, rows, multiline, ...props }: In
     <TextField
       label={label}
       placeholder={placeholder}
-      value={field.state.value}
+      value={field.state.value ?? ''}
       onChangeText={field.handleChange}
       onBlur={handleBlur}
+      clearButtonMode="while-editing"
+      onClear={() => {
+        // Ensure form state updates and validation can react
+        field.handleChange('');
+        if (validationModeContext) {
+          validationModeContext.markFieldBlurred(field.name);
+        }
+      }}
       errorMessage={errorMessage}
       numberOfLines={rows}
       multiline={multiline ?? (rows != null)}
