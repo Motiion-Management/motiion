@@ -38,6 +38,7 @@ export function ExperienceEditSheet({
   const formDataRef = useRef<Partial<Experience>>({});
   const [actionsHeight, setActionsHeight] = useState(0);
   const [isSaving, setIsSaving] = useState(false);
+  const [resetCount, setResetCount] = useState(0);
   const bottomSafeInset = insets.bottom || 0;
   const bottomCompensation = actionsHeight + bottomSafeInset + 8; // small cushion for caret
   // Single-form approach: form data buffered in ref to avoid parent re-renders
@@ -52,30 +53,32 @@ export function ExperienceEditSheet({
     experienceId ? { id: experienceId as any } : 'skip'
   ) as any | undefined;
 
+  // Helper to convert date strings to Date objects for the form layer
+  const hydrateDates = useCallback((data: any) => {
+    if (!data) return {} as any;
+    const out: any = { ...data };
+    const parse = (v: any) => {
+      if (!v || typeof v !== 'string') return undefined;
+      const trimmed = v.trim();
+      if (!trimmed) return undefined;
+      const d = new Date(trimmed);
+      return isNaN(d.getTime()) ? undefined : d;
+    };
+    const sd = parse(data.startDate);
+    const ed = parse(data.endDate);
+    if (sd) out.startDate = sd;
+    else delete out.startDate;
+    if (ed) out.endDate = ed;
+    else delete out.endDate;
+    return out;
+  }, []);
+
   // Reset state when sheet opens; if editing, seed from backend doc
   useEffect(() => {
     if (isOpen) {
       setActiveTab('details');
       if (experienceId && existingExperience) {
         setExperienceType(existingExperience.type as ExperienceType);
-        // Hydrate date strings to Date objects for the form controls
-        const hydrateDates = (data: any) => {
-          const out: any = { ...data };
-          const parse = (v: any) => {
-            if (!v || typeof v !== 'string') return undefined;
-            const trimmed = v.trim();
-            if (!trimmed) return undefined;
-            const d = new Date(trimmed);
-            return isNaN(d.getTime()) ? undefined : d;
-          };
-          const sd = parse(data.startDate);
-          const ed = parse(data.endDate);
-          if (sd) out.startDate = sd;
-          else delete out.startDate;
-          if (ed) out.endDate = ed;
-          else delete out.endDate;
-          return out;
-        };
         formDataRef.current = hydrateDates(existingExperience) as Partial<Experience>;
       } else {
         setExperienceType(undefined);
@@ -207,10 +210,27 @@ export function ExperienceEditSheet({
     () => ({ ...formDataRef.current, type: experienceType }),
     [isOpen, experienceType, experienceId, existingExperience?._id]
   );
-  const resetKey = `${isOpen}|${experienceId ?? 'new'}|${experienceType ?? ''}`;
+  const resetKey = `${resetCount}|${experienceId ?? 'new'}|${experienceType ?? ''}`;
 
   return (
-    <Sheet isOpened={isOpen} label={getTitle()} onIsOpenedChange={onOpenChange}>
+    <Sheet
+      isOpened={isOpen}
+      label={getTitle()}
+      onIsOpenedChange={(open) => {
+        if (!open) {
+          // Reset local form buffer back to backend data or empty for new
+          if (experienceId && existingExperience) {
+            formDataRef.current = hydrateDates(existingExperience) as Partial<Experience>;
+            setExperienceType(existingExperience.type as ExperienceType);
+          } else {
+            formDataRef.current = {};
+            setExperienceType(undefined);
+          }
+          setActiveTab('details');
+          setResetCount((c) => c + 1);
+        }
+        onOpenChange(open);
+      }}>
       <View className="h-[80vh]">
         {/* Tabs */}
         <Tabs tabs={TABS} activeTab={activeTab} onTabChange={setActiveTab} />
