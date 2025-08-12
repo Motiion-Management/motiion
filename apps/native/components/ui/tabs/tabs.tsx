@@ -1,5 +1,11 @@
-import React, { useMemo, useRef, useState } from 'react';
+import React, { useMemo, useState, useEffect } from 'react';
 import { View, TouchableOpacity, LayoutChangeEvent } from 'react-native';
+import Animated, {
+  useSharedValue,
+  useAnimatedStyle,
+  withSpring,
+  interpolate,
+} from 'react-native-reanimated';
 
 import { Text } from '~/components/ui/text';
 import { cn } from '~/lib/cn';
@@ -42,9 +48,30 @@ export function Tabs({
   );
 
   const visualProgress = progress != null ? progress : activeIndex;
+  
+  // Animated values for smooth transitions
+  const animatedProgress = useSharedValue(visualProgress);
+  const indicatorX = useSharedValue(0);
+  const indicatorWidth = useSharedValue(0);
 
-  // Calculate indicator position and width based on measurements
-  const indicatorStyle = useMemo(() => {
+  // Update animated values when progress changes
+  useEffect(() => {
+    // Use spring for tab clicks, direct assignment for swipe gestures
+    if (progress != null) {
+      // Direct assignment for swipe gestures (already smooth from pager)
+      animatedProgress.value = visualProgress;
+    } else {
+      // Spring animation for tab clicks
+      animatedProgress.value = withSpring(visualProgress, {
+        damping: 20,
+        stiffness: 300,
+        mass: 0.8,
+      });
+    }
+  }, [visualProgress, progress]);
+
+  // Update indicator position based on measurements
+  useEffect(() => {
     if (visualProgress >= 0 && visualProgress < tabs.length) {
       const tabIndex = Math.floor(visualProgress);
       const offset = visualProgress - tabIndex;
@@ -55,21 +82,43 @@ export function Tabs({
       const nextMeasurement = tabMeasurements[nextTab?.key];
 
       if (currentMeasurement) {
-        let x = currentMeasurement.x;
-        let width = currentMeasurement.width;
+        let targetX = currentMeasurement.x;
+        let targetWidth = currentMeasurement.width;
 
         // If animating to next tab, interpolate position and width
         if (offset > 0 && nextMeasurement) {
-          x = currentMeasurement.x + (nextMeasurement.x - currentMeasurement.x) * offset;
-          width =
+          targetX = currentMeasurement.x + (nextMeasurement.x - currentMeasurement.x) * offset;
+          targetWidth =
             currentMeasurement.width + (nextMeasurement.width - currentMeasurement.width) * offset;
         }
 
-        return { width, transform: [{ translateX: x }] };
+        if (progress != null) {
+          // Direct assignment for swipe gestures
+          indicatorX.value = targetX;
+          indicatorWidth.value = targetWidth;
+        } else {
+          // Spring animation for tab clicks
+          indicatorX.value = withSpring(targetX, {
+            damping: 20,
+            stiffness: 300,
+            mass: 0.8,
+          });
+          indicatorWidth.value = withSpring(targetWidth, {
+            damping: 20,
+            stiffness: 300,
+            mass: 0.8,
+          });
+        }
       }
     }
-    return { width: 0, transform: [{ translateX: 0 }] };
-  }, [visualProgress, tabs, tabMeasurements]);
+  }, [visualProgress, tabs, tabMeasurements, progress]);
+
+  const animatedIndicatorStyle = useAnimatedStyle(() => {
+    return {
+      transform: [{ translateX: indicatorX.value }],
+      width: indicatorWidth.value,
+    };
+  });
 
   const handleTabLayout = (key: string, event: LayoutChangeEvent) => {
     const { x, width } = event.nativeEvent.layout;
@@ -105,13 +154,11 @@ export function Tabs({
           );
         })}
         {/* Animated indicator */}
-        {indicatorStyle.width > 0 && (
-          <View
-            pointerEvents="none"
-            className="absolute -bottom-[0.5px] h-[1.5px] bg-border-high"
-            style={indicatorStyle}
-          />
-        )}
+        <Animated.View
+          pointerEvents="none"
+          className="absolute -bottom-[0.5px] h-[1.5px] bg-border-high"
+          style={animatedIndicatorStyle}
+        />
       </View>
     </View>
   );
