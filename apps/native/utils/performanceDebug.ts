@@ -8,6 +8,12 @@ interface PerformanceMark {
   metadata?: Record<string, any>;
 }
 
+const perfNow = (() => {
+  const p: any = (globalThis as any)?.performance;
+  if (p && typeof p.now === 'function') return () => p.now();
+  return () => Date.now();
+})();
+
 class PerformanceDebugger {
   private marks: Map<string, PerformanceMark> = new Map();
   private enabled = __DEV__; // Only in development
@@ -18,7 +24,7 @@ class PerformanceDebugger {
   mark(name: string, metadata?: Record<string, any>) {
     if (!this.enabled) return;
 
-    const timestamp = performance.now();
+    const timestamp = perfNow();
     this.marks.set(name, { name, timestamp, metadata });
 
     console.log(`[PERF] ${this.formatTimestamp()} START: ${name}`, metadata || '');
@@ -36,7 +42,7 @@ class PerformanceDebugger {
       return;
     }
 
-    const endTimestamp = performance.now();
+    const endTimestamp = perfNow();
     const duration = endTimestamp - start.timestamp;
 
     const finalEndMark = endMark || `${startMark}:end`;
@@ -92,7 +98,7 @@ class PerformanceDebugger {
   getActiveMarks() {
     return Array.from(this.marks.entries()).map(([name, mark]) => ({
       name,
-      age: performance.now() - mark.timestamp,
+      age: perfNow() - mark.timestamp,
       metadata: mark.metadata,
     }));
   }

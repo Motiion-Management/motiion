@@ -239,9 +239,7 @@ export function ExperienceEditSheet({
 
   // Enable/disable pager scroll programmatically as well, for platforms not respecting prop
   useEffect(() => {
-    try {
-      pagerRef.current?.setScrollEnabled?.(!!experienceType);
-    } catch {}
+    pagerRef.current?.setScrollEnabled?.(!!experienceType);
   }, [experienceType]);
 
 

@@ -223,15 +223,13 @@ export const ConvexDynamicForm = React.memo(
         }
       }
       // Backfill defaults for any field still undefined (useful when sharing external form)
-      try {
-        const currentValues = (form as any)?.store?.getState?.().values ?? {};
-        for (const f of fields) {
-          if (currentValues[f.name] === undefined && defaultValues[f.name] !== undefined) {
-            // @ts-ignore tanstack typed generic
-            (form as any).setFieldValue(f.name as any, defaultValues[f.name]);
-          }
+      const currentValues = (form as any)?.store?.getState?.().values ?? {};
+      for (const f of fields) {
+        if (currentValues[f.name] === undefined && defaultValues[f.name] !== undefined) {
+          // @ts-ignore tanstack typed generic
+          (form as any).setFieldValue(f.name as any, defaultValues[f.name]);
         }
-      } catch {}
+      }
       initializedRef.current = key;
     }, [fieldsKey, fields, form, initialData, resetKey, defaultValues]);
 
