@@ -3,7 +3,13 @@ import { Table } from 'convex-helpers/server'
 import { z } from 'zod'
 import { Doc } from '../_generated/dataModel'
 
-export const TRAINING_TYPES = ['education', 'dance-school', 'other'] as const
+export const TRAINING_TYPES = [
+  'education',
+  'dance-school',
+  'programs-intensives',
+  'scholarships',
+  'other'
+] as const
 
 export const training = {
   userId: zid('users'),
