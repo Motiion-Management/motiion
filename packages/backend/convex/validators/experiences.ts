@@ -46,28 +46,19 @@ export const experiences = {
   duration: z.string().optional(),
   link: z.string().optional(),
   media: z.union([zid('_storage'), z.string()]).optional(),
-  roles: z.array(z.string()),
+  roles: z.array(z.string()).optional(),
 
-  // TV/Film
+  // Unified title field for all types
   title: z.string().optional(),
+  // TV/Film
   studio: z.string().optional(),
-
   // Music Videos
-  songTitle: z.string().optional(),
   artists: z.array(z.string()).optional(),
-
   // Commercials
   companyName: z.string().optional(),
-  campaignTitle: z.string().optional(),
   productionCompany: z.string().optional(),
-
-  // Live Performances (type-specific optional fields)
-  festivalTitle: z.string().optional(),
-  tourName: z.string().optional(),
+  // Live Performances
   tourArtist: z.string().optional(),
-  eventName: z.string().optional(),
-  awardShowName: z.string().optional(),
-  productionTitle: z.string().optional(),
   venue: z.string().optional(),
 
   // Team fields

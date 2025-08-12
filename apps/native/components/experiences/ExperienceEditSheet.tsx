@@ -12,15 +12,18 @@ import { Tabs } from '~/components/ui/tabs/tabs';
 import { type ExperienceType, type Experience } from '~/types/experiences';
 import { type Doc, type Id } from '@packages/backend/convex/_generated/dataModel';
 import { getExperienceMetadata } from '~/utils/convexFormMetadata';
-import { zExperiencesUnified } from '@packages/backend/convex/schemas';
+// import { zExperiences } from '@packages/backend/convex/validators/experiences';
 import { useAppForm } from '~/components/form/appForm';
-import { zodValidator } from '@tanstack/zod-form-adapter';
 import { useStore } from '@tanstack/react-form';
 import * as Haptics from 'expo-haptics';
 import { api } from '@packages/backend/convex/_generated/api';
 import { useMutation } from 'convex/react';
 import { normalizeForConvex } from '~/utils/convexHelpers';
 
+import { vv } from '@packages/backend/convex/schema';
+import { convexToZod } from 'convex-helpers/server/zod';
+
+const zExperiences = convexToZod(vv.doc('experiences'));
 // Constants
 const BOTTOM_OFFSET_CUSHION = 8;
 const MAX_VIEW_HEIGHT = '80vh' as const;
@@ -87,7 +90,8 @@ export function ExperienceEditSheet({
   const title = experienceId ? 'Edit Experience' : 'Add Experience';
 
   // Map type -> schema and metadata
-  const schema = useMemo(() => zExperiencesUnified, []);
+  // Use shared backend validator schema for single source of truth
+  const schema = zExperiences;
 
   // Initialize shared form controller with onSubmit handling
   const addMyExperience = useMutation(api.users.experiences.addMyExperience);
@@ -96,9 +100,10 @@ export function ExperienceEditSheet({
   const sharedForm = useAppForm({
     defaultValues: experience,
     validators: {
-      onChange: zodValidator(schema as any),
+      onChange: schema,
     },
     onSubmit: async ({ value }) => {
+      console.log('Submitting experience:', value);
       const payload = normalizeForConvex(value as Experience);
       try {
         setUiState((prev) => ({ ...prev, isSaving: true }));
@@ -121,6 +126,7 @@ export function ExperienceEditSheet({
     },
   });
 
+  const canSubmit = useStore(sharedForm.store, (state: any) => state.canSubmit);
   // Track current selected type from the form store to drive UI
   const selectedType = useStore(sharedForm.store, (state: any) => state.values?.type) as
     | ExperienceType
@@ -136,7 +142,7 @@ export function ExperienceEditSheet({
   const formOverrides = useMemo(
     () => ({
       type: {
-        // Hint to render as picker/select and place in details group
+        // Render selector only on Details tab
         metadata: { group: ['details', 'basic', 'quick'], order: 0 },
         component: 'picker' as any,
       },
@@ -290,8 +296,8 @@ export function ExperienceEditSheet({
               </Button>
             ) : (
               <Button
-                onPress={() => (sharedForm as any)?.handleSubmit?.()}
-                disabled={uiState.isSaving || !(sharedForm as any)?.state?.canSubmit}
+                onPress={sharedForm.handleSubmit}
+                disabled={uiState.isSaving || !canSubmit}
                 className="w-full">
                 <Text>{uiState.isSaving ? 'Saving…' : 'Save'}</Text>
               </Button>

@@ -88,27 +88,27 @@ export const getExperienceDisplayTitle = (experience: any): string => {
     case 'tv-film':
       return experience.title || 'Untitled Project';
     case 'music-video':
-      return experience.songTitle || 'Untitled Song';
+      return experience.title || 'Untitled Song';
     case 'live-performance':
       switch (experience.subtype) {
         case 'festival':
-          return experience.festivalTitle || 'Festival';
+          return experience.title || 'Festival';
         case 'tour':
-          return experience.tourName || 'Tour';
+          return experience.title || 'Tour';
         case 'theater':
-          return experience.productionTitle || 'Theater Production';
+          return experience.title || 'Theater Production';
         case 'award-show':
-          return experience.awardShowName || 'Award Show';
+          return experience.title || 'Award Show';
         case 'corporate':
         case 'other':
-          return experience.eventName || 'Event';
+          return experience.title || 'Event';
         case 'concert':
-          return experience.venue || 'Concert';
+          return experience.title || experience.venue || 'Concert';
         default:
           return 'Performance';
       }
     case 'commercial':
-      return experience.campaignTitle || 'Commercial';
+      return experience.title || 'Commercial';
     default:
       return 'Experience';
   }

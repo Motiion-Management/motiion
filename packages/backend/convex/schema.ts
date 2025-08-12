@@ -10,8 +10,9 @@ import { Agents } from './validators/agents'
 import { Experiences } from './validators/experiences'
 import { Training } from './validators/training'
 import { OnboardingFlows } from './validators/onboardingFlows'
+import { typedV } from 'convex-helpers/validators'
 
-export default defineSchema({
+const schema = defineSchema({
   // global
   featuredContent: FeaturedContent.table,
   featuredMembers: FeaturedMembers.table,
@@ -44,3 +45,6 @@ export default defineSchema({
   //   // ONLY ENABLE WHEN DOING SCHEMA MIGRATION
   //   schemaValidation: false
 })
+
+export default schema
+export const vv = typedV(schema)

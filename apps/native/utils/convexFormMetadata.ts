@@ -53,12 +53,18 @@ export interface FieldMetadata {
     isEmpty?: boolean;
     equals?: any | any[];
   };
-  // Conditional label override
-  labelWhen?: {
-    field: string;
-    equals?: any | any[];
-    label: string;
-  };
+  // Conditional label override (supports single rule or array of rules)
+  labelWhen?:
+    | {
+        field: string;
+        equals?: any | any[];
+        label: string;
+      }
+    | Array<{
+        field: string;
+        equals?: any | any[];
+        label: string;
+      }>;
 }
 
 export type FormMetadata = Record<string, FieldMetadata>;
@@ -235,7 +241,7 @@ export const tvFilmMetadata: FormMetadata = {
  * Music Video experience form metadata
  */
 export const musicVideoMetadata: FormMetadata = {
-  songTitle: {
+  title: {
     group: ['details', 'basic', 'quick'],
     order: 1,
     placeholder: 'Enter the song title',
@@ -318,21 +324,21 @@ export const livePerformanceMetadata: FormMetadata = {
     order: 1,
     options: LIVE_EVENT_TYPES,
   },
-  festivalTitle: {
-    placeholder: 'Enter festival name',
+  title: {
+    placeholder: 'Enter title',
     group: ['details', 'basic', 'quick'],
-    helpText: 'e.g., Coachella, Glastonbury',
-    showWhen: { field: 'subtype', equals: 'festival' },
+    helpText: 'Name of the event or production',
     order: 2,
     autoCapitalize: 'words',
-  },
-  tourName: {
-    placeholder: 'Enter tour name',
-    group: ['details', 'basic', 'quick'],
-    helpText: 'Official tour title',
-    showWhen: { field: 'subtype', equals: 'tour' },
-    order: 2,
-    autoCapitalize: 'words',
+    labelWhen: [
+      { field: 'subtype', equals: 'festival', label: 'Festival Name' },
+      { field: 'subtype', equals: 'tour', label: 'Tour Name' },
+      { field: 'subtype', equals: 'concert', label: 'Concert Name' },
+      { field: 'subtype', equals: 'corporate', label: 'Event Name' },
+      { field: 'subtype', equals: 'award-show', label: 'Award Show Name' },
+      { field: 'subtype', equals: 'theater', label: 'Production Title' },
+      { field: 'subtype', equals: 'other', label: 'Event Name' },
+    ],
   },
   tourArtist: {
     placeholder: 'Enter artist name',
@@ -346,31 +352,6 @@ export const livePerformanceMetadata: FormMetadata = {
     group: ['details', 'basic', 'quick'],
     helpText: 'Corporate or production company',
     showWhen: { field: 'subtype', equals: 'corporate' },
-    autoCapitalize: 'words',
-  },
-  eventName: {
-    placeholder: 'Enter event name',
-    group: ['details', 'basic', 'quick'],
-    helpText: 'Name of the specific event',
-    showWhen: { field: 'subtype', equals: ['corporate', 'other'] },
-    order: 2,
-    autoCapitalize: 'words',
-  },
-  awardShowName: {
-    label: 'Award Show Title',
-    placeholder: 'Enter award show name',
-    helpText: 'e.g., Grammy Awards, MTV VMAs',
-    group: ['details', 'basic', 'quick'],
-    showWhen: { field: 'subtype', equals: 'award-show' },
-    order: 2,
-    autoCapitalize: 'words',
-  },
-  productionTitle: {
-    placeholder: 'Enter production title',
-    helpText: 'Theater or stage production name',
-    group: ['details', 'basic', 'quick'],
-    showWhen: { field: 'subtype', equals: 'theater' },
-    order: 2,
     autoCapitalize: 'words',
   },
   venue: {
@@ -430,6 +411,14 @@ export const livePerformanceMetadata: FormMetadata = {
     order: 10,
     autoCapitalize: 'words',
   },
+  directors: {
+    component: 'chips',
+    placeholder: 'Add director name(s)',
+    helpText: 'Director(s) for the production or event',
+    group: 'team',
+    order: 11,
+    autoCapitalize: 'words',
+  },
 };
 
 /**
@@ -442,7 +431,7 @@ export const commercialMetadata: FormMetadata = {
     helpText: 'The brand being advertised',
     autoCapitalize: 'words',
   },
-  campaignTitle: {
+  title: {
     placeholder: 'Enter campaign or commercial title',
     group: ['details', 'basic', 'quick'],
     helpText: 'Campaign name or commercial title',

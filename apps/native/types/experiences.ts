@@ -35,7 +35,7 @@ export interface TvFilmExperience extends BaseExperience {
 // Music Video specific
 export interface MusicVideoExperience extends BaseExperience {
   type: 'music-video';
-  songTitle: string;
+  title: string;
   artists: string[];
   startDate?: string;
   duration?: string;
@@ -45,16 +45,12 @@ export interface MusicVideoExperience extends BaseExperience {
 export interface LivePerformanceExperience extends BaseExperience {
   type: 'live-performance';
   subtype: LivePerformanceEventType;
+  title: string;
   startDate?: string;
   duration?: string;
   // Dynamic fields based on event type
-  festivalTitle?: string;
-  tourName?: string;
   tourArtist?: string;
   companyName?: string;
-  eventName?: string;
-  awardShowName?: string;
-  productionTitle?: string;
   venue?: string;
 }
 
@@ -62,7 +58,7 @@ export interface LivePerformanceExperience extends BaseExperience {
 export interface CommercialExperience extends BaseExperience {
   type: 'commercial';
   companyName: string;
-  campaignTitle: string;
+  title: string;
   productionCompany: string;
   startDate?: string;
   duration?: string;

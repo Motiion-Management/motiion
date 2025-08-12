@@ -238,15 +238,25 @@ export const ConvexDynamicForm = React.memo(
 
         const labelOverridden = (() => {
           if (!labelWhen) return undefined
-          const labelCurrent = (values as any)?.[labelWhen.field]
-          if (labelWhen.equals !== undefined) {
-            if (Array.isArray(labelWhen.equals)) {
-              if (labelWhen.equals.includes(labelCurrent)) return labelWhen.label
-            } else if (labelCurrent === labelWhen.equals) {
-              return labelWhen.label
+          const tryRule = (rule: any) => {
+            const labelCurrent = (values as any)?.[rule.field]
+            if (rule.equals !== undefined) {
+              if (Array.isArray(rule.equals)) {
+                if (rule.equals.includes(labelCurrent)) return rule.label
+              } else if (labelCurrent === rule.equals) {
+                return rule.label
+              }
             }
+            return undefined
           }
-          return undefined
+          if (Array.isArray(labelWhen)) {
+            for (const r of labelWhen) {
+              const m = tryRule(r)
+              if (m) return m
+            }
+            return undefined
+          }
+          return tryRule(labelWhen)
         })()
 
         return {
