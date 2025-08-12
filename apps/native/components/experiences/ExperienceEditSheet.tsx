@@ -150,16 +150,15 @@ export function ExperienceEditSheet({
 
   return (
     <Sheet
+      enableContentPanningGesture={false}
       isOpened={isOpen}
       label={title}
       onIsOpenedChange={(open) => {
-        if (!open) {
-          // Reset UI state
-          setUiState((prev) => ({ ...prev, activeTab: 'details', pagerProgress: 0 }));
+        if (open) {
+          sharedForm.reset();
           pagerRef.current?.setPage?.(0);
-          // Reset form state for next open via controller
-          (sharedForm as any)?.reset?.();
         }
+
         onOpenChange(open);
       }}>
       <View className="h-[80vh]">
