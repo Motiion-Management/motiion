@@ -73,6 +73,15 @@ export const experiences = {
 
 export const zExperiences = z.object(experiences)
 
+// Full Convex document schema (includes system fields)
+export const zExperiencesDoc = zExperiences.extend({
+  _id: zid('experiences'),
+  _creationTime: z.number()
+})
+
+// Aliases for clarity in imports
+export const zExperiencesBase = zExperiences
+
 export const Experiences = Table('experiences', zodToConvexFields(experiences))
 
 export type ExperienceDoc = Doc<'experiences'>

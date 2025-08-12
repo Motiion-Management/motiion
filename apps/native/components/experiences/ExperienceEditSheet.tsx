@@ -19,10 +19,8 @@ import { api } from '@packages/backend/convex/_generated/api';
 import { useMutation } from 'convex/react';
 import { normalizeForConvex } from '~/utils/convexHelpers';
 
-import { vv } from '@packages/backend/convex/schema';
-import { convexToZod } from 'convex-helpers/server/zod';
+import { zExperiencesDoc } from '@packages/backend/convex/validators/experiences';
 
-const zExperiences = convexToZod(vv.doc('experiences'));
 // Constants
 const BOTTOM_OFFSET_CUSHION = 8;
 const HAPTIC_MEDIUM = Haptics.ImpactFeedbackStyle.Medium;
@@ -88,8 +86,8 @@ export function ExperienceEditSheet({
   const title = experienceId ? 'Edit Experience' : 'Add Experience';
 
   // Map type -> schema and metadata
-  // Use shared backend validator schema for single source of truth
-  const schema = zExperiences;
+  // Use shared backend validator schema for single source of truth (full doc shape)
+  const schema = zExperiencesDoc.passthrough();
 
   // Initialize shared form controller with onSubmit handling
   const addMyExperience = useMutation(api.users.experiences.addMyExperience);
