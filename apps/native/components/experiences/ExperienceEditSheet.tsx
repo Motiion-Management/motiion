@@ -1,5 +1,5 @@
 import React, { useState, useCallback, useEffect, useMemo, useRef } from 'react';
-import { View, Platform } from 'react-native';
+import { View, Platform, Alert } from 'react-native';
 import PagerView from 'react-native-pager-view';
 import { KeyboardAwareScrollView, KeyboardStickyView } from 'react-native-keyboard-controller';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -10,7 +10,8 @@ import { Sheet } from '~/components/ui/sheet';
 import { Text } from '~/components/ui/text';
 import { Tabs } from '~/components/ui/tabs/tabs';
 
-import { ExperienceType, Experience } from '~/types/experiences';
+import { type ExperienceType, type Experience } from '~/types/experiences';
+import { type Doc, type Id } from '@packages/backend/convex/_generated/dataModel';
 import { getExperienceMetadata } from '~/utils/convexFormMetadata';
 import { EXPERIENCE_TYPES } from '~/config/experienceTypes';
 import { zExperiencesUnified } from '@packages/backend/convex/schemas';
@@ -18,12 +19,24 @@ import { useAppForm } from '~/components/form/appForm';
 import { zodValidator } from '@tanstack/zod-form-adapter';
 import * as Haptics from 'expo-haptics';
 import { api } from '@packages/backend/convex/_generated/api';
-import { useMutation, useQuery } from 'convex/react';
+import { useMutation } from 'convex/react';
+import { hydrateDates } from '~/utils/dateHelpers';
+import { normalizeForConvex } from '~/utils/convexHelpers';
+import { getDefaultsFromSchema, mergeFormValues } from '~/utils/formDefaults';
+import { convexSchemaToFormConfig } from '~/utils/convexSchemaToForm';
+
+// Constants
+const BOTTOM_OFFSET_CUSHION = 8;
+const MAX_VIEW_HEIGHT = '80vh' as const;
+const HAPTIC_MEDIUM = Haptics.ImpactFeedbackStyle.Medium;
+const HAPTIC_LIGHT = Haptics.ImpactFeedbackStyle.Light;
 
 interface ExperienceEditSheetProps {
   isOpen: boolean;
   onOpenChange: (isOpen: boolean) => void;
-  experienceId?: string;
+  // Prefer passing the whole experience to avoid refetching
+  experience?: Doc<'experiences'>;
+  experienceId?: Id<'experiences'>;
 }
 
 const TABS = [
@@ -34,208 +47,190 @@ const TABS = [
 export function ExperienceEditSheet({
   isOpen,
   onOpenChange,
-  experienceId,
+  experience,
+  experienceId: experienceIdProp,
 }: ExperienceEditSheetProps) {
+  const experienceId = experience?._id ?? experienceIdProp;
   const insets = useSafeAreaInsets();
-  const [activeTab, setActiveTab] = useState('details');
-  const pagerRef = useRef<React.ElementRef<typeof PagerView> | null>(null);
-  const [pagerProgress, setPagerProgress] = useState(0);
-  const [experienceType, setExperienceType] = useState<ExperienceType | undefined>(undefined);
-  const formDataRef = useRef<Partial<Experience>>({});
-  const [actionsHeight, setActionsHeight] = useState(0);
-  const [isSaving, setIsSaving] = useState(false);
-  const [resetCount, setResetCount] = useState(0);
-  const bottomSafeInset = insets.bottom || 0;
-  const bottomCompensation = actionsHeight + bottomSafeInset + 8; // small cushion for caret
-  // Single-form approach: form data buffered in ref to avoid parent re-renders
 
   // Convex mutation to persist an experience for the current user
   const addMyExperience = useMutation(api.users.experiences.addMyExperience);
   const updateExperience = useMutation(api.experiences.update);
 
-  // Load the experience when editing
-  const existingExperience = useQuery(
-    (api as any).experiences.read,
-    experienceId ? { id: experienceId as any } : 'skip'
-  ) as any | undefined;
+  // Compute initial type and values up front, no effects
+  const initialType = experience?.type as ExperienceType | undefined;
 
-  // Helper to convert date strings to Date objects for the form layer
-  const hydrateDates = useCallback((data: any) => {
-    if (!data) return {} as any;
-    const out: any = { ...data };
-    const parse = (v: any) => {
-      if (!v || typeof v !== 'string') return undefined;
-      const trimmed = v.trim();
-      if (!trimmed) return undefined;
-      const d = new Date(trimmed);
-      return isNaN(d.getTime()) ? undefined : d;
-    };
-    const sd = parse(data.startDate);
-    const ed = parse(data.endDate);
-    if (sd) out.startDate = sd;
-    else delete out.startDate;
-    if (ed) out.endDate = ed;
-    else delete out.endDate;
-    return out;
-  }, []);
+  // Combined UI state for better management
+  const [uiState, setUiState] = useState({
+    activeTab: 'details',
+    pagerProgress: 0,
+    actionsHeight: 0,
+    isSaving: false,
+  });
 
-  // Reset state when sheet opens; if editing, seed from backend doc
+  const pagerRef = useRef<React.ElementRef<typeof PagerView> | null>(null);
+  const [experienceType, setExperienceType] = useState<ExperienceType | undefined>(initialType);
+
+  // Update experience type when experience prop changes (e.g., when editing different experience)
   useEffect(() => {
-    if (isOpen) {
-      setActiveTab('details');
-      if (experienceId && existingExperience) {
-        setExperienceType(existingExperience.type as ExperienceType);
-        formDataRef.current = hydrateDates(existingExperience) as Partial<Experience>;
-      } else {
-        setExperienceType(undefined);
-        formDataRef.current = {};
-      }
-      // formData is authoritative; team fields are included in dynamic form
+    if (experience?.type) {
+      setExperienceType(experience.type as ExperienceType);
     }
-  }, [isOpen, experienceId, existingExperience]);
+  }, [experience]);
 
-  // Handle experience type change
-  const handleExperienceTypeChange = useCallback(
-    (value: ExperienceType | undefined) => {
-      console.log('Selected experience type:', value);
-      if (value) {
-        setExperienceType(value);
-        // Clear form data when changing type for new experiences
-        if (!experienceId) {
-          formDataRef.current = { type: value } as Partial<Experience>;
-        }
-      }
-    },
-    [experienceId]
-  );
+  const bottomSafeInset = insets.bottom || 0;
+  const bottomCompensation = uiState.actionsHeight + bottomSafeInset + BOTTOM_OFFSET_CUSHION;
+
+  const handleExperienceTypeChange = useCallback((value: ExperienceType | undefined) => {
+    setExperienceType(value);
+  }, []);
 
   const handleClose = useCallback(() => {
     onOpenChange(false);
   }, [onOpenChange]);
 
-  const handleFormChange = useCallback((data: Partial<Experience>) => {
-    formDataRef.current = { ...formDataRef.current, ...data };
-  }, []);
-
-  // No separate team change; dynamic form updates formData for both steps
-
-  const handleNext = useCallback(() => {
-    if (activeTab === 'details') {
-      setActiveTab('team');
+  const handleNext = useCallback(async () => {
+    if (uiState.activeTab === 'details') {
+      setUiState((prev) => ({ ...prev, activeTab: 'team' }));
       pagerRef.current?.setPage?.(1);
-      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium).catch(() => {});
+      try {
+        await Haptics.impactAsync(HAPTIC_MEDIUM);
+      } catch (error) {
+        // Haptics not available on this device
+      }
     }
-  }, [activeTab]);
+  }, [uiState.activeTab]);
 
   const handleTabChange = useCallback(
     (tab: string) => {
-      if (tab === activeTab) return;
+      if (tab === uiState.activeTab) return;
       if (!experienceType && tab === 'team') return;
-      setActiveTab(tab);
+      setUiState((prev) => ({ ...prev, activeTab: tab }));
       const nextIndex = tab === 'team' ? 1 : 0;
       pagerRef.current?.setPage?.(nextIndex);
     },
-    [activeTab]
+    [uiState.activeTab, experienceType]
   );
 
-  const handleSave = useCallback(async () => {
-    if (!experienceType) return;
-
-    const completeData: Experience = {
-      ...formDataRef.current,
-      type: experienceType,
-    } as Experience;
-
-    // Check if required fields are filled
-    const isComplete = checkExperienceComplete(completeData);
-
-    // Convert Date objects to ISO strings and drop empty strings
-    const normalizeForConvex = (obj: Record<string, any>) => {
-      const out: Record<string, any> = {};
-      for (const [key, value] of Object.entries(obj)) {
-        if (value === undefined || value === null) continue;
-        if (value instanceof Date) {
-          out[key] = value.toISOString();
-          continue;
-        }
-        if (typeof value === 'string') {
-          const trimmed = value.trim();
-          if (trimmed === '') continue;
-          out[key] = trimmed;
-          continue;
-        }
-        if (Array.isArray(value)) {
-          out[key] = value.filter(
-            (v) => !(v === undefined || v === null || (typeof v === 'string' && v.trim() === ''))
-          );
-          continue;
-        }
-        out[key] = value;
-      }
-      return out;
-    };
-
-    const payload = normalizeForConvex(completeData as any);
-
-    try {
-      setIsSaving(true);
-      if (experienceId) {
-        await updateExperience({ id: experienceId as any, patch: payload as any });
-      } else {
-        await addMyExperience(payload as any);
-      }
-      handleClose();
-    } catch (err) {
-      console.error('Failed to save experience:', err);
-    } finally {
-      setIsSaving(false);
-    }
-  }, [experienceType, experienceId, handleClose, addMyExperience, updateExperience]);
-
-  const checkExperienceComplete = (data: Partial<Experience>): boolean => {
-    // Basic validation - check if key fields are filled
-    switch (data.type) {
-      case 'tv-film':
-        return !!(data.title && data.studio && data.roles?.length);
-      case 'music-video':
-        return !!(data.songTitle && data.artists?.length && data.roles?.length);
-      case 'live-performance':
-        return !!(data.subtype && data.roles?.length);
-      case 'commercial':
-        return !!(data.companyName && data.campaignTitle && data.roles?.length);
-      default:
-        return false;
-    }
-  };
-
-  const getTitle = () => {
-    return experienceId ? 'Edit Experience' : 'Add Experience';
-  };
+  const title = experienceId ? 'Edit Experience' : 'Add Experience';
 
   // Map type -> schema and metadata
   const schema = useMemo(() => zExperiencesUnified, []);
 
-  // Shared form instance across pager pages to keep values in sync
+  const metadata = useMemo(() => {
+    return experienceType ? getExperienceMetadata(experienceType) : {};
+  }, [experienceType]);
+
   const sharedForm = useAppForm({
     defaultValues: {},
     validators: {
       onChange: zodValidator(schema as any),
     },
   });
+  // Initialize form with data when component mounts or experience changes
+  const initializedRef = useRef(false);
+  const lastExperienceIdRef = useRef<string | undefined>(undefined);
 
-  const metadata = useMemo(() => {
-    return experienceType ? getExperienceMetadata(experienceType) : {};
-  }, [experienceType]);
+  useEffect(() => {
+    if (!sharedForm) return;
 
-  // Group mapping for tabs
-  // Groups are specified per page for the pager layout
+    const currentExperienceId = experience?._id ?? experienceId;
+    const isNewExperience = currentExperienceId !== lastExperienceIdRef.current;
 
-  // Stable memoized initial data for the dynamic form (must not be created conditionally)
-  const initialFormData = useMemo(
-    () => ({ ...formDataRef.current, type: experienceType }),
-    [isOpen, experienceType, experienceId, existingExperience?._id]
-  );
-  const resetKey = `${resetCount}|${experienceId ?? 'new'}|${experienceType ?? ''}`;
+    // Initialize form data when:
+    // 1. First mount
+    // 2. Experience ID changes (switching between experiences)
+    // 3. Experience type is set for the first time
+    if (
+      !initializedRef.current ||
+      isNewExperience ||
+      (experienceType && !(sharedForm as any).store?.getState?.().values?.type)
+    ) {
+      // Get schema defaults for the type
+      const schemaDefaults = experienceType ? getDefaultsFromSchema(schema, experienceType) : {};
+
+      // Hydrate dates from experience data
+      const hydratedExperience = hydrateDates(experience ?? {});
+
+      // Merge all values
+      const formValues: Record<string, any> = {
+        ...schemaDefaults,
+        ...hydratedExperience,
+      };
+
+      // Set type if we have one
+      if (experienceType) {
+        formValues.type = experienceType;
+      }
+
+      // Set all form values
+      for (const [key, value] of Object.entries(formValues)) {
+        if (value !== undefined && typeof (sharedForm as any).setFieldValue === 'function') {
+          try {
+            (sharedForm as any).setFieldValue(key, value);
+          } catch (error) {
+            console.warn(`Failed to set field ${key}:`, error);
+          }
+        }
+      }
+
+      initializedRef.current = true;
+      lastExperienceIdRef.current = currentExperienceId;
+    }
+  }, [experience, experienceId, experienceType, schema, sharedForm]);
+
+  // Handle type changes separately
+  useEffect(() => {
+    if (!sharedForm || !experienceType) return;
+
+    const currentType = (sharedForm as any).store?.getState?.().values?.type;
+
+    // Only update if type actually changed
+    if (currentType && currentType !== experienceType) {
+      // Update type field
+      (sharedForm as any).setFieldValue('type', experienceType);
+
+      // Get new defaults for the new type
+      const newDefaults = getDefaultsFromSchema(schema, experienceType);
+
+      // Only update type-specific fields, preserve common fields
+      const typeSpecificFields = [
+        'title',
+        'songTitle',
+        'companyName',
+        'festivalTitle',
+        'tourName',
+        'tourArtist',
+        'eventName',
+        'awardShowName',
+        'productionTitle',
+        'venue',
+        'subtype',
+        'studio',
+        'artists',
+        'productionCompany',
+        'campaignTitle',
+      ];
+
+      for (const field of typeSpecificFields) {
+        if (field in newDefaults) {
+          (sharedForm as any).setFieldValue(field, newDefaults[field]);
+        } else {
+          // Clear fields that don't belong to new type
+          (sharedForm as any).setFieldValue(field, undefined);
+        }
+      }
+    }
+  }, [experienceType, schema, sharedForm]);
+
+  // Compute initial data for ConvexDynamicForm
+  const fullInitialData = useMemo(() => {
+    const values = (sharedForm as any)?.store?.getState?.().values ?? {};
+    return {
+      ...values,
+      type: experienceType,
+    };
+  }, [experienceType, sharedForm]);
 
   // Enable/disable pager scroll programmatically as well, for platforms not respecting prop
   useEffect(() => {
@@ -245,21 +240,21 @@ export function ExperienceEditSheet({
   return (
     <Sheet
       isOpened={isOpen}
-      label={getTitle()}
+      label={title}
       onIsOpenedChange={(open) => {
         if (!open) {
-          // Reset local form buffer back to backend data or empty for new
-          if (experienceId && existingExperience) {
-            formDataRef.current = hydrateDates(existingExperience) as Partial<Experience>;
-            setExperienceType(existingExperience.type as ExperienceType);
-          } else {
-            formDataRef.current = {};
+          // Reset UI state
+          setUiState((prev) => ({ ...prev, activeTab: 'details', pagerProgress: 0 }));
+          pagerRef.current?.setPage?.(0);
+
+          // Reset form state for next open
+          initializedRef.current = false;
+          lastExperienceIdRef.current = undefined;
+
+          // Clear experience type if creating new
+          if (!experience && !experienceId) {
             setExperienceType(undefined);
           }
-          setActiveTab('details');
-          pagerRef.current?.setPage?.(0);
-          setPagerProgress(0);
-          setResetCount((c) => c + 1);
         }
         onOpenChange(open);
       }}>
@@ -267,9 +262,9 @@ export function ExperienceEditSheet({
         {/* Tabs */}
         <Tabs
           tabs={TABS}
-          activeTab={activeTab}
+          activeTab={uiState.activeTab}
           onTabChange={handleTabChange}
-          progress={pagerProgress}
+          progress={uiState.pagerProgress}
           disabledKeys={!experienceType ? ['team'] : []}
         />
 
@@ -280,21 +275,27 @@ export function ExperienceEditSheet({
           style={{ flex: 1 }}
           scrollEnabled={!!experienceType}
           onPageScroll={(e) => {
-            const { position = 0, offset = 0 } = (e as any).nativeEvent || {};
+            const { position = 0, offset = 0 } = e.nativeEvent || {};
             if (!experienceType) {
               if (position !== 0 || offset > 0) {
                 pagerRef.current?.setPageWithoutAnimation?.(0);
               }
-              setPagerProgress(0);
+              setUiState((prev) => ({ ...prev, pagerProgress: 0 }));
               return;
             }
-            setPagerProgress(position + offset);
+            setUiState((prev) => ({ ...prev, pagerProgress: position + offset }));
           }}
-          onPageSelected={(e) => {
+          onPageSelected={async (e) => {
             const idx = e.nativeEvent.position ?? 0;
             const nextTab = idx === 1 ? 'team' : 'details';
-            if (nextTab !== activeTab) setActiveTab(nextTab);
-            Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light).catch(() => {});
+            if (nextTab !== uiState.activeTab) {
+              setUiState((prev) => ({ ...prev, activeTab: nextTab }));
+            }
+            try {
+              await Haptics.impactAsync(HAPTIC_LIGHT);
+            } catch (error) {
+              // Haptics not available on this device
+            }
           }}>
           {/* Keep progress synced while swiping */}
           {/* onPageScroll provided as a sibling prop in RN; place after onPageSelected for readability */}
@@ -322,9 +323,7 @@ export function ExperienceEditSheet({
                     <ConvexDynamicForm
                       schema={schema}
                       metadata={metadata}
-                      initialData={initialFormData}
-                      resetKey={resetKey}
-                      onChange={handleFormChange}
+                      initialData={fullInitialData}
                       groups={['details', 'basic', 'dates', 'media']}
                       exclude={['userId', 'private', 'type']}
                       debounceMs={300}
@@ -352,9 +351,7 @@ export function ExperienceEditSheet({
                     <ConvexDynamicForm
                       schema={schema}
                       metadata={metadata}
-                      initialData={initialFormData}
-                      resetKey={resetKey}
-                      onChange={handleFormChange}
+                      initialData={fullInitialData}
                       groups={['team']}
                       exclude={['userId', 'private', 'type']}
                       debounceMs={300}
@@ -375,17 +372,52 @@ export function ExperienceEditSheet({
           }}>
           <View
             className="gap-2 border-t border-t-border-low bg-surface-default px-4 pb-8 pt-4"
-            onLayout={(e) => setActionsHeight(e.nativeEvent.layout.height)}>
-            {activeTab === 'details' ? (
+            onLayout={(e) =>
+              setUiState((prev) => ({ ...prev, actionsHeight: e.nativeEvent.layout.height }))
+            }>
+            {uiState.activeTab === 'details' ? (
               <Button onPress={handleNext} disabled={!experienceType} className="w-full">
                 <Text>Next</Text>
               </Button>
             ) : (
               <Button
-                onPress={handleSave}
-                disabled={!experienceType || isSaving}
+                onPress={async () => {
+                  if (!experienceType) return;
+
+                  // Gather current values directly from the form
+                  const values = (sharedForm as any).store?.getState?.().values ?? {};
+
+                  const completeData = {
+                    ...values,
+                    type: experienceType,
+                  } as Experience;
+
+                  const payload = normalizeForConvex(completeData);
+
+                  try {
+                    setUiState((prev) => ({ ...prev, isSaving: true }));
+                    const idToUpdate = experience?._id ?? experienceId;
+
+                    if (idToUpdate) {
+                      await updateExperience({ id: idToUpdate, patch: payload });
+                    } else {
+                      await addMyExperience(payload);
+                    }
+
+                    handleClose();
+                  } catch (error) {
+                    const errorMessage =
+                      error instanceof Error ? error.message : 'Failed to save experience';
+                    console.error('Failed to save experience:', error);
+
+                    Alert.alert('Error', errorMessage, [{ text: 'OK' }]);
+                  } finally {
+                    setUiState((prev) => ({ ...prev, isSaving: false }));
+                  }
+                }}
+                disabled={!experienceType || uiState.isSaving}
                 className="w-full">
-                <Text>{isSaving ? 'Saving…' : 'Save'}</Text>
+                <Text>{uiState.isSaving ? 'Saving…' : 'Save'}</Text>
               </Button>
             )}
 

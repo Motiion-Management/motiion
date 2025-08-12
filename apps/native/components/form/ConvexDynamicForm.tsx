@@ -1,39 +1,31 @@
-import React, { useEffect, useMemo, useRef } from 'react';
-import { View } from 'react-native';
-import { useStore } from '@tanstack/react-form';
-import { z } from 'zod';
-import { zodValidator } from '@tanstack/zod-form-adapter';
-import { useAppForm } from './appForm';
-import { ConvexFormField } from './ConvexFormField';
-import { Text } from '~/components/ui/text';
+import React, { useEffect, useMemo, useRef } from 'react'
+import { View } from 'react-native'
+import { useStore } from '@tanstack/react-form'
+import { z } from 'zod'
+import { ConvexFormField } from './ConvexFormField'
+import { Text } from '~/components/ui/text'
 import {
   convexSchemaToFormConfig,
   FormFieldConfig,
   zodObjectToFormFields,
   extractLabel,
-} from '~/utils/convexSchemaToForm';
-import { getDiscriminatedUnionInfo } from '~/utils/zodSafeAccess';
-import { enhanceFieldsWithMetadata, FormMetadata } from '~/utils/convexFormMetadata';
-import { debounce } from '~/lib/debounce';
+} from '~/utils/convexSchemaToForm'
+import { getDiscriminatedUnionInfo } from '~/utils/zodSafeAccess'
+import { enhanceFieldsWithMetadata, type FormMetadata } from '~/utils/convexFormMetadata'
+import { debounce } from '~/lib/debounce'
 
 interface ConvexDynamicFormProps {
-  schema: z.ZodObject<any> | z.ZodTypeAny;
-  metadata?: FormMetadata;
-  initialData?: Record<string, any>;
-  onChange?: (data: Record<string, any>) => void;
-  onSubmit?: (data: Record<string, any>) => void;
-  // Optional external TanStack form instance to share state across multiple render trees
-  form?: any;
-  exclude?: string[];
-  include?: string[];
-  overrides?: Record<string, Partial<FormFieldConfig>>;
-  debounceMs?: number;
-  groups?: string[]; // Filter fields by group
-  /**
-   * When this key changes, the form re-applies initialData even if fields shape is the same.
-   * Useful for reopening sheets or switching between items of the same type.
-   */
-  resetKey?: string | number | boolean;
+  schema: z.ZodObject<any> | z.ZodTypeAny
+  metadata?: FormMetadata
+  initialData?: Record<string, any>
+  onChange?: (data: Record<string, any>) => void
+  // Required external TanStack form instance to share state across multiple render trees
+  form: any
+  exclude?: string[]
+  include?: string[]
+  overrides?: Record<string, Partial<FormFieldConfig>>
+  debounceMs?: number
+  groups?: string[] // Filter fields by group
 }
 
 /**
@@ -45,18 +37,16 @@ export const ConvexDynamicForm = React.memo(
     metadata = {},
     initialData = {},
     onChange,
-    onSubmit,
-    form: externalForm,
+    form,
     exclude,
     include,
     overrides,
     debounceMs = 300,
     groups,
-    resetKey,
   }: ConvexDynamicFormProps) => {
     // Safety check for undefined schema
     if (!schema) {
-      console.error('ConvexDynamicForm: schema is undefined');
+      console.error('ConvexDynamicForm: schema is undefined')
       return (
         <View className="rounded-lg bg-destructive/10 p-4">
           <Text className="text-destructive">Error: Form schema is undefined</Text>
@@ -64,33 +54,55 @@ export const ConvexDynamicForm = React.memo(
             The form cannot be rendered without a valid schema.
           </Text>
         </View>
-      );
+      )
     }
+    
+    // Sync initialData to form when it changes
+    // This ensures form fields get populated with the correct values
+    const lastInitialDataRef = useRef<string>('')
+    useEffect(() => {
+      if (!form || !initialData) return
+      
+      // Create a signature of the initial data to detect changes
+      const dataSignature = JSON.stringify(initialData)
+      if (dataSignature === lastInitialDataRef.current) return
+      
+      // Update form values with initial data
+      for (const [key, value] of Object.entries(initialData)) {
+        const currentValue = (form as any).store?.getState?.().values?.[key]
+        // Only update if value is different to avoid unnecessary re-renders
+        if (value !== undefined && value !== currentValue) {
+          ;(form as any).setFieldValue?.(key, value)
+        }
+      }
+      
+      lastInitialDataRef.current = dataSignature
+    }, [initialData, form])
 
     // Discriminated union info
-    const duInfo = useMemo(() => getDiscriminatedUnionInfo(schema as any), [schema]);
+    const duInfo = useMemo(() => getDiscriminatedUnionInfo(schema), [schema]);
 
     // Track selected discriminator value (init from initialData or first option)
     const [selectedDisc, setSelectedDisc] = React.useState<string | undefined>(() => {
-      if (!duInfo) return undefined;
-      return (initialData as any)?.[duInfo.discriminator] ?? duInfo.options[0]?.value;
-    });
+      if (!duInfo || !duInfo.options || !Array.isArray(duInfo.options)) return undefined
+      return (initialData as any)?.[duInfo.discriminator] ?? duInfo.options[0]?.value
+    })
 
     useEffect(() => {
-      if (duInfo) {
+      if (duInfo && duInfo.options && Array.isArray(duInfo.options)) {
         setSelectedDisc(
           (prev) => prev ?? (initialData as any)?.[duInfo.discriminator] ?? duInfo.options[0]?.value
-        );
+        )
       } else {
-        setSelectedDisc(undefined);
+        setSelectedDisc(undefined)
       }
-    }, [duInfo?.discriminator]);
+    }, [duInfo?.discriminator, initialData])
 
     // Convert schema (including discriminated unions) to form field configuration
     const baseFields = useMemo(() => {
       try {
         const du = duInfo;
-        if (du && selectedDisc) {
+        if (du && selectedDisc && du.options && Array.isArray(du.options)) {
           // Build discriminator field first
           const discName = du.discriminator;
           const discOptions = du.options.map((o) => ({
@@ -107,8 +119,8 @@ export const ConvexDynamicForm = React.memo(
           };
 
           // Determine active branch via selectedDisc
-          const active = du.options.find((o) => o.value === selectedDisc) ?? du.options[0];
-          const branchFields = active ? zodObjectToFormFields(active.schema as any) : [];
+          const active = du.options.find((o) => o.value === selectedDisc) ?? du.options[0]
+          const branchFields = active ? zodObjectToFormFields(active.schema) : []
           const filteredBranch = branchFields.filter((f) => f.name !== discName);
 
           let fields: FormFieldConfig[] = [discField, ...filteredBranch];
@@ -138,128 +150,54 @@ export const ConvexDynamicForm = React.memo(
 
     // Enhance fields with metadata
     const fields = useMemo(() => {
-      return enhanceFieldsWithMetadata(baseFields, metadata);
-    }, [baseFields, metadata]);
-
-    // Build default values from schema and initial data
-    const defaultValues = useMemo(() => {
-      const values: Record<string, any> = {};
-      fields.forEach((field) => {
-        // Option-driven defaults: select/radio/picker default to first option
-        if (
-          (field.type === 'select' || field.type === 'radio' || field.component === 'picker') &&
-          field.options &&
-          field.options.length > 0
-        ) {
-          values[field.name] = field.options[0].value;
-          return;
-        }
-        switch (field.type) {
-          case 'checkbox':
-            values[field.name] = false;
-            break;
-          case 'chips':
-          case 'multiselect':
-            values[field.name] = [];
-            break;
-          case 'number':
-            values[field.name] = field.metadata?.min ?? undefined;
-            break;
-          case 'object':
-            values[field.name] = {};
-            break;
-          default:
-            values[field.name] = '';
-        }
-      });
-      return values;
-    }, [fields]);
-
-    // Create form instance
-    const createdForm = useAppForm({
-      defaultValues,
-      validators: {
-        onChange: zodValidator(schema as any),
-      },
-      onSubmit: async ({ value }) => {
-        if (onSubmit) {
-          onSubmit(value);
-        }
-      },
-    });
-    const form = externalForm ?? createdForm;
+      return enhanceFieldsWithMetadata(baseFields, metadata)
+    }, [baseFields, metadata])
 
     // Use ref to store the latest onChange callback without causing re-renders
-    const onChangeRef = useRef(onChange);
+    const onChangeRef = useRef(onChange)
     useEffect(() => {
-      onChangeRef.current = onChange;
-    }, [onChange]);
+      onChangeRef.current = onChange
+    }, [onChange])
 
     // Create stable debounced onChange handler
     const debouncedOnChange = useMemo(() => {
       const handler = debounce((values: Record<string, any>) => {
         if (onChangeRef.current) {
-          onChangeRef.current(values);
+          onChangeRef.current(values)
         }
-      }, debounceMs);
+      }, debounceMs)
 
-      return handler;
-    }, [debounceMs]);
+      return handler
+    }, [debounceMs])
 
-    // Initialize values from initialData once per fields shape or resetKey change
-    const fieldsKey = useMemo(() => fields.map((f) => f.name).join('|'), [fields]);
-    const initializedRef = useRef<string | null>(null);
+    // Keep discriminated union branch in sync with form value changes
     useEffect(() => {
-      const key = `${fieldsKey}|${String(resetKey ?? '')}`;
-      if (initializedRef.current === key) return;
-      // Set initial values from provided initialData without recreating the form
-      if (initialData && typeof initialData === 'object') {
-        for (const f of fields) {
-          const v = (initialData as any)[f.name];
-          if (v !== undefined) {
-            // @ts-ignore tanstack typed generic
-            (form as any).setFieldValue(f.name as any, v);
-          }
-        }
+      if (!duInfo) return
+      const discName = duInfo.discriminator
+      const currentValue = (form as any).store?.getState?.().values?.[discName]
+      if (currentValue && currentValue !== selectedDisc) {
+        setSelectedDisc(currentValue)
       }
-      // Backfill defaults for any field still undefined (useful when sharing external form)
-      const currentValues = (form as any)?.store?.getState?.().values ?? {};
-      for (const f of fields) {
-        if (currentValues[f.name] === undefined && defaultValues[f.name] !== undefined) {
-          // @ts-ignore tanstack typed generic
-          (form as any).setFieldValue(f.name as any, defaultValues[f.name]);
-        }
-      }
-      initializedRef.current = key;
-    }, [fieldsKey, fields, form, initialData, resetKey, defaultValues]);
-
-    // Keep discriminated union branch in sync with external initialData changes (e.g., type selected outside)
-    useEffect(() => {
-      if (!duInfo) return;
-      const discName = duInfo.discriminator as string;
-      const desired = (initialData as any)?.[discName];
-      if (desired && desired !== selectedDisc) {
-        setSelectedDisc(desired);
-        // @ts-ignore tanstack typed generic
-        (form as any).setFieldValue(discName as any, desired);
-      }
-    }, [initialData, duInfo, selectedDisc, form]);
+    }, [duInfo, selectedDisc, form])
 
     // Observe values changes with useStore and debounce external onChange
-    const values = useStore((form as any).store, (state: any) => state.values as any);
-    // Recompute fields on discriminator change (discriminated unions)
+    const values = useStore((form as any).store, (state: any) => state.values)
+    
+    // Update selected discriminator when form values change
     useEffect(() => {
-      if (!duInfo) return;
-      const v = (values as any)[duInfo.discriminator];
-      if (v && v !== selectedDisc) setSelectedDisc(v);
-    }, [values, duInfo, selectedDisc]);
+      if (!duInfo) return
+      const v = (values as any)?.[duInfo.discriminator]
+      if (v && v !== selectedDisc) setSelectedDisc(v)
+    }, [values, duInfo, selectedDisc])
+    
+    // Trigger onChange callback when values change
     useEffect(() => {
-      if (!onChange) return;
-      debouncedOnChange(values);
+      if (!onChange) return
+      debouncedOnChange(values)
       return () => {
-        debouncedOnChange.cancel();
-      };
-    }, [values, debouncedOnChange, onChange]);
+        debouncedOnChange.cancel()
+      }
+    }, [values, debouncedOnChange, onChange])
 
     // Filter fields by groups and conditional showWhen if specified
     const filteredFields = useMemo(() => {
@@ -275,91 +213,93 @@ export const ConvexDynamicForm = React.memo(
 
       // Apply conditional visibility using current form values
       const visible = byGroup.filter((field) => {
-        const cond = field.metadata?.showWhen;
-        if (!cond) return true;
-        const current = (values as any)?.[cond.field];
+        const cond = field.metadata?.showWhen
+        if (!cond) return true
+        const current = (values as any)?.[cond.field]
         if (cond.equals !== undefined) {
           if (Array.isArray(cond.equals)) {
-            return cond.equals.includes(current);
+            return cond.equals.includes(current)
           }
-          return current === cond.equals;
+          return current === cond.equals
         }
         if (cond.in && Array.isArray(cond.in)) {
-          return cond.in.includes(current);
+          return cond.in.includes(current)
         }
-        return true;
-      });
+        return true
+      })
 
       // Apply conditional disabling via metadata.disabledWhen and conditional label via labelWhen
       return visible.map((field) => {
-        const disabledWhen = (field.metadata as any)?.disabledWhen;
-        const labelWhen = (field.metadata as any)?.labelWhen;
-        let shouldDisable = false;
+        const disabledWhen = (field.metadata as any)?.disabledWhen
+        const labelWhen = (field.metadata as any)?.labelWhen
+        let shouldDisable = false
         if (disabledWhen) {
-          const current = (values as any)?.[disabledWhen.field];
+          const current = (values as any)?.[disabledWhen.field]
           if (disabledWhen.isEmpty) {
-            shouldDisable = current == null || current === '';
+            shouldDisable = current == null || current === ''
           } else if (disabledWhen.equals !== undefined) {
             if (Array.isArray(disabledWhen.equals)) {
-              shouldDisable = !disabledWhen.equals.includes(current);
+              shouldDisable = !disabledWhen.equals.includes(current)
             } else {
-              shouldDisable = current !== disabledWhen.equals;
+              shouldDisable = current !== disabledWhen.equals
             }
           }
         }
 
         const labelOverridden = (() => {
-          if (!labelWhen) return undefined;
-          const labelCurrent = (values as any)?.[labelWhen.field];
+          if (!labelWhen) return undefined
+          const labelCurrent = (values as any)?.[labelWhen.field]
           if (labelWhen.equals !== undefined) {
             if (Array.isArray(labelWhen.equals)) {
-              if (labelWhen.equals.includes(labelCurrent)) return labelWhen.label;
+              if (labelWhen.equals.includes(labelCurrent)) return labelWhen.label
             } else if (labelCurrent === labelWhen.equals) {
-              return labelWhen.label;
+              return labelWhen.label
             }
           }
-          return undefined;
-        })();
+          return undefined
+        })()
 
         return {
           ...field,
           metadata: {
             ...(field.metadata as any),
             disabled: shouldDisable ? true : field.metadata?.disabled,
-          } as any,
+          },
           label: labelOverridden ?? field.label,
-        } as any;
-      });
+        }
+      })
     }, [fields, groups, values]);
+
 
     // Ensure endDate is not before startDate and default endDate to startDate when empty
     useEffect(() => {
-      const names = filteredFields.map((f) => f.name);
-      if (!names.includes('startDate') || !names.includes('endDate')) return;
-      const sd: any = (values as any)?.startDate;
-      const ed: any = (values as any)?.endDate;
-      if (!sd) return;
-      const sdDate = sd instanceof Date ? sd : new Date(sd);
+      const names = filteredFields.map((f) => f.name)
+      if (!names.includes('startDate') || !names.includes('endDate')) return
+      
+      const sd = (values as any)?.startDate
+      const ed = (values as any)?.endDate
+      if (!sd) return
+      
+      const sdDate = sd instanceof Date ? sd : new Date(sd)
       if (!ed) {
-        // @ts-ignore tanstack typed generic
-        (form as any).setFieldValue('endDate' as any, sdDate);
-        return;
+        ;(form as any).setFieldValue('endDate', sdDate)
+        return
       }
-      const edDate = ed instanceof Date ? ed : new Date(ed);
+      
+      const edDate = ed instanceof Date ? ed : new Date(ed)
       if (edDate < sdDate) {
-        // @ts-ignore tanstack typed generic
-        (form as any).setFieldValue('endDate' as any, sdDate);
+        ;(form as any).setFieldValue('endDate', sdDate)
       }
-    }, [filteredFields, values, form]);
+    }, [filteredFields, values, form])
 
     // Sort fields by order if specified
     const sortedFields = useMemo(() => {
       return [...filteredFields].sort((a, b) => {
-        const orderA = a.metadata?.order ?? Infinity;
-        const orderB = b.metadata?.order ?? Infinity;
-        return orderA - orderB;
-      });
-    }, [filteredFields]);
+        const orderA = (a.metadata as any)?.order ?? Infinity
+        const orderB = (b.metadata as any)?.order ?? Infinity
+        return orderA - orderB
+      })
+    }, [filteredFields])
 
     // Group consecutive half/third width fields into rows
     const rowGroupedFields = useMemo(() => {
@@ -380,9 +320,9 @@ export const ConvexDynamicForm = React.memo(
 
           // Check if row is complete
           const totalWidth = currentRow.reduce((sum, f) => {
-            const w = f.metadata?.width;
-            return sum + (w === 'half' ? 0.5 : w === 'third' ? 0.33 : 1);
-          }, 0);
+            const w = (f.metadata as any)?.width
+            return sum + (w === 'half' ? 0.5 : w === 'third' ? 0.33 : 1)
+          }, 0)
 
           if (totalWidth >= 0.99 || index === sortedFields.length - 1) {
             rows.push(currentRow);

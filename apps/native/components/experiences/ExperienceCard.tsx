@@ -6,8 +6,9 @@ import { Text } from '~/components/ui/text';
 import { cn } from '~/lib/cn';
 import Check from '~/lib/icons/Check';
 import Plus from '~/lib/icons/Plus';
-import { getExperienceDisplayTitle, getExperienceDisplaySubtitle } from '~/config/experienceTypes';
-import { ExperienceEditSheet } from './ExperienceEditSheet';
+import { getExperienceDisplayTitle, getExperienceDisplaySubtitle } from '~/config/experienceTypes'
+import { ExperienceEditSheet } from './ExperienceEditSheet'
+import { type Doc, type Id } from '@packages/backend/convex/_generated/dataModel'
 
 const experienceCardVariants = cva(
   'w-full flex-row items-center justify-between rounded-full border px-5 py-4',
@@ -26,8 +27,8 @@ const experienceCardVariants = cva(
 );
 
 interface ExperienceCardProps extends VariantProps<typeof experienceCardVariants> {
-  experience?: any;
-  experienceId?: string;
+  experience?: Doc<'experiences'>
+  experienceId?: Id<'experiences'>
   disabled?: boolean;
   placeholder?: string;
   className?: string;
@@ -90,6 +91,7 @@ export function ExperienceCard({
       <ExperienceEditSheet
         isOpen={isSheetOpen}
         onOpenChange={setIsSheetOpen}
+        experience={experience}
         experienceId={experienceId}
       />
     </>

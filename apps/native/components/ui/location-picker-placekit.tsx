@@ -19,7 +19,7 @@ export interface PlaceKitLocation {
 
 export interface LocationPickerProps {
   value?: PlaceKitLocation | null;
-  // eslint-disable-next-line no-unused-vars
+   
   onValueChange: (value: PlaceKitLocation | null) => void;
   placeholder?: string;
   label?: string;
