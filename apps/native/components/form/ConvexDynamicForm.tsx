@@ -22,6 +22,8 @@ interface ConvexDynamicFormProps {
   initialData?: Record<string, any>;
   onChange?: (data: Record<string, any>) => void;
   onSubmit?: (data: Record<string, any>) => void;
+  // Optional external TanStack form instance to share state across multiple render trees
+  form?: any;
   exclude?: string[];
   include?: string[];
   overrides?: Record<string, Partial<FormFieldConfig>>;
@@ -44,6 +46,7 @@ export const ConvexDynamicForm = React.memo(
     initialData = {},
     onChange,
     onSubmit,
+    form: externalForm,
     exclude,
     include,
     overrides,
@@ -173,7 +176,7 @@ export const ConvexDynamicForm = React.memo(
     }, [fields]);
 
     // Create form instance
-    const form = useAppForm({
+    const createdForm = useAppForm({
       defaultValues,
       validators: {
         onChange: zodValidator(schema as any),
@@ -184,6 +187,7 @@ export const ConvexDynamicForm = React.memo(
         }
       },
     });
+    const form = externalForm ?? createdForm;
 
     // Use ref to store the latest onChange callback without causing re-renders
     const onChangeRef = useRef(onChange);
@@ -218,8 +222,18 @@ export const ConvexDynamicForm = React.memo(
           }
         }
       }
+      // Backfill defaults for any field still undefined (useful when sharing external form)
+      try {
+        const currentValues = (form as any)?.store?.getState?.().values ?? {};
+        for (const f of fields) {
+          if (currentValues[f.name] === undefined && defaultValues[f.name] !== undefined) {
+            // @ts-ignore tanstack typed generic
+            (form as any).setFieldValue(f.name as any, defaultValues[f.name]);
+          }
+        }
+      } catch {}
       initializedRef.current = key;
-    }, [fieldsKey, fields, form, initialData, resetKey]);
+    }, [fieldsKey, fields, form, initialData, resetKey, defaultValues]);
 
   // Keep discriminated union branch in sync with external initialData changes (e.g., type selected outside)
   useEffect(() => {

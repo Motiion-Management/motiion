@@ -1,5 +1,6 @@
 import React, { useState, useCallback, useEffect, useMemo, useRef } from 'react';
 import { View, Platform } from 'react-native';
+import PagerView from 'react-native-pager-view';
 import { KeyboardAwareScrollView, KeyboardStickyView } from 'react-native-keyboard-controller';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { ConvexDynamicForm } from '~/components/form/ConvexDynamicForm';
@@ -13,6 +14,8 @@ import { ExperienceType, Experience } from '~/types/experiences';
 import { getExperienceMetadata } from '~/utils/convexFormMetadata';
 import { EXPERIENCE_TYPES } from '~/config/experienceTypes';
 import { zExperiencesUnified } from '@packages/backend/convex/schemas';
+import { useAppForm } from '~/components/form/appForm';
+import { zodValidator } from '@tanstack/zod-form-adapter';
 import { api } from '@packages/backend/convex/_generated/api';
 import { useMutation, useQuery } from 'convex/react';
 
@@ -34,6 +37,7 @@ export function ExperienceEditSheet({
 }: ExperienceEditSheetProps) {
   const insets = useSafeAreaInsets();
   const [activeTab, setActiveTab] = useState('details');
+  const pagerRef = useRef<React.ElementRef<typeof PagerView> | null>(null);
   const [experienceType, setExperienceType] = useState<ExperienceType | undefined>(undefined);
   const formDataRef = useRef<Partial<Experience>>({});
   const [actionsHeight, setActionsHeight] = useState(0);
@@ -116,8 +120,19 @@ export function ExperienceEditSheet({
   const handleNext = useCallback(() => {
     if (activeTab === 'details') {
       setActiveTab('team');
+      pagerRef.current?.setPage?.(1);
     }
   }, [activeTab]);
+
+  const handleTabChange = useCallback(
+    (tab: string) => {
+      if (tab === activeTab) return;
+      setActiveTab(tab);
+      const nextIndex = tab === 'team' ? 1 : 0;
+      pagerRef.current?.setPage?.(nextIndex);
+    },
+    [activeTab]
+  );
 
   const handleSave = useCallback(async () => {
     if (!experienceType) return;
@@ -196,14 +211,20 @@ export function ExperienceEditSheet({
   // Map type -> schema and metadata
   const schema = useMemo(() => zExperiencesUnified, []);
 
+  // Shared form instance across pager pages to keep values in sync
+  const sharedForm = useAppForm({
+    defaultValues: {},
+    validators: {
+      onChange: zodValidator(schema as any),
+    },
+  });
+
   const metadata = useMemo(() => {
     return experienceType ? getExperienceMetadata(experienceType) : {};
   }, [experienceType]);
 
   // Group mapping for tabs
-  const currentGroups = useMemo(() => {
-    return activeTab === 'details' ? ['details', 'basic', 'dates', 'media'] : ['team'];
-  }, [activeTab]);
+  // Groups are specified per page for the pager layout
 
   // Stable memoized initial data for the dynamic form (must not be created conditionally)
   const initialFormData = useMemo(
@@ -227,53 +248,93 @@ export function ExperienceEditSheet({
             setExperienceType(undefined);
           }
           setActiveTab('details');
+          pagerRef.current?.setPage?.(0);
           setResetCount((c) => c + 1);
         }
         onOpenChange(open);
       }}>
       <View className="h-[80vh]">
         {/* Tabs */}
-        <Tabs tabs={TABS} activeTab={activeTab} onTabChange={setActiveTab} />
+        <Tabs tabs={TABS} activeTab={activeTab} onTabChange={handleTabChange} />
 
         {/* Tab Content */}
-        <KeyboardAwareScrollView
-          bounces={false}
-          disableScrollOnKeyboardHide
-          contentInsetAdjustmentBehavior="never"
-          keyboardDismissMode="interactive"
-          keyboardShouldPersistTaps="handled"
-          bottomOffset={bottomCompensation}
-          showsVerticalScrollIndicator={false}>
-          <View className="flex-1 pt-2">
-            {/* Type selector only on Details tab */}
-            {activeTab === 'details' && (
-              <View className="gap-4 px-4 pt-4">
-                <BottomSheetPicker
-                  onChange={handleExperienceTypeChange}
-                  label="Experience Type"
-                  value={experienceType}
-                  data={EXPERIENCE_TYPES}
-                />
+        <PagerView
+          ref={pagerRef}
+          initialPage={0}
+          style={{ flex: 1 }}
+          onPageSelected={(e) => {
+            const idx = e.nativeEvent.position ?? 0;
+            const nextTab = idx === 1 ? 'team' : 'details';
+            if (nextTab !== activeTab) setActiveTab(nextTab);
+          }}>
+          {/* Details Page */}
+          <View key="details" className="flex-1">
+            <KeyboardAwareScrollView
+              bounces={false}
+              disableScrollOnKeyboardHide
+              contentInsetAdjustmentBehavior="never"
+              keyboardDismissMode="interactive"
+              keyboardShouldPersistTaps="handled"
+              bottomOffset={bottomCompensation}
+              showsVerticalScrollIndicator={false}>
+              <View className="flex-1 pt-2">
+                <View className="gap-4 px-4 pt-4">
+                  <BottomSheetPicker
+                    onChange={handleExperienceTypeChange}
+                    label="Experience Type"
+                    value={experienceType}
+                    data={EXPERIENCE_TYPES}
+                  />
+                </View>
+                <View className="px-4 pb-4 pt-4">
+                  {experienceType && schema && (
+                    <ConvexDynamicForm
+                      schema={schema}
+                      metadata={metadata}
+                      initialData={initialFormData}
+                      resetKey={resetKey}
+                      onChange={handleFormChange}
+                      groups={['details', 'basic', 'dates', 'media']}
+                      exclude={['userId', 'private', 'type']}
+                      debounceMs={300}
+                      form={sharedForm}
+                    />
+                  )}
+                </View>
               </View>
-            )}
-
-            {/* Single dynamic form instance; filters fields by groups per tab */}
-            <View className="px-4 pb-4 pt-4">
-              {experienceType && schema && (
-                <ConvexDynamicForm
-                  schema={schema}
-                  metadata={metadata}
-                  initialData={initialFormData}
-                  resetKey={resetKey}
-                  onChange={handleFormChange}
-                  groups={currentGroups}
-                  exclude={['userId', 'private', 'type']}
-                  debounceMs={300}
-                />
-              )}
-            </View>
+            </KeyboardAwareScrollView>
           </View>
-        </KeyboardAwareScrollView>
+
+          {/* Team Page */}
+          <View key="team" className="flex-1">
+            <KeyboardAwareScrollView
+              bounces={false}
+              disableScrollOnKeyboardHide
+              contentInsetAdjustmentBehavior="never"
+              keyboardDismissMode="interactive"
+              keyboardShouldPersistTaps="handled"
+              bottomOffset={bottomCompensation}
+              showsVerticalScrollIndicator={false}>
+              <View className="flex-1 pt-2">
+                <View className="px-4 pb-4 pt-4">
+                  {experienceType && schema && (
+                    <ConvexDynamicForm
+                      schema={schema}
+                      metadata={metadata}
+                      initialData={initialFormData}
+                      resetKey={resetKey}
+                      onChange={handleFormChange}
+                      groups={['team']}
+                      exclude={['userId', 'private', 'type']}
+                      debounceMs={300}
+                      form={sharedForm}
+                    />
+                  )}
+                </View>
+              </View>
+            </KeyboardAwareScrollView>
+          </View>
+        </PagerView>
 
         {/* Actions */}
         <KeyboardStickyView
