@@ -28,10 +28,14 @@ export default function ExperiencesScreen() {
       primaryAction={{
         onPress: handleContinue,
       }}
-      secondaryAction={{
-        text: 'Skip for now',
-        onPress: () => onboarding.navigateNext(),
-      }}>
+      secondaryAction={
+        !experiences?.length
+          ? {
+              text: 'Skip for now',
+              onPress: () => onboarding.navigateNext(),
+            }
+          : undefined
+      }>
       <View className="flex-1 gap-3">
         {slots.map((exp, index) => {
           const isCompleted = !!exp;
