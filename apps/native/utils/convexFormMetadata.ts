@@ -131,8 +131,25 @@ export function enhanceFieldsWithMetadata(
 
 // Shared base metadata for Experiences; specific types can extend/override
 const baseExperienceMetadata: FormMetadata = {
+  type: {
+    component: 'picker',
+    label: 'Experience Type',
+    placeholder: 'Select experience type',
+    options: [
+      { label: 'Television & Film', value: 'tv-film' },
+      { label: 'Music Video', value: 'music-video' },
+      { label: 'Live Performance', value: 'live-performance' },
+      { label: 'Commercial', value: 'commercial' },
+    ],
+    width: 'full',
+    group: ['details', 'basic', 'quick'],
+    order: 0,
+  },
   startDate: {
     component: 'date',
+    label: 'Start Date',
+    placeholder: 'Select start date',
+    order: 3,
     format: 'yyyy-MM-dd',
     width: 'half',
     group: ['details', 'basic', 'dates'],
@@ -166,6 +183,7 @@ const baseExperienceMetadata: FormMetadata = {
  * TV/Film experience form metadata
  */
 export const tvFilmMetadata: FormMetadata = {
+  ...baseExperienceMetadata,
   title: {
     placeholder: 'Project title',
     autoCapitalize: 'words',
@@ -185,8 +203,7 @@ export const tvFilmMetadata: FormMetadata = {
   startDate: {
     ...baseExperienceMetadata.startDate,
     label: 'Premier Date',
-    placeholder: 'Select start date',
-    order: 3,
+    placeholder: 'Select premier date',
   },
   duration: {
     ...baseExperienceMetadata.duration,
@@ -241,6 +258,7 @@ export const tvFilmMetadata: FormMetadata = {
  * Music Video experience form metadata
  */
 export const musicVideoMetadata: FormMetadata = {
+  ...baseExperienceMetadata,
   title: {
     group: ['details', 'basic', 'quick'],
     order: 1,
@@ -260,7 +278,6 @@ export const musicVideoMetadata: FormMetadata = {
     ...baseExperienceMetadata.startDate,
     label: 'Premier Date',
     placeholder: 'Select premier date',
-    order: 3,
   },
   duration: {
     ...baseExperienceMetadata.duration,
@@ -316,6 +333,7 @@ export const musicVideoMetadata: FormMetadata = {
  * Live Performance experience form metadata
  */
 export const livePerformanceMetadata: FormMetadata = {
+  ...baseExperienceMetadata,
   subtype: {
     component: 'picker',
     label: 'Event Type',
@@ -364,9 +382,7 @@ export const livePerformanceMetadata: FormMetadata = {
   },
   startDate: {
     ...baseExperienceMetadata.startDate,
-    label: 'Start Date',
     labelWhen: { field: 'subtype', equals: 'award-show', label: 'Date' },
-    placeholder: 'Select start date',
     order: 4,
   },
   endDate: {
@@ -425,6 +441,7 @@ export const livePerformanceMetadata: FormMetadata = {
  * Commercial experience form metadata
  */
 export const commercialMetadata: FormMetadata = {
+  ...baseExperienceMetadata,
   companyName: {
     placeholder: 'Enter brand or company name',
     group: ['details', 'basic', 'quick'],
@@ -448,7 +465,6 @@ export const commercialMetadata: FormMetadata = {
     ...baseExperienceMetadata.startDate,
     label: 'Premier Date',
     placeholder: 'Select premier date',
-    order: 3,
   },
   duration: {
     ...baseExperienceMetadata.duration,
@@ -540,24 +556,9 @@ export const userAttributeMetadata: FormMetadata = {
   },
 };
 
-/**
- * Get metadata for a specific experience type
- */
-export function getExperienceMetadata(type: string): FormMetadata {
-  switch (type) {
-    case 'tv-film':
-    case 'television-film':
-      return tvFilmMetadata;
-    case 'music-video':
-    case 'music-videos':
-      return musicVideoMetadata;
-    case 'live-performance':
-    case 'live-performances':
-      return livePerformanceMetadata;
-    case 'commercial':
-    case 'commercials':
-      return commercialMetadata;
-    default:
-      return {};
-  }
-}
+export const experienceMetadata: Record<string, FormMetadata> = {
+  'tv-film': tvFilmMetadata,
+  'music-video': musicVideoMetadata,
+  'live-performance': livePerformanceMetadata,
+  commercial: commercialMetadata,
+};

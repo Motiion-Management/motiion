@@ -1,4 +1,4 @@
-import React, { useState, useCallback, useEffect, useMemo, useRef } from 'react';
+import React, { useState, useCallback, useMemo, useRef } from 'react';
 import { View, Platform, Alert } from 'react-native';
 import PagerView from 'react-native-pager-view';
 import { KeyboardAwareScrollView, KeyboardStickyView } from 'react-native-keyboard-controller';
@@ -11,8 +11,7 @@ import { Tabs } from '~/components/ui/tabs/tabs';
 
 import { type ExperienceType, type Experience } from '~/types/experiences';
 import { type Doc, type Id } from '@packages/backend/convex/_generated/dataModel';
-import { getExperienceMetadata } from '~/utils/convexFormMetadata';
-// import { zExperiences } from '@packages/backend/convex/validators/experiences';
+import { experienceMetadata } from '~/utils/convexFormMetadata';
 import { useAppForm } from '~/components/form/appForm';
 import { useStore } from '@tanstack/react-form';
 import * as Haptics from 'expo-haptics';
@@ -26,7 +25,6 @@ import { convexToZod } from 'convex-helpers/server/zod';
 const zExperiences = convexToZod(vv.doc('experiences'));
 // Constants
 const BOTTOM_OFFSET_CUSHION = 8;
-const MAX_VIEW_HEIGHT = '80vh' as const;
 const HAPTIC_MEDIUM = Haptics.ImpactFeedbackStyle.Medium;
 const HAPTIC_LIGHT = Haptics.ImpactFeedbackStyle.Light;
 
@@ -133,22 +131,12 @@ export function ExperienceEditSheet({
     | undefined;
 
   const metadata = useMemo(() => {
-    return selectedType ? getExperienceMetadata(selectedType) : {};
+    return selectedType ? experienceMetadata[selectedType] : {};
   }, [selectedType]);
 
   // Pager scroll is controlled via the `scrollEnabled` prop; avoid imperative commands
 
-  // Ensure discriminator 'type' field shows on Details tab
-  const formOverrides = useMemo(
-    () => ({
-      type: {
-        // Render selector only on Details tab
-        metadata: { group: ['details', 'basic', 'quick'], order: 0 },
-        component: 'picker' as any,
-      },
-    }),
-    []
-  );
+  // No per-field overrides; rely on base metadata
 
   const handleTabChange = useCallback(
     (tab: string) => {
@@ -212,6 +200,7 @@ export function ExperienceEditSheet({
             try {
               await Haptics.impactAsync(HAPTIC_LIGHT);
             } catch (error) {
+              console.warn('Haptics error:', error);
               // Haptics not available on this device
             }
           }}>
@@ -239,7 +228,6 @@ export function ExperienceEditSheet({
                       groups={['details', 'basic', 'dates', 'media']}
                       exclude={['userId', 'private']}
                       debounceMs={300}
-                      overrides={formOverrides}
                       form={sharedForm}
                     />
                   )}
@@ -269,7 +257,6 @@ export function ExperienceEditSheet({
                       groups={['team']}
                       exclude={['userId', 'private']}
                       debounceMs={300}
-                      overrides={formOverrides}
                       form={sharedForm}
                     />
                   )}
