@@ -11,9 +11,10 @@ export interface ChipsFieldProps {
   label: string;
   placeholder?: string;
   helpText?: string;
+  autoCapitalize?: 'none' | 'sentences' | 'words' | 'characters';
 }
 
-export const ChipsField = ({ label, placeholder, helpText }: ChipsFieldProps) => {
+export const ChipsField = ({ label, placeholder, helpText, autoCapitalize = 'words' }: ChipsFieldProps) => {
   const field = useFieldContext<string[]>();
   const validationModeContext = useValidationModeContextSafe();
   const { errorMessage } = useFieldError(field, { fieldName: field.name });
@@ -75,7 +76,7 @@ export const ChipsField = ({ label, placeholder, helpText }: ChipsFieldProps) =>
         onKeyPress={handleKeyPress}
         onBlur={handleBlur}
         errorMessage={errorMessage}
-        autoCapitalize="none"
+        autoCapitalize={autoCapitalize}
         autoCorrect={false}
         returnKeyType="done"
       />

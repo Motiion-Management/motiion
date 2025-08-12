@@ -15,6 +15,7 @@ export interface BottomSheetComboboxFieldProps<T = any> {
   width?: number;
   pickerLabel?: string;
   disabled?: boolean;
+  autoCapitalize?: 'none' | 'sentences' | 'words' | 'characters';
   onSearch?: (searchTerm: string, data: ComboboxItem<T>[]) => ComboboxItem<T>[];
   onSearchAsync?: (searchTerm: string) => Promise<ComboboxItem<T>[]>;
   getLabelAsync?: (value: T) => Promise<ComboboxItem<T> | string | undefined | null>;
@@ -29,6 +30,7 @@ export function BottomSheetComboboxField<T = any>({
   width,
   pickerLabel,
   disabled,
+  autoCapitalize,
   onSearch,
   onSearchAsync,
   getLabelAsync,
@@ -60,6 +62,7 @@ export function BottomSheetComboboxField<T = any>({
       pickerLabel={pickerLabel}
       errorMessage={errorMessage}
       disabled={disabled}
+      autoCapitalize={autoCapitalize}
       onSearch={onSearch}
       onSearchAsync={onSearchAsync}
       getLabelAsync={getLabelAsync}

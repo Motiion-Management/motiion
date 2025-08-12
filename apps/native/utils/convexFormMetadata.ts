@@ -31,6 +31,8 @@ export interface FieldMetadata {
   min?: number;
   max?: number;
   step?: number;
+  // Mobile keyboard capitalization behavior
+  autoCapitalize?: 'none' | 'sentences' | 'words' | 'characters';
   // Layout properties
   width?: 'full' | 'half' | 'third';
   order?: number;
@@ -150,6 +152,7 @@ const baseExperienceMetadata: FormMetadata = {
     label: 'Role',
     suggestions: COMMON_ROLES,
     group: ['details', 'basic', 'quick'],
+    autoCapitalize: 'words',
   },
 };
 
@@ -159,6 +162,7 @@ const baseExperienceMetadata: FormMetadata = {
 export const tvFilmMetadata: FormMetadata = {
   title: {
     placeholder: 'Project title',
+    autoCapitalize: 'words',
     // helpText: 'Use the official title as it appears in credits',
     group: ['details', 'basic', 'quick'],
     order: 1,
@@ -170,6 +174,7 @@ export const tvFilmMetadata: FormMetadata = {
     helpText: 'Major studio or production company',
     group: ['details', 'basic', 'quick'],
     order: 6,
+    autoCapitalize: 'words',
   },
   startDate: {
     ...baseExperienceMetadata.startDate,
@@ -199,6 +204,7 @@ export const tvFilmMetadata: FormMetadata = {
     helpText: 'Principal actors, performers, or talent',
     group: 'team',
     order: 8,
+    autoCapitalize: 'words',
   },
   choreographers: {
     component: 'chips',
@@ -206,12 +212,14 @@ export const tvFilmMetadata: FormMetadata = {
     helpText: 'Lead choreographers for the production',
     group: 'team',
     order: 9,
+    autoCapitalize: 'words',
   },
   associateChoreographers: {
     component: 'chips',
     placeholder: 'Add associate/assistant choreographer names',
     group: 'team',
     order: 10,
+    autoCapitalize: 'words',
   },
   directors: {
     component: 'chips',
@@ -219,6 +227,7 @@ export const tvFilmMetadata: FormMetadata = {
     helpText: 'Theater director for the production',
     group: 'team',
     order: 11,
+    autoCapitalize: 'words',
   },
 };
 
@@ -231,6 +240,7 @@ export const musicVideoMetadata: FormMetadata = {
     order: 1,
     placeholder: 'Enter the song title',
     helpText: 'Official song name',
+    autoCapitalize: 'words',
   },
   artists: {
     component: 'chips',
@@ -238,6 +248,7 @@ export const musicVideoMetadata: FormMetadata = {
     order: 6,
     placeholder: 'Add artist names',
     helpText: 'All featured artists on the track',
+    autoCapitalize: 'words',
   },
   startDate: {
     ...baseExperienceMetadata.startDate,
@@ -269,6 +280,7 @@ export const musicVideoMetadata: FormMetadata = {
     helpText: 'Principal performers or talent',
     group: 'team',
     order: 8,
+    autoCapitalize: 'words',
   },
   choreographers: {
     component: 'chips',
@@ -276,18 +288,21 @@ export const musicVideoMetadata: FormMetadata = {
     helpText: 'Lead choreographers for the production',
     group: 'team',
     order: 9,
+    autoCapitalize: 'words',
   },
   associateChoreographers: {
     component: 'chips',
     placeholder: 'Add associate/assistant choreographer names',
     group: 'team',
     order: 10,
+    autoCapitalize: 'words',
   },
   directors: {
     component: 'chips',
     placeholder: 'Add director name(s)',
     group: 'team',
     order: 11,
+    autoCapitalize: 'words',
   },
 };
 
@@ -309,6 +324,7 @@ export const livePerformanceMetadata: FormMetadata = {
     helpText: 'e.g., Coachella, Glastonbury',
     showWhen: { field: 'subtype', equals: 'festival' },
     order: 2,
+    autoCapitalize: 'words',
   },
   tourName: {
     placeholder: 'Enter tour name',
@@ -316,18 +332,21 @@ export const livePerformanceMetadata: FormMetadata = {
     helpText: 'Official tour title',
     showWhen: { field: 'subtype', equals: 'tour' },
     order: 2,
+    autoCapitalize: 'words',
   },
   tourArtist: {
     placeholder: 'Enter artist name',
     group: ['details', 'basic', 'quick'],
     helpText: 'Headlining artist for the tour',
     showWhen: { field: 'subtype', equals: 'tour' },
+    autoCapitalize: 'words',
   },
   companyName: {
     placeholder: 'Enter company name',
     group: ['details', 'basic', 'quick'],
     helpText: 'Corporate or production company',
     showWhen: { field: 'subtype', equals: 'corporate' },
+    autoCapitalize: 'words',
   },
   eventName: {
     placeholder: 'Enter event name',
@@ -335,6 +354,7 @@ export const livePerformanceMetadata: FormMetadata = {
     helpText: 'Name of the specific event',
     showWhen: { field: 'subtype', equals: ['corporate', 'other'] },
     order: 2,
+    autoCapitalize: 'words',
   },
   awardShowName: {
     label: 'Award Show Title',
@@ -343,6 +363,7 @@ export const livePerformanceMetadata: FormMetadata = {
     group: ['details', 'basic', 'quick'],
     showWhen: { field: 'subtype', equals: 'award-show' },
     order: 2,
+    autoCapitalize: 'words',
   },
   productionTitle: {
     placeholder: 'Enter production title',
@@ -350,6 +371,7 @@ export const livePerformanceMetadata: FormMetadata = {
     group: ['details', 'basic', 'quick'],
     showWhen: { field: 'subtype', equals: 'theater' },
     order: 2,
+    autoCapitalize: 'words',
   },
   venue: {
     placeholder: 'Enter venue name',
@@ -357,6 +379,7 @@ export const livePerformanceMetadata: FormMetadata = {
     group: ['details', 'basic', 'quick'],
     showWhen: { field: 'subtype', equals: ['concert', 'theater'] },
     order: 2,
+    autoCapitalize: 'words',
   },
   startDate: {
     ...baseExperienceMetadata.startDate,
@@ -390,6 +413,7 @@ export const livePerformanceMetadata: FormMetadata = {
     helpText: 'Principal performers or talent',
     group: 'team',
     order: 8,
+    autoCapitalize: 'words',
   },
   choreographers: {
     component: 'chips',
@@ -397,12 +421,14 @@ export const livePerformanceMetadata: FormMetadata = {
     helpText: 'Lead choreographers for the production',
     group: 'team',
     order: 9,
+    autoCapitalize: 'words',
   },
   associateChoreographers: {
     component: 'chips',
     placeholder: 'Add associate/assistant choreographer names',
     group: 'team',
     order: 10,
+    autoCapitalize: 'words',
   },
 };
 
@@ -414,17 +440,20 @@ export const commercialMetadata: FormMetadata = {
     placeholder: 'Enter brand or company name',
     group: ['details', 'basic', 'quick'],
     helpText: 'The brand being advertised',
+    autoCapitalize: 'words',
   },
   campaignTitle: {
     placeholder: 'Enter campaign or commercial title',
     group: ['details', 'basic', 'quick'],
     helpText: 'Campaign name or commercial title',
     order: 1,
+    autoCapitalize: 'words',
   },
   productionCompany: {
     placeholder: 'Enter production company',
     group: ['details', 'basic', 'quick'],
     helpText: 'Company that produced the commercial',
+    autoCapitalize: 'words',
   },
   startDate: {
     ...baseExperienceMetadata.startDate,
@@ -455,6 +484,7 @@ export const commercialMetadata: FormMetadata = {
     helpText: 'Principal performers or talent',
     group: 'team',
     order: 8,
+    autoCapitalize: 'words',
   },
   choreographers: {
     component: 'chips',
@@ -462,18 +492,21 @@ export const commercialMetadata: FormMetadata = {
     helpText: 'Lead choreographers for the production',
     group: 'team',
     order: 9,
+    autoCapitalize: 'words',
   },
   associateChoreographers: {
     component: 'chips',
     placeholder: 'Add associate/assistant choreographer names',
     group: 'team',
     order: 10,
+    autoCapitalize: 'words',
   },
   directors: {
     component: 'chips',
     placeholder: 'Add director name(s)',
     group: 'team',
     order: 11,
+    autoCapitalize: 'words',
   },
 };
 

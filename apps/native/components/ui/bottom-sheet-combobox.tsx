@@ -26,6 +26,7 @@ export interface BottomSheetPickerProps<T = any> {
   pickerLabel?: string;
   errorMessage?: string;
   disabled?: boolean;
+  autoCapitalize?: 'none' | 'sentences' | 'words' | 'characters';
   onSearch?: (searchTerm: string, data: ComboboxItem<T>[]) => ComboboxItem<T>[];
   onSearchAsync?: (searchTerm: string) => Promise<ComboboxItem<T>[]>;
   getLabelAsync?: (value: T) => Promise<ComboboxItem<T> | string | undefined | null>;
@@ -42,6 +43,7 @@ export function BottomSheetCombobox<T = any>({
   defaultValue,
   errorMessage,
   disabled,
+  autoCapitalize,
   onSearch,
   onSearchAsync,
   getLabelAsync,
@@ -198,6 +200,7 @@ export function BottomSheetCombobox<T = any>({
               placeholder="Search..."
               value={searchTerm}
               onChangeText={setSearchTerm}
+              autoCapitalize={autoCapitalize}
               rightView={
                 <Search
                   className="pointer-events-none mr-2 text-text-default opacity-50"

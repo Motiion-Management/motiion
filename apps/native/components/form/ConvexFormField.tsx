@@ -37,7 +37,11 @@ export function ConvexFormField({ field, form }: ConvexFormFieldProps) {
                 label={field.label}
                 placeholder={field.placeholder || `Enter ${field.label.toLowerCase()}`}
                 keyboardType={field.type === 'email' ? 'email-address' : 'default'}
-                autoCapitalize={field.type === 'email' ? 'none' : 'sentences'}
+                autoCapitalize={
+                  (field.type === 'email'
+                    ? 'none'
+                    : (field.metadata?.autoCapitalize as any) || 'sentences') as any
+                }
                 editable={!isReadOnly && !isDisabled}
                 selectTextOnFocus={!isReadOnly}
                 style={isReadOnly || isDisabled ? { opacity: 0.6 } : undefined}
@@ -111,11 +115,12 @@ export function ConvexFormField({ field, form }: ConvexFormFieldProps) {
           <form.AppField
             name={field.name}
             children={(fieldApi: any) => (
-              <fieldApi.ChipsField
-                label={field.label}
-                placeholder={field.placeholder || `Add ${field.label.toLowerCase()}`}
-                helpText={field.helpText}
-              />
+                <fieldApi.ChipsField
+                  label={field.label}
+                  placeholder={field.placeholder || `Add ${field.label.toLowerCase()}`}
+                  helpText={field.helpText}
+                  autoCapitalize={field.metadata?.autoCapitalize as any}
+                />
             )}
           />
         );
@@ -149,12 +154,13 @@ export function ConvexFormField({ field, form }: ConvexFormFieldProps) {
           <form.AppField
             name={field.name}
             children={(fieldApi: any) => (
-              <fieldApi.BottomSheetComboboxField
-                label={field.label}
-                placeholder={field.placeholder || `Select or enter ${field.label.toLowerCase()}`}
-                data={field.options || []}
-                disabled={isReadOnly || isDisabled}
-              />
+                <fieldApi.BottomSheetComboboxField
+                  label={field.label}
+                  placeholder={field.placeholder || `Select or enter ${field.label.toLowerCase()}`}
+                  data={field.options || []}
+                  autoCapitalize={field.metadata?.autoCapitalize as any}
+                  disabled={isReadOnly || isDisabled}
+                />
             )}
           />
         );
