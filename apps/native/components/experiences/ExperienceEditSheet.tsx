@@ -122,7 +122,7 @@ export function ExperienceEditSheet({
   });
 
   // Track current selected type from the form store to drive UI
-  const selectedType = useStore((sharedForm as any).store, (state: any) => state.values?.type) as
+  const selectedType = useStore(sharedForm.store, (state: any) => state.values?.type) as
     | ExperienceType
     | undefined;
 
@@ -130,10 +130,7 @@ export function ExperienceEditSheet({
     return selectedType ? getExperienceMetadata(selectedType) : {};
   }, [selectedType]);
 
-  // Enable/disable pager scroll based on selected type in the form
-  useEffect(() => {
-    pagerRef.current?.setScrollEnabled?.(!!selectedType);
-  }, [selectedType]);
+  // Pager scroll is controlled via the `scrollEnabled` prop; avoid imperative commands
 
   // Ensure discriminator 'type' field shows on Details tab
   const formOverrides = useMemo(

@@ -69,7 +69,7 @@ export const ConvexDynamicForm = React.memo(
       
       // Update form values with initial data
       for (const [key, value] of Object.entries(initialData)) {
-        const currentValue = (form as any).store?.getState?.().values?.[key]
+        const currentValue = (form as any).state?.values?.[key]
         // Only update if value is different to avoid unnecessary re-renders
         if (value !== undefined && value !== currentValue) {
           ;(form as any).setFieldValue?.(key, value)
@@ -169,16 +169,6 @@ export const ConvexDynamicForm = React.memo(
 
       return handler
     }, [debounceMs])
-
-    // Keep discriminated union branch in sync with form value changes
-    useEffect(() => {
-      if (!duInfo) return
-      const discName = duInfo.discriminator
-      const currentValue = (form as any).store?.getState?.().values?.[discName]
-      if (currentValue && currentValue !== selectedDisc) {
-        setSelectedDisc(currentValue)
-      }
-    }, [duInfo, selectedDisc, form])
 
     // Observe values changes with useStore and debounce external onChange
     const values = useStore((form as any).store, (state: any) => state.values)
