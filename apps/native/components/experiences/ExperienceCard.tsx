@@ -50,7 +50,11 @@ export function ExperienceCard({
   const displayTitle = hasExperience
     ? getExperienceDisplayTitle(experience)
     : placeholder || 'Project';
-  const displaySubtitle = hasExperience ? getExperienceDisplaySubtitle(experience) : null;
+  const displaySubtitle = hasExperience
+    ? getExperienceDisplaySubtitle(experience)
+    : disabled
+      ? '-'
+      : 'Add your experience here';
 
   return (
     <>
@@ -58,7 +62,7 @@ export function ExperienceCard({
         onPress={handlePress}
         disabled={disabled}
         className={cn(experienceCardVariants({ variant }), className)}>
-        <View className="flex-1">
+        <View className="flex-1 px-2">
           <Text
             variant="body"
             className={cn(
