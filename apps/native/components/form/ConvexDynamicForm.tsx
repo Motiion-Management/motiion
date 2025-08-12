@@ -308,12 +308,8 @@ export const ConvexDynamicForm = React.memo(
       if (!sdDate) return
 
       const setEnd = (date: Date) => {
-        // Preserve the existing type convention: if startDate is a string, write a string; else write Date
-        if (typeof sd === 'string') {
-          ;(form as any).setFieldValue('endDate', formatLocalDate(date))
-        } else {
-          ;(form as any).setFieldValue('endDate', date)
-        }
+        // Always write normalized string values to match backend schema
+        ;(form as any).setFieldValue('endDate', formatLocalDate(date))
       }
 
       if (!ed) {
