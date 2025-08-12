@@ -6,6 +6,7 @@ import { Input } from '~/components/ui/input';
 import { Sheet, useSheetState } from '~/components/ui/sheet';
 import { Button } from '~/components/ui/button';
 import { Text } from '~/components/ui/text';
+import Calendar from '~/lib/icons/Calendar';
 
 export interface BottomSheetDatePickerProps {
   value?: Date;
@@ -83,6 +84,7 @@ export function BottomSheetDatePicker({
           placeholder={placeholder}
           value={displayValue}
           errorMessage={errorMessage}
+          rightView={<Calendar size={20} className="color-icon-default" />}
         />
       </Pressable>
 

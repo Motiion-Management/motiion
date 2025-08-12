@@ -11,7 +11,11 @@ import { Tabs } from '~/components/ui/tabs/tabs';
 
 import { type ExperienceType, type Experience } from '~/types/experiences';
 import { type Doc, type Id } from '@packages/backend/convex/_generated/dataModel';
-import { experienceMetadata } from '~/utils/convexFormMetadata';
+import {
+  experienceMetadata,
+  baseExperienceMetadata,
+  initialExperienceMetadata,
+} from '~/utils/convexFormMetadata';
 import { useAppForm } from '~/components/form/appForm';
 import { useStore } from '@tanstack/react-form';
 import * as Haptics from 'expo-haptics';
@@ -129,7 +133,15 @@ export function ExperienceEditSheet({
     | undefined;
 
   const metadata = useMemo(() => {
-    return selectedType ? experienceMetadata[selectedType] : {};
+    // Before type is chosen, show initial fields but keep all except title disabled
+    if (!selectedType) return initialExperienceMetadata;
+    return experienceMetadata[selectedType] ?? baseExperienceMetadata;
+  }, [selectedType]);
+
+  // When no type is selected, only show the minimal fields
+  const detailsInclude = useMemo(() => {
+    // Before selecting a type, show only the type selector
+    return selectedType ? undefined : ['type'];
   }, [selectedType]);
 
   // Pager scroll is controlled via the `scrollEnabled` prop; avoid imperative commands
@@ -172,69 +184,88 @@ export function ExperienceEditSheet({
         />
 
         {/* Tab Content */}
-        <PagerView
-          ref={pagerRef}
-          initialPage={0}
-          style={{ flex: 1 }}
-          scrollEnabled={!!selectedType}
-          onPageScroll={(e) => {
-            const { position = 0, offset = 0 } = e.nativeEvent || {};
-            if (!selectedType) {
-              if (position !== 0 || offset > 0) {
-                pagerRef.current?.setPageWithoutAnimation?.(0);
+        {selectedType ? (
+          <PagerView
+            ref={pagerRef}
+            initialPage={0}
+            style={{ flex: 1 }}
+            scrollEnabled={true}
+            onPageScroll={(e) => {
+              const { position = 0, offset = 0 } = e.nativeEvent || {};
+              setUiState((prev) => ({ ...prev, pagerProgress: position + offset }));
+            }}
+            onPageSelected={async (e) => {
+              const idx = e.nativeEvent.position ?? 0;
+              const nextTab = idx === 1 ? 'team' : 'details';
+              if (nextTab !== uiState.activeTab) {
+                setUiState((prev) => ({ ...prev, activeTab: nextTab }));
               }
-              setUiState((prev) => ({ ...prev, pagerProgress: 0 }));
-              return;
-            }
-            setUiState((prev) => ({ ...prev, pagerProgress: position + offset }));
-          }}
-          onPageSelected={async (e) => {
-            const idx = e.nativeEvent.position ?? 0;
-            const nextTab = idx === 1 ? 'team' : 'details';
-            if (nextTab !== uiState.activeTab) {
-              setUiState((prev) => ({ ...prev, activeTab: nextTab }));
-            }
-            try {
-              await Haptics.impactAsync(HAPTIC_LIGHT);
-            } catch (error) {
-              console.warn('Haptics error:', error);
-              // Haptics not available on this device
-            }
-          }}>
-          {/* Keep progress synced while swiping */}
-          {/* onPageScroll provided as a sibling prop in RN; place after onPageSelected for readability */}
-          {/* Details Page */}
-          <View key="details" className="flex-1">
-            <KeyboardAwareScrollView
-              bounces={false}
-              disableScrollOnKeyboardHide
-              contentInsetAdjustmentBehavior="never"
-              keyboardDismissMode="interactive"
-              keyboardShouldPersistTaps="handled"
-              bottomOffset={bottomCompensation}
-              showsVerticalScrollIndicator={false}>
-              <View className="flex-1 pt-2">
-                {/* Experience type is rendered within the dynamic form via discriminator */}
-                <View className="px-4 pb-4 pt-4">
-                  {schema && (
-                    <ConvexDynamicForm
-                      key={`details`}
-                      schema={schema}
-                      metadata={metadata}
-                      // initialData={}
-                      groups={['details', 'basic', 'dates', 'media']}
-                      exclude={['userId', 'private']}
-                      debounceMs={300}
-                      form={sharedForm}
-                    />
-                  )}
+              try {
+                await Haptics.impactAsync(HAPTIC_LIGHT);
+              } catch (error) {
+                console.warn('Haptics error:', error);
+                // Haptics not available on this device
+              }
+            }}>
+            {/* Details Page */}
+            <View key="details" className="flex-1">
+              <KeyboardAwareScrollView
+                bounces={false}
+                disableScrollOnKeyboardHide
+                contentInsetAdjustmentBehavior="never"
+                keyboardDismissMode="interactive"
+                keyboardShouldPersistTaps="handled"
+                bottomOffset={bottomCompensation}
+                showsVerticalScrollIndicator={false}>
+                <View className="flex-1 pt-2">
+                  <View className="px-4 pb-4 pt-4">
+                    {schema && (
+                      <ConvexDynamicForm
+                        key={`details`}
+                        schema={schema}
+                        metadata={metadata}
+                        groups={['details', 'basic', 'dates', 'media']}
+                        exclude={['userId', 'private']}
+                        debounceMs={300}
+                        form={sharedForm}
+                      />
+                    )}
+                  </View>
                 </View>
-              </View>
-            </KeyboardAwareScrollView>
-          </View>
+              </KeyboardAwareScrollView>
+            </View>
 
-          {/* Team Page */}
-          <View key="team" className="flex-1">
+            {/* Team Page */}
+            <View key="team" className="flex-1">
+              <KeyboardAwareScrollView
+                bounces={false}
+                disableScrollOnKeyboardHide
+                contentInsetAdjustmentBehavior="never"
+                keyboardDismissMode="interactive"
+                keyboardShouldPersistTaps="handled"
+                bottomOffset={bottomCompensation}
+                showsVerticalScrollIndicator={false}>
+                <View className="flex-1 pt-2">
+                  <View className="px-4 pb-4 pt-4">
+                    {schema && (
+                      <ConvexDynamicForm
+                        key={`team`}
+                        schema={schema}
+                        metadata={metadata}
+                        groups={['team']}
+                        exclude={['userId', 'private']}
+                        debounceMs={300}
+                        form={sharedForm}
+                      />
+                    )}
+                  </View>
+                </View>
+              </KeyboardAwareScrollView>
+            </View>
+          </PagerView>
+        ) : (
+          // No type selected: render only the details content without a pager, and include only minimal fields
+          <View className="flex-1">
             <KeyboardAwareScrollView
               bounces={false}
               disableScrollOnKeyboardHide
@@ -247,11 +278,11 @@ export function ExperienceEditSheet({
                 <View className="px-4 pb-4 pt-4">
                   {schema && (
                     <ConvexDynamicForm
-                      key={`team`}
+                      key={`details-initial`}
                       schema={schema}
                       metadata={metadata}
-                      // initialData={fullInitialData}
-                      groups={['team']}
+                      groups={['details', 'basic', 'dates', 'media']}
+                      include={detailsInclude}
                       exclude={['userId', 'private']}
                       debounceMs={300}
                       form={sharedForm}
@@ -261,7 +292,7 @@ export function ExperienceEditSheet({
               </View>
             </KeyboardAwareScrollView>
           </View>
-        </PagerView>
+        )}
 
         {/* Actions */}
         <KeyboardStickyView

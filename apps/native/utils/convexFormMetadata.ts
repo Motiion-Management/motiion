@@ -11,15 +11,15 @@ import {
  */
 export interface FieldMetadata {
   component?:
-    | 'text'
-    | 'select'
-    | 'combobox'
-    | 'chips'
-    | 'date'
-    | 'picker'
-    | 'radio'
-    | 'checkbox'
-    | 'number';
+  | 'text'
+  | 'select'
+  | 'combobox'
+  | 'chips'
+  | 'date'
+  | 'picker'
+  | 'radio'
+  | 'checkbox'
+  | 'number';
   placeholder?: string;
   helpText?: string;
   label?: string;
@@ -55,16 +55,16 @@ export interface FieldMetadata {
   };
   // Conditional label override (supports single rule or array of rules)
   labelWhen?:
-    | {
-        field: string;
-        equals?: any | any[];
-        label: string;
-      }
-    | Array<{
-        field: string;
-        equals?: any | any[];
-        label: string;
-      }>;
+  | {
+    field: string;
+    equals?: any | any[];
+    label: string;
+  }
+  | Array<{
+    field: string;
+    equals?: any | any[];
+    label: string;
+  }>;
 }
 
 export type FormMetadata = Record<string, FieldMetadata>;
@@ -130,7 +130,8 @@ export function enhanceFieldsWithMetadata(
 }
 
 // Shared base metadata for Experiences; specific types can extend/override
-const baseExperienceMetadata: FormMetadata = {
+// Exported so forms can always render the type selector before a type is chosen
+export const baseExperienceMetadata: FormMetadata = {
   type: {
     component: 'picker',
     label: 'Experience Type',
@@ -145,10 +146,18 @@ const baseExperienceMetadata: FormMetadata = {
     group: ['details', 'basic', 'quick'],
     order: 0,
   },
+  title: {
+    // Generic title shown for all experience types unless overridden
+    component: 'text',
+    placeholder: 'Project title',
+    autoCapitalize: 'words',
+    group: ['details', 'basic', 'quick'],
+    order: 1,
+  },
   startDate: {
     component: 'date',
     label: 'Start Date',
-    placeholder: 'Select start date',
+    placeholder: 'Select date',
     order: 3,
     format: 'yyyy-MM-dd',
     width: 'half',
@@ -157,7 +166,7 @@ const baseExperienceMetadata: FormMetadata = {
   endDate: {
     component: 'date',
     label: 'End Date',
-    placeholder: 'Select end date',
+    placeholder: 'Select date',
     format: 'yyyy-MM-dd',
     width: 'half',
     group: ['details', 'basic', 'dates'],
@@ -184,13 +193,6 @@ const baseExperienceMetadata: FormMetadata = {
  */
 export const tvFilmMetadata: FormMetadata = {
   ...baseExperienceMetadata,
-  title: {
-    placeholder: 'Project title',
-    autoCapitalize: 'words',
-    // helpText: 'Use the official title as it appears in credits',
-    group: ['details', 'basic', 'quick'],
-    order: 1,
-  },
   studio: {
     component: 'combobox',
     placeholder: 'Select or enter production studio',
@@ -259,13 +261,6 @@ export const tvFilmMetadata: FormMetadata = {
  */
 export const musicVideoMetadata: FormMetadata = {
   ...baseExperienceMetadata,
-  title: {
-    group: ['details', 'basic', 'quick'],
-    order: 1,
-    placeholder: 'Enter the song title',
-    helpText: 'Official song name',
-    autoCapitalize: 'words',
-  },
   artists: {
     component: 'chips',
     group: ['details', 'basic', 'quick'],
@@ -448,13 +443,6 @@ export const commercialMetadata: FormMetadata = {
     helpText: 'The brand being advertised',
     autoCapitalize: 'words',
   },
-  title: {
-    placeholder: 'Enter campaign or commercial title',
-    group: ['details', 'basic', 'quick'],
-    helpText: 'Campaign name or commercial title',
-    order: 1,
-    autoCapitalize: 'words',
-  },
   productionCompany: {
     placeholder: 'Enter production company',
     group: ['details', 'basic', 'quick'],
@@ -561,4 +549,36 @@ export const experienceMetadata: Record<string, FormMetadata> = {
   'music-video': musicVideoMetadata,
   'live-performance': livePerformanceMetadata,
   commercial: commercialMetadata,
+};
+
+// Initial state metadata: show only core fields and disable all except title
+export const initialExperienceMetadata: FormMetadata = {
+  ...baseExperienceMetadata,
+  // Keep the field visible in groups but disabled
+  type: {
+    ...baseExperienceMetadata.type,
+    // Keep type enabled so the user can choose it
+    disabled: false,
+  },
+  title: {
+    ...baseExperienceMetadata.title,
+    // explicitly keep enabled
+    disabled: false,
+  },
+  startDate: {
+    ...baseExperienceMetadata.startDate,
+    disabled: true,
+  },
+  endDate: {
+    ...baseExperienceMetadata.endDate,
+    disabled: true,
+  },
+  duration: {
+    ...baseExperienceMetadata.duration,
+    disabled: true,
+  },
+  roles: {
+    ...baseExperienceMetadata.roles,
+    disabled: true,
+  },
 };
