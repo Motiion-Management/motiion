@@ -165,8 +165,8 @@ export function ExperienceEditSheet({
           continue;
         }
         if (Array.isArray(value)) {
-          out[key] = value.filter((v) =>
-            !(v === undefined || v === null || (typeof v === 'string' && v.trim() === ''))
+          out[key] = value.filter(
+            (v) => !(v === undefined || v === null || (typeof v === 'string' && v.trim() === ''))
           );
           continue;
         }
@@ -242,7 +242,6 @@ export function ExperienceEditSheet({
     pagerRef.current?.setScrollEnabled?.(!!experienceType);
   }, [experienceType]);
 
-
   return (
     <Sheet
       isOpened={isOpen}
@@ -298,7 +297,7 @@ export function ExperienceEditSheet({
             Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light).catch(() => {});
           }}>
           {/* Keep progress synced while swiping */}
-          { /* onPageScroll provided as a sibling prop in RN; place after onPageSelected for readability */ }
+          {/* onPageScroll provided as a sibling prop in RN; place after onPageSelected for readability */}
           {/* Details Page */}
           <View key="details" className="flex-1">
             <KeyboardAwareScrollView
@@ -310,7 +309,7 @@ export function ExperienceEditSheet({
               bottomOffset={bottomCompensation}
               showsVerticalScrollIndicator={false}>
               <View className="flex-1 pt-2">
-                <View className="gap-4 px-4 pt-4">
+                <View className="gap-4 p-4">
                   <BottomSheetPicker
                     onChange={handleExperienceTypeChange}
                     label="Experience Type"

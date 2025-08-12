@@ -72,14 +72,12 @@ export const getMyAllExperiences = authQuery({
       .query('experiences')
       .withIndex('userId', (q) => q.eq('userId', ctx.user._id))
       .collect()
-    return res
-      .map(decorate)
-      .sort((a, b) => {
-        if (!a.startDate || !b.startDate) return 0
-        const dateA = new Date(a.startDate).getTime()
-        const dateB = new Date(b.startDate).getTime()
-        return dateB - dateA
-      })
+    return res.map(decorate).sort((a, b) => {
+      if (!a.startDate || !b.startDate) return 0
+      const dateA = new Date(a.startDate).getTime()
+      const dateB = new Date(b.startDate).getTime()
+      return dateB - dateA
+    })
   }
 })
 

@@ -5,4 +5,3 @@ import { z } from 'zod'
 export function clientZid(table: string) {
   return z.string().describe(`convexId:${table}`)
 }
-

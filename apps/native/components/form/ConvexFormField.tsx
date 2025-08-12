@@ -20,7 +20,7 @@ export function ConvexFormField({ field, form }: ConvexFormFieldProps) {
   // Determine container style based on width
   const width = field.metadata?.width || 'full';
   const containerClassName = width === 'full' ? 'w-full' : 'flex-1';
-  
+
   // Check if field should be read-only or disabled
   const isReadOnly = field.metadata?.readOnly || false;
   const isDisabled = field.metadata?.disabled || false;
@@ -67,7 +67,7 @@ export function ConvexFormField({ field, form }: ConvexFormFieldProps) {
         return (
           <form.AppField
             name={field.name}
-            children={(fieldApi: any) => (
+            children={(fieldApi: any) =>
               field.component === 'picker' ? (
                 <fieldApi.BottomSheetPickerField
                   label={field.label}
@@ -83,7 +83,7 @@ export function ConvexFormField({ field, form }: ConvexFormFieldProps) {
                   disabled={isReadOnly || isDisabled}
                 />
               )
-            )}
+            }
           />
         );
 
@@ -102,10 +102,7 @@ export function ConvexFormField({ field, form }: ConvexFormFieldProps) {
           <form.AppField
             name={field.name}
             children={(fieldApi: any) => (
-              <fieldApi.MultiselectField
-                label={field.label}
-                options={field.options || []}
-              />
+              <fieldApi.MultiselectField label={field.label} options={field.options || []} />
             )}
           />
         );
@@ -115,12 +112,12 @@ export function ConvexFormField({ field, form }: ConvexFormFieldProps) {
           <form.AppField
             name={field.name}
             children={(fieldApi: any) => (
-                <fieldApi.ChipsField
-                  label={field.label}
-                  placeholder={field.placeholder || `Add ${field.label.toLowerCase()}`}
-                  helpText={field.helpText}
-                  autoCapitalize={field.metadata?.autoCapitalize as any}
-                />
+              <fieldApi.ChipsField
+                label={field.label}
+                placeholder={field.placeholder || `Add ${field.label.toLowerCase()}`}
+                helpText={field.helpText}
+                autoCapitalize={field.metadata?.autoCapitalize as any}
+              />
             )}
           />
         );
@@ -154,13 +151,13 @@ export function ConvexFormField({ field, form }: ConvexFormFieldProps) {
           <form.AppField
             name={field.name}
             children={(fieldApi: any) => (
-                <fieldApi.BottomSheetComboboxField
-                  label={field.label}
-                  placeholder={field.placeholder || `Select or enter ${field.label.toLowerCase()}`}
-                  data={field.options || []}
-                  autoCapitalize={field.metadata?.autoCapitalize as any}
-                  disabled={isReadOnly || isDisabled}
-                />
+              <fieldApi.BottomSheetComboboxField
+                label={field.label}
+                placeholder={field.placeholder || `Select or enter ${field.label.toLowerCase()}`}
+                data={field.options || []}
+                autoCapitalize={field.metadata?.autoCapitalize as any}
+                disabled={isReadOnly || isDisabled}
+              />
             )}
           />
         );

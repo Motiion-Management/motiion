@@ -1,61 +1,61 @@
-import React, { useState, useEffect, useCallback } from 'react'
-import { View } from 'react-native'
+import React, { useState, useEffect, useCallback } from 'react';
+import { View } from 'react-native';
 
-import { WheelPicker } from '~/components/ui/wheel-picker'
+import { WheelPicker } from '~/components/ui/wheel-picker';
 
 export interface HeightValue {
-  feet: number
-  inches: number
+  feet: number;
+  inches: number;
 }
 
 interface HeightPickerProps {
-  value?: HeightValue
-  onChange?: (value: HeightValue) => void
-  defaultValue?: HeightValue
+  value?: HeightValue;
+  onChange?: (value: HeightValue) => void;
+  defaultValue?: HeightValue;
 }
 
 // Generate feet options (3-7 feet)
 const feetData = Array.from({ length: 5 }, (_, i) => ({
   value: i + 3,
   label: (i + 3).toString(),
-}))
+}));
 
 // Generate inches options (0-11 inches)
 const inchesData = Array.from({ length: 12 }, (_, i) => ({
   value: i,
   label: i.toString(),
-}))
+}));
 
 export function HeightPicker({
   value,
   onChange,
   defaultValue = { feet: 5, inches: 6 },
 }: HeightPickerProps) {
-  const [currentValue, setCurrentValue] = useState<HeightValue>(value || defaultValue)
+  const [currentValue, setCurrentValue] = useState<HeightValue>(value || defaultValue);
 
   useEffect(() => {
     if (value) {
-      setCurrentValue(value)
+      setCurrentValue(value);
     }
-  }, [value])
+  }, [value]);
 
   const handleFeetChange = useCallback(
     (feet: number) => {
-      const newValue = { ...currentValue, feet }
-      setCurrentValue(newValue)
-      onChange?.(newValue)
+      const newValue = { ...currentValue, feet };
+      setCurrentValue(newValue);
+      onChange?.(newValue);
     },
     [currentValue, onChange]
-  )
+  );
 
   const handleInchesChange = useCallback(
     (inches: number) => {
-      const newValue = { ...currentValue, inches }
-      setCurrentValue(newValue)
-      onChange?.(newValue)
+      const newValue = { ...currentValue, inches };
+      setCurrentValue(newValue);
+      onChange?.(newValue);
     },
     [currentValue, onChange]
-  )
+  );
 
   return (
     <View className="overflow-hidden rounded-lg border border-border-low">
@@ -83,6 +83,5 @@ export function HeightPicker({
         </View>
       </View>
     </View>
-  )
+  );
 }
-

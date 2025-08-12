@@ -1,6 +1,10 @@
-"use client"
+'use client'
 
-export default function GlobalError({ error }: { error: Error & { digest?: string } }) {
+export default function GlobalError({
+  error
+}: {
+  error: Error & { digest?: string }
+}) {
   // Minimal client error boundary
   return (
     <html>
@@ -11,4 +15,3 @@ export default function GlobalError({ error }: { error: Error & { digest?: strin
     </html>
   )
 }
-

@@ -173,10 +173,7 @@ export function OnboardingFlowProvider({
       return flow.steps.filter((step) => isStepVisible(step, userData));
     };
 
-    const calculateProgress = (
-      currentStepId: string,
-      userData: Record<string, any>
-    ): number => {
+    const calculateProgress = (currentStepId: string, userData: Record<string, any>): number => {
       const visibleSteps = getVisibleSteps(userData);
       const currentIndex = visibleSteps.findIndex((step) => step.id === currentStepId);
       if (currentIndex === -1 || visibleSteps.length === 0) return 0;

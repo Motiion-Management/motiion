@@ -14,14 +14,20 @@ export interface ChipsFieldProps {
   autoCapitalize?: 'none' | 'sentences' | 'words' | 'characters';
 }
 
-export const ChipsField = ({ label, placeholder, helpText, autoCapitalize = 'words' }: ChipsFieldProps) => {
+export const ChipsField = ({
+  label,
+  placeholder,
+  helpText,
+  autoCapitalize = 'words',
+}: ChipsFieldProps) => {
   const field = useFieldContext<string[]>();
   const validationModeContext = useValidationModeContextSafe();
   const { errorMessage } = useFieldError(field, { fieldName: field.name });
 
-  const chips: string[] = useMemo(() => (Array.isArray(field.state.value) ? field.state.value : []), [
-    field.state.value,
-  ]);
+  const chips: string[] = useMemo(
+    () => (Array.isArray(field.state.value) ? field.state.value : []),
+    [field.state.value]
+  );
   const [buffer, setBuffer] = useState('');
 
   const commitBuffer = useCallback(() => {

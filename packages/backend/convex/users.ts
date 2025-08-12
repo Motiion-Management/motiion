@@ -102,7 +102,10 @@ export const patchUserAttributes = authMutation({
     attributes: zodToConvex(z.object(attributesPlainObject).partial())
   },
   async handler(ctx, { attributes }): Promise<void> {
-    const currentAttributes = (ctx.user.attributes || {}) as Record<string, unknown>
+    const currentAttributes = (ctx.user.attributes || {}) as Record<
+      string,
+      unknown
+    >
     const mergedAttributes = {
       ...currentAttributes,
       ...attributes

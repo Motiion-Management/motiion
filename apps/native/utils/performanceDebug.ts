@@ -110,11 +110,7 @@ export const perfDebug = new PerformanceDebugger();
 // Convenience functions
 export const perfMark = (name: string, metadata?: Record<string, any>) =>
   perfDebug.mark(name, metadata);
-export const perfMeasure = (
-  startMark: string,
-  endMark?: string,
-  metadata?: Record<string, any>
-) =>
+export const perfMeasure = (startMark: string, endMark?: string, metadata?: Record<string, any>) =>
   perfDebug.measure(startMark, endMark, metadata);
 export const perfLog = (event: string, metadata?: Record<string, any>) =>
   perfDebug.log(event, metadata);

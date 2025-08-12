@@ -20,9 +20,7 @@ const Alert = React.forwardRef<AlertRef, AlertProps>(
       deps: [prompt],
     });
 
-    function promptAlert(
-      args: AlertProps & { prompt: NonNullable<AlertProps['prompt']> }
-    ) {
+    function promptAlert(args: AlertProps & { prompt: NonNullable<AlertProps['prompt']> }) {
       RNAlert.prompt(
         args.title,
         args.message,

@@ -22,7 +22,9 @@ export const FileUploadField = ({ label, helpText }: FileUploadFieldProps) => {
 
   const pickFile = useCallback(async () => {
     try {
-      const res = await ImagePicker.launchImageLibraryAsync({ mediaTypes: ImagePicker.MediaTypeOptions.All });
+      const res = await ImagePicker.launchImageLibraryAsync({
+        mediaTypes: ImagePicker.MediaTypeOptions.All,
+      });
       if (!res.canceled && res.assets && res.assets.length > 0) {
         const uri = res.assets[0].uri;
         field.handleChange(uri);
@@ -36,16 +38,22 @@ export const FileUploadField = ({ label, helpText }: FileUploadFieldProps) => {
 
   return (
     <View className="gap-2">
-      <Text variant="label" className="text-text-secondary">{label}</Text>
+      <Text variant="label" className="text-text-secondary">
+        {label}
+      </Text>
       <Button onPress={pickFile}>
         <Text>Pick File</Text>
       </Button>
       {field.state.value && (
-        <Text variant="footnote" className="text-text-secondary">Selected: {field.state.value}</Text>
+        <Text variant="footnote" className="text-text-secondary">
+          Selected: {field.state.value}
+        </Text>
       )}
       <ErrorText>{errorMessage}</ErrorText>
       {helpText && (
-        <Text variant="footnote" className="text-text-secondary">{helpText}</Text>
+        <Text variant="footnote" className="text-text-secondary">
+          {helpText}
+        </Text>
       )}
     </View>
   );

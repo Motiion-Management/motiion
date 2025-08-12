@@ -5,29 +5,35 @@ Based on Figma designs, this document itemizes all fields that make up experienc
 ## Common Fields Across All Experience Types
 
 ### Details Tab
+
 - **Duration** - Dropdown selector for experience duration (e.g., "1 week", "1 month", "2 months", "Current")
   - Help text: "This is the total time you worked on this project, including rehearsals"
 - **Link** - Text field for project visual/portfolio link
 - **Role** - Text field with chip selector for role in the project
 
 ### Team Tab
+
 Common team member fields across all categories:
+
 - **Main Talent** - Primary talent with chip selector
 - **Choreographer(s)** - Multiple choreographers with chip selectors
 - **Associate Choreographer(s)** - Multiple associate choreographers with chip selectors
 
 Some categories include additional team roles:
+
 - **Director** - Director of the project (Print/Commercial, Music Videos, Theater Production)
 
 ## TV/Film
 
 ### Details Tab
+
 - **Project Type** - Dropdown selector ("Television & Film")
 - **Title** - Text field for project title
 - **Studio** - Dropdown selector for production studio (e.g., "Netflix")
 - **Premier Date** - Optional date picker for premier date
 
 ### Team Tab
+
 - Main Talent
 - Choreographer(s)
 - Associate Choreographer(s)
@@ -35,12 +41,14 @@ Some categories include additional team roles:
 ## Print/Commercial
 
 ### Details Tab
+
 - **Company Name** - Text field for the company (e.g., "JBL")
 - **Campaign Title** - Text field for campaign name
 - **Production Company** - Text field for production agency
 - **Premier Date** - Optional date picker for premier date
 
 ### Team Tab
+
 - Director
 - Main Talent
 - Choreographer(s)
@@ -49,11 +57,13 @@ Some categories include additional team roles:
 ## Music Videos
 
 ### Details Tab
+
 - **Song Title** - Text field for song name
 - **Song Artist(s)** - Text field with chip selector for artist(s)
 - **Premier Date** - Optional date picker for premier date
 
 ### Team Tab
+
 - Director
 - Choreographer(s)
 - Associate Choreographer(s)
@@ -63,12 +73,14 @@ Some categories include additional team roles:
 ### Festival
 
 #### Details Tab
+
 - **Event Type** - Dropdown selector ("Festival")
 - **Festival Title** - Text field for festival name (e.g., "Coachella")
 - **Start Date** - Optional date picker for start date
 - **End Date** - Optional date picker for end date
 
 #### Team Tab
+
 - Main Talent
 - Choreographer(s)
 - Associate Choreographer(s)
@@ -76,6 +88,7 @@ Some categories include additional team roles:
 ### Tour
 
 #### Details Tab
+
 - **Event Type** - Dropdown selector ("Tour")
 - **Tour Name** - Text field for tour title
 - **Tour Artist** - Text field for artist name
@@ -84,6 +97,7 @@ Some categories include additional team roles:
 - **End Date** - Optional date picker for end date
 
 #### Team Tab
+
 - Main Talent
 - Choreographer(s)
 - Associate Choreographer(s)
@@ -91,12 +105,14 @@ Some categories include additional team roles:
 ### Concerts
 
 #### Details Tab
+
 - **Event Type** - Dropdown selector ("Concerts")
 - **Event Name** - Text field for concert/event name
 - **Start Date** - Optional date picker for start date
 - **End Date** - Optional date picker for end date
 
 #### Team Tab
+
 - Main Talent
 - Choreographer(s)
 - Associate Choreographer(s)
@@ -104,6 +120,7 @@ Some categories include additional team roles:
 ### Corporate
 
 #### Details Tab
+
 - **Event Type** - Dropdown selector ("Corporate")
 - **Company Name** - Text field for company name
 - **Event Name** - Text field for event title
@@ -111,6 +128,7 @@ Some categories include additional team roles:
 - **End Date** - Optional date picker for end date
 
 #### Team Tab
+
 - Main Talent
 - Choreographer(s)
 - Associate Choreographer(s)
@@ -118,11 +136,13 @@ Some categories include additional team roles:
 ### Awards Show
 
 #### Details Tab
+
 - **Event Type** - Dropdown selector ("Award Show")
 - **Award Show Title** - Text field for awards show name (e.g., "Video Music Awards")
 - **Date** - Optional date picker for event date
 
 #### Team Tab
+
 - Main Talent
 - Choreographer(s)
 - Associate Choreographer(s)
@@ -130,6 +150,7 @@ Some categories include additional team roles:
 ### Theater Production
 
 #### Details Tab
+
 - **Event Type** - Dropdown selector ("Theater Production")
 - **Production Title** - Text field for production name
 - **Theater** - Text field for theater venue
@@ -137,6 +158,7 @@ Some categories include additional team roles:
 - **End Date** - Optional date picker for end date
 
 #### Team Tab
+
 - Director (with description: "Theater director for the production")
 - Choreographer(s)
 - Associate Choreographer(s)
@@ -144,12 +166,14 @@ Some categories include additional team roles:
 ### Other
 
 #### Details Tab
+
 - **Event Type** - Dropdown selector ("Other")
 - **Event Name** - Text field for custom event name
 - **Start Date** - Optional date picker for start date
 - **End Date** - Optional date picker for end date
 
 #### Team Tab
+
 - Main Talent
 - Choreographer(s)
 - Associate Choreographer(s)

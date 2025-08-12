@@ -20,13 +20,27 @@ interface TabsProps {
   disabledKeys?: string[];
 }
 
-export function Tabs({ tabs, activeTab, onTabChange, className, progress, disabledKeys = [] }: TabsProps) {
+export function Tabs({
+  tabs,
+  activeTab,
+  onTabChange,
+  className,
+  progress,
+  disabledKeys = [],
+}: TabsProps) {
   const [width, setWidth] = useState(0);
   const onLayout = (e: LayoutChangeEvent) => {
     setWidth(e.nativeEvent.layout.width);
   };
   const tabWidth = tabs.length > 0 && width > 0 ? width / tabs.length : 0;
-  const activeIndex = useMemo(() => Math.max(0, tabs.findIndex((t) => t.key === activeTab)), [tabs, activeTab]);
+  const activeIndex = useMemo(
+    () =>
+      Math.max(
+        0,
+        tabs.findIndex((t) => t.key === activeTab)
+      ),
+    [tabs, activeTab]
+  );
   const visualProgress = progress != null ? progress : activeIndex;
 
   return (

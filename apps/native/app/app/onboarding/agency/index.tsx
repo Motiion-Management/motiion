@@ -78,7 +78,9 @@ export default function AgencySelectionScreen() {
                   const results = await convex.query(api.agencies.search, { query: term });
                   return results.map((a: AgencyResult) => ({
                     value: a._id,
-                    label: a.location ? `${a.name} — ${a.location.city}, ${a.location.state}` : a.name,
+                    label: a.location
+                      ? `${a.name} — ${a.location.city}, ${a.location.state}`
+                      : a.name,
                   }));
                 }}
                 getLabelAsync={async (id: string) => {

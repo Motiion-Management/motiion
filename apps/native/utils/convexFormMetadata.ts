@@ -11,15 +11,15 @@ import {
  */
 export interface FieldMetadata {
   component?:
-  | 'text'
-  | 'select'
-  | 'combobox'
-  | 'chips'
-  | 'date'
-  | 'picker'
-  | 'radio'
-  | 'checkbox'
-  | 'number';
+    | 'text'
+    | 'select'
+    | 'combobox'
+    | 'chips'
+    | 'date'
+    | 'picker'
+    | 'radio'
+    | 'checkbox'
+    | 'number';
   placeholder?: string;
   helpText?: string;
   label?: string;

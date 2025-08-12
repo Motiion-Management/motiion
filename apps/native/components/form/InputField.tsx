@@ -60,7 +60,7 @@ export const InputField = ({ label, placeholder, rows, multiline, ...props }: In
       }}
       errorMessage={errorMessage}
       numberOfLines={rows}
-      multiline={multiline ?? (rows != null)}
+      multiline={multiline ?? rows != null}
       {...props}
     />
   );

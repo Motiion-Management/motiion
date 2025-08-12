@@ -62,7 +62,14 @@ export const getMyExperiences = authQuery({
 })
 
 export const getMyExperiencesByType = authQuery({
-  args: { type: v.union(v.literal('tv-film'), v.literal('music-video'), v.literal('live-performance'), v.literal('commercial')) },
+  args: {
+    type: v.union(
+      v.literal('tv-film'),
+      v.literal('music-video'),
+      v.literal('live-performance'),
+      v.literal('commercial')
+    )
+  },
   returns: v.array(v.any()),
   handler: async (ctx, args) => {
     if (!ctx.user) return []
@@ -99,7 +106,15 @@ export const getUserPublicExperiences = query({
 })
 
 export const getUserPublicExperiencesByType = query({
-  args: { userId: v.id('users'), type: v.union(v.literal('tv-film'), v.literal('music-video'), v.literal('live-performance'), v.literal('commercial')) },
+  args: {
+    userId: v.id('users'),
+    type: v.union(
+      v.literal('tv-film'),
+      v.literal('music-video'),
+      v.literal('live-performance'),
+      v.literal('commercial')
+    )
+  },
   returns: v.array(v.any()),
   handler: async (ctx, args) => {
     const exps = await ctx.db

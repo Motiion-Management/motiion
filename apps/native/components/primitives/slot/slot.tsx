@@ -45,14 +45,17 @@ function Slot(props: any) {
 
   const { ref: childRef, ...childProps } = childrenProps;
 
-  return React.cloneElement(children as any, {
-    ...mergeProps(restOfProps, childProps),
-    ...(children.type === 'function'
-      ? {}
-      : {
-          ref: forwardedRef ? composeRefs(forwardedRef, childRef) : childRef,
-        }),
-  } as any);
+  return React.cloneElement(
+    children as any,
+    {
+      ...mergeProps(restOfProps, childProps),
+      ...(children.type === 'function'
+        ? {}
+        : {
+            ref: forwardedRef ? composeRefs(forwardedRef, childRef) : childRef,
+          }),
+    } as any
+  );
 }
 
 Slot.displayName = 'Slot';
@@ -60,7 +63,10 @@ Slot.displayName = 'Slot';
 /**
  * @deprecated: Use Slot instead
  */
-const Pressable = ({ ref: forwardedRef, ...props }: RNPressableProps & { ref: React.RefObject<any> }) => {
+const Pressable = ({
+  ref: forwardedRef,
+  ...props
+}: RNPressableProps & { ref: React.RefObject<any> }) => {
   const { children, ...pressableSlotProps } = props;
 
   if (!React.isValidElement(children)) {
@@ -68,13 +74,10 @@ const Pressable = ({ ref: forwardedRef, ...props }: RNPressableProps & { ref: Re
     return null;
   }
 
-  return React.cloneElement(
-    isTextChildren(children) ? <></> : (children as any),
-    {
-      ...mergeProps(pressableSlotProps, children.props as any),
-      ref: forwardedRef ? composeRefs(forwardedRef, (children as any).ref) : (children as any).ref,
-    }
-  );
+  return React.cloneElement(isTextChildren(children) ? <></> : (children as any), {
+    ...mergeProps(pressableSlotProps, children.props as any),
+    ref: forwardedRef ? composeRefs(forwardedRef, (children as any).ref) : (children as any).ref,
+  });
 };
 
 Pressable.displayName = 'SlotPressable';
@@ -90,13 +93,10 @@ const View = ({ ref: forwardedRef, ...props }: RNViewProps & { ref: React.RefObj
     return null;
   }
 
-  return React.cloneElement(
-    isTextChildren(children) ? <></> : (children as any),
-    {
-      ...mergeProps(viewSlotProps, children.props as any),
-      ref: forwardedRef ? composeRefs(forwardedRef, (children as any).ref) : (children as any).ref,
-    }
-  );
+  return React.cloneElement(isTextChildren(children) ? <></> : (children as any), {
+    ...mergeProps(viewSlotProps, children.props as any),
+    ref: forwardedRef ? composeRefs(forwardedRef, (children as any).ref) : (children as any).ref,
+  });
 };
 
 View.displayName = 'SlotView';
@@ -112,13 +112,10 @@ const Text = ({ ref: forwardedRef, ...props }: RNTextProps & { ref: React.RefObj
     return null;
   }
 
-  return React.cloneElement(
-    isTextChildren(children) ? <></> : (children as any),
-    {
-      ...mergeProps(textSlotProps, children.props as any),
-      ref: forwardedRef ? composeRefs(forwardedRef, (children as any).ref) : (children as any).ref,
-    }
-  );
+  return React.cloneElement(isTextChildren(children) ? <></> : (children as any), {
+    ...mergeProps(textSlotProps, children.props as any),
+    ref: forwardedRef ? composeRefs(forwardedRef, (children as any).ref) : (children as any).ref,
+  });
 };
 
 Text.displayName = 'SlotText';
@@ -138,13 +135,10 @@ const Image = ({ ref: forwardedRef, ...props }: ImageSlotProps & { ref: React.Re
     return null;
   }
 
-  return React.cloneElement(
-    isTextChildren(children) ? <></> : (children as any),
-    {
-      ...mergeProps(imageSlotProps, children.props as any),
-      ref: forwardedRef ? composeRefs(forwardedRef, (children as any).ref) : (children as any).ref,
-    }
-  );
+  return React.cloneElement(isTextChildren(children) ? <></> : (children as any), {
+    ...mergeProps(imageSlotProps, children.props as any),
+    ref: forwardedRef ? composeRefs(forwardedRef, (children as any).ref) : (children as any).ref,
+  });
 };
 
 Image.displayName = 'SlotImage';

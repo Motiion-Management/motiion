@@ -233,17 +233,17 @@ export const ConvexDynamicForm = React.memo(
       initializedRef.current = key;
     }, [fieldsKey, fields, form, initialData, resetKey, defaultValues]);
 
-  // Keep discriminated union branch in sync with external initialData changes (e.g., type selected outside)
-  useEffect(() => {
-    if (!duInfo) return;
-    const discName = duInfo.discriminator as string;
-    const desired = (initialData as any)?.[discName];
-    if (desired && desired !== selectedDisc) {
-      setSelectedDisc(desired);
-      // @ts-ignore tanstack typed generic
-      (form as any).setFieldValue(discName as any, desired);
-    }
-  }, [initialData, duInfo, selectedDisc, form]);
+    // Keep discriminated union branch in sync with external initialData changes (e.g., type selected outside)
+    useEffect(() => {
+      if (!duInfo) return;
+      const discName = duInfo.discriminator as string;
+      const desired = (initialData as any)?.[discName];
+      if (desired && desired !== selectedDisc) {
+        setSelectedDisc(desired);
+        // @ts-ignore tanstack typed generic
+        (form as any).setFieldValue(discName as any, desired);
+      }
+    }, [initialData, duInfo, selectedDisc, form]);
 
     // Observe values changes with useStore and debounce external onChange
     const values = useStore((form as any).store, (state: any) => state.values as any);
@@ -263,14 +263,15 @@ export const ConvexDynamicForm = React.memo(
 
     // Filter fields by groups and conditional showWhen if specified
     const filteredFields = useMemo(() => {
-      const byGroup = !groups || groups.length === 0
-        ? fields
-        : fields.filter((field) => {
-            const fieldGroups = field.metadata?.group;
-            if (!fieldGroups) return false;
-            const fieldGroupArray = Array.isArray(fieldGroups) ? fieldGroups : [fieldGroups];
-            return fieldGroupArray.some((g) => groups.includes(g));
-          });
+      const byGroup =
+        !groups || groups.length === 0
+          ? fields
+          : fields.filter((field) => {
+              const fieldGroups = field.metadata?.group;
+              if (!fieldGroups) return false;
+              const fieldGroupArray = Array.isArray(fieldGroups) ? fieldGroups : [fieldGroups];
+              return fieldGroupArray.some((g) => groups.includes(g));
+            });
 
       // Apply conditional visibility using current form values
       const visible = byGroup.filter((field) => {
@@ -399,7 +400,7 @@ export const ConvexDynamicForm = React.memo(
     }, [sortedFields]);
 
     return (
-      <View className="gap-4">
+      <View className="gap-8">
         {rowGroupedFields.map((row, rowIndex) => (
           <View key={rowIndex} className={row.length > 1 ? 'flex-row gap-2' : ''}>
             {row.map((field) => (
