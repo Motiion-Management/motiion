@@ -248,7 +248,7 @@ export const ConvexDynamicForm = React.memo(
   }, [initialData, duInfo, selectedDisc, form]);
 
     // Observe values changes with useStore and debounce external onChange
-    const values = useStore(form.store, (state) => state.values);
+    const values = useStore((form as any).store, (state: any) => state.values as any);
     // Recompute fields on discriminator change (discriminated unions)
     useEffect(() => {
       if (!duInfo) return;

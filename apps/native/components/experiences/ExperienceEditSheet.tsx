@@ -16,6 +16,7 @@ import { EXPERIENCE_TYPES } from '~/config/experienceTypes';
 import { zExperiencesUnified } from '@packages/backend/convex/schemas';
 import { useAppForm } from '~/components/form/appForm';
 import { zodValidator } from '@tanstack/zod-form-adapter';
+import * as Haptics from 'expo-haptics';
 import { api } from '@packages/backend/convex/_generated/api';
 import { useMutation, useQuery } from 'convex/react';
 
@@ -38,6 +39,7 @@ export function ExperienceEditSheet({
   const insets = useSafeAreaInsets();
   const [activeTab, setActiveTab] = useState('details');
   const pagerRef = useRef<React.ElementRef<typeof PagerView> | null>(null);
+  const [pagerProgress, setPagerProgress] = useState(0);
   const [experienceType, setExperienceType] = useState<ExperienceType | undefined>(undefined);
   const formDataRef = useRef<Partial<Experience>>({});
   const [actionsHeight, setActionsHeight] = useState(0);
@@ -121,12 +123,14 @@ export function ExperienceEditSheet({
     if (activeTab === 'details') {
       setActiveTab('team');
       pagerRef.current?.setPage?.(1);
+      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium).catch(() => {});
     }
   }, [activeTab]);
 
   const handleTabChange = useCallback(
     (tab: string) => {
       if (tab === activeTab) return;
+      if (!experienceType && tab === 'team') return;
       setActiveTab(tab);
       const nextIndex = tab === 'team' ? 1 : 0;
       pagerRef.current?.setPage?.(nextIndex);
@@ -233,6 +237,14 @@ export function ExperienceEditSheet({
   );
   const resetKey = `${resetCount}|${experienceId ?? 'new'}|${experienceType ?? ''}`;
 
+  // Enable/disable pager scroll programmatically as well, for platforms not respecting prop
+  useEffect(() => {
+    try {
+      pagerRef.current?.setScrollEnabled?.(!!experienceType);
+    } catch {}
+  }, [experienceType]);
+
+
   return (
     <Sheet
       isOpened={isOpen}
@@ -249,24 +261,46 @@ export function ExperienceEditSheet({
           }
           setActiveTab('details');
           pagerRef.current?.setPage?.(0);
+          setPagerProgress(0);
           setResetCount((c) => c + 1);
         }
         onOpenChange(open);
       }}>
       <View className="h-[80vh]">
         {/* Tabs */}
-        <Tabs tabs={TABS} activeTab={activeTab} onTabChange={handleTabChange} />
+        <Tabs
+          tabs={TABS}
+          activeTab={activeTab}
+          onTabChange={handleTabChange}
+          progress={pagerProgress}
+          disabledKeys={!experienceType ? ['team'] : []}
+        />
 
         {/* Tab Content */}
         <PagerView
           ref={pagerRef}
           initialPage={0}
           style={{ flex: 1 }}
+          scrollEnabled={!!experienceType}
+          onPageScroll={(e) => {
+            const { position = 0, offset = 0 } = (e as any).nativeEvent || {};
+            if (!experienceType) {
+              if (position !== 0 || offset > 0) {
+                pagerRef.current?.setPageWithoutAnimation?.(0);
+              }
+              setPagerProgress(0);
+              return;
+            }
+            setPagerProgress(position + offset);
+          }}
           onPageSelected={(e) => {
             const idx = e.nativeEvent.position ?? 0;
             const nextTab = idx === 1 ? 'team' : 'details';
             if (nextTab !== activeTab) setActiveTab(nextTab);
+            Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light).catch(() => {});
           }}>
+          {/* Keep progress synced while swiping */}
+          { /* onPageScroll provided as a sibling prop in RN; place after onPageSelected for readability */ }
           {/* Details Page */}
           <View key="details" className="flex-1">
             <KeyboardAwareScrollView

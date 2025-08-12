@@ -36,7 +36,7 @@ export default function ExperiencesScreen() {
             }
           : undefined
       }>
-      <View className="flex-1 gap-3">
+      <View className="flex-1 gap-4">
         {slots.map((exp, index) => {
           const isCompleted = !!exp;
           const isDisabled = !exp && firstEmptyIndex !== -1 && index !== firstEmptyIndex;
