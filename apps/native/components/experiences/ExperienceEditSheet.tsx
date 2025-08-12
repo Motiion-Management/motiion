@@ -4,7 +4,6 @@ import PagerView from 'react-native-pager-view';
 import { KeyboardAwareScrollView, KeyboardStickyView } from 'react-native-keyboard-controller';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { ConvexDynamicForm } from '~/components/form/ConvexDynamicForm';
-import { BottomSheetPicker } from '../ui/bottom-sheet-picker';
 import { Button } from '~/components/ui/button';
 import { Sheet } from '~/components/ui/sheet';
 import { Text } from '~/components/ui/text';
@@ -13,17 +12,14 @@ import { Tabs } from '~/components/ui/tabs/tabs';
 import { type ExperienceType, type Experience } from '~/types/experiences';
 import { type Doc, type Id } from '@packages/backend/convex/_generated/dataModel';
 import { getExperienceMetadata } from '~/utils/convexFormMetadata';
-import { EXPERIENCE_TYPES } from '~/config/experienceTypes';
 import { zExperiencesUnified } from '@packages/backend/convex/schemas';
 import { useAppForm } from '~/components/form/appForm';
 import { zodValidator } from '@tanstack/zod-form-adapter';
+import { useStore } from '@tanstack/react-form';
 import * as Haptics from 'expo-haptics';
 import { api } from '@packages/backend/convex/_generated/api';
 import { useMutation } from 'convex/react';
-import { hydrateDates } from '~/utils/dateHelpers';
 import { normalizeForConvex } from '~/utils/convexHelpers';
-import { getDefaultsFromSchema, mergeFormValues } from '~/utils/formDefaults';
-import { convexSchemaToFormConfig } from '~/utils/convexSchemaToForm';
 
 // Constants
 const BOTTOM_OFFSET_CUSHION = 8;
@@ -54,8 +50,6 @@ export function ExperienceEditSheet({
   const insets = useSafeAreaInsets();
 
   // Convex mutation to persist an experience for the current user
-  const addMyExperience = useMutation(api.users.experiences.addMyExperience);
-  const updateExperience = useMutation(api.experiences.update);
 
   // Combined UI state for better management
   const [uiState, setUiState] = useState({
@@ -66,16 +60,11 @@ export function ExperienceEditSheet({
   });
 
   const pagerRef = useRef<React.ElementRef<typeof PagerView> | null>(null);
-  const [experienceType, setExperienceType] = useState<ExperienceType | undefined>(
-    experience?.type
-  );
 
   const bottomSafeInset = insets.bottom || 0;
   const bottomCompensation = uiState.actionsHeight + bottomSafeInset + BOTTOM_OFFSET_CUSHION;
 
-  const handleExperienceTypeChange = useCallback((value: ExperienceType | undefined) => {
-    setExperienceType(value);
-  }, []);
+  // Type is managed by the form; no external setter required
 
   const handleClose = useCallback(() => {
     onOpenChange(false);
@@ -93,37 +82,82 @@ export function ExperienceEditSheet({
     }
   }, [uiState.activeTab]);
 
-  const handleTabChange = useCallback(
-    (tab: string) => {
-      if (tab === uiState.activeTab) return;
-      if (!experienceType && tab === 'team') return;
-      setUiState((prev) => ({ ...prev, activeTab: tab }));
-      const nextIndex = tab === 'team' ? 1 : 0;
-      pagerRef.current?.setPage?.(nextIndex);
-    },
-    [uiState.activeTab, experienceType]
-  );
+  // handleTabChange will be defined after form initialization
 
   const title = experienceId ? 'Edit Experience' : 'Add Experience';
 
   // Map type -> schema and metadata
   const schema = useMemo(() => zExperiencesUnified, []);
 
-  const metadata = useMemo(() => {
-    return experienceType ? getExperienceMetadata(experienceType) : {};
-  }, [experienceType]);
+  // Initialize shared form controller with onSubmit handling
+  const addMyExperience = useMutation(api.users.experiences.addMyExperience);
+  const updateExperience = useMutation(api.experiences.update);
 
   const sharedForm = useAppForm({
     defaultValues: experience,
     validators: {
       onChange: zodValidator(schema as any),
     },
+    onSubmit: async ({ value }) => {
+      const payload = normalizeForConvex(value as Experience);
+      try {
+        setUiState((prev) => ({ ...prev, isSaving: true }));
+        const idToUpdate = experience?._id ?? experienceId;
+        if (idToUpdate) {
+          await updateExperience({ id: idToUpdate, patch: payload });
+        } else {
+          await addMyExperience(payload);
+        }
+        // Reset via form controller and close
+        sharedForm.reset();
+        handleClose();
+      } catch (error) {
+        const errorMessage = error instanceof Error ? error.message : 'Failed to save experience';
+        console.error('Failed to save experience:', error);
+        Alert.alert('Error', errorMessage, [{ text: 'OK' }]);
+      } finally {
+        setUiState((prev) => ({ ...prev, isSaving: false }));
+      }
+    },
   });
 
-  // Enable/disable pager scroll programmatically as well, for platforms not respecting prop
+  // Track current selected type from the form store to drive UI
+  const selectedType = useStore((sharedForm as any).store, (state: any) => state.values?.type) as
+    | ExperienceType
+    | undefined;
+
+  const metadata = useMemo(() => {
+    return selectedType ? getExperienceMetadata(selectedType) : {};
+  }, [selectedType]);
+
+  // Enable/disable pager scroll based on selected type in the form
   useEffect(() => {
-    pagerRef.current?.setScrollEnabled?.(!!experienceType);
-  }, [experienceType]);
+    pagerRef.current?.setScrollEnabled?.(!!selectedType);
+  }, [selectedType]);
+
+  // Ensure discriminator 'type' field shows on Details tab
+  const formOverrides = useMemo(
+    () => ({
+      type: {
+        // Hint to render as picker/select and place in details group
+        metadata: { group: ['details', 'basic', 'quick'], order: 0 },
+        component: 'picker' as any,
+      },
+    }),
+    []
+  );
+
+  const handleTabChange = useCallback(
+    (tab: string) => {
+      if (tab === uiState.activeTab) return;
+      const t = selectedType;
+      if (!t && tab === 'team') return;
+      setUiState((prev) => ({ ...prev, activeTab: tab }));
+      const nextIndex = tab === 'team' ? 1 : 0;
+      pagerRef.current?.setPage?.(nextIndex);
+    },
+    [uiState.activeTab, selectedType]
+  );
 
   return (
     <Sheet
@@ -134,11 +168,8 @@ export function ExperienceEditSheet({
           // Reset UI state
           setUiState((prev) => ({ ...prev, activeTab: 'details', pagerProgress: 0 }));
           pagerRef.current?.setPage?.(0);
-
-          // Clear experience type if creating new
-          if (!experience && !experienceId) {
-            setExperienceType(undefined);
-          }
+          // Reset form state for next open via controller
+          (sharedForm as any)?.reset?.();
         }
         onOpenChange(open);
       }}>
@@ -149,7 +180,7 @@ export function ExperienceEditSheet({
           activeTab={uiState.activeTab}
           onTabChange={handleTabChange}
           progress={uiState.pagerProgress}
-          disabledKeys={!experienceType ? ['team'] : []}
+          disabledKeys={!selectedType ? ['team'] : []}
         />
 
         {/* Tab Content */}
@@ -157,10 +188,10 @@ export function ExperienceEditSheet({
           ref={pagerRef}
           initialPage={0}
           style={{ flex: 1 }}
-          scrollEnabled={!!experienceType}
+          scrollEnabled={!!selectedType}
           onPageScroll={(e) => {
             const { position = 0, offset = 0 } = e.nativeEvent || {};
-            if (!experienceType) {
+            if (!selectedType) {
               if (position !== 0 || offset > 0) {
                 pagerRef.current?.setPageWithoutAnimation?.(0);
               }
@@ -194,24 +225,18 @@ export function ExperienceEditSheet({
               bottomOffset={bottomCompensation}
               showsVerticalScrollIndicator={false}>
               <View className="flex-1 pt-2">
-                <View className="gap-4 p-4">
-                  <BottomSheetPicker
-                    onChange={handleExperienceTypeChange}
-                    label="Experience Type"
-                    value={experienceType}
-                    data={EXPERIENCE_TYPES}
-                  />
-                </View>
+                {/* Experience type is rendered within the dynamic form via discriminator */}
                 <View className="px-4 pb-4 pt-4">
-                  {experienceType && schema && (
+                  {schema && (
                     <ConvexDynamicForm
-                      key={`details+${experienceType}`}
+                      key={`details`}
                       schema={schema}
                       metadata={metadata}
                       // initialData={}
                       groups={['details', 'basic', 'dates', 'media']}
-                      exclude={['userId', 'private', 'type']}
+                      exclude={['userId', 'private']}
                       debounceMs={300}
+                      overrides={formOverrides}
                       form={sharedForm}
                     />
                   )}
@@ -232,15 +257,16 @@ export function ExperienceEditSheet({
               showsVerticalScrollIndicator={false}>
               <View className="flex-1 pt-2">
                 <View className="px-4 pb-4 pt-4">
-                  {experienceType && schema && (
+                  {schema && (
                     <ConvexDynamicForm
-                      key={`date+${experienceType}`}
+                      key={`team`}
                       schema={schema}
                       metadata={metadata}
                       // initialData={fullInitialData}
                       groups={['team']}
-                      exclude={['userId', 'private', 'type']}
+                      exclude={['userId', 'private']}
                       debounceMs={300}
+                      overrides={formOverrides}
                       form={sharedForm}
                     />
                   )}
@@ -262,46 +288,13 @@ export function ExperienceEditSheet({
               setUiState((prev) => ({ ...prev, actionsHeight: e.nativeEvent.layout.height }))
             }>
             {uiState.activeTab === 'details' ? (
-              <Button onPress={handleNext} disabled={!experienceType} className="w-full">
+              <Button onPress={handleNext} disabled={!selectedType} className="w-full">
                 <Text>Next</Text>
               </Button>
             ) : (
               <Button
-                onPress={async () => {
-                  if (!experienceType) return;
-
-                  // Gather current values directly from the form
-                  const values = (sharedForm as any).store?.getState?.().values ?? {};
-
-                  const completeData = {
-                    ...values,
-                    type: experienceType,
-                  } as Experience;
-
-                  const payload = normalizeForConvex(completeData);
-
-                  try {
-                    setUiState((prev) => ({ ...prev, isSaving: true }));
-                    const idToUpdate = experience?._id ?? experienceId;
-
-                    if (idToUpdate) {
-                      await updateExperience({ id: idToUpdate, patch: payload });
-                    } else {
-                      await addMyExperience(payload);
-                    }
-
-                    handleClose();
-                  } catch (error) {
-                    const errorMessage =
-                      error instanceof Error ? error.message : 'Failed to save experience';
-                    console.error('Failed to save experience:', error);
-
-                    Alert.alert('Error', errorMessage, [{ text: 'OK' }]);
-                  } finally {
-                    setUiState((prev) => ({ ...prev, isSaving: false }));
-                  }
-                }}
-                disabled={!experienceType || uiState.isSaving}
+                onPress={() => (sharedForm as any)?.handleSubmit?.()}
+                disabled={uiState.isSaving || !(sharedForm as any)?.state?.canSubmit}
                 className="w-full">
                 <Text>{uiState.isSaving ? 'Saving…' : 'Save'}</Text>
               </Button>

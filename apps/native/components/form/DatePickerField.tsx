@@ -31,7 +31,7 @@ export const DatePickerField = ({
   formatTime,
 }: DatePickerFieldProps) => {
   // Store date values in the form as 'yyyy-MM-dd' strings for backend compatibility.
-  const field = useFieldContext<string | undefined>()
+  const field = useFieldContext<any>()
   const validationModeContext = useValidationModeContextSafe()
   const { errorMessage } = useFieldError(field, {
     fieldName: field.name,
@@ -65,7 +65,11 @@ export const DatePickerField = ({
   }, [field, validationModeContext])
 
   // Convert stored string value into a Date for the picker UI
-  const dateValue = useMemo(() => parseLocalDate(field.state.value), [field.state.value])
+  const dateValue = useMemo(() => {
+    const v = field.state.value
+    if (v instanceof Date) return v
+    return parseLocalDate(v)
+  }, [field.state.value])
 
   return (
     <View className="flex-1">
@@ -73,8 +77,13 @@ export const DatePickerField = ({
         value={dateValue}
         onChange={(d) => {
           if (!d) return
-          const asString = formatLocalDate(d)
-          field.handleChange(asString as unknown as string)
+          const current = field.state.value
+          if (current instanceof Date) {
+            field.handleChange(d as any)
+          } else {
+            const asString = formatLocalDate(d)
+            field.handleChange(asString as any)
+          }
         }}
         onBlur={handleBlur}
         label={label}
