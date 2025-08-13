@@ -1,39 +1,29 @@
 import React from 'react';
-import { View } from 'react-native';
+import { ImageBackground, View } from 'react-native';
 import { router } from 'expo-router';
-import { BaseOnboardingScreen } from '~/components/layouts/BaseOnboardingScreen';
 import { Button } from '~/components/ui/button';
 import { Text } from '~/components/ui/text';
-import { OnboardingScreenWrapper } from '~/components/onboarding/OnboardingScreenWrapper';
-import { CheckCircle2 } from 'lucide-react-native';
+
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 export default function CompleteScreen() {
-  return <OnboardingScreenWrapper v1Component={CompleteScreenV1} screenName="complete" />;
-}
-
-function CompleteScreenV1() {
   return (
-    <BaseOnboardingScreen
-      title="Welcome!"
-      description="Your profile is complete and ready to go."
-      canProgress={false}>
-      <View className="items-center py-8">
-        <CheckCircle2 size={64} className="text-success mb-4" />
-        <Text variant="title2" className="mb-2 text-center">
-          All Set!
-        </Text>
-        <Text variant="body" className="mb-8 text-center text-muted-foreground">
-          You've successfully completed your profile setup.
-        </Text>
-        <Button
-          variant="accent"
-          size="lg"
-          onPress={() => {
-            router.replace('/app');
-          }}>
-          <Text>Get Started</Text>
-        </Button>
-      </View>
-    </BaseOnboardingScreen>
+    <ImageBackground source={require('./background.png')} className="h-full">
+      <SafeAreaView className="h-full flex-1">
+        <View className="items-between h-full flex-1 px-2 py-8">
+          <Text variant="title2" className="mx-6 mb-2 flex-1">
+            You're all Set!
+          </Text>
+
+          <Button
+            size="lg"
+            onPress={() => {
+              router.replace('/app/home');
+            }}>
+            <Text>Start Using Motiion</Text>
+          </Button>
+        </View>
+      </SafeAreaView>
+    </ImageBackground>
   );
 }

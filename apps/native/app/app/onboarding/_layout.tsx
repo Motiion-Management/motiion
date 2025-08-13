@@ -13,6 +13,11 @@ const OnboardingHeaderV1 = () => {
   const cursor = useOnboardingCursor();
   const { getStepLabel } = useOnboardingStatus(stepName);
 
+  // Hide the onboarding header on the complete screen
+  if (stepName && stepName.includes('/onboarding/complete')) {
+    return null;
+  }
+
   return (
     <SafeAreaView style={{ position: 'absolute', top: 0, left: 0, right: 0, zIndex: 10 }}>
       <View className="h-8 flex-row items-center bg-transparent px-4">
