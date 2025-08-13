@@ -7,11 +7,21 @@
       "outputs": ["dist/**", ".next/**", "!.next/cache/**"],
       "dependsOn": ["^build"]
     },
+    "build:dev": {
+      "dependsOn": ["^build"]
+    },
+    "build:dev:sim": {
+      "dependsOn": ["^build"]
+    },
+    "build:dev:ios": {
+      "dependsOn": ["^build"]
+    },
     "dev": {
       "cache": false,
       "persistent": true
     },
     "lint": {},
+    "type-check": {},
     "clean": {
       "cache": false
     }

@@ -1,0 +1,58 @@
+{
+  "build": {
+    "monorepo": {
+      "pnpm": "9.0.6",
+      "env": {
+        "EXPO_USE_FAST_RESOLVER": "true"
+      },
+      "channel": "monorepo"
+    },
+    "development": {
+      "extends": "monorepo",
+      "developmentClient": true,
+      "distribution": "internal",
+      "android": {
+        "buildType": "apk"
+      },
+      "ios": {
+        "resourceClass": "m-medium"
+      },
+      "environment": "development",
+      "channel": "development"
+    },
+    "dev-sim": {
+      "extends": "development",
+      "ios": {
+        "simulator": true
+      },
+      "channel": "dev-sim"
+    },
+    "preview": {
+      "extends": "monorepo",
+      "distribution": "store",
+      "android": {
+        "buildType": "app-bundle"
+      },
+      "ios": {
+        "resourceClass": "m-medium"
+      },
+      "environment": "preview",
+      "channel": "preview"
+    },
+    "production": {
+      "extends": "monorepo",
+      "distribution": "store",
+      "android": {
+        "buildType": "app-bundle"
+      },
+      "ios": {
+        "resourceClass": "m-medium"
+      },
+      "environment": "production",
+      "channel": "production"
+    }
+  },
+  "cli": {
+    "appVersionSource": "remote"
+  }
+}

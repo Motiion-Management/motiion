@@ -2,8 +2,14 @@ import { zodToConvex } from 'convex-helpers/server/zod'
 import { internalAction } from './_generated/server'
 import { authMutation } from './util'
 import { zFileUploadObjectArray } from './validators/base'
+import type { RegisteredMutation } from 'convex/server'
+import type { DataModel } from './_generated/dataModel'
 
-export const generateUploadUrl = authMutation({
+export const generateUploadUrl: RegisteredMutation<
+  'public',
+  Record<string, never>,
+  Promise<string>
+> = authMutation({
   handler: async (ctx) => {
     return await ctx.storage.generateUploadUrl()
   }

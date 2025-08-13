@@ -1,6 +1,6 @@
 'use node'
 
-import type { WebhookEvent } from '@clerk/clerk-sdk-node'
+import type { WebhookEvent } from '@clerk/backend'
 import { internalAction } from './_generated/server'
 import { Webhook } from 'svix'
 import { v } from 'convex/values'

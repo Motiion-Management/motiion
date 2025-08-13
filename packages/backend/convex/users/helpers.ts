@@ -1,10 +1,8 @@
-import { ONBOARDING_STEPS } from '../validators/users'
-
 export const NEW_USER_DEFAULTS = {
   type: 'member',
   isAdmin: false,
   pointsEarned: 0,
-  onboardingStep: ONBOARDING_STEPS.VISION
+  onboardingCompleted: false
 } as const
 
 export function formatFullName(firstName?: string, lastName?: string) {

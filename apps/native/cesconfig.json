@@ -1,0 +1,50 @@
+{
+  "cesVersion": "2.12.1",
+  "projectName": "motiion",
+  "packages": [
+    {
+      "name": "expo-router",
+      "type": "navigation",
+      "options": {
+        "type": "stack"
+      }
+    },
+    {
+      "name": "nativewindui",
+      "type": "styling",
+      "options": {
+        "selectedComponents": [
+          "activity-indicator",
+          "activity-view",
+          "avatar",
+          "date-picker",
+          "picker",
+          "progress-indicator",
+          "ratings-indicator",
+          "slider",
+          "text",
+          "toggle",
+          "action-sheet"
+        ]
+      }
+    }
+  ],
+  "flags": {
+    "noGit": false,
+    "noInstall": false,
+    "overwrite": false,
+    "importAlias": true,
+    "packageManager": "pnpm",
+    "eas": true
+  },
+  "packageManager": {
+    "type": "pnpm",
+    "version": "9.10.0"
+  },
+  "os": {
+    "type": "Darwin",
+    "platform": "darwin",
+    "arch": "arm64",
+    "kernelVersion": "24.2.0"
+  }
+}

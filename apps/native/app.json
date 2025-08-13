@@ -3,27 +3,113 @@
     "name": "Motiion",
     "slug": "motiion",
     "version": "1.0.0",
+    "scheme": "motiion",
+    "web": {
+      "bundler": "metro",
+      "output": "static",
+      "favicon": "./assets/favicon.png"
+    },
+    "plugins": [
+      "expo-router",
+      [
+        "expo-font",
+        {
+          "fonts": [
+            "assets/fonts/Montserrat Light.ttf",
+            "assets/fonts/Montserrat Medium.ttf",
+            "assets/fonts/Montserrat Regular.ttf",
+            "assets/fonts/Montserrat SemiBold.ttf",
+            "assets/fonts/Montserrat Bold.ttf"
+          ]
+        }
+      ],
+      "expo-secure-store",
+      "expo-video",
+      "expo-web-browser",
+      [
+        "expo-image-picker",
+        {
+          "photosPermission": "Allow Motiion to access your photos to upload and share.",
+          "cameraPermission": "Allow Motiion to access your camera to take photos and videos."
+        }
+      ],
+      "expo-asset"
+    ],
+    "experiments": {
+      "typedRoutes": true,
+      "tsconfigPaths": true,
+      "reactCanary": true
+    },
     "orientation": "portrait",
     "icon": "./assets/icon.png",
-    "userInterfaceStyle": "light",
+    "userInterfaceStyle": "automatic",
     "splash": {
       "image": "./assets/splash.png",
       "resizeMode": "contain",
-      "backgroundColor": "#0D87E1"
+      "backgroundColor": "#003D37"
     },
-    "assetBundlePatterns": ["**/*"],
+    "updates": {
+      "url": "https://u.expo.dev/26b62811-8f3e-4bab-9548-9ab85dfa7cb2",
+      "assetPatternsToBeBundled": ["**/*", "**/*"]
+    },
+    "notification": {
+      "icon": "./assets/icon.png",
+      "color": "#003D37"
+    },
     "ios": {
-      "supportsTablet": true
+      "bundleIdentifier": "io.motiion.motiion",
+      "supportsTablet": true,
+      "entitlements": {
+        "com.apple.developer.associated-domains": [
+          "applinks:motiion.io",
+          "applinks:motiion.io",
+          "applinks:motiion.io",
+          "applinks:motiion.io"
+        ],
+        "com.apple.developer.authentication-services.autofill-credential-provider": true,
+        "com.apple.developer.usernotifications.communication": true,
+        "aps-environment": "production",
+        "com.apple.developer.applesignin": ["Default", "Default", "Default", "Default"],
+        "com.apple.developer.usernotifications.time-sensitive": true
+      },
+      "infoPlist": {
+        "ITSAppUsesNonExemptEncryption": false
+      },
+      "appleTeamId": "67VB85RULJ"
     },
     "android": {
+      "package": "io.motiion.motiion",
+      "edgeToEdgeEnabled": true,
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#ffffff"
+      },
+      "permissions": [
+        "android.permission.CAMERA",
+        "android.permission.READ_EXTERNAL_STORAGE",
+        "android.permission.RECEIVE_BOOT_COMPLETED",
+        "android.permission.WAKE_LOCK",
+        "com.android.alarm.permission.SET_ALARM",
+        "android.permission.RECORD_AUDIO",
+        "android.permission.CAMERA",
+        "android.permission.READ_EXTERNAL_STORAGE",
+        "android.permission.RECEIVE_BOOT_COMPLETED",
+        "android.permission.WAKE_LOCK",
+        "com.android.alarm.permission.SET_ALARM",
+        "android.permission.RECORD_AUDIO"
+      ]
+    },
+    "extra": {
+      "router": {
+        "origin": false
+      },
+      "eas": {
+        "projectId": "26b62811-8f3e-4bab-9548-9ab85dfa7cb2"
       }
     },
-    "web": {
-      "favicon": "./assets/favicon.png"
-    },
-    "plugins": ["expo-font"]
+    "owner": "motiion",
+    "runtimeVersion": {
+      "policy": "appVersion"
+    }
   }
 }

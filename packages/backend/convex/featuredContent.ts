@@ -19,7 +19,9 @@ export const getCurrent = query({
 
     if (!featuredContent) return
 
-    return { ...featuredContent, image: await ctx.storage.getUrl(featuredContent.media) }
-
+    return {
+      ...featuredContent,
+      image: await ctx.storage.getUrl(featuredContent.media)
+    }
   }
 })

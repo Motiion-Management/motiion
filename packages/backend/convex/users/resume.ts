@@ -139,7 +139,8 @@ export const removeResumeUpload = authMutation({
 export const updateMyResume = authMutation({
   args: {
     experiences: zodToConvex(resumeObj.experiences),
-    skills: zodToConvex(resumeObj.skills)
+    skills: zodToConvex(resumeObj.skills),
+    genres: zodToConvex(resumeObj.genres)
   },
   handler: async (ctx, args) => {
     if (!ctx.user) return
@@ -148,7 +149,8 @@ export const updateMyResume = authMutation({
       resume: {
         ...ctx.user.resume,
         experiences: args.experiences,
-        skills: args.skills
+        skills: args.skills,
+        genres: args.genres
       }
     })
   }

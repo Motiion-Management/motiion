@@ -1,9 +1,17 @@
 {
   "compilerOptions": {
     "target": "ESNext",
-    // "module": "NodeNext",
-    // "moduleResolution": "NodeNext",
+    "module": "NodeNext",
+    "moduleResolution": "NodeNext",
+    "allowSyntheticDefaultImports": true,
     "jsx": "preserve"
-  }
-  // "extends": "expo/tsconfig.base"
+  },
+  "references": [
+    { "path": "./apps/native" },
+    { "path": "./apps/web" },
+    { "path": "./packages/backend" },
+    { "path": "./packages/web-ui" },
+    { "path": "./packages/primatives" }
+  ],
+  "files": []
 }

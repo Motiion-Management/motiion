@@ -8,8 +8,10 @@ import { Rewards } from './validators/rewards'
 import { Agencies } from './validators/agencies'
 import { Agents } from './validators/agents'
 import { Experiences } from './validators/experiences'
+import { Training } from './validators/training'
+import { typedV } from 'convex-helpers/validators'
 
-export default defineSchema({
+const schema = defineSchema({
   // global
   featuredContent: FeaturedContent.table,
   featuredMembers: FeaturedMembers.table,
@@ -23,14 +25,22 @@ export default defineSchema({
   users: Users.table.index('tokenId', ['tokenId']).searchIndex('search_user', {
     searchField: 'searchPattern'
   }),
-  // resume data
+  // unified experiences table
   experiences: Experiences.table.index('userId', ['userId']),
+
+  // training (separate from experiences)
+  training: Training.table.index('by_userId', ['userId']),
 
   // agency
   agents: Agents.table.index('userId', ['userId']),
-  agencies: Agencies.table.searchIndex('search_name', { searchField: 'name' })
+  agencies: Agencies.table.searchIndex('search_name', { searchField: 'name' }),
+
+  // onboarding (no dynamic flow tables; client controls flow)
   // },
   // {
   //   // ONLY ENABLE WHEN DOING SCHEMA MIGRATION
   //   schemaValidation: false
 })
+
+export default schema
+export const vv = typedV(schema)

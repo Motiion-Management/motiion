@@ -4,193 +4,219 @@
 
 @layer base {
   :root {
-    --background: 0 0% 98.04%;
-    --foreground: 225 70% 4%;
+    /* Background tokens - Figma semantic names */
+    --background-default: 255 255 255;
+    --background-low: 55 59 65;
+    --background-accent: 0 122 110;
+    --background-overlay: 21 25 28 / 0.4;
+    --background-utility-dark: 21 25 28;
+    --background-utility-light: 255 255 255;
+    --background-utility-accent: 0 61 55;
+    --background-gradient-transparent: 255 255 255 / 0;
+    --background-gradient-filled: 248 249 250;
 
-    --muted: 216 14% 93%;
-    --muted-foreground: 225 7% 12%;
+    /* Surface tokens - Figma semantic names */
+    --surface-default: 248 249 250;
+    --surface-high: 253 253 253;
+    --surface-accent: 248 249 250;
+    --surface-low: 55 59 65;
+    --surface-dark: 21 25 28;
+    --surface-tint: 55 59 65 / 0.4;
+    --surface-overlay: 21 25 28 / 0.8;
+    --surface-tint-accent: 255 255 255;
+    --surface-onGradient: 255 255 255;
+    --surface-onBackground-accent: 255 255 255;
+    --surface-disabled: 255 255 255;
+    --surface-error: 245 197 205;
+    --surface-caution: 253 232 214;
 
-    --popover: 225 40% 98%;
-    --popover-foreground: 225 70% 3%;
+    /* Text tokens - Figma semantic names */
+    --text-default: 21 25 28;
+    --text-high: 255 255 255;
+    --text-low: 55 59 65;
+    --text-accent: 0 204 183;
+    --text-accent-low: 0 122 110;
+    --text-disabled: 135 143 155;
+    --text-error: 204 1 36;
+    --text-utility-light: 255 255 255;
+    --text-utility-dark: 21 25 28;
+    --text-error-emphasis: 61 0 11;
+    --text-caution-emphasis: 74 43 15;
 
-    --card: 0 0% 100%;
-    --card-foreground: 216 8.2% 11.96%;
+    /* Button surface tokens - Figma semantic names */
+    --button-surface-default: 21 25 28;
+    --button-surface-tint: 21 25 28 / 0.6;
+    --button-surface-disabled: 250 250 250;
+    --button-surface-low: 210 210 210;
+    --button-surface-high: 248 249 250;
+    --button-surface-accent: 0 41 37;
+    --button-surface-accent-low: 0 41 37;
+    --button-surface-utility-dark: 21 25 28;
+    --button-surface-utility-light: 255 255 255;
 
-    --primary: 225 7% 12%;
-    --primary-foreground: 0 0% 100%;
+    /* Icon tokens - Figma semantic names */
+    --icon-default: 21 25 28;
+    --icon-tint: 21 25 28 / 0.2;
+    --icon-inverse: 255 255 255;
+    --icon-low: 55 59 65;
+    --icon-accent: 0 204 183;
+    --icon-disabled: 135 143 155;
+    --icon-utility-light: 255 255 255;
+    --icon-utility-dark: 21 25 28;
+    --icon-error: 204 1 36;
+    --icon-error-emphasis: 61 0 11;
+    --icon-caution-emphasis: 74 43 15;
 
-    --secondary: 173.02 100% 16.86%;
-    --secondary-foreground: 0 0% 100%;
+    /* Border tokens - Figma semantic names */
+    --border-default: 198 205 215;
+    --border-low: 224 228 233;
+    --border-high: 21 25 28;
+    --border-accent: 0 82 73;
+    --border-disabled: 210 210 210;
+    --border-tint: 21 25 28 / 0.4;
+    --border-inverse: 255 255 255;
 
-    --accent: 173.55 100% 36.47%;
-    --accent-foreground: 0 0% 100%;
+    /* Primary color scale - Figma foundational tokens */
+    --primary-0: 244 255 254;
+    --primary-50: 221 250 247;
+    --primary-100: 196 245 240;
+    --primary-500: 0 204 183;
+    --primary-850: 0 61 55;
+    --primary-900: 0 41 37;
 
-    --destructive: 349.66 99.02% 40.2%;
-    --destructive-foreground: 0 0% 100%;
+    /* Legacy mappings for backward compatibility */
+    --background: var(--background-default);
+    --foreground: var(--text-default);
+    --card: var(--surface-default);
+    --card-foreground: var(--text-default);
+    --popover: var(--surface-onBackground-accent);
+    --popover-foreground: var(--text-default);
+    --primary: var(--primary-500);
+    --primary-foreground: var(--text-high);
+    --secondary: var(--primary-900);
+    --secondary-foreground: var(--text-high);
+    --muted: var(--surface-default);
+    --muted-foreground: var(--text-disabled);
+    --accent: var(--primary-500);
+    --accent-foreground: var(--text-high);
+    --destructive: var(--text-error);
+    --destructive-foreground: var(--text-high);
+    --border: var(--border-default);
+    --input: var(--border-default);
+    --ring: var(--border-accent);
 
-    --utility: 216 14.29% 93.14%;
-    --input: 216 14.29% 93.14%;
-    --input-background: 216 14.29% 93.14%;
-    --input-foreground: 225 7% 12%;
-    --border: 216 14.29% 93.14%;
-    --ring: 174, 100%, 24%;
+    /* Utility/system values */
     --radius: 0.5rem;
+    --tonal: var(--primary-850);
+    --tonal-foreground: var(--primary-500);
   }
 
-  .dark {
-    --background: 225 47% 2%;
-    --foreground: 225 29% 98%;
+  @media (prefers-color-scheme: dark) {
+    :root {
+      /* Background tokens - Dark mode */
+      --background-default: 0 61 55;
+      --background-low: 83 88 96;
+      --background-accent: 0 163 146;
+      --background-overlay: 35 36 37 / 0.8;
+      --background-utility-dark: 0 0 0;
+      --background-utility-light: 255 255 255;
+      --background-utility-accent: 0 61 55;
+      --background-gradient-transparent: 21 25 28 / 0;
+      --background-gradient-filled: 21 25 28;
 
-    --muted: 195 33% 15%;
-    --muted-foreground: 195 12% 60%;
+      /* Surface tokens - Dark mode */
+      --surface-default: 21 25 28;
+      --surface-high: 17 17 17;
+      --surface-accent: 0 41 37;
+      --surface-low: 210 210 210;
+      --surface-dark: 255 255 255;
+      --surface-tint: 55 59 65 / 0.4;
+      --surface-overlay: 21 25 28 / 0.8;
+      --surface-tint-accent: 38 42 41 / 0.5;
+      --surface-onGradient: 255 255 255;
+      --surface-onBackground-accent: 255 255 255;
+      --surface-disabled: 255 255 255;
+      --surface-error: 214 50 78;
+      --surface-caution: 247 165 90;
 
-    --popover: 225 47% 3%;
-    --popover-foreground: 225 29% 99%;
+      /* Text tokens - Dark mode */
+      --text-default: 255 255 255;
+      --text-high: 21 25 28;
+      --text-low: 210 210 210;
+      --text-accent: 0 204 183;
+      --text-accent-low: 0 122 110;
+      --text-disabled: 83 88 96;
+      --text-error: 224 99 120;
+      --text-utility-light: 255 255 255;
+      --text-utility-dark: 21 25 28;
+      --text-error-emphasis: 250 221 226;
+      --text-caution-emphasis: 254 244 234;
 
-    --card: 225 6.67% 11.76%;
-    --card-foreground: 0 0% 100%;
+      /* Button surface tokens - Dark mode */
+      --button-surface-default: 255 255 255;
+      --button-surface-tint: 21 25 28 / 0.6;
+      --button-surface-disabled: 25 29 30;
+      --button-surface-low: 55 59 65;
+      --button-surface-high: 21 25 28;
+      --button-surface-accent: 0 61 55;
+      --button-surface-accent-low: 0 41 37;
+      --button-surface-utility-dark: 21 25 28;
+      --button-surface-utility-light: 255 255 255;
 
-    --primary: 0 0% 100%;
-    --primary-foreground: 225 40% 1.96%;
+      /* Icon tokens - Dark mode */
+      --icon-default: 255 255 255;
+      --icon-tint: 21 25 28 / 0.2;
+      --icon-inverse: 21 25 28;
+      --icon-low: 250 250 250;
+      --icon-accent: 0 204 183;
+      --icon-disabled: 83 88 96;
+      --icon-utility-light: 255 255 255;
+      --icon-utility-dark: 21 25 28;
+      --icon-error: 214 50 78;
+      --icon-error-emphasis: 245 197 205;
+      --icon-caution-emphasis: 253 232 214;
 
-    --secondary: 195 7% 12%;
-    --secondary-foreground: 195 7% 72%;
+      /* Border tokens - Dark mode */
+      --border-default: 83 88 96;
+      --border-low: 55 59 65;
+      --border-high: 255 255 255;
+      --border-accent: 0 122 110;
+      --border-disabled: 83 88 96;
+      --border-tint: 55 59 65 / 0.4;
+      --border-inverse: 21 25 28;
 
-    --accent: 173.82 100% 40%;
-    --accent-foreground: 225 40% 1.96%;
+      /* Legacy mappings for backward compatibility - Dark mode */
+      --background: var(--background-default);
+      --foreground: var(--text-default);
+      --card: var(--surface-default);
+      --card-foreground: var(--text-default);
+      --popover: var(--surface-default);
+      --popover-foreground: var(--text-default);
+      --primary: var(--primary-500);
+      --primary-foreground: var(--primary-900);
+      --secondary: var(--surface-low);
+      --secondary-foreground: var(--text-default);
+      --muted: var(--surface-dark);
+      --muted-foreground: var(--text-disabled);
+      --accent: var(--primary-500);
+      --accent-foreground: var(--primary-900);
+      --destructive: var(--text-error);
+      --destructive-foreground: var(--text-high);
+      --border: var(--border-default);
+      --input: var(--border-default);
+      --ring: var(--border-accent);
 
-    --destructive: 19 99% 46%;
-    --destructive-foreground: 0 0% 100%;
-
-    --utility: 216 14.29% 93.14%;
-    --input: 174.1 100% 23.92%;
-    --input-background: 174.1 100% 23.92%/20%;
-    --input-foreground: 225 99% 98%;
-
-    --border: 225 8% 10%;
-    --ring: 174.1 47% 90%;
-  }
-}
-
-@layer base {
-  * {
-    @apply border-border;
-  }
-  body {
-    @apply bg-background text-foreground;
-  }
-}
-
-.ptr-element {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  color: #aaa;
-  z-index: 10;
-  text-align: center;
-  height: 50px;
-  transition: all;
-}
-
-.ptr-element .genericon {
-  opacity: 0.6;
-  font-size: 34px;
-  width: auto;
-  height: auto;
-  transition: all 0.25s ease;
-  transform: rotate(90deg);
-  margin-top: 5px;
-}
-.ptr-refresh .ptr-element .genericon {
-  transform: rotate(270deg);
-}
-.ptr-loading .ptr-element .genericon,
-.ptr-reset .ptr-element .genericon {
-  display: none;
-}
-
-.loading {
-  display: inline-block;
-  text-align: center;
-  opacity: 0.4;
-  margin: 12px 0 0 5px;
-  display: none;
-}
-.ptr-loading .loading {
-  display: block;
-}
-
-.loading span {
-  display: inline-block;
-  vertical-align: middle;
-  width: 10px;
-  height: 10px;
-  margin-right: 3px;
-  transform: scale(0.3);
-  border-radius: 50%;
-  animation: ptr-loading 0.4s infinite alternate;
-}
-
-.loading-ptr-1 {
-  animation-delay: 0 !important;
-}
-
-.loading-ptr-2 {
-  animation-delay: 0.2s !important;
-}
-
-.loading-ptr-3 {
-  animation-delay: 0.4s !important;
-}
-
-@keyframes ptr-loading {
-  0% {
-    transform: translateY(0) scale(0.3);
-    opacity: 0;
+      /* Utility/system values */
+      --tonal: var(--primary-500);
+      --tonal-foreground: var(--primary-900);
+    }
   }
 
-  100% {
-    transform: scale(1);
-    background-color: #333;
-    opacity: 1;
+  /* Ensure dark class is applied based on color scheme */
+  @media (prefers-color-scheme: dark) {
+    :root {
+      color-scheme: dark;
+    }
   }
 }
 
-.ptr-loading .refresh-view,
-.ptr-reset .refresh-view,
-.ptr-loading .ptr-element,
-.ptr-reset .ptr-element {
-  transition: all 0.25s ease;
-}
-
-.ptr-reset .refresh-view {
-  transform: translate3d(0, 0, 0);
-}
-
-.ptr-loading .refresh-view {
-  transform: translate3d(0, 30px, 0);
-}
-
-/* react-pull-to-refresh CSS */
-
-#root {
-  background-color: #fff;
-  min-height: 100%;
-  z-index: 20;
-  padding: 20px 20px;
-  text-align: center;
-  font-family: Helvetica, Arial, sans-serif;
-  font-size: 24px;
-  font-weight: 200;
-  color: #555;
-  box-sizing: border-box;
-}
-
-#root h3 {
-  margin: 0.4rem;
-}
-
-body:not(.ptr-loading) .ptr-element {
-  transform: translate3d(0, -50px, 0);
-}

@@ -1,0 +1,43 @@
+{
+  "compilerOptions": {
+    "target": "ESNext",
+    "lib": ["dom", "dom.iterable", "esnext", "webworker"],
+    "allowJs": true,
+    "skipLibCheck": true,
+    "skipDefaultLibCheck": true,
+    "maxNodeModuleJsDepth": 0,
+    "strict": true,
+    "noEmit": true,
+    "esModuleInterop": true,
+    "module": "esnext",
+    "moduleResolution": "bundler",
+    "resolveJsonModule": true,
+    "isolatedModules": true,
+    "jsx": "preserve",
+    "incremental": true,
+    "composite": true,
+    // "types": ["@serwist/next/typings"],
+    "plugins": [
+      {
+        "name": "ts-plugin-sort-import-suggestions"
+      }
+    ],
+    "paths": {
+      "@/*": ["./*"]
+    }
+  },
+  "include": [
+    "next-env.d.ts",
+    "**/*.ts",
+    "**/*.tsx",
+    ".next/types/**/*.ts",
+    "types/**/*.d.ts"
+  ],
+  "exclude": [
+    "node_modules",
+    "../../node_modules/@xixixao",
+    "../../node_modules/@xixixao/uploadstuff",
+    "../../node_modules/@xixixao/uploadstuff/lib",
+    "../../node_modules/@xixixao/uploadstuff/lib/useEvent.ts"
+  ]
+}

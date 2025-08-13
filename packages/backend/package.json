@@ -5,17 +5,18 @@
   "scripts": {
     "dev": "convex dev",
     "build": "convex deploy",
+    "type-check": "tsc --noEmit",
     "setup": "convex dev --until-success"
   },
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@clerk/clerk-sdk-node": "^5.0.9",
-    "convex": "^1.15.0",
-    "convex-helpers": "0.1.57-alpha.1",
+    "@clerk/backend": "^2.5.0",
+    "convex": "^1.25.4",
+    "convex-helpers": "0.1.99",
     "date-fns": "^3.6.0",
-    "openai": "^4.47.3",
-    "svix": "^1.24.0",
-    "zod": "^3.23.8"
+    "openai": "^5.10.1",
+    "svix": "^1.69.0",
+    "zod": "^3.25.76"
   }
 }

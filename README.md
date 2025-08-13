@@ -1,6 +1,5 @@
 # Motiion
 
-
 # Fullstack monorepo template feat. Expo, Turbo, Next.js, Convex, Clerk
 
 This is a modern TypeScript monorepo template with AI web and native apps featuring:
@@ -14,6 +13,7 @@ This is a modern TypeScript monorepo template with AI web and native apps featur
 
 The example app is a note taking app that can summarize notes using AI.
 Features include:
+
 - Marketing page
 - Dashboard page (web & native)
 - Note taking page (web & native)

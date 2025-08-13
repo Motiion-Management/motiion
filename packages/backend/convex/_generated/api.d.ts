@@ -23,9 +23,13 @@ import type * as featuredContent from "../featuredContent.js";
 import type * as featuredMembers from "../featuredMembers.js";
 import type * as files from "../files.js";
 import type * as http from "../http.js";
+import type * as onboarding from "../onboarding.js";
+import type * as onboardingConfig from "../onboardingConfig.js";
 import type * as rewards from "../rewards.js";
+import type * as training from "../training.js";
 import type * as users_experiences from "../users/experiences.js";
 import type * as users_headshots from "../users/headshots.js";
+import type * as users_headshotsOptimized from "../users/headshotsOptimized.js";
 import type * as users_helpers from "../users/helpers.js";
 import type * as users_representation from "../users/representation.js";
 import type * as users_resume from "../users/resume.js";
@@ -42,6 +46,7 @@ import type * as validators_featuredContent from "../validators/featuredContent.
 import type * as validators_featuredMembers from "../validators/featuredMembers.js";
 import type * as validators_rewards from "../validators/rewards.js";
 import type * as validators_sizing from "../validators/sizing.js";
+import type * as validators_training from "../validators/training.js";
 import type * as validators_users from "../validators/users.js";
 
 /**
@@ -63,9 +68,13 @@ declare const fullApi: ApiFromModules<{
   featuredMembers: typeof featuredMembers;
   files: typeof files;
   http: typeof http;
+  onboarding: typeof onboarding;
+  onboardingConfig: typeof onboardingConfig;
   rewards: typeof rewards;
+  training: typeof training;
   "users/experiences": typeof users_experiences;
   "users/headshots": typeof users_headshots;
+  "users/headshotsOptimized": typeof users_headshotsOptimized;
   "users/helpers": typeof users_helpers;
   "users/representation": typeof users_representation;
   "users/resume": typeof users_resume;
@@ -82,6 +91,7 @@ declare const fullApi: ApiFromModules<{
   "validators/featuredMembers": typeof validators_featuredMembers;
   "validators/rewards": typeof validators_rewards;
   "validators/sizing": typeof validators_sizing;
+  "validators/training": typeof validators_training;
   "validators/users": typeof validators_users;
 }>;
 export declare const api: FilterApi<

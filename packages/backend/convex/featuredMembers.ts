@@ -4,6 +4,7 @@ import { authMutation, authQuery, notEmpty } from './util'
 import { crud } from 'convex-helpers/server'
 import { FeaturedMembers } from './validators/featuredMembers'
 import { getAll } from 'convex-helpers/server/relationships'
+import type { RegisteredQuery } from 'convex/server'
 
 export const { read } = crud(FeaturedMembers, query, mutation)
 
@@ -12,7 +13,6 @@ export const { create, update, destroy } = crud(
   authQuery,
   authMutation
 )
-
 
 export const getFeaturedChoreographers = query({
   args: {},
@@ -38,8 +38,16 @@ export const getFeaturedChoreographers = query({
   }
 })
 
-
-export const getFeaturedTalent = query({
+export const getFeaturedTalent: RegisteredQuery<
+  'public',
+  Record<string, never>,
+  | Array<{
+      userId: string
+      label: string
+      headshotUrl: string
+    }>
+  | undefined
+> = query({
   async handler(ctx) {
     const result = await ctx.db.query('featuredMembers').first()
     const users = await getAll(ctx.db, result?.talent || [])
