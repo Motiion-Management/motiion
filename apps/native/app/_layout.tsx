@@ -32,7 +32,7 @@ export default function RootLayout() {
         key={`root-status-bar-${isDarkColorScheme ? 'light' : 'dark'}`}
         style={isDarkColorScheme ? 'light' : 'dark'}
       />
-      <GestureHandlerRootView style={{ flex: 1 }}>
+      <GestureHandlerRootView style={{ flex: 1 }} className="bg-surface-default">
         <KeyboardProvider statusBarTranslucent navigationBarTranslucent>
           <BottomSheetModalProvider>
             <ActionSheetProvider>
@@ -56,6 +56,7 @@ const RootStack = () => {
       screenOptions={{
         animation: 'ios_from_right', // for android
         headerShown: false,
+        contentStyle: { backgroundColor: 'transparent' },
       }}>
       <Stack.Screen name="index" />
       <Stack.Screen
