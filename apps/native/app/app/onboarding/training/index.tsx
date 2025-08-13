@@ -1,12 +1,10 @@
 import React, { useMemo } from 'react';
 import { View } from 'react-native';
-
 import { BaseOnboardingScreen } from '~/components/layouts/BaseOnboardingScreen';
 import { TrainingCard } from '~/components/training/TrainingCard';
 import { useSimpleOnboardingFlow } from '~/hooks/useSimpleOnboardingFlow';
 import { useQuery } from 'convex/react';
 import { api } from '@packages/backend/convex/_generated/api';
-
 export default function TrainingScreen() {
   const onboarding = useSimpleOnboardingFlow();
   const training = useQuery(api.training.getMyTraining, {});
@@ -18,24 +16,17 @@ export default function TrainingScreen() {
 
   const firstEmptyIndex = useMemo(() => slots.findIndex((s) => !s), [slots]);
 
-  const handleContinue = async () => {
-    onboarding.navigateNext();
-  };
-
   return (
     <BaseOnboardingScreen
       title="Add your training"
       description="Add up to 3 training details. People commonly include dance teams, schools, and training programs."
       canProgress
-      primaryAction={{
-        onPress: handleContinue,
-      }}
       secondaryAction={
         !training?.length
           ? {
-              text: 'Skip for now',
-              onPress: () => onboarding.navigateNext(),
-            }
+            text: 'Skip for now',
+            onPress: () => onboarding.navigateNext(),
+          }
           : undefined
       }>
       <View className="flex-1 gap-4">

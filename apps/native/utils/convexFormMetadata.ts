@@ -95,7 +95,7 @@ export function enhanceFieldsWithMetadata(
     };
 
     // Override component type if specified
-  if (fieldMeta.component === 'combobox') {
+    if (fieldMeta.component === 'combobox') {
       enhanced.type = 'combobox';
     } else if (fieldMeta.component === 'picker') {
       enhanced.type = 'select';
@@ -632,7 +632,7 @@ export const baseTrainingMetadata: FormMetadata = {
     order: 3,
   },
   startYear: {
-    component: 'year',
+    component: 'number',
     label: 'Year Start',
     placeholder: 'Select year',
     width: 'half',
@@ -640,7 +640,7 @@ export const baseTrainingMetadata: FormMetadata = {
     order: 4,
   },
   endYear: {
-    component: 'year',
+    component: 'number',
     label: 'Year End',
     placeholder: 'Select year',
     width: 'half',

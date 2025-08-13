@@ -1,51 +1,96 @@
-import { useRouter } from 'expo-router';
-import React from 'react';
-import { View, Text } from 'react-native';
+import { api } from '@packages/backend/convex/_generated/api';
+import { useMutation } from 'convex/react';
+import React, { useCallback } from 'react';
+import { View } from 'react-native';
+import * as z from 'zod';
 
+import { ValidationModeForm } from '~/components/form/ValidationModeForm';
+import { useAppForm } from '~/components/form/appForm';
 import { BaseOnboardingScreen } from '~/components/layouts/BaseOnboardingScreen';
-import { OnboardingStepGuard } from '~/components/onboarding/OnboardingGuard';
-import { useOnboardingNavigation, useOnboardingStatus } from '~/hooks/useOnboardingStatus';
+import { useStore } from '@tanstack/react-form';
+import { useSimpleOnboardingFlow } from '~/hooks/useSimpleOnboardingFlow';
+import { useUser } from '~/hooks/useUser';
+import { zResume } from '@packages/backend/convex/validators/users';
+
+const skillsValidator = zResume.pick({ skills: true, genres: true });
+type SkillsSchema = z.infer<typeof skillsValidator>;
 
 export default function SkillsScreen() {
-  const router = useRouter();
-  const { getStepTitle } = useOnboardingStatus();
-  const { advanceToNextStep } = useOnboardingNavigation();
+  const onboarding = useSimpleOnboardingFlow();
+  const updateMyResume = useMutation(api.users.resume.updateMyResume);
+  const { user } = useUser();
 
-  const handleContinue = async () => {
-    try {
-      // TODO: Implement skills form logic
-      console.log('Skills step - implement form logic');
+  const form = useAppForm({
+    defaultValues: {
+      genres: user?.resume?.genres,
+      skills: user?.resume?.skills,
+    } as SkillsSchema,
+    validators: {
+      onChange: skillsValidator,
+    },
+    onSubmit: async ({ value }) => {
+      try {
+        await updateMyResume({
+          ...value,
+          experiences: user?.resume?.experiences,
+        });
 
-      // Navigate to the next step
-      const result = await advanceToNextStep();
-      if (result.route) {
-        router.push(result.route);
-      } else {
-        // If no next step, onboarding is complete
-        router.push('/app/home');
+        // Navigate to next step after successful save
+        onboarding.navigateNext();
+      } catch (error) {
+        console.error('Error saving skills:', error);
       }
-    } catch (error) {
-      console.error('Error in skills step:', error);
-    }
-  };
+    },
+  });
+
+  const canProgress = useStore(
+    form.store,
+    (s) => (s.values.genres?.length ?? 0) > 0 && (s.values.skills?.length ?? 0) > 0 && s.canSubmit
+  );
+
+  const handleSkip = useCallback(() => {
+    onboarding.navigateNext();
+  }, [onboarding]);
 
   return (
-    <OnboardingStepGuard requiredStep="skills">
-      <BaseOnboardingScreen
-        title={getStepTitle()}
-        description="What are your skills and abilities?"
-        canProgress={false} // TODO: Set to true when form is filled
-        primaryAction={{
-          onPress: handleContinue,
-          disabled: true, // TODO: Enable when form is valid
-        }}>
-        <View className="flex-1 items-center justify-center">
-          <Text className="text-lg text-gray-500">Skills form will be implemented here</Text>
-          <Text className="mt-2 text-sm text-gray-400">
-            This will include skills, abilities, and expertise levels
-          </Text>
+    <BaseOnboardingScreen
+      title="Add your skills"
+      description="What genre and special skills are you proficient in?"
+      canProgress={canProgress}
+      primaryAction={{
+        onPress: () => form.handleSubmit(),
+        disabled: !canProgress,
+        handlesNavigation: true,
+      }}
+      secondaryAction={{
+        text: 'Skip for now',
+        onPress: handleSkip,
+      }}>
+      <ValidationModeForm form={form}>
+        <View className="gap-6">
+          <form.AppField
+            name="genres"
+            children={(field) => (
+              <field.ChipsField
+                label="GENRES"
+                placeholder="Hip Hop, Musical Theater, Tap Dance..."
+                autoCapitalize="words"
+              />
+            )}
+          />
+
+          <form.AppField
+            name="skills"
+            children={(field) => (
+              <field.ChipsField
+                label="SKILLS"
+                placeholder="Breaking, Juggling, Skateboarding..."
+                autoCapitalize="words"
+              />
+            )}
+          />
         </View>
-      </BaseOnboardingScreen>
-    </OnboardingStepGuard>
+      </ValidationModeForm>
+    </BaseOnboardingScreen>
   );
 }
