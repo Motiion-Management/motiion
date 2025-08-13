@@ -24,9 +24,9 @@ export default function TrainingScreen() {
       secondaryAction={
         !training?.length
           ? {
-            text: 'Skip for now',
-            onPress: () => onboarding.navigateNext(),
-          }
+              text: 'Skip for now',
+              onPress: () => onboarding.navigateNext(),
+            }
           : undefined
       }>
       <View className="flex-1 gap-4">

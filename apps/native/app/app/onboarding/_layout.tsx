@@ -5,27 +5,30 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { UserButton } from '~/components/auth/UserButton';
 import { ProgressBar } from '~/components/ui/progress-bar';
-import { useOnboardingCursor } from '~/hooks/useOnboardingCursor';
-import { useOnboardingStatus } from '~/hooks/useOnboardingStatus';
+import { useSimpleOnboardingFlow } from '~/hooks/useSimpleOnboardingFlow';
+import { useUser } from '~/hooks/useUser';
 
 const OnboardingHeaderV1 = () => {
   const stepName = usePathname();
-  const cursor = useOnboardingCursor();
-  const { getStepLabel } = useOnboardingStatus(stepName);
+  const flow = useSimpleOnboardingFlow();
+  const { user } = useUser();
 
   // Hide the onboarding header on the complete screen
   if (stepName && stepName.includes('/onboarding/complete')) {
     return null;
   }
 
+  // Match previous label behavior: PROFILE on first step, else profile type
+  const label = (() => {
+    if (flow.currentStepId === 'profile-type') return 'PROFILE';
+    const type = user?.profileType || 'dancer';
+    return String(type).toUpperCase();
+  })();
+
   return (
     <SafeAreaView style={{ position: 'absolute', top: 0, left: 0, right: 0, zIndex: 10 }}>
       <View className="h-8 flex-row items-center bg-transparent px-4">
-        <ProgressBar
-          currentStep={cursor.currentStepIndex}
-          totalSteps={cursor.totalSteps}
-          label={getStepLabel(cursor.currentStep || '')}
-        />
+        <ProgressBar currentStep={flow.currentIndex} totalSteps={flow.totalSteps} label={label} />
         <UserButton />
       </View>
     </SafeAreaView>

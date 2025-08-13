@@ -67,11 +67,7 @@ export default function UnionScreen() {
           <form.AppField
             name="sagAftraId"
             children={(field) => (
-              <field.InputField 
-                label="MEMBER ID" 
-                placeholder="12345678"
-                keyboardType="numeric"
-              />
+              <field.InputField label="MEMBER ID" placeholder="12345678" keyboardType="numeric" />
             )}
           />
         </View>

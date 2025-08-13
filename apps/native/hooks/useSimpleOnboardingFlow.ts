@@ -1,5 +1,7 @@
 import { useRouter, useSegments, Href } from 'expo-router';
 import { useCallback, useMemo } from 'react';
+import { api } from '@packages/backend/convex/_generated/api';
+import { useMutation } from 'convex/react';
 import { useUser } from './useUser';
 
 // Define the static flow structure
@@ -37,6 +39,9 @@ const ONBOARDING_FLOWS = {
   guest: ['profile-type', 'database-use', 'company', 'complete'],
 } as const;
 
+// Steps that are client-only and not tracked by backend setOnboardingStep
+const DO_NOT_PERSIST_STEPS = new Set(['complete']);
+
 type ProfileType = keyof typeof ONBOARDING_FLOWS;
 
 interface UseSimpleOnboardingFlowReturn {
@@ -69,6 +74,7 @@ export function useSimpleOnboardingFlow(): UseSimpleOnboardingFlowReturn {
   const router = useRouter();
   const segments = useSegments();
   const { user } = useUser();
+  const setStep = useMutation(api.onboarding.setOnboardingStep);
 
   // Extract current step from URL
   const currentStepId = useMemo(() => {
@@ -109,35 +115,47 @@ export function useSimpleOnboardingFlow(): UseSimpleOnboardingFlowReturn {
     return index >= 0 ? index : 0;
   }, [activeFlow, currentStepId]);
 
-  // Calculate navigation paths
-  const { nextStepPath, previousStepPath } = useMemo(() => {
+  // Calculate navigation targets
+  const { nextStepPath, previousStepPath, nextStepId, previousStepId } = useMemo(() => {
     let nextPath: string | null = null;
     let prevPath: string | null = null;
+    let nextId: string | null = null;
+    let prevId: string | null = null;
 
     // Handle profile-type decision navigation
     if (currentStepId === 'profile-type' && user?.profileType) {
       const profileType = user.profileType as ProfileType;
       const targetFlow = ONBOARDING_FLOWS[profileType];
       if (targetFlow && targetFlow.length > 1) {
-        nextPath = `/app/onboarding/${targetFlow[1]}`;
+        nextId = targetFlow[1];
+        nextPath = `/app/onboarding/${nextId}`;
       }
     } else if (currentStepId === 'representation' && user?.representationStatus !== 'represented') {
       // Skip agency step if already represented
-      nextPath = `/app/onboarding/${activeFlow[currentIndex + 2]}`;
+      nextId = activeFlow[currentIndex + 2] ?? null;
+      nextPath = nextId ? `/app/onboarding/${nextId}` : null;
     } else if (currentIndex < activeFlow.length - 1) {
-      nextPath = `/app/onboarding/${activeFlow[currentIndex + 1]}`;
+      nextId = activeFlow[currentIndex + 1] ?? null;
+      nextPath = nextId ? `/app/onboarding/${nextId}` : null;
     }
 
     if (currentIndex > 0) {
-      prevPath = `/app/onboarding/${activeFlow[currentIndex - 1]}`;
+      prevId = activeFlow[currentIndex - 1] ?? null;
+      prevPath = prevId ? `/app/onboarding/${prevId}` : null;
     }
 
     if (user?.representationStatus !== 'represented' && prevPath === '/app/onboarding/agency') {
       // Skip agency step if already represented
+      prevId = 'representation';
       prevPath = `/app/onboarding/representation`;
     }
 
-    return { nextStepPath: nextPath, previousStepPath: prevPath };
+    return {
+      nextStepPath: nextPath,
+      previousStepPath: prevPath,
+      nextStepId: nextId,
+      previousStepId: prevId,
+    };
   }, [currentStepId, currentIndex, activeFlow, user?.profileType]);
 
   // Calculate progress
@@ -148,22 +166,32 @@ export function useSimpleOnboardingFlow(): UseSimpleOnboardingFlowReturn {
 
   // Navigation methods
   const navigateNext = useCallback(() => {
-    if (nextStepPath) {
+    if (nextStepPath && nextStepId) {
       router.push(nextStepPath as Href);
+      // Persist navigation position for server-side redirect support (fire-and-forget)
+      if (!DO_NOT_PERSIST_STEPS.has(nextStepId)) {
+        setStep({ step: nextStepId }).catch(() => {});
+      }
     }
-  }, [nextStepPath, router]);
+  }, [nextStepPath, nextStepId, router, setStep]);
 
   const navigatePrevious = useCallback(() => {
-    if (previousStepPath) {
+    if (previousStepPath && previousStepId) {
       router.push(previousStepPath as Href);
+      if (!DO_NOT_PERSIST_STEPS.has(previousStepId)) {
+        setStep({ step: previousStepId }).catch(() => {});
+      }
     }
-  }, [previousStepPath, router]);
+  }, [previousStepPath, previousStepId, router, setStep]);
 
   const navigateToStep = useCallback(
     (stepId: string) => {
       router.push(`/app/onboarding/${stepId}` as Href);
+      if (!DO_NOT_PERSIST_STEPS.has(stepId)) {
+        setStep({ step: stepId }).catch(() => {});
+      }
     },
-    [router]
+    [router, setStep]
   );
 
   return {

@@ -86,6 +86,11 @@ export const ONBOARDING_FLOWS: OnboardingFlows = {
         description: 'Agency selection (conditional)'
       },
       {
+        step: 'resume',
+        required: [],
+        description: 'Import or attach your resume (optional)'
+      },
+      {
         step: 'experiences',
         required: ['experiences'],
         minItems: 1,
@@ -103,8 +108,8 @@ export const ONBOARDING_FLOWS: OnboardingFlows = {
       },
       {
         step: 'union',
-        required: ['unionStatus'],
-        description: 'Union membership status'
+        required: [],
+        description: 'SAG-AFTRA membership (optional)'
       }
     ],
     choreographer: [
@@ -133,6 +138,11 @@ export const ONBOARDING_FLOWS: OnboardingFlows = {
         step: 'agency',
         required: ['agency'],
         description: 'Agency selection (conditional)'
+      },
+      {
+        step: 'resume',
+        required: [],
+        description: 'Import or attach your resume (optional)'
       },
       {
         step: 'experiences',

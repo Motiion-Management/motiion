@@ -127,16 +127,7 @@ export const completeOnboarding: RegisteredMutation<
       throw new ConvexError('User not found')
     }
 
-    // Verify that onboarding is actually complete
-    const isComplete = isOnboardingComplete(user, CURRENT_ONBOARDING_VERSION)
-    if (!isComplete) {
-      const status = analyzeOnboardingProgress(user, CURRENT_ONBOARDING_VERSION)
-      throw new ConvexError(
-        `Cannot complete onboarding. Missing required fields: ${status.missingFields.join(', ')}`
-      )
-    }
-
-    // Mark onboarding as completed
+    // Mark onboarding as completed (non-blocking; individual screens own validation)
     await ctx.db.patch(user._id, {
       onboardingCompleted: true,
       onboardingCompletedAt: new Date().toISOString(),
@@ -254,7 +245,6 @@ export const debugOnboardingStatus: RegisteredQuery<
         sizing: !!user.sizing,
         representation: !!user.representation,
         experiences: user.resume?.experiences?.length || 0,
-        unionStatus: user.unionStatus,
         companyName: user.companyName,
         onboardingCompleted: user.onboardingCompleted,
         onboardingVersion: user.onboardingVersion,
@@ -491,5 +481,38 @@ export const migrateNavigationPosition: RegisteredMutation<
       errors,
       message: `Migration complete: ${migrated} users migrated, ${errors} errors`
     }
+  }
+})
+
+// Minimal redirect target for client guard: no heavy analysis, no flow logic
+export const getOnboardingRedirect = query({
+  args: {},
+  returns: v.object({
+    shouldRedirect: v.boolean(),
+    redirectPath: v.string()
+  }),
+  handler: async (ctx) => {
+    const identity = await ctx.auth.getUserIdentity()
+    if (!identity) {
+      return { shouldRedirect: false, redirectPath: '/app' }
+    }
+
+    const user = await ctx.db
+      .query('users')
+      .withIndex('tokenId', (q) => q.eq('tokenId', identity.subject))
+      .first()
+
+    if (!user) {
+      return { shouldRedirect: false, redirectPath: '/app' }
+    }
+
+    // If onboarding completed, never redirect to onboarding
+    if (user.onboardingCompleted) {
+      return { shouldRedirect: false, redirectPath: '/app' }
+    }
+
+    const step = (user.currentOnboardingStep as string) || 'profile-type'
+    const redirectPath = `/app/onboarding/${step}`
+    return { shouldRedirect: true, redirectPath }
   }
 })

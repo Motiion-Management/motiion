@@ -207,8 +207,6 @@ function getFieldValue(user: Doc<'users'>, field: string): any {
       return user.training
     case 'skills':
       return user.resume?.skills
-    case 'unionStatus':
-      return user.unionStatus
     case 'companyName':
       return user.companyName
     case 'databaseUse':

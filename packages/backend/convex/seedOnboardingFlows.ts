@@ -81,11 +81,6 @@ const INITIAL_FLOWS = {
         step: 'skills',
         required: ['skills'],
         description: 'Skills and abilities'
-      },
-      {
-        step: 'union',
-        required: ['unionStatus'],
-        description: 'Union membership status'
       }
     ],
     choreographer: [

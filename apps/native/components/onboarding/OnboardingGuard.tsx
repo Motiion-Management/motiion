@@ -3,9 +3,9 @@ import React, { useEffect } from 'react';
 import { View, ActivityIndicator } from 'react-native';
 
 import { AuthErrorBoundary } from '~/components/auth/AuthErrorBoundary';
-import { useOnboardingStatus } from '~/hooks/useOnboardingStatus';
-import { useSharedOnboardingFlow } from '~/contexts/OnboardingFlowContext';
 import { perfLog, perfMark, perfMeasure } from '~/utils/performanceDebug';
+import { api } from '@packages/backend/convex/_generated/api';
+import { useQuery } from 'convex/react';
 
 interface OnboardingGuardProps {
   children: React.ReactNode;
@@ -13,10 +13,11 @@ interface OnboardingGuardProps {
 }
 
 export function OnboardingGuard({ children, fallback }: OnboardingGuardProps) {
-  const { isLoading, isComplete, shouldRedirect, redirectPath } = useOnboardingStatus();
+  // Minimal server-side check: should we send user into onboarding, and where?
+  const redirectInfo = useQuery(api.onboarding.getOnboardingRedirect);
 
   // Show loading state while checking onboarding status
-  if (isLoading) {
+  if (redirectInfo === undefined) {
     return (
       fallback ?? (
         <View className="flex-1 items-center justify-center">
@@ -27,8 +28,8 @@ export function OnboardingGuard({ children, fallback }: OnboardingGuardProps) {
   }
 
   // Redirect to onboarding if not complete
-  if (!isComplete && shouldRedirect) {
-    return <Redirect href={redirectPath} />;
+  if (redirectInfo.shouldRedirect) {
+    return <Redirect href={redirectInfo.redirectPath} />;
   }
 
   // User has completed onboarding, render protected content
@@ -98,10 +99,10 @@ interface OnboardingCompleteGuardProps {
 
 // Component to protect content that should only be shown to completed users
 export function OnboardingCompleteGuard({ children, fallback }: OnboardingCompleteGuardProps) {
-  const { isLoading, isComplete, redirectPath } = useOnboardingStatus();
+  const redirectInfo = useQuery(api.onboarding.getOnboardingRedirect);
 
   // Show loading state
-  if (isLoading) {
+  if (redirectInfo === undefined) {
     return (
       fallback ?? (
         <View className="flex-1 items-center justify-center">
@@ -112,8 +113,8 @@ export function OnboardingCompleteGuard({ children, fallback }: OnboardingComple
   }
 
   // If onboarding is not complete, redirect to current step
-  if (!isComplete) {
-    return <Redirect href={redirectPath} />;
+  if (redirectInfo.shouldRedirect) {
+    return <Redirect href={redirectInfo.redirectPath} />;
   }
 
   // User has completed onboarding, render protected content

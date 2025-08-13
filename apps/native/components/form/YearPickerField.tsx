@@ -22,8 +22,8 @@ export function YearPickerField({
 }: YearPickerFieldProps) {
   const yearData: WheelPickerData<number>[] = useMemo(() => {
     // Normalize bounds so callers can pass years in any order
-    const min = Math.min(startYear, endYear)
-    const max = Math.max(startYear, endYear)
+    const min = Math.min(startYear, endYear);
+    const max = Math.max(startYear, endYear);
 
     const years: WheelPickerData<number>[] = [];
     for (let year = max; year >= min; year--) {
