@@ -130,3 +130,18 @@ export const getUserPublicExperiencesByType = query({
       })
   }
 })
+
+// Get the 3 most recently added experiences for the authenticated user
+export const getMyRecentExperiences = authQuery({
+  args: {},
+  returns: v.array(v.any()),
+  handler: async (ctx) => {
+    if (!ctx.user) return []
+    const exps = await ctx.db
+      .query('experiences')
+      .withIndex('userId', (q) => q.eq('userId', ctx.user._id))
+      .order('desc')
+      .take(3)
+    return exps.filter(notEmpty)
+  }
+})

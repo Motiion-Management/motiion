@@ -1,40 +1,83 @@
-import { useClerk } from '@clerk/clerk-expo';
 import * as React from 'react';
-import { Image, View } from 'react-native';
+import { View, ScrollView } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
-import { AlertAnchor } from '~/components/ui/alert';
-import { AlertRef } from '~/components/ui/alert/types';
-import { Button } from '~/components/ui/button';
-import { Text } from '~/components/ui/text';
+import { BackgroundGradientView } from '~/components/ui/background-gradient-view';
+import {
+  HomeHeader,
+  RecentlyAddedSection,
+  BookedOutDatesSection,
+  QuickActionsSection,
+} from '~/components/home';
 
-const LOGO_SOURCE = {
-  uri: 'https://nativewindui.com/_next/image?url=/_next/static/media/logo.28276aeb.png&w=2048&q=75',
-};
+export default function HomeScreen() {
+  const handleSettingsPress = () => {
+    // TODO: Navigate to settings
+    console.log('Settings pressed');
+  };
 
-export default function AuthIndexScreen() {
-  const { signOut } = useClerk();
-  const alertRef = React.useRef<AlertRef>(null);
+  const handleNotificationsPress = () => {
+    // TODO: Navigate to notifications
+    console.log('Notifications pressed');
+  };
+
+  const handleProfilePress = () => {
+    // TODO: Navigate to profile
+    console.log('Profile pressed');
+  };
+
+  const handleAddExperiencePress = () => {
+    // TODO: Navigate to add experience
+    console.log('Add experience pressed');
+  };
+
+  const handleEditAvailabilityPress = () => {
+    // TODO: Navigate to edit availability
+    console.log('Edit availability pressed');
+  };
+
+  const handleSearchTalentPress = () => {
+    // TODO: Navigate to talent search
+    console.log('Search talent pressed');
+  };
+
+  const handleManageContentPress = () => {
+    // TODO: Navigate to content management
+    console.log('Manage content pressed');
+  };
 
   return (
-    <SafeAreaView style={{ flex: 1 }}>
-      <View className="ios:justify-end flex-1 justify-center gap-4 px-8 py-4">
-        <View className="items-center">
-          <Image source={LOGO_SOURCE} className="ios:h-12 ios:w-12 h-8 w-8" resizeMode="contain" />
-        </View>
-        <View className="ios:pb-5 ios:pt-2 pb-2">
-          <Text className="ios:font-extrabold text-center text-3xl font-medium">
-            Brace Yourself
-          </Text>
-          <Text className="ios:font-extrabold text-center text-3xl font-medium">
-            for What's Next
-          </Text>
-        </View>
-        <Button variant="primary" onPress={() => signOut()} className="mx-8">
-          <Text>Sign Out</Text>
-        </Button>
-      </View>
-      <AlertAnchor ref={alertRef} />
-    </SafeAreaView>
+    <BackgroundGradientView>
+      <SafeAreaView className="flex-1">
+        {/* Header */}
+        <HomeHeader
+          onSettingsPress={handleSettingsPress}
+          onNotificationsPress={handleNotificationsPress}
+          onProfilePress={handleProfilePress}
+        />
+
+        {/* Scrollable content */}
+        <ScrollView
+          className="flex-1 px-4"
+          showsVerticalScrollIndicator={false}
+          contentContainerStyle={{ paddingTop: 24, paddingBottom: 32 }}>
+          {/* Recently Added Section */}
+          <View className="mb-6">
+            <RecentlyAddedSection onAddPress={handleAddExperiencePress} />
+          </View>
+
+          {/* Quick Actions */}
+          <View className="mb-6">
+            <QuickActionsSection
+              onSearchPress={handleSearchTalentPress}
+              onManageContentPress={handleManageContentPress}
+            />
+          </View>
+
+          {/* Booked Out Dates */}
+          <BookedOutDatesSection onEditPress={handleEditAvailabilityPress} />
+        </ScrollView>
+      </SafeAreaView>
+    </BackgroundGradientView>
   );
 }
