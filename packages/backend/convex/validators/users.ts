@@ -11,7 +11,6 @@ export const zSkillsPlainObject = {
   proficient: z.array(z.string()),
   novice: z.array(z.string())
 }
-export const zSkills = z.object(zSkillsPlainObject).partial()
 
 export const representationObj = {
   agencyId: zid('agencies').optional(),
@@ -24,7 +23,8 @@ export const resume = {
   // Legacy field - kept for migration
   experiences: z.array(zid('experiences')).optional(),
   uploads: zFileUploadObjectArray.optional(),
-  skills: zSkills.optional()
+  skills: z.array(z.string()).optional(),
+  genres: z.array(z.string()).optional()
 }
 
 export const zResume = z.object(resume)

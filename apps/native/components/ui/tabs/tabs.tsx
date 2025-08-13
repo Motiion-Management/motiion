@@ -48,7 +48,7 @@ export function Tabs({
   );
 
   const visualProgress = progress != null ? progress : activeIndex;
-  
+
   // Animated values for smooth transitions
   const animatedProgress = useSharedValue(visualProgress);
   const indicatorX = useSharedValue(0);

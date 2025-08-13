@@ -1,9 +1,10 @@
 import { authMutation, authQuery, notEmpty } from './util'
 import { v } from 'convex/values'
-import { Training } from './validators/training'
+import { Training, trainingInput } from './validators/training'
 import { getAll } from 'convex-helpers/server/relationships'
 import { query } from './_generated/server'
 import { crud } from 'convex-helpers/server'
+import { zodToConvexFields } from 'convex-helpers/server/zod'
 
 // Basic CRUD operations
 export const { read } = crud(Training, query, authMutation)
@@ -15,7 +16,7 @@ export const { create, update, destroy } = crud(
 
 // Add training to user
 export const addMyTraining = authMutation({
-  args: Training.withoutSystemFields,
+  args: zodToConvexFields(trainingInput),
   returns: v.null(),
   handler: async (ctx, training) => {
     // Get current max order index
@@ -32,7 +33,7 @@ export const addMyTraining = authMutation({
     const trainingId = await ctx.db.insert('training', {
       ...training,
       userId: ctx.user._id,
-      orderIndex: training.orderIndex ?? maxOrderIndex + 1
+      orderIndex: maxOrderIndex + 1
     })
 
     await ctx.db.patch(ctx.user._id, {
@@ -67,12 +68,13 @@ export const getMyTraining = authQuery({
     return training
       .filter(notEmpty)
       .sort((a, b) => (a.orderIndex || 0) - (b.orderIndex || 0))
+      .map(({ orderIndex, userId, ...rest }) => rest)
   }
 })
 
 // Get user's training by type
 export const getMyTrainingByType = authQuery({
-  args: { type: Training.withoutSystemFields.type },
+  args: { type: zodToConvexFields(trainingInput).type },
   returns: v.array(v.any()),
   handler: async (ctx, args) => {
     if (!ctx.user?.training) return []
@@ -83,6 +85,7 @@ export const getMyTrainingByType = authQuery({
       .filter(notEmpty)
       .filter((t) => t.type === args.type)
       .sort((a, b) => (a.orderIndex || 0) - (b.orderIndex || 0))
+      .map(({ orderIndex, userId, ...rest }) => rest)
   }
 })
 
@@ -117,5 +120,6 @@ export const getUserPublicTraining = query({
     return training
       .filter(notEmpty)
       .sort((a, b) => (a.orderIndex || 0) - (b.orderIndex || 0))
+      .map(({ orderIndex, userId, ...rest }) => rest)
   }
 })

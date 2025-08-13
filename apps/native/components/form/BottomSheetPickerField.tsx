@@ -16,6 +16,7 @@ export interface BottomSheetPickerFieldProps<T = any> {
   width?: number;
   pickerLabel?: string;
   helpText?: string;
+  disabled?: boolean;
 }
 
 export function BottomSheetPickerField<T = any>({
@@ -27,6 +28,7 @@ export function BottomSheetPickerField<T = any>({
   width,
   pickerLabel,
   helpText,
+  disabled,
 }: BottomSheetPickerFieldProps<T>) {
   const field = useFieldContext<T>();
   const validationModeContext = useValidationModeContextSafe();
@@ -54,6 +56,7 @@ export function BottomSheetPickerField<T = any>({
       width={width}
       pickerLabel={pickerLabel}
       helpText={helpText}
+      disabled={disabled}
       errorMessage={errorMessage}
     />
   );

@@ -74,6 +74,16 @@ export function ConvexFormField({ field, form }: ConvexFormFieldProps) {
                   placeholder={field.placeholder || `Select ${field.label.toLowerCase()}`}
                   data={(field.options || []) as any}
                   helpText={field.helpText}
+                  disabled={isReadOnly || isDisabled}
+                />
+              ) : field.component === 'year' ? (
+                <fieldApi.YearPickerField
+                  label={field.label}
+                  placeholder={field.placeholder || `Select ${field.label.toLowerCase()}`}
+                  startYear={(field.metadata?.min as number | undefined) ?? 1900}
+                  endYear={(field.metadata?.max as number | undefined) ?? new Date().getFullYear()}
+                  helpText={field.helpText}
+                  disabled={isReadOnly || isDisabled}
                 />
               ) : (
                 <fieldApi.SelectField

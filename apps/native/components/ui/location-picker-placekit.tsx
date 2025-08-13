@@ -19,7 +19,7 @@ export interface PlaceKitLocation {
 
 export interface LocationPickerProps {
   value?: PlaceKitLocation | null;
-   
+
   onValueChange: (value: PlaceKitLocation | null) => void;
   placeholder?: string;
   label?: string;

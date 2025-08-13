@@ -11,15 +11,16 @@ import {
  */
 export interface FieldMetadata {
   component?:
-  | 'text'
-  | 'select'
-  | 'combobox'
-  | 'chips'
-  | 'date'
-  | 'picker'
-  | 'radio'
-  | 'checkbox'
-  | 'number';
+    | 'text'
+    | 'select'
+    | 'combobox'
+    | 'chips'
+    | 'date'
+    | 'year'
+    | 'picker'
+    | 'radio'
+    | 'checkbox'
+    | 'number';
   placeholder?: string;
   helpText?: string;
   label?: string;
@@ -55,16 +56,16 @@ export interface FieldMetadata {
   };
   // Conditional label override (supports single rule or array of rules)
   labelWhen?:
-  | {
-    field: string;
-    equals?: any | any[];
-    label: string;
-  }
-  | Array<{
-    field: string;
-    equals?: any | any[];
-    label: string;
-  }>;
+    | {
+        field: string;
+        equals?: any | any[];
+        label: string;
+      }
+    | Array<{
+        field: string;
+        equals?: any | any[];
+        label: string;
+      }>;
 }
 
 export type FormMetadata = Record<string, FieldMetadata>;
@@ -94,9 +95,11 @@ export function enhanceFieldsWithMetadata(
     };
 
     // Override component type if specified
-    if (fieldMeta.component === 'combobox') {
+  if (fieldMeta.component === 'combobox') {
       enhanced.type = 'combobox';
     } else if (fieldMeta.component === 'picker') {
+      enhanced.type = 'select';
+    } else if (fieldMeta.component === 'year') {
       enhanced.type = 'select';
     } else if (fieldMeta.component === 'date') {
       enhanced.type = 'date';
@@ -579,6 +582,170 @@ export const initialExperienceMetadata: FormMetadata = {
   },
   roles: {
     ...baseExperienceMetadata.roles,
+    disabled: true,
+  },
+};
+
+/**
+ * Base training form metadata
+ */
+export const baseTrainingMetadata: FormMetadata = {
+  type: {
+    component: 'picker',
+    label: 'Training Type',
+    placeholder: 'Select training type',
+    options: [
+      { label: 'Education', value: 'education' },
+      { label: 'Dance School', value: 'dance-school' },
+      { label: 'Programs & Intensives', value: 'programs-intensives' },
+      { label: 'Scholarships', value: 'scholarships' },
+      { label: 'Other', value: 'other' },
+    ],
+    width: 'full',
+    group: 'details',
+    order: 0,
+  },
+  institution: {
+    component: 'text',
+    label: 'Institution',
+    placeholder: 'Enter institution',
+    autoCapitalize: 'words',
+    group: 'details',
+    order: 1,
+  },
+  degree: {
+    component: 'text',
+    label: 'Degree',
+    placeholder: 'Enter degree (e.g., BFA, BA)',
+    autoCapitalize: 'words',
+    group: 'details',
+    order: 2,
+    showWhen: { field: 'type', equals: 'education' },
+  },
+  instructors: {
+    component: 'chips',
+    label: 'Instructors',
+    placeholder: 'Add instructor names',
+    helpText: 'The teachers you studied under',
+    autoCapitalize: 'words',
+    group: 'details',
+    order: 3,
+  },
+  startYear: {
+    component: 'year',
+    label: 'Year Start',
+    placeholder: 'Select year',
+    width: 'half',
+    group: 'details',
+    order: 4,
+  },
+  endYear: {
+    component: 'year',
+    label: 'Year End',
+    placeholder: 'Select year',
+    width: 'half',
+    group: 'details',
+    order: 5,
+  },
+};
+
+/**
+ * Education training metadata
+ */
+export const educationTrainingMetadata: FormMetadata = {
+  ...baseTrainingMetadata,
+  institution: {
+    ...baseTrainingMetadata.institution,
+    label: 'School Name',
+    placeholder: 'Enter school name',
+  },
+};
+
+/**
+ * Dance School training metadata
+ */
+export const danceSchoolTrainingMetadata: FormMetadata = {
+  ...baseTrainingMetadata,
+  institution: {
+    ...baseTrainingMetadata.institution,
+    label: 'Studio Name',
+    placeholder: 'Enter studio name',
+  },
+  // degree field omitted for dance schools
+};
+
+/**
+ * Programs & Intensives training metadata
+ */
+export const programsTrainingMetadata: FormMetadata = {
+  ...baseTrainingMetadata,
+  institution: {
+    ...baseTrainingMetadata.institution,
+    label: 'Program Name',
+    placeholder: 'Enter program name',
+  },
+  // degree field omitted
+};
+
+/**
+ * Scholarships training metadata
+ */
+export const scholarshipsTrainingMetadata: FormMetadata = {
+  ...baseTrainingMetadata,
+  institution: {
+    ...baseTrainingMetadata.institution,
+    label: 'Organization',
+    placeholder: 'Enter organization name',
+  },
+  // degree field omitted
+};
+
+/**
+ * Other training metadata
+ */
+export const otherTrainingMetadata: FormMetadata = {
+  ...baseTrainingMetadata,
+  // degree field omitted
+};
+
+/**
+ * Map of training type to metadata
+ */
+export const trainingMetadata: Record<string, FormMetadata> = {
+  education: educationTrainingMetadata,
+  'dance-school': danceSchoolTrainingMetadata,
+  'programs-intensives': programsTrainingMetadata,
+  scholarships: scholarshipsTrainingMetadata,
+  other: otherTrainingMetadata,
+};
+
+/**
+ * Initial training metadata (only type selector enabled)
+ */
+export const initialTrainingMetadata: FormMetadata = {
+  ...baseTrainingMetadata,
+  type: {
+    ...baseTrainingMetadata.type,
+    disabled: false,
+  },
+  institution: {
+    ...baseTrainingMetadata.institution,
+    disabled: true,
+  },
+  degree: {
+    ...baseTrainingMetadata.degree,
+    disabled: true,
+  },
+  instructors: {
+    ...baseTrainingMetadata.instructors,
+    disabled: true,
+  },
+  startYear: {
+    ...baseTrainingMetadata.startYear,
+    disabled: true,
+  },
+  endYear: {
+    ...baseTrainingMetadata.endYear,
     disabled: true,
   },
 };

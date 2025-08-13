@@ -6,6 +6,7 @@ import { Text } from '~/components/ui/text';
 import { useFieldError } from '~/hooks/useFieldError';
 import { useValidationModeContextSafe } from '~/hooks/useValidationMode';
 import { Chips } from '~/components/ui/chips';
+import { HelperText } from '../ui/helper-text';
 
 export interface ChipsFieldProps {
   label: string;
@@ -72,7 +73,7 @@ export const ChipsField = ({
   };
 
   return (
-    <View>
+    <View className="gap-2">
       <Input
         label={label}
         placeholder={placeholder}
@@ -88,11 +89,7 @@ export const ChipsField = ({
         onClear={() => setBuffer('')}
         returnKeyType="done"
       />
-      {helpText && (
-        <Text variant="footnote" className="mt-1 text-text-low">
-          {helpText}
-        </Text>
-      )}
+      {helpText && <HelperText message={helpText} />}
       <Chips items={chips} onRemove={removeChip} variant="combo" />
     </View>
   );

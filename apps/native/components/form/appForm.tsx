@@ -14,6 +14,7 @@ import { SelectField } from './SelectField';
 import { InputField } from './InputField';
 import { RelationshipPickerField } from './RelationshipPickerField';
 import { FileUploadField } from './FileUploadField';
+import { YearPickerField } from './YearPickerField';
 import { fieldContext, formContext } from './context';
 
 const { useAppForm } = createFormHook({
@@ -35,6 +36,7 @@ const { useAppForm } = createFormHook({
     TextAreaField: InputField,
     NumberInputField,
     DatePickerField,
+    YearPickerField,
     SelectField,
     ChipsField,
     BottomSheetPickerField,

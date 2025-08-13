@@ -1,51 +1,64 @@
-import { useRouter } from 'expo-router';
-import React from 'react';
-import { View, Text } from 'react-native';
+import React, { useMemo } from 'react';
+import { View } from 'react-native';
 
 import { BaseOnboardingScreen } from '~/components/layouts/BaseOnboardingScreen';
-import { OnboardingStepGuard } from '~/components/onboarding/OnboardingGuard';
-import { useOnboardingNavigation, useOnboardingStatus } from '~/hooks/useOnboardingStatus';
+import { TrainingCard } from '~/components/training/TrainingCard';
+import { useSimpleOnboardingFlow } from '~/hooks/useSimpleOnboardingFlow';
+import { useQuery } from 'convex/react';
+import { api } from '@packages/backend/convex/_generated/api';
 
 export default function TrainingScreen() {
-  const router = useRouter();
-  const { getStepTitle } = useOnboardingStatus();
-  const { advanceToNextStep } = useOnboardingNavigation();
+  const onboarding = useSimpleOnboardingFlow();
+  const training = useQuery(api.training.getMyTraining, {});
+
+  const slots = useMemo(() => {
+    const docs = training || [];
+    return [docs[0] || null, docs[1] || null, docs[2] || null] as (any | null)[];
+  }, [training]);
+
+  const firstEmptyIndex = useMemo(() => slots.findIndex((s) => !s), [slots]);
 
   const handleContinue = async () => {
-    try {
-      // TODO: Implement training form logic
-      console.log('Training step - implement form logic');
-
-      // Navigate to the next step
-      const result = await advanceToNextStep();
-      if (result.route) {
-        router.push(result.route);
-      } else {
-        // If no next step, onboarding is complete
-        router.push('/app/home');
-      }
-    } catch (error) {
-      console.error('Error in training step:', error);
-    }
+    onboarding.navigateNext();
   };
 
   return (
-    <OnboardingStepGuard requiredStep="training">
-      <BaseOnboardingScreen
-        title={getStepTitle()}
-        description="What training and education do you have?"
-        canProgress={false} // TODO: Set to true when form is filled
-        primaryAction={{
-          onPress: handleContinue,
-          disabled: true, // TODO: Enable when form is valid
-        }}>
-        <View className="flex-1 items-center justify-center">
-          <Text className="text-lg text-gray-500">Training form will be implemented here</Text>
-          <Text className="mt-2 text-sm text-gray-400">
-            This will include training, education, certifications, and classes
-          </Text>
-        </View>
-      </BaseOnboardingScreen>
-    </OnboardingStepGuard>
+    <BaseOnboardingScreen
+      title="Add your training"
+      description="Add up to 3 training details. People commonly include dance teams, schools, and training programs."
+      canProgress
+      primaryAction={{
+        onPress: handleContinue,
+      }}
+      secondaryAction={
+        !training?.length
+          ? {
+              text: 'Skip for now',
+              onPress: () => onboarding.navigateNext(),
+            }
+          : undefined
+      }>
+      <View className="flex-1 gap-4">
+        {slots.map((tr, index) => {
+          const isCompleted = !!tr;
+          const isDisabled = !tr && firstEmptyIndex !== -1 && index !== firstEmptyIndex;
+          const variant: 'completed' | 'default' | 'disabled' = isCompleted
+            ? 'completed'
+            : isDisabled
+              ? 'disabled'
+              : 'default';
+          return (
+            <TrainingCard
+              key={tr?._id ?? `slot-${index}`}
+              training={tr || undefined}
+              trainingId={tr?._id}
+              placeholder={`Training ${index + 1}`}
+              variant={variant}
+              disabled={isDisabled}
+            />
+          );
+        })}
+      </View>
+    </BaseOnboardingScreen>
   );
 }

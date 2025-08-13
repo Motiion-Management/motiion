@@ -6,11 +6,12 @@ import { Text } from '~/components/ui/text';
 import { cn } from '~/lib/cn';
 import Check from '~/lib/icons/Check';
 import Plus from '~/lib/icons/Plus';
-import { getExperienceDisplayTitle, getExperienceDisplaySubtitle } from '~/config/experienceTypes';
-import { ExperienceEditSheet } from './ExperienceEditSheet';
-import { type Doc, type Id } from '@packages/backend/convex/_generated/dataModel';
+import { getTrainingDisplayTitle, getTrainingDisplaySubtitle } from '~/config/trainingTypes';
+import { TrainingEditSheet } from './TrainingEditSheet';
+import { type Id } from '@packages/backend/convex/_generated/dataModel';
+import { type TrainingFormDoc } from '@packages/backend/convex/validators/training';
 
-const experienceCardVariants = cva(
+const trainingCardVariants = cva(
   'w-full flex-row items-center justify-between rounded-full border px-5 py-4',
   {
     variants: {
@@ -26,43 +27,41 @@ const experienceCardVariants = cva(
   }
 );
 
-interface ExperienceCardProps extends VariantProps<typeof experienceCardVariants> {
-  experience?: Doc<'experiences'>;
-  experienceId?: Id<'experiences'>;
+interface TrainingCardProps extends VariantProps<typeof trainingCardVariants> {
+  training?: TrainingFormDoc;
+  trainingId?: Id<'training'>;
   disabled?: boolean;
   placeholder?: string;
   className?: string;
 }
 
-export function ExperienceCard({
-  experience,
-  experienceId,
+export function TrainingCard({
+  training,
+  trainingId,
   variant = 'default',
   disabled = false,
   placeholder,
   className,
-}: ExperienceCardProps) {
+}: TrainingCardProps) {
   const [isSheetOpen, setIsSheetOpen] = useState(false);
   const handlePress = useCallback(() => {
     if (disabled) return;
     setIsSheetOpen(true);
   }, [disabled]);
-  const hasExperience = !!experience;
-  const displayTitle = hasExperience
-    ? getExperienceDisplayTitle(experience)
-    : placeholder || 'Project';
-  const displaySubtitle = hasExperience
-    ? getExperienceDisplaySubtitle(experience)
+  const hasTraining = !!training;
+  const displayTitle = hasTraining ? getTrainingDisplayTitle(training) : placeholder || 'Training';
+  const displaySubtitle = hasTraining
+    ? getTrainingDisplaySubtitle(training)
     : disabled
       ? '-'
-      : 'Add your experience here';
+      : 'Add your training here';
 
   return (
     <>
       <TouchableOpacity
         onPress={handlePress}
         disabled={disabled}
-        className={cn(experienceCardVariants({ variant }), className)}>
+        className={cn(trainingCardVariants({ variant }), className)}>
         <View className="flex-1 px-2">
           <Text
             variant="body"
@@ -88,11 +87,11 @@ export function ExperienceCard({
       </TouchableOpacity>
 
       {/* Local bottom sheet for this card */}
-      <ExperienceEditSheet
+      <TrainingEditSheet
         isOpen={isSheetOpen}
         onOpenChange={setIsSheetOpen}
-        experience={experience}
-        experienceId={experienceId}
+        training={training}
+        trainingId={trainingId}
       />
     </>
   );
