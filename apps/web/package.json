@@ -4,7 +4,7 @@
   "private": true,
   "description": "Motiion website - landing page and marketing site",
   "scripts": {
-    "dev": "next dev --turbopack",
+    "dev": "next dev",
     "build": "next build",
     "type-check": "tsc --noEmit",
     "start": "next start",
