@@ -1,7 +1,7 @@
-# Implementation Plan: React Native Sortables for Headshots Page
+# Implementation Plan: Add Sorting To Existing MultiImageUploadOptimized
 
 ## 1. Architecture Overview
-Create a new **SortableMultiImageUpload** component that wraps the existing functionality with sortable capabilities. This approach maintains the current component structure while adding drag-and-drop reordering specifically for ImagePreview cards.
+Enhance the existing `MultiImageUploadOptimized` to support drag-and-drop reordering of uploaded images while preserving the current UI (first card full width, next two side-by-side) and the existing upload/remove flows. Sorting applies only to uploaded images; upload cards render separately.
 
 ## 2. Key Implementation Challenges & Solutions
 
@@ -12,7 +12,7 @@ Create a new **SortableMultiImageUpload** component that wraps the existing func
 
 ### Challenge B: Mixed Content Types
 - **Current State**: Mix of ImagePreview components (uploaded images) and ImageUploadCard (empty slots)
-- **Solution**: Only include uploaded images in sortable data array, render upload cards separately outside the sortable container
+- **Solution**: Only include uploaded images in sortable container; render upload cards separately to fill remaining slots up to 3.
 
 ### Challenge C: State Management
 - **Current State**: Images stored in Convex backend with real-time sync
@@ -20,83 +20,76 @@ Create a new **SortableMultiImageUpload** component that wraps the existing func
 
 ## 3. Detailed Implementation Steps
 
-### Step 1: Create SortableMultiImageUpload Component
-**File**: `apps/native/components/upload/SortableMultiImageUpload.tsx`
+### Step 1: Modify Existing Component
+**File**: `apps/native/components/upload/MultiImageUploadOptimized.tsx`
 
 ```typescript
-// Core structure:
+// Core changes:
 - Import Sortable from 'react-native-sortables'
-- Import existing components (ImagePreview, ImageUploadCard)
-- Extend MultiImageUploadOptimized props
-- Add local state for sortable data management
+- Derive `sortableImages` from current `headshotsWithUrls` (uploaded only)
+- Wrap rendered uploaded images in <Sortable.Flex/>, keep upload cards after
+- Add `onDragEnd` to update local order optimistically and persist to backend
+- Disable sorting during uploads with `sortEnabled={!uploadState.isUploading}`
 ```
 
 ### Step 2: Data Structure Enhancement
 ```typescript
-interface SortableHeadshot extends HeadshotWithUrl {
-  id: string; // Unique identifier for sortable
-  order: number; // Display order
+// Use storageId as the stable key and track order explicitly
+type SortableHeadshot = HeadshotWithUrl & {
+  id: string; // storageId
+  order: number;
 }
 ```
 
 ### Step 3: Sortable Implementation Strategy
 
-**Option A: Sortable.Flex (Recommended)**
+**Sortable Container (Recommended)**
 ```typescript
-<Sortable.Flex gap={16} padding={0}>
+<Sortable.Flex
+  gap={16}
+  padding={0}
+  sortEnabled={!uploadState.isUploading}
+  onDragEnd={handleDragEnd}
+  activeItemScale={1.05}
+  inactiveItemOpacity={0.8}
+  dragActivationDelay={150}
+>
   {sortableHeadshots.map((headshot, index) => (
-    <View 
-      key={headshot.id}
-      style={{
-        width: index === 0 ? '100%' : '48%',
-        marginBottom: index === 0 ? 16 : 0
-      }}
-    >
-      <ImagePreview 
-        imageUrl={headshot.url}
-        onRemove={() => handleRemoveImage(headshot.storageId)}
-      />
+    <View key={headshot.id} className={index === 0 ? 'w-full' : 'flex-1'}>
+      {headshot.url ? (
+        <ImagePreview
+          imageUrl={headshot.url}
+          onRemove={() => handleRemoveImage(headshot.storageId)}
+        />
+      ) : (
+        <View className="bg-bg-surface h-[234px] w-full items-center justify-center rounded">
+          <ActivityIndicator size="small" />
+        </View>
+      )}
     </View>
   ))}
 </Sortable.Flex>
 ```
 
-**Option B: Custom Grid with Dynamic Columns**
-```typescript
-<Sortable.Grid
-  columns={2}
-  data={sortableHeadshots}
-  renderItem={({ item, index }) => (
-    <View style={index === 0 ? fullWidthStyle : halfWidthStyle}>
-      <ImagePreview {...} />
-    </View>
-  )}
-  onDragEnd={handleDragEnd}
-/>
-```
-
 ### Step 4: Drag End Handler Implementation
 ```typescript
 const handleDragEnd = useCallback(({ fromIndex, toIndex }) => {
-  // 1. Update local state immediately (optimistic update)
-  const reorderedImages = [...sortableHeadshots];
-  const [movedItem] = reorderedImages.splice(fromIndex, 1);
-  reorderedImages.splice(toIndex, 0, movedItem);
-  
-  // 2. Update order property
-  const updatedWithOrder = reorderedImages.map((item, idx) => ({
-    ...item,
-    order: idx
-  }));
-  
-  setSortableHeadshots(updatedWithOrder);
-  
-  // 3. Persist to backend
-  updateHeadshotOrder({ 
-    headshots: updatedWithOrder.map(h => ({
-      storageId: h.storageId,
-      order: h.order
-    }))
+  if (fromIndex === toIndex) return;
+
+  // 1) Optimistic local reorder
+  const prev = sortableHeadshots;
+  const next = [...prev];
+  const [moved] = next.splice(fromIndex, 1);
+  next.splice(toIndex, 0, moved);
+  const updated = next.map((item, idx) => ({ ...item, order: idx }));
+  setSortableHeadshots(updated);
+
+  // 2) Persist to backend; rollback on failure
+  updateHeadshotOrder({
+    headshots: updated.map(h => ({ storageId: h.storageId, order: h.order }))
+  }).catch(() => {
+    setSortableHeadshots(prev);
+    Alert.alert('Reorder failed', 'Your order change could not be saved.');
   });
 }, [sortableHeadshots, updateHeadshotOrder]);
 ```
@@ -106,42 +99,84 @@ Place upload cards after sortable container:
 ```typescript
 <View className="flex-1">
   {/* Sortable images */}
-  <Sortable.Flex {...}>
-    {sortableHeadshots.map(...)}
-  </Sortable.Flex>
-  
-  {/* Upload cards for remaining slots */}
+  {/* ...Sortable.Flex as above... */}
+
+  {/* Upload cards to fill remaining slots (to 3) */}
   {remainingSlots > 0 && (
-    <View className="flex-row gap-4 mt-4">
+    <View className={sortableHeadshots.length === 0 ? 'gap-4 mt-4' : 'flex-row gap-4 mt-4'}>
       {Array.from({ length: remainingSlots }).map((_, idx) => (
-        <ImageUploadCard 
-          key={`upload-${idx}`}
-          shape={sortableHeadshots.length === 0 && idx === 0 ? 'primary' : 'secondary'}
-          onPress={handleImageUpload}
-          isActive={idx === 0}
-        />
+        <View key={`upload-${idx}`} className={sortableHeadshots.length === 0 && idx === 0 ? 'w-full' : 'flex-1'}>
+          <ImageUploadCard
+            shape={sortableHeadshots.length === 0 && idx === 0 ? 'primary' : 'secondary'}
+            onPress={handleImageUpload}
+            isActive={sortableHeadshots.length === 0 ? idx === 0 : true}
+            disabled={uploadState.isUploading}
+          />
+        </View>
       ))}
     </View>
   )}
 </View>
 ```
 
-### Step 6: Backend Integration
-Add Convex mutation for updating image order:
+### Step 6: Backend Integration (Add Explicit Sort Order)
+Persist and query an explicit `order` field for each headshot. Keep the array as the single source of truth, but make order explicit for clarity and migration.
 ```typescript
 // packages/backend/convex/users/headshots.ts
-export const updateHeadshotOrder = mutation({
+export const updateHeadshotOrder = authMutation({
   args: {
     headshots: v.array(v.object({
       storageId: v.id('_storage'),
       order: v.number()
     }))
   },
-  handler: async (ctx, args) => {
-    // Update order in database
+  handler: async (ctx, { headshots }) => {
+    if (!ctx.user) return
+    const current = ctx.user.headshots || []
+
+    // Map incoming order by storageId
+    const orderMap = new Map(headshots.map(h => [h.storageId, h.order]))
+
+    // Rebuild sorted list: first all that are in payload, then the rest (stable)
+    const inPayload = current
+      .filter(h => orderMap.has(h.storageId))
+      .sort((a, b) => (orderMap.get(a.storageId)! - orderMap.get(b.storageId)!))
+      .map((h, idx) => ({ ...h, order: idx }))
+
+    const remaining = current
+      .filter(h => !orderMap.has(h.storageId))
+      .map((h, idx) => ({ ...h, order: inPayload.length + idx }))
+
+    const next = [...inPayload, ...remaining]
+    await ctx.db.patch(ctx.user._id, { headshots: next })
   }
-});
+})
+
+// Also ensure saveHeadshotIds writes an `order` number (e.g., recompute by array index)
+
+// packages/backend/convex/users/headshotsOptimized.ts
+export const getMyHeadshotsMetadata = query({
+  args: {},
+  handler: async (ctx) => {
+    const identity = await ctx.auth.getUserIdentity()
+    if (!identity) return []
+    const user = await ctx.db
+      .query('users')
+      .withIndex('tokenId', (q) => q.eq('tokenId', identity.subject))
+      .unique()
+    const list = user?.headshots ?? []
+    return list.map((h, index) => ({
+      id: `headshot-${index}`,
+      storageId: h.storageId,
+      title: h.title,
+      uploadDate: h.uploadDate,
+      order: h.order ?? index
+    }))
+  }
+})
 ```
+
+Migration note: for existing users without `order`, default to the current array index and write `order` on next mutation touching headshots (e.g., in `saveHeadshotIds` or a dedicated migration).
 
 ## 4. UI/UX Enhancements
 
@@ -151,154 +186,23 @@ export const updateHeadshotOrder = mutation({
 - **dragActivationDelay**: 150ms (quick but prevents accidental drags)
 
 ### Optional: Drag Handle
-Add a drag handle icon to ImagePreview:
+Add a drag handle icon to ImagePreview and enable `customHandle` on the container:
 ```typescript
-<View className="absolute top-2 left-2">
-  <Sortable.Handle>
-    <GripVertical size={20} className="color-icon-subtle" />
-  </Sortable.Handle>
-</View>
+<Sortable.Flex customHandle {...otherProps}>
+  {/* ... */}
+  <View className="absolute top-2 left-2">
+    <Sortable.Handle>
+      <GripVertical size={20} className="color-icon-subtle" />
+    </Sortable.Handle>
+  </View>
+  {/* ... */}
+</Sortable.Flex>
 ```
 
 ## 5. Complete Implementation Example
 
-### SortableMultiImageUpload.tsx
-```typescript
-import { api } from '@packages/backend/convex/_generated/api';
-import { useMutation, useQuery } from 'convex/react';
-import { useCallback, useState, useEffect, memo } from 'react';
-import { Alert, View } from 'react-native';
-import Sortable from 'react-native-sortables';
-
-import * as ImagePicker from 'expo-image-picker';
-import * as ImageManipulator from 'expo-image-manipulator';
-
-import { ImagePreview } from './ImagePreview';
-import { ImageUploadCard } from './ImageUploadCard';
-import { ActivityIndicator } from '../ui/activity-indicator';
-import { Text } from '../ui/text';
-
-interface SortableHeadshot extends HeadshotWithUrl {
-  id: string;
-  order: number;
-}
-
-export function SortableMultiImageUpload({ onImageCountChange }: MultiImageUploadProps) {
-  const [sortableHeadshots, setSortableHeadshots] = useState<SortableHeadshot[]>([]);
-  const [uploadState, setUploadState] = useState<UploadState>({
-    isUploading: false,
-    progress: 0,
-    error: null,
-  });
-
-  // Convex mutations and queries
-  const generateUploadUrl = useMutation(api.files.generateUploadUrl);
-  const saveHeadshotIds = useMutation(api.users.headshots.saveHeadshotIds);
-  const removeHeadshot = useMutation(api.users.headshots.removeHeadshot);
-  const updateHeadshotOrder = useMutation(api.users.headshots.updateHeadshotOrder);
-
-  const headshotsMetadata = useQuery(api.users.headshotsOptimized.getMyHeadshotsMetadata);
-  const getHeadshotUrls = useQuery(
-    api.users.headshotsOptimized.getHeadshotUrls,
-    headshotsMetadata ? { storageIds: headshotsMetadata.map((h) => h.storageId) } : 'skip'
-  );
-
-  // Update local state when metadata or URLs change
-  useEffect(() => {
-    if (headshotsMetadata) {
-      const updatedHeadshots = headshotsMetadata.map((metadata, index) => {
-        const urlData = getHeadshotUrls?.find((u) => u.storageId === metadata.storageId);
-        return {
-          ...metadata,
-          id: metadata.storageId,
-          order: metadata.order ?? index,
-          url: urlData?.url,
-          isLoading: !urlData,
-        };
-      });
-      setSortableHeadshots(updatedHeadshots.sort((a, b) => a.order - b.order));
-    }
-  }, [headshotsMetadata, getHeadshotUrls]);
-
-  const handleDragEnd = useCallback(({ fromIndex, toIndex }) => {
-    const reorderedImages = [...sortableHeadshots];
-    const [movedItem] = reorderedImages.splice(fromIndex, 1);
-    reorderedImages.splice(toIndex, 0, movedItem);
-    
-    const updatedWithOrder = reorderedImages.map((item, idx) => ({
-      ...item,
-      order: idx
-    }));
-    
-    setSortableHeadshots(updatedWithOrder);
-    
-    // Persist to backend
-    updateHeadshotOrder({ 
-      headshots: updatedWithOrder.map(h => ({
-        storageId: h.storageId,
-        order: h.order
-      }))
-    });
-  }, [sortableHeadshots, updateHeadshotOrder]);
-
-  const remainingSlots = Math.max(0, 3 - sortableHeadshots.length);
-
-  return (
-    <View className="flex-1 gap-4">
-      {/* Sortable images */}
-      {sortableHeadshots.length > 0 && (
-        <Sortable.Flex 
-          gap={16} 
-          padding={0}
-          onDragEnd={handleDragEnd}
-          activeItemScale={1.05}
-          inactiveItemOpacity={0.8}
-          dragActivationDelay={150}
-        >
-          {sortableHeadshots.map((headshot, index) => (
-            <View 
-              key={headshot.id}
-              className={index === 0 ? "w-full" : "w-[48%]"}
-            >
-              {headshot.url ? (
-                <ImagePreview 
-                  imageUrl={headshot.url}
-                  onRemove={() => handleRemoveImage(headshot.storageId)}
-                />
-              ) : (
-                <View className="bg-bg-surface h-[234px] w-full items-center justify-center rounded">
-                  <ActivityIndicator size="small" />
-                </View>
-              )}
-            </View>
-          ))}
-        </Sortable.Flex>
-      )}
-
-      {/* Upload cards for remaining slots */}
-      {remainingSlots > 0 && (
-        <View className={sortableHeadshots.length === 0 ? "gap-4" : "flex-row gap-4"}>
-          {Array.from({ length: remainingSlots }).map((_, idx) => (
-            <View 
-              key={`upload-${idx}`} 
-              className={sortableHeadshots.length === 0 && idx === 0 ? "w-full" : "flex-1"}
-            >
-              <ImageUploadCard 
-                shape={sortableHeadshots.length === 0 && idx === 0 ? 'primary' : 'secondary'}
-                onPress={handleImageUpload}
-                isActive={sortableHeadshots.length === 0 ? idx === 0 : true}
-                disabled={uploadState.isUploading}
-              />
-            </View>
-          ))}
-        </View>
-      )}
-
-      {/* Upload progress and error states remain the same */}
-    </View>
-  );
-}
-```
+### Complete Example: Changes Inside MultiImageUploadOptimized
+Keep existing upload/remove logic. Focus changes on rendering and ordering. See snippets above for `Sortable.Flex`, `handleDragEnd`, and upload card placement.
 
 ## 6. Performance Optimizations
 
@@ -313,7 +217,7 @@ export function SortableMultiImageUpload({ onImageCountChange }: MultiImageUploa
 2. **Maximum Images**: Disable sorting when at max capacity
 3. **Upload in Progress**: Disable sorting during active uploads
 4. **Network Failures**: Rollback optimistic updates on backend error
-5. **Rapid Reordering**: Debounce backend updates
+5. **Rapid Reordering**: Debounce backend updates (optional; or rely on latest write wins)
 
 ## 8. Testing Checklist
 
@@ -326,20 +230,20 @@ export function SortableMultiImageUpload({ onImageCountChange }: MultiImageUploa
 - [ ] Accessibility with screen readers
 
 ## 9. File Structure
+No new components. Modify the existing file only.
 ```
 apps/native/components/upload/
-├── SortableMultiImageUpload.tsx  (new)
-├── MultiImageUploadOptimized.tsx  (existing)
-├── ImagePreview.tsx               (modify if adding handle)
+├── MultiImageUploadOptimized.tsx  (modified)
+├── ImagePreview.tsx               (optional: add handle UI)
 ├── ImageUploadCard.tsx            (existing)
-└── index.ts                       (update exports)
+└── index.ts                       (unchanged)
 ```
 
 ## 10. Dependencies & Imports
 ```typescript
 import Sortable from 'react-native-sortables'
 import { View, Alert } from 'react-native'
-import { useCallback, useState, useEffect, useMemo } from 'react'
+import { useCallback, useMemo, useState, useEffect } from 'react'
 import { useMutation, useQuery } from 'convex/react'
 ```
 
@@ -351,13 +255,13 @@ import { useMutation, useQuery } from 'convex/react'
 - **Performance**: Better for small lists (3 items max)
 
 ### State Synchronization Strategy
-1. Local state (`sortableHeadshots`) for immediate UI updates
-2. Backend persistence via `updateHeadshotOrder` mutation
-3. Real-time sync via Convex subscriptions ensures consistency
+1. Local state (`headshotsWithUrls` → derive `sortableHeadshots`) updates immediately
+2. Persist order via `updateHeadshotOrder` mutation (explicit `order` field)
+3. Convex queries return `order`; client sorts by `order` to render
 
 ### Visual Hierarchy Preservation
-- First image always displays full-width regardless of position
-- Remaining images display in 48% width (allowing for gap)
-- Empty upload cards adapt based on existing images
+- First image displays full-width (index 0 after sort)
+- Remaining images use `flex-1` in a row with `gap-4`
+- Upload cards fill to 3 total; primary shape if no images
 
-This implementation provides a complete, production-ready solution for adding sortable functionality to the headshots page while maintaining all existing features and UI patterns.
+This plan updates the existing component to support drag-and-drop sorting, adds explicit sort order in the backend, and preserves current UX and upload behavior.
