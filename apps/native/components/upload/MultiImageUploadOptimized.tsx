@@ -4,6 +4,8 @@ import * as ImagePicker from 'expo-image-picker';
 import { useCallback, useState, useEffect, memo } from 'react';
 import { Alert, View } from 'react-native';
 
+import { optimizeImage } from '~/utils/imageOptimization';
+
 import { ImagePreview } from './ImagePreview';
 import { ImageUploadCard } from './ImageUploadCard';
 import { ActivityIndicator } from '../ui/activity-indicator';
@@ -112,6 +114,7 @@ export function MultiImageUploadOptimized({ onImageCountChange }: MultiImageUplo
     mediaTypes: ImagePicker.MediaTypeOptions.Images,
     allowsMultipleSelection: true,
     selectionLimit: 3 - headshotsWithUrls.length,
+    quality: 0.8, // Initial compression at selection time
   };
 
   // Image picker functions
@@ -145,6 +148,7 @@ export function MultiImageUploadOptimized({ onImageCountChange }: MultiImageUplo
 
     const result = await ImagePicker.launchCameraAsync({
       mediaTypes: ImagePicker.MediaTypeOptions.Images,
+      quality: 0.8, // Initial compression at capture time
     });
 
     if (!result.canceled && result.assets[0]) {
@@ -165,11 +169,18 @@ export function MultiImageUploadOptimized({ onImageCountChange }: MultiImageUplo
         for (let i = 0; i < totalImages; i++) {
           const asset = imageAssets[i];
 
+          // Optimize image before uploading
+          const optimizedImage = await optimizeImage(asset.uri, {
+            maxWidth: 1200,
+            maxHeight: 1200,
+            compressQuality: 0.8,
+          });
+
           // Generate upload URL for each image
           const uploadUrl = await generateUploadUrl();
 
-          // Upload to Convex storage
-          const response = await fetch(asset.uri);
+          // Upload optimized image to Convex storage
+          const response = await fetch(optimizedImage.uri);
           const blob = await response.blob();
 
           const uploadResponse = await fetch(uploadUrl, {

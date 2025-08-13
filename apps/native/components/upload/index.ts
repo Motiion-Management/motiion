@@ -1,3 +1,3 @@
 export { ImageUploadCard } from './ImageUploadCard';
 export { ImagePreview } from './ImagePreview';
-export { MultiImageUpload } from './MultiImageUpload';
+export { MultiImageUploadOptimized as MultiImageUpload } from './MultiImageUploadOptimized';
