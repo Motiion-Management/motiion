@@ -4,10 +4,11 @@ import { View, ActivityIndicator } from 'react-native';
 
 import { AuthErrorBoundary } from '~/components/auth/AuthErrorBoundary';
 import { BackgroundGradientView } from '~/components/ui/background-gradient-view';
-import { useOnboardingStatus } from '~/hooks/useOnboardingStatus';
+import { useQuery } from 'convex/react';
+import { api } from '@packages/backend/convex/_generated/api';
 
 export default function AppRouter() {
-  const { isLoading, isComplete, redirectPath } = useOnboardingStatus();
+  const redirectInfo = useQuery(api.onboarding.getOnboardingRedirect);
   const segments = useSegments();
 
   // Check if we're already on an onboarding screen
@@ -18,7 +19,7 @@ export default function AppRouter() {
   // Debug logging removed for cleaner output
 
   // Show loading state while checking onboarding status
-  if (isLoading) {
+  if (redirectInfo === undefined) {
     return (
       <BackgroundGradientView>
         <View className="flex-1 items-center justify-center">
@@ -29,15 +30,15 @@ export default function AppRouter() {
   }
 
   // If already on an onboarding screen, don't redirect (avoid loops)
-  if (isOnOnboardingScreen && !isComplete) {
+  if (isOnOnboardingScreen && redirectInfo.shouldRedirect) {
     // Return empty view instead of null to avoid placeholder screen issues
     return <View style={{ flex: 1 }} />;
   }
 
   // Determine where to redirect based on onboarding status
-  const destination: Href = isComplete
-    ? '/app/home'
-    : redirectPath || '/app/onboarding/profile-type';
+  const destination: Href = redirectInfo.shouldRedirect
+    ? (redirectInfo.redirectPath as Href)
+    : ('/app/home' as Href);
 
   // Redirect to appropriate screen
 

@@ -9,7 +9,6 @@ import { Agencies } from './validators/agencies'
 import { Agents } from './validators/agents'
 import { Experiences } from './validators/experiences'
 import { Training } from './validators/training'
-import { OnboardingFlows } from './validators/onboardingFlows'
 import { typedV } from 'convex-helpers/validators'
 
 const schema = defineSchema({
@@ -36,10 +35,7 @@ const schema = defineSchema({
   agents: Agents.table.index('userId', ['userId']),
   agencies: Agencies.table.searchIndex('search_name', { searchField: 'name' }),
 
-  // onboarding
-  onboardingFlows: OnboardingFlows.table
-    .index('by_version_and_profileType', ['version', 'profileType'])
-    .index('by_isActive', ['isActive'])
+  // onboarding (no dynamic flow tables; client controls flow)
   // },
   // {
   //   // ONLY ENABLE WHEN DOING SCHEMA MIGRATION
