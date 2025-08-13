@@ -1,22 +1,14 @@
-# Onboarding Navigation Refactor Plan
+# Onboarding Navigation Refactor Plan (Deprecated)
 
-## Problem Statement
-
-The current onboarding implementation suffers from:
-
-1. Navigation state mismatches between native and JS ("The screen 'agency/index' was removed natively...")
-2. Excessive server round trips causing slow form interactions
-3. Decision logic split between client and server
-4. Duplicate conditional logic across multiple files
+Note: This document described a server-driven onboarding flow stored in Convex. The project has moved to a local-first model where the client controls the flow and the server only persists the last step and completion status for redirect. The `onboardingFlows` table and associated APIs were removed.
 
 ## Core Architecture Decisions
 
-### 1. Server-Driven UI via Convex Table
+### Current Approach Summary
 
-- **Move onboarding flow from constants to a new `onboardingFlows` table in Convex**
-- Include decision matrices directly in the flow data (e.g., representation status → agency visibility)
-- Version flows properly to support A/B testing and gradual rollouts
-- Single source of truth for flow structure, cached client-side
+- Flow defined client-side via `useSimpleOnboardingFlow`.
+- Server exposes minimal APIs: `setOnboardingStep`, `getOnboardingRedirect`, `completeOnboarding`, `resetOnboarding`.
+- Screens validate and save their own data; onboarding completion is non-blocking.
 
 ### 2. Local-First Navigation
 
@@ -34,7 +26,7 @@ The current onboarding implementation suffers from:
 
 ## Implementation Phases
 
-### Phase 1: Database Schema & Immediate Fixes
+### Migration Notes (historical)
 
 1. **Create Convex table schema**:
 
@@ -85,7 +77,7 @@ The current onboarding implementation suffers from:
    - Replace `router.dismissTo()` with `router.replace()`
    - Implement proper back handling with navigation state
 
-### Phase 2: Flow Migration
+This section is retained for historical context but is not applicable after the pivot to client-controlled onboarding.
 
 1. **Migrate existing flow constants to Convex table**:
    - Convert ONBOARDING_FLOWS to table entries
@@ -104,7 +96,7 @@ The current onboarding implementation suffers from:
    }
    ```
 
-### Phase 3: Client-Side Navigation
+See `apps/native/hooks/useSimpleOnboardingFlow.ts` for the current navigation implementation.
 
 1. **Refactor useOnboardingCursor**:
    - Remove backend step validation calls
@@ -116,7 +108,7 @@ The current onboarding implementation suffers from:
    - Use decision matrices from flow data
    - Remove duplicate agency filtering
 
-### Phase 4: Form Integration
+Forms own validation and persistence per screen (unchanged).
 
 1. **Create auto-save form hooks**:
 
@@ -133,7 +125,7 @@ The current onboarding implementation suffers from:
    - Show real-time save status
    - Enable navigation based on Convex state
 
-### Phase 5: Performance & Polish
+General performance tips still apply.
 
 1. **Implement prefetching**:
    - Preload all onboarding screens on mount

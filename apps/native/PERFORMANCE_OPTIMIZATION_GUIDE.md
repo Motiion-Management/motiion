@@ -15,30 +15,21 @@ export default function AppLayout() {
 }
 ```
 
-**Step 2**: Update hooks to use shared user data:
+**Step 2**: Use shared user data with local-first onboarding:
 
 ```tsx
-// In useOnboardingStatus.ts
-import { useSharedUser } from '~/contexts/SharedUserContext';
+// app/app/index.tsx (entry redirect)
+import { useQuery } from 'convex/react';
+import { api } from '@packages/backend/convex/_generated/api';
 
-export function useOnboardingStatus(overrideStep?: string) {
-  const { isLoading: authLoading } = useAuthenticated();
-  const status = useQuery(api.onboarding.getOnboardingStatus);
-  const { user } = useSharedUser(); // Replace useQuery(api.users.getMyUser)
-  // ... rest of the hook
-}
+const redirectInfo = useQuery(api.onboarding.getOnboardingRedirect);
+// Redirect to redirectInfo.redirectPath when redirectInfo.shouldRedirect
 ```
 
 ```tsx
-// In useOnboardingCursor.ts
-import { useSharedUser } from '~/contexts/SharedUserContext';
-
-export function useOnboardingCursor() {
-  const segments = useSegments();
-  const router = useRouter();
-  const { user } = useSharedUser(); // Replace useQuery(api.users.getMyUser)
-  // ... rest of the hook
-}
+// In onboarding screens
+import { useSimpleOnboardingFlow } from '~/hooks/useSimpleOnboardingFlow';
+// Use navigateNext / navigatePrevious and progress from the simple flow.
 ```
 
 ### 2. Use Optimized Headshots Loading
