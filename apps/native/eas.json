@@ -52,6 +52,14 @@
       "channel": "production"
     }
   },
+  "submit": {
+    "production": {
+      "ios": {
+        "ascAppId": "6748365434",
+        "bundleIdentifier": "io.motiion.motiion"
+      }
+    }
+  },
   "cli": {
     "appVersionSource": "remote"
   }
