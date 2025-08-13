@@ -12,22 +12,23 @@ interface ImagePreviewProps {
 
 export function ImagePreview({ imageUrl, onRemove, className }: ImagePreviewProps) {
   return (
-    <View className={cn('relative w-full overflow-hidden rounded', className)}>
-      <Image
-        source={{ uri: imageUrl }}
-        contentFit="cover"
-        style={{ width: '100%', height: 234 }}
-        onError={(error) => {
-          console.error('Failed to load image:', error);
-        }}
-        transition={150}
-      />
-
+    <View className={cn('relative w-full', className)}>
+      <View className={'relative w-full overflow-hidden rounded'}>
+        <Image
+          source={{ uri: imageUrl }}
+          contentFit="cover"
+          style={{ width: '100%', height: 234 }}
+          onError={(error) => {
+            console.error('Failed to load image:', error);
+          }}
+          transition={150}
+        />
+      </View>
       {/* Remove button */}
       <Pressable
         onPress={onRemove}
         className="absolute -right-2 -top-2 rounded-full bg-red-500 p-1 shadow-sm">
-        <XIcon size={16} className="color-white" />
+        <XIcon size={12} className="color-white" />
       </Pressable>
     </View>
   );

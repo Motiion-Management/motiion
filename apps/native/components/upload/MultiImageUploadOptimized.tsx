@@ -33,7 +33,6 @@ interface HeadshotWithUrl {
 const ImageSlot = memo(
   ({
     image,
-    index,
     onRemove,
     onUpload,
     canAdd,
