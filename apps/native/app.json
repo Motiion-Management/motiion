@@ -9,6 +9,7 @@
       "output": "static",
       "favicon": "./assets/favicon.png"
     },
+    "platforms": ["ios"],
     "plugins": [
       "expo-router",
       [
