@@ -21,7 +21,7 @@ export const MediaCard = React.forwardRef<ViewRef, MediaCardProps>(
     const CardContent = (
       <View
         ref={ref}
-        className={cn('h-56 flex-1 rounded-lg border border-border-default shadow-sm', className)}
+        className={cn('flex-1 rounded-lg border border-border-default shadow-sm', className)}
         style={{ backgroundColor: backgroundImage ? undefined : backgroundColor }}
         {...props}>
         <View className="flex-1 items-end justify-end p-6">
@@ -37,19 +37,25 @@ export const MediaCard = React.forwardRef<ViewRef, MediaCardProps>(
 
     if (backgroundImage) {
       return (
-        <TouchableOpacity onPress={onPress} className="relative flex-1" disabled={!onPress}>
+        <TouchableOpacity
+          onPress={onPress}
+          className="relative"
+          style={{ width: 177, height: 220 }}
+          disabled={!onPress}>
           <Image
             source={backgroundImage}
-            className={cn('h-56 w-auto flex-1 overflow-hidden rounded-lg shadow-sm', className)}
-            style={{ borderRadius: 8 }}
+            style={{ width: 177, height: 220, borderRadius: 8 }}
+            resizeMode="cover"
           />
 
-          <View className="absolute top-0 h-full w-full flex-1 items-end justify-end p-6">
+          <View className="absolute top-0 h-full w-full items-end justify-end p-6">
             <View className="w-full">
-              <Text className="text-text-accent mb-0.5 text-xs font-medium uppercase tracking-wider">
+              <Text variant="labelXs" className="mb-0.5 text-accent">
                 {label}
               </Text>
-              <Text className="text-lg font-semibold text-white">{title}</Text>
+              <Text variant="header4" className="">
+                {title}
+              </Text>
             </View>
           </View>
         </TouchableOpacity>
