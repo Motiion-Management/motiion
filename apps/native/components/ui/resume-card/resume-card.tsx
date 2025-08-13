@@ -28,17 +28,17 @@ export const ResumeCard = React.forwardRef<ViewRef, ResumeCardProps>(
       <View
         ref={ref}
         className={cn(
-          'rounded-lg border border-border-default bg-surface-high p-6 shadow-sm',
+          'rounded-lg border border-border-low bg-surface-default p-6 shadow-sm',
           className
         )}
         {...props}>
         {/* Header */}
         <View className="mb-4 flex-row items-center justify-between">
-          <View className="flex-1">
-            <Text className="text-text-accent mb-0.5 text-xs font-medium uppercase tracking-wider">
+          <View className="flex-1 gap-1">
+            <Text variant="labelXs" className="text-accent">
               {label}
             </Text>
-            <Text className="text-base font-semibold text-text-high">{title}</Text>
+            <Text variant="header5">{title}</Text>
           </View>
 
           {/* Three dots menu */}
@@ -48,25 +48,24 @@ export const ResumeCard = React.forwardRef<ViewRef, ResumeCardProps>(
         </View>
 
         {/* Items list */}
-        <View className="mb-4 space-y-1">
+        <View className="mb-4 gap-1">
           {items.map((item) => (
             <TouchableOpacity
               key={item.id}
               onPress={() => onItemPress?.(item)}
-              className="flex-row items-center space-x-2 py-1"
+              className="flex-row items-center gap-2 py-1"
               style={{ opacity: item.opacity ?? 1 }}>
-              <View className="h-2.5 w-2.5 rounded-sm bg-border-low" />
-              <Text className="flex-1 text-xs text-text-high">{item.title}</Text>
+              <View className="h-2.5 w-2.5 rounded-full bg-icon-low" />
+              <Text variant="bodyXs" className="flex-1">
+                {item.title}
+              </Text>
             </TouchableOpacity>
           ))}
         </View>
 
         {/* Action button */}
-        <Button
-          variant="primary"
-          className="w-full rounded-3xl bg-surface-default py-2 shadow-sm"
-          onPress={onActionPress}>
-          <Text className="text-xs font-semibold text-white">{actionLabel}</Text>
+        <Button variant="primary" className="w-full" onPress={onActionPress}>
+          <Text>{actionLabel}</Text>
         </Button>
       </View>
     );

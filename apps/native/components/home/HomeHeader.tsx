@@ -26,15 +26,15 @@ export function HomeHeader({
   const profileTypeLabel = profileType.charAt(0).toUpperCase() + profileType.slice(1);
 
   return (
-    <View className="flex-row items-start justify-between px-4 pb-0 pt-16">
+    <View className="flex-row items-start justify-between px-4 pb-0">
       {/* Profile info */}
-      <View className="flex-1">
-        <Text className="mb-0.5 text-sm font-normal text-text-high">{profileTypeLabel}</Text>
-        <Text className="text-lg font-semibold text-text-high">{displayName}</Text>
+      <View className="flex-1 gap-1">
+        <Text variant="bodySm">{profileTypeLabel}</Text>
+        <Text variant="header4">{displayName}</Text>
       </View>
 
       {/* Action buttons */}
-      <View className="flex-row items-center space-x-1">
+      <View className="flex-row items-center gap-4">
         {/* Settings */}
         <TouchableOpacity
           onPress={onSettingsPress}
