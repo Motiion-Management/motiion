@@ -2,10 +2,10 @@ import React from 'react';
 import { View, TouchableOpacity } from 'react-native';
 
 import { Text } from '~/components/ui/text';
-import { Avatar } from '~/components/ui/avatar';
 import { useUser } from '~/hooks/useUser';
 import Settings from '~/lib/icons/Settings';
 import Bell from '~/lib/icons/Bell';
+import { UserButton } from '../auth/UserButton';
 
 interface HomeHeaderProps {
   onSettingsPress?: () => void;
@@ -49,16 +49,7 @@ export function HomeHeader({
           <Bell className="h-6 w-6 color-white" />
         </TouchableOpacity>
 
-        {/* Profile Avatar */}
-        <TouchableOpacity onPress={onProfilePress} className="ml-1">
-          <Avatar
-            alt={`${displayName} profile`}
-            className="h-10 w-10 border border-border-tint shadow-sm">
-            <Text className="text-sm font-medium text-white">
-              {displayName.charAt(0).toUpperCase()}
-            </Text>
-          </Avatar>
-        </TouchableOpacity>
+        <UserButton />
       </View>
     </View>
   );
