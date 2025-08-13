@@ -1,4 +1,5 @@
-import { Pressable, View, Image } from 'react-native';
+import { Pressable, View } from 'react-native';
+import { Image } from 'expo-image';
 
 import XIcon from '~/lib/icons/X';
 import { cn } from '~/lib/utils';
@@ -11,13 +12,15 @@ interface ImagePreviewProps {
 
 export function ImagePreview({ imageUrl, onRemove, className }: ImagePreviewProps) {
   return (
-    <View className={cn('relative w-full', className)}>
+    <View className={cn('relative w-full overflow-hidden rounded', className)}>
       <Image
-        src={imageUrl}
-        className="h-[234px] w-full rounded"
+        source={{ uri: imageUrl }}
+        contentFit="cover"
+        style={{ width: '100%', height: 234 }}
         onError={(error) => {
           console.error('Failed to load image:', error);
         }}
+        transition={150}
       />
 
       {/* Remove button */}

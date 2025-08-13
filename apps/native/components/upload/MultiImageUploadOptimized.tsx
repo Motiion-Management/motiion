@@ -1,10 +1,10 @@
 import { api } from '@packages/backend/convex/_generated/api';
 import { useMutation, useQuery } from 'convex/react';
-import * as ImagePicker from 'expo-image-picker';
 import { useCallback, useState, useEffect, memo } from 'react';
 import { Alert, View } from 'react-native';
 
-import { optimizeImage } from '~/utils/imageOptimization';
+import * as ImagePicker from 'expo-image-picker';
+import * as ImageManipulator from 'expo-image-manipulator';
 
 import { ImagePreview } from './ImagePreview';
 import { ImageUploadCard } from './ImageUploadCard';
@@ -114,7 +114,7 @@ export function MultiImageUploadOptimized({ onImageCountChange }: MultiImageUplo
     mediaTypes: ImagePicker.MediaTypeOptions.Images,
     allowsMultipleSelection: true,
     selectionLimit: 3 - headshotsWithUrls.length,
-    quality: 0.8, // Initial compression at selection time
+    quality: 1, // Keep original quality; we compress in optimizer
   };
 
   // Image picker functions
@@ -148,7 +148,7 @@ export function MultiImageUploadOptimized({ onImageCountChange }: MultiImageUplo
 
     const result = await ImagePicker.launchCameraAsync({
       mediaTypes: ImagePicker.MediaTypeOptions.Images,
-      quality: 0.8, // Initial compression at capture time
+      quality: 1, // Keep original quality; we compress in optimizer
     });
 
     if (!result.canceled && result.assets[0]) {
@@ -169,18 +169,18 @@ export function MultiImageUploadOptimized({ onImageCountChange }: MultiImageUplo
         for (let i = 0; i < totalImages; i++) {
           const asset = imageAssets[i];
 
-          // Optimize image before uploading
-          const optimizedImage = await optimizeImage(asset.uri, {
-            maxWidth: 1200,
-            maxHeight: 1200,
-            compressQuality: 0.8,
-          });
+          // Resize the image using Expo ImageManipulator
+          const manipResult = await ImageManipulator.manipulateAsync(
+            asset.uri,
+            [{ resize: { width: 800 } }],
+            { compress: 0.8, format: ImageManipulator.SaveFormat.JPEG }
+          );
 
           // Generate upload URL for each image
           const uploadUrl = await generateUploadUrl();
 
           // Upload optimized image to Convex storage
-          const response = await fetch(optimizedImage.uri);
+          const response = await fetch(manipResult.uri);
           const blob = await response.blob();
 
           const uploadResponse = await fetch(uploadUrl, {
