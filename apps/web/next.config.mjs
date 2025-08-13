@@ -1,6 +1,6 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  // Basic Next.js configuration for the Motiion website
+  // Ensure workspace packages are transpiled and share React/Next
 }
 
 export default nextConfig
