@@ -2,7 +2,6 @@ import * as React from 'react';
 import { Pressable, View } from 'react-native';
 
 import { Checkbox } from '~/components/ui/checkbox';
-import { RadioGroupItem } from '~/components/ui/radio-group';
 import { Text } from '~/components/ui/text';
 import { cn } from '~/lib/utils';
 
@@ -50,7 +49,15 @@ const SelectionCard = React.forwardRef<React.ElementRef<typeof Pressable>, Selec
               disabled={disabled}
             />
           )}
-          {variant === 'radio' && <RadioGroupItem value={value} />}
+          {variant === 'radio' && (
+            <View
+              className={cn(
+                'h-4 w-4 items-center justify-center rounded-full border-2',
+                selected ? 'border-border-high' : 'border-border-default'
+              )}>
+              {selected && <View className="h-2 w-2 rounded-full bg-border-high" />}
+            </View>
+          )}
         </View>
       </Pressable>
     );
