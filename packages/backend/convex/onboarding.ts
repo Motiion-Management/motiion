@@ -60,7 +60,10 @@ export const resetOnboarding: RegisteredMutation<
     await ctx.db.patch(user._id, {
       onboardingCompleted: false,
       onboardingCompletedAt: undefined,
-      onboardingVersion: undefined
+      onboardingVersion: undefined,
+      // Also clear navigation position so redirects start at the beginning
+      currentOnboardingStep: undefined,
+      currentOnboardingStepIndex: undefined
     })
 
     return { success: true }
