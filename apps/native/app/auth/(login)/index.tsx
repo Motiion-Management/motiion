@@ -1,6 +1,6 @@
 import { useSignIn } from '@clerk/clerk-expo';
 import { useStore } from '@tanstack/react-store';
-import { router, usePathname, useLocalSearchParams } from 'expo-router';
+import { router, useLocalSearchParams } from 'expo-router';
 import React, { useState, useEffect, useRef } from 'react';
 import { ActivityIndicator, View } from 'react-native';
 import { isValidNumber } from 'react-native-phone-entry';
@@ -10,7 +10,7 @@ import { ValidationModeForm } from '~/components/form/ValidationModeForm';
 import { useAppForm } from '~/components/form/appForm';
 import { BaseAuthScreen } from '~/components/layouts/BaseAuthScreen';
 import { Text } from '~/components/ui/text';
-import { determineSigninStep } from '~/utils/signinNavigation';
+// Forward navigation is declarative via button press; no auto-redirect on mount
 
 const formValidator = z.object({
   phone: z
@@ -31,7 +31,6 @@ export default function LoginScreen() {
   const { isLoaded, signIn } = useSignIn();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [signInError, setSignInError] = useState<string | null>(null);
-  const pathname = usePathname();
   const hasNavigatedRef = useRef(false);
   const { phoneNumber: paramPhoneNumber } = useLocalSearchParams<{ phoneNumber?: string }>();
 
@@ -79,18 +78,7 @@ export default function LoginScreen() {
     },
   });
 
-  useEffect(() => {
-    if (!isLoaded || !signIn || hasNavigatedRef.current) return;
-
-    // Check if there's an existing signin in progress and navigate to the appropriate step
-    const targetRoute = determineSigninStep(signIn);
-
-    // Only navigate if we're not already on the target route and it's different from current route
-    if (targetRoute && targetRoute !== pathname && targetRoute !== '/auth/(login)') {
-      hasNavigatedRef.current = true;
-      router.replace(targetRoute as any);
-    }
-  }, [isLoaded, signIn, pathname]);
+  // Removed auto-redirect effect to avoid push→replace stutter.
 
   const isFormReady = useStore(form.store, (state) => state.canSubmit && !isSubmitting);
 

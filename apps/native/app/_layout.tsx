@@ -49,8 +49,11 @@ export default function RootLayout() {
   );
 }
 
+import { useAuth } from '@clerk/clerk-expo';
+
 const RootStack = () => {
-  const { isLoading, isAuthenticated } = useAuthenticated();
+  // Use Clerk auth state only to gate access into /app
+  const { isLoaded, isSignedIn } = useAuth();
   return (
     <Stack
       screenOptions={{
@@ -66,7 +69,7 @@ const RootStack = () => {
           title: 'auth',
         }}
       />
-      <Stack.Protected guard={!isLoading && isAuthenticated}>
+      <Stack.Protected guard={isLoaded && !!isSignedIn}>
         <Stack.Screen name="app" />
       </Stack.Protected>
 

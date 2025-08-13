@@ -50,8 +50,8 @@ export default function VerifyPhoneScreen() {
           await setActive({ session: result.createdSessionId });
           console.log('Sign-in complete, session created:', result.createdSessionId);
 
-          // Navigate to the main app
-          router.replace('/app/home');
+          // Navigate to the main app (let app index/guard route appropriately)
+          router.replace('/app');
           console.log('Navigated to home screen');
         } else {
           setVerificationError('Sign-in incomplete. Please try again.');
