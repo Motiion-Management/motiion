@@ -20,7 +20,6 @@ export default function CreateAccountLayout() {
       name: 2,
       email: 3,
       dob: 4,
-      username: 5,
       complete: 6,
     };
     return stepMapping[step as keyof typeof stepMapping] || 0;

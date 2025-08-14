@@ -10,6 +10,25 @@ import { useAppForm } from '~/components/form/appForm';
 import { BaseAuthScreen } from '~/components/layouts/BaseAuthScreen';
 import { Text } from '~/components/ui/text';
 
+// Parse a value into a Date, supporting 'yyyy-MM-dd' strings with local timezone
+const parseLocalDate = (value: unknown): Date | undefined => {
+  if (!value) return undefined;
+  if (value instanceof Date) return value;
+  if (typeof value === 'string') {
+    const ymd = value.match(/^(\d{4})-(\d{2})-(\d{2})$/);
+    if (ymd) {
+      const year = Number(ymd[1]);
+      const month = Number(ymd[2]) - 1;
+      const day = Number(ymd[3]);
+      const d = new Date(year, month, day);
+      return isNaN(d.getTime()) ? undefined : d;
+    }
+    const d = new Date(value);
+    return isNaN(d.getTime()) ? undefined : d;
+  }
+  return undefined;
+};
+
 const calculateAge = (dob: Date): number => {
   const today = new Date();
   const birthDate = new Date(dob);
@@ -110,7 +129,7 @@ export default function DOBScreen() {
 
   const isFormReady = useStore(form.store, (state) => state.canSubmit && !isCreatingAccount);
   const dob = useStore(form.store, (state) => state.values.dob);
-  const age = useMemo(() => calculateAge(dob), [dob]);
+  const age = useMemo(() => (dob ? calculateAge(dob as Date) : 0), [dob]);
 
   const helpText = `By continuing, you are confirming that the above information is accurate and that you are ${age} years of age.`;
 

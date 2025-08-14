@@ -22,6 +22,7 @@ import * as Haptics from 'expo-haptics';
 import { api } from '@packages/backend/convex/_generated/api';
 import { useMutation } from 'convex/react';
 import { normalizeForConvex } from '~/utils/convexHelpers';
+import * as z from 'zod';
 
 import {
   zExperiencesDoc,
@@ -94,7 +95,13 @@ export function ExperienceEditSheet({
 
   // Map type -> schema and metadata
   // Use shared backend validator schema for single source of truth (full doc shape)
-  const schema = zExperiencesDoc.passthrough();
+  // Keep a plain object schema for UI introspection
+  const uiSchema = zExperiencesDoc.passthrough();
+  // Separate schema for validation: preprocess Dates -> ISO strings
+  const validateSchema = z.preprocess(
+    (v) => normalizeForConvex(v as any),
+    uiSchema
+  );
 
   // Initialize shared form controller with onSubmit handling
   const addMyExperience = useMutation(api.users.experiences.addMyExperience);
@@ -103,7 +110,7 @@ export function ExperienceEditSheet({
   const sharedForm = useAppForm({
     defaultValues: experience,
     validators: {
-      onChange: schema,
+      onChange: validateSchema as any,
     },
     onSubmit: async ({ value }) => {
       console.log('Submitting experience:', value);
@@ -222,10 +229,10 @@ export function ExperienceEditSheet({
                 showsVerticalScrollIndicator={false}>
                 <View className="flex-1 pt-2">
                   <View className="px-4 pb-4 pt-4">
-                    {schema && (
+                    {uiSchema && (
                       <ConvexDynamicForm
                         key={`details`}
-                        schema={schema}
+                        schema={uiSchema}
                         metadata={metadata}
                         groups={['details', 'basic', 'dates', 'media']}
                         exclude={['userId', 'private']}
@@ -250,10 +257,10 @@ export function ExperienceEditSheet({
                 showsVerticalScrollIndicator={false}>
                 <View className="flex-1 pt-2">
                   <View className="px-4 pb-4 pt-4">
-                    {schema && (
+                    {uiSchema && (
                       <ConvexDynamicForm
                         key={`team`}
-                        schema={schema}
+                        schema={uiSchema}
                         metadata={metadata}
                         groups={['team']}
                         exclude={['userId', 'private']}
@@ -279,10 +286,10 @@ export function ExperienceEditSheet({
               showsVerticalScrollIndicator={false}>
               <View className="flex-1 pt-2">
                 <View className="px-4 pb-4 pt-4">
-                  {schema && (
+                  {uiSchema && (
                     <ConvexDynamicForm
                       key={`details-initial`}
-                      schema={schema}
+                      schema={uiSchema}
                       metadata={metadata}
                       groups={['details', 'basic', 'dates', 'media']}
                       include={detailsInclude}
