@@ -14,9 +14,10 @@ Enhance the existing `MultiImageUploadOptimized` to support drag-and-drop reorde
 - **Current State**: Mix of ImagePreview components (uploaded images) and ImageUploadCard (empty slots)
 - **Solution**: Only include uploaded images in sortable container; render upload cards separately to fill remaining slots up to 3.
 
-### Challenge C: State Management
-- **Current State**: Images stored in Convex backend with real-time sync
-- **Solution**: Implement optimistic UI updates with local state, then sync to backend on drag end
+### Challenge C: State Management & Schema Support
+- **Current State**: Images stored in Convex backend with real-time sync. Schema today does not track explicit item order.
+- **Preferred Solution (Chosen)**: Add a persistent `position` field to each headshot item so order is explicit, durable, and independent of array mutations.
+- **Alternative**: Skip the field and persist ordering by reordering the array only. This works but is less explicit and can be brittle across writers. The rest of this plan assumes the `position` field approach; see Section 6 for both options.
 
 ## 3. Detailed Implementation Steps
 
@@ -34,10 +35,10 @@ Enhance the existing `MultiImageUploadOptimized` to support drag-and-drop reorde
 
 ### Step 2: Data Structure Enhancement
 ```typescript
-// Use storageId as the stable key and track order explicitly
+// Use storageId as the stable key and track an explicit position
 type SortableHeadshot = HeadshotWithUrl & {
   id: string; // storageId
-  order: number;
+  position: number;
 }
 ```
 
@@ -81,17 +82,17 @@ const handleDragEnd = useCallback(({ fromIndex, toIndex }) => {
   const next = [...prev];
   const [moved] = next.splice(fromIndex, 1);
   next.splice(toIndex, 0, moved);
-  const updated = next.map((item, idx) => ({ ...item, order: idx }));
+  const updated = next.map((item, idx) => ({ ...item, position: idx }));
   setSortableHeadshots(updated);
 
   // 2) Persist to backend; rollback on failure
-  updateHeadshotOrder({
-    headshots: updated.map(h => ({ storageId: h.storageId, order: h.order }))
+  updateHeadshotPosition({
+    headshots: updated.map(h => ({ storageId: h.storageId, position: h.position }))
   }).catch(() => {
     setSortableHeadshots(prev);
     Alert.alert('Reorder failed', 'Your order change could not be saved.');
   });
-}, [sortableHeadshots, updateHeadshotOrder]);
+}, [sortableHeadshots, updateHeadshotPosition]);
 ```
 
 ### Step 5: Upload Card Integration
@@ -119,40 +120,54 @@ Place upload cards after sortable container:
 </View>
 ```
 
-### Step 6: Backend Integration (Add Explicit Sort Order)
-Persist and query an explicit `order` field for each headshot. Keep the array as the single source of truth, but make order explicit for clarity and migration.
+### Step 6: Backend Integration (Add Explicit Position Field)
+Persist and query an explicit `position` field for each headshot so ordering is stable and intentional.
+
+Schema changes:
+- File: `packages/backend/convex/validators/base.ts`
+  - Update `zFileUploadObject` to add `position: z.number().optional()` (optional for migration safety; write it going forward).
+- File: `packages/backend/convex/validators/users.ts`
+  - No schema shape changes beyond the updated `zFileUploadObject`; continue to use `zFileUploadObjectArray` in user fields.
+
+Write-path updates:
+- File: `packages/backend/convex/users/headshots.ts`
+  - In `saveHeadshotIds`, assign `position` for any newly added items (e.g., recompute by array index after merging), ensuring positions are contiguous starting at 0.
+  - In `removeHeadshot`, after removing, recompute positions to remain contiguous.
+  - Add a new mutation `updateHeadshotPosition` that accepts `{ headshots: { storageId, position }[] }` and rewrites the user’s `headshots` array with updated positions (payload-first by `position`, then remaining items), also normalizing positions to `0..n-1`.
+
+Read-path updates:
+- File: `packages/backend/convex/users/headshotsOptimized.ts`
+  - In `getMyHeadshotsMetadata`, return `position` and default to index when absent.
+  - The client should sort by `position ?? index` before rendering.
 ```typescript
 // packages/backend/convex/users/headshots.ts
-export const updateHeadshotOrder = authMutation({
+export const updateHeadshotPosition = authMutation({
   args: {
     headshots: v.array(v.object({
       storageId: v.id('_storage'),
-      order: v.number()
+      position: v.number()
     }))
   },
   handler: async (ctx, { headshots }) => {
     if (!ctx.user) return
     const current = ctx.user.headshots || []
 
-    // Map incoming order by storageId
-    const orderMap = new Map(headshots.map(h => [h.storageId, h.order]))
+    // Map incoming position by storageId
+    const posMap = new Map(headshots.map(h => [h.storageId, h.position]))
 
-    // Rebuild sorted list: first all that are in payload, then the rest (stable)
+    // Rebuild list: first all in payload ordered by position, then the rest (stable)
     const inPayload = current
-      .filter(h => orderMap.has(h.storageId))
-      .sort((a, b) => (orderMap.get(a.storageId)! - orderMap.get(b.storageId)!))
-      .map((h, idx) => ({ ...h, order: idx }))
+      .filter(h => posMap.has(h.storageId))
+      .sort((a, b) => (posMap.get(a.storageId)! - posMap.get(b.storageId)!))
 
-    const remaining = current
-      .filter(h => !orderMap.has(h.storageId))
-      .map((h, idx) => ({ ...h, order: inPayload.length + idx }))
+    const remaining = current.filter(h => !posMap.has(h.storageId))
 
-    const next = [...inPayload, ...remaining]
+    const next = [...inPayload, ...remaining].map((h, idx) => ({ ...h, position: idx }))
     await ctx.db.patch(ctx.user._id, { headshots: next })
   }
 })
 
-// Also ensure saveHeadshotIds writes an `order` number (e.g., recompute by array index)
+// Ensure saveHeadshotIds writes `position` (e.g., recompute by array index after merging)
 
 // packages/backend/convex/users/headshotsOptimized.ts
 export const getMyHeadshotsMetadata = query({
@@ -170,13 +185,16 @@ export const getMyHeadshotsMetadata = query({
       storageId: h.storageId,
       title: h.title,
       uploadDate: h.uploadDate,
-      order: h.order ?? index
+      position: h.position ?? index
     }))
   }
 })
 ```
 
-Migration note: for existing users without `order`, default to the current array index and write `order` on next mutation touching headshots (e.g., in `saveHeadshotIds` or a dedicated migration).
+Migration note: for existing users without `position`, default to the current array index and write `position` on the next mutation touching headshots (e.g., in `saveHeadshotIds`) or via a dedicated maintenance job.
+
+Alternative (Array Reorder Only):
+- Skip adding `position` to the schema. Instead, persist the array in the desired order in `updateHeadshotOrder({ storageIds: Id<'_storage'>[] })` and patch `users.headshots` with the re-ordered list. This avoids schema changes but makes order implicit and may be fragile with concurrent writers.
 
 ## 4. UI/UX Enhancements
 
@@ -256,8 +274,8 @@ import { useMutation, useQuery } from 'convex/react'
 
 ### State Synchronization Strategy
 1. Local state (`headshotsWithUrls` → derive `sortableHeadshots`) updates immediately
-2. Persist order via `updateHeadshotOrder` mutation (explicit `order` field)
-3. Convex queries return `order`; client sorts by `order` to render
+2. Persist order via `updateHeadshotPosition` mutation (explicit `position` field)
+3. Convex queries return `position`; client sorts by `position` (fallback to index) to render
 
 ### Visual Hierarchy Preservation
 - First image displays full-width (index 0 after sort)
