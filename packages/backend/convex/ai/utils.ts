@@ -12,41 +12,39 @@ export function validateAIEnvironment(): void {
 }
 
 /**
- * Sanitizes and validates image file types
+ * Validates resume asset types (images and PDFs)
  */
-export function isValidImageType(mimeType: string | undefined): boolean {
+export function isValidResumeFileType(mimeType: string | undefined): boolean {
   if (!mimeType) return false
-
-  const validTypes = [
-    'image/jpeg',
-    'image/jpg',
-    'image/png',
-    'image/heic',
-    'image/heif',
-    'image/webp'
-  ]
-
-  return validTypes.includes(mimeType.toLowerCase())
+  const mt = mimeType.toLowerCase()
+  if (mt === 'application/pdf') return true
+  return (
+    mt === 'image/jpeg' ||
+    mt === 'image/jpg' ||
+    mt === 'image/png' ||
+    mt === 'image/heic' ||
+    mt === 'image/heif' ||
+    mt === 'image/webp'
+  )
 }
 
 /**
- * Checks if an image URL is accessible
+ * Checks if a remote file URL is accessible and of a supported type.
+ * Returns the resolved content-type header if valid.
  */
-export async function validateImageAccess(imageUrl: string): Promise<void> {
+export async function validateFileAccess(fileUrl: string): Promise<string> {
   try {
-    const response: any = await fetch(imageUrl, {
+    const response: any = await fetch(fileUrl, {
       method: 'HEAD'
     })
 
     if (!response.ok) {
-      throw new ConvexError('Image is not accessible')
+      throw new ConvexError('File is not accessible')
     }
 
     const contentType = response.headers?.get?.('content-type')
-    if (!isValidImageType(contentType || undefined)) {
-      throw new ConvexError(
-        'Invalid image format. Please use JPEG, PNG, HEIC, or WebP format.'
-      )
+    if (!isValidResumeFileType(contentType || undefined)) {
+      throw new ConvexError('Invalid file format. Please use JPEG, PNG, HEIC, WebP, or PDF.')
     }
 
     const contentLength = response.headers?.get?.('content-length')
@@ -54,16 +52,16 @@ export async function validateImageAccess(imageUrl: string): Promise<void> {
       const sizeMB = parseInt(contentLength) / (1024 * 1024)
       if (sizeMB > 20) {
         // 20MB limit
-        throw new ConvexError(
-          'Image is too large. Please use an image smaller than 20MB.'
-        )
+        throw new ConvexError('File is too large. Please upload a file smaller than 20MB.')
       }
     }
+
+    return (contentType || '').toLowerCase()
   } catch (error) {
     if (error instanceof ConvexError) {
       throw error
     }
-    throw new ConvexError('Could not access image for processing')
+    throw new ConvexError('Could not access file for processing')
   }
 }
 
@@ -131,16 +129,14 @@ export function createFallbackError(originalError: Error): ConvexError<any> {
     )
   }
 
-  if (message.includes('image') && message.includes('format')) {
+  if ((message.includes('image') || message.includes('file')) && message.includes('format')) {
     return new ConvexError(
-      'The image format is not supported. Please try with a JPEG or PNG image.'
+      'The file format is not supported. Please try with a JPEG/PNG image or a PDF.'
     )
   }
 
   if (message.includes('size') || message.includes('large')) {
-    return new ConvexError(
-      'The image is too large. Please try with a smaller image.'
-    )
+    return new ConvexError('The file is too large. Please try with a smaller file.')
   }
 
   if (message.includes('network') || message.includes('connection')) {
@@ -150,6 +146,6 @@ export function createFallbackError(originalError: Error): ConvexError<any> {
   }
 
   return new ConvexError(
-    'Could not process your resume. Please try with a clearer image or enter information manually.'
+    'Could not process your resume. Please try with a clearer image/PDF or enter information manually.'
   )
 }

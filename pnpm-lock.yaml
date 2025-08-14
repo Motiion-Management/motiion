@@ -348,6 +348,15 @@ importers:
 
   apps/web:
     dependencies:
+      '@packages/backend':
+        specifier: workspace:*
+        version: link:../../packages/backend
+      '@xixixao/uploadstuff':
+        specifier: 0.0.5
+        version: 0.0.5(react-dropzone@14.3.8(react@19.0.0))(react@19.0.0)(typescript@5.8.3)
+      convex:
+        specifier: ^1.25.4
+        version: 1.25.4(@clerk/clerk-react@5.41.0(react-dom@19.0.0(react@19.0.0))(react@19.0.0))(react@19.0.0)
       next:
         specifier: 14.2.31
         version: 14.2.31(react-dom@19.0.0(react@19.0.0))(react@19.0.0)
