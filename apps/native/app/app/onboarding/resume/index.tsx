@@ -1,21 +1,257 @@
-import React from 'react';
-import { View } from 'react-native';
+import React, { useState, useCallback } from 'react';
+import { View, Alert } from 'react-native';
 import { Image } from 'expo-image';
+import * as ImagePicker from 'expo-image-picker';
+import * as DocumentPicker from 'expo-document-picker';
+import { api } from '@packages/backend/convex/_generated/api';
+import { useAction } from 'convex/react';
+import { useActionSheet } from '@expo/react-native-action-sheet';
 
 import { BaseOnboardingScreen } from '~/components/layouts/BaseOnboardingScreen';
 import { OnboardingStepGuard } from '~/components/onboarding/OnboardingGuard';
 import { Button } from '~/components/ui/button';
 import { Text } from '~/components/ui/text';
+import { ActivityIndicator } from '~/components/ui/activity-indicator';
 import { router } from 'expo-router';
 import { useSimpleOnboardingFlow } from '~/hooks/useSimpleOnboardingFlow';
+import { ParsedResumeReview } from '~/components/resume/ParsedResumeReview';
+import {
+  extractTextFromImage,
+  isSupported as isTextExtractionSupported,
+} from 'expo-text-extractor';
+
+interface ParsedResumeData {
+  experiences: any[];
+  training: any[];
+  skills: string[];
+  genres: string[];
+  sagAftraId?: string;
+}
 
 export default function ResumeScreen() {
-  const handleUploadResume = async () => {};
-  const nav = useSimpleOnboardingFlow();
+  const { showActionSheetWithOptions } = useActionSheet();
+  const [isProcessing, setIsProcessing] = useState(false);
+  const [parsedData, setParsedData] = useState<ParsedResumeData | null>(null);
+  const [hasError, setHasError] = useState(false);
 
-  const handleSkip = async () => {
-    router.push('/app/onboarding/experiences');
+  const nav = useSimpleOnboardingFlow();
+  const parseResumeText = useAction(api.users.resumeImport.parseResumeTextDirect);
+
+  const handleImportIntent = () => {
+    const options = ['Take Photo', 'Choose Image', 'Upload Document', 'Cancel'];
+    // const destructiveButtonIndex = 0;
+    const cancelButtonIndex = 3;
+
+    showActionSheetWithOptions(
+      {
+        options,
+        cancelButtonIndex,
+        // destructiveButtonIndex,
+      },
+      (selectedIndex?: number) => {
+        switch (selectedIndex) {
+          case 0:
+            // Take Photo
+            handleTakePhoto();
+            break;
+          case 1:
+            // Choose Image
+            handleUploadResume();
+            break;
+
+          case 2:
+            // Upload Document
+            handlePickDocument();
+            break;
+
+          case cancelButtonIndex:
+          // Canceled
+        }
+      }
+    );
   };
+
+  const handleSkip = useCallback(() => {
+    router.push('/app/onboarding/experiences');
+  }, []);
+
+  const handlePickDocument = useCallback(async () => {
+    try {
+      setIsProcessing(true);
+      setHasError(false);
+
+      // Pick a document (support images and PDFs)
+      const result = await DocumentPicker.getDocumentAsync({
+        multiple: false,
+        type: ['image/*', 'application/pdf'],
+        copyToCacheDirectory: true,
+      });
+
+      if (result.canceled || !result.assets?.[0]) {
+        return;
+      }
+
+      const asset = result.assets[0];
+
+      if (!isTextExtractionSupported) {
+        Alert.alert('Unsupported', 'Text extraction is not supported on this device.');
+        return;
+      }
+
+      const lines = await extractTextFromImage(asset.uri);
+      const text = lines.join('\n').trim();
+      if (!text) {
+        throw new Error('No text detected in the selected file.');
+      }
+
+      const parsed = await parseResumeText({ text });
+      setParsedData(parsed as any);
+    } catch (error) {
+      console.error('Resume document upload error:', error);
+      setHasError(true);
+      Alert.alert(
+        'Processing Failed',
+        "Sorry, we couldn't extract text from your file. Please try a clearer file or enter information manually.",
+        [
+          { text: 'Try Again', onPress: () => setHasError(false) },
+          { text: 'Enter Manually', onPress: handleSkip },
+        ]
+      );
+    } finally {
+      setIsProcessing(false);
+    }
+  }, [parseResumeText, handleSkip]);
+
+  const handleUploadResume = useCallback(async () => {
+    try {
+      setIsProcessing(true);
+      setHasError(false);
+
+      // Request permissions
+      const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
+      if (status !== 'granted') {
+        Alert.alert(
+          'Permission Required',
+          'We need camera roll permissions to upload your resume.'
+        );
+        return;
+      }
+
+      // Pick image
+      const result = await ImagePicker.launchImageLibraryAsync({
+        mediaTypes: ImagePicker.MediaTypeOptions.Images,
+        allowsMultipleSelection: false,
+        quality: 0.9,
+        allowsEditing: false,
+      });
+
+      if (result.canceled || !result.assets[0]) {
+        return;
+      }
+
+      const asset = result.assets[0];
+
+      if (!isTextExtractionSupported) {
+        Alert.alert('Unsupported', 'Text extraction is not supported on this device.');
+        return;
+      }
+
+      const lines = await extractTextFromImage(asset.uri);
+      const text = lines.join('\n').trim();
+      if (!text) {
+        throw new Error('No text detected in the selected image.');
+      }
+
+      const parsed = await parseResumeText({ text });
+      setParsedData(parsed as any);
+    } catch (error) {
+      console.error('Resume upload error:', error);
+      setHasError(true);
+      Alert.alert(
+        'Upload Failed',
+        "Sorry, we couldn't process your resume. Please try again with a clearer image or enter your information manually.",
+        [
+          { text: 'Try Again', onPress: () => setHasError(false) },
+          { text: 'Enter Manually', onPress: handleSkip },
+        ]
+      );
+    } finally {
+      setIsProcessing(false);
+    }
+  }, [parseResumeText, handleSkip]);
+
+  const handleTakePhoto = useCallback(async () => {
+    try {
+      setIsProcessing(true);
+      setHasError(false);
+
+      // Request camera permissions
+      const { status } = await ImagePicker.requestCameraPermissionsAsync();
+      if (status !== 'granted') {
+        Alert.alert(
+          'Permission Required',
+          'We need camera permissions to take a photo of your resume.'
+        );
+        return;
+      }
+
+      // Take photo
+      const result = await ImagePicker.launchCameraAsync({
+        mediaTypes: ImagePicker.MediaTypeOptions.Images,
+        quality: 0.9,
+        allowsEditing: false,
+      });
+
+      if (result.canceled || !result.assets[0]) {
+        return;
+      }
+
+      const asset = result.assets[0];
+
+      if (!isTextExtractionSupported) {
+        Alert.alert('Unsupported', 'Text extraction is not supported on this device.');
+        return;
+      }
+
+      const lines = await extractTextFromImage(asset.uri);
+      const text = lines.join('\n').trim();
+      if (!text) {
+        throw new Error('No text detected in the captured image.');
+      }
+
+      const parsed = await parseResumeText({ text });
+      setParsedData(parsed as any);
+    } catch (error) {
+      console.error('Resume photo error:', error);
+      setHasError(true);
+      Alert.alert(
+        'Photo Failed',
+        "Sorry, we couldn't process your resume photo. Please try again with a clearer photo or enter your information manually.",
+        [
+          { text: 'Try Again', onPress: () => setHasError(false) },
+          { text: 'Enter Manually', onPress: handleSkip },
+        ]
+      );
+    } finally {
+      setIsProcessing(false);
+    }
+  }, [parseResumeText, handleSkip]);
+
+  const handleReviewComplete = useCallback(() => {
+    // After user reviews and confirms the data, proceed to next step
+    router.push('/app/onboarding/experiences');
+  }, []);
+
+  // Show parsed data review screen
+  if (parsedData) {
+    return (
+      <ParsedResumeReview
+        parsedData={parsedData}
+        onComplete={handleReviewComplete}
+        onStartOver={() => setParsedData(null)}
+      />
+    );
+  }
 
   return (
     <OnboardingStepGuard requiredStep="resume">
@@ -28,19 +264,28 @@ export default function ResumeScreen() {
         }}
         bottomActionSlot={
           <View className="w-full gap-3">
-            <Button size="lg" className="w-full" onPress={handleUploadResume}>
-              <Text>Import</Text>
-            </Button>
-            <Button
-              size="lg"
-              variant="secondary"
-              className="w-full"
-              onPress={() => nav.navigatePrevious()}>
-              <Text>Go Back</Text>
-            </Button>
-            <Button size="lg" variant="secondary" className="w-full" onPress={handleSkip}>
-              <Text>Enter Manually</Text>
-            </Button>
+            {isProcessing ? (
+              <View className="flex-row items-center justify-center p-4">
+                <ActivityIndicator size="small" className="mr-2" />
+                <Text variant="body" className="text-text-secondary">
+                  Processing your resume...
+                </Text>
+              </View>
+            ) : (
+              <>
+                <Button
+                  size="lg"
+                  className="w-full"
+                  onPress={handleImportIntent}
+                  disabled={isProcessing}>
+                  <Text>Import</Text>
+                </Button>
+
+                <Button size="lg" variant="secondary" onPress={handleSkip} disabled={isProcessing}>
+                  <Text>Enter Manually</Text>
+                </Button>
+              </>
+            )}
           </View>
         }>
         <Image

@@ -27,7 +27,10 @@
       }
     ],
     "paths": {
-      "@/*": ["./*"]
+      "@/*": ["./*"],
+      "@packages/backend/convex/_generated/*": [
+        "../../packages/backend/convex/_generated/*"
+      ]
     }
   },
   "include": [
@@ -35,13 +38,16 @@
     "**/*.ts",
     "**/*.tsx",
     ".next/types/**/*.ts",
-    "types/**/*.d.ts"
+    "types/**/*.d.ts",
+    "../../packages/backend/convex/**/*.ts",
+    "../../packages/backend/convex/**/*.d.ts"
   ],
   "exclude": [
     "node_modules",
     "../../node_modules/@xixixao",
     "../../node_modules/@xixixao/uploadstuff",
     "../../node_modules/@xixixao/uploadstuff/lib",
-    "../../node_modules/@xixixao/uploadstuff/lib/useEvent.ts"
+    "../../node_modules/@xixixao/uploadstuff/lib/useEvent.ts",
+    "../../packages/backend/convex/dev/**"
   ]
 }

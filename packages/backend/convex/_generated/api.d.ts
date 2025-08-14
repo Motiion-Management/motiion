@@ -15,7 +15,10 @@ import type {
 } from "convex/server";
 import type * as agencies from "../agencies.js";
 import type * as agents from "../agents.js";
+import type * as ai_resumeParser from "../ai/resumeParser.js";
+import type * as ai_utils from "../ai/utils.js";
 import type * as clerk from "../clerk.js";
+import type * as dev_resumeTest from "../dev/resumeTest.js";
 import type * as eventTypes from "../eventTypes.js";
 import type * as events from "../events.js";
 import type * as experiences from "../experiences.js";
@@ -33,6 +36,7 @@ import type * as users_headshotsOptimized from "../users/headshotsOptimized.js";
 import type * as users_helpers from "../users/helpers.js";
 import type * as users_representation from "../users/representation.js";
 import type * as users_resume from "../users/resume.js";
+import type * as users_resumeImport from "../users/resumeImport.js";
 import type * as users from "../users.js";
 import type * as util from "../util.js";
 import type * as validators_agencies from "../validators/agencies.js";
@@ -60,7 +64,10 @@ import type * as validators_users from "../validators/users.js";
 declare const fullApi: ApiFromModules<{
   agencies: typeof agencies;
   agents: typeof agents;
+  "ai/resumeParser": typeof ai_resumeParser;
+  "ai/utils": typeof ai_utils;
   clerk: typeof clerk;
+  "dev/resumeTest": typeof dev_resumeTest;
   eventTypes: typeof eventTypes;
   events: typeof events;
   experiences: typeof experiences;
@@ -78,6 +85,7 @@ declare const fullApi: ApiFromModules<{
   "users/helpers": typeof users_helpers;
   "users/representation": typeof users_representation;
   "users/resume": typeof users_resume;
+  "users/resumeImport": typeof users_resumeImport;
   users: typeof users;
   util: typeof util;
   "validators/agencies": typeof validators_agencies;
