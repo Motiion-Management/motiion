@@ -1,4 +1,5 @@
 import { Redirect } from 'expo-router';
+import type { Href } from 'expo-router';
 import React, { useEffect } from 'react';
 import { View, ActivityIndicator } from 'react-native';
 
@@ -29,7 +30,7 @@ export function OnboardingGuard({ children, fallback }: OnboardingGuardProps) {
 
   // Redirect to onboarding if not complete
   if (redirectInfo.shouldRedirect) {
-    return <Redirect href={redirectInfo.redirectPath} />;
+    return <Redirect href={redirectInfo.redirectPath as Href} />;
   }
 
   // User has completed onboarding, render protected content
@@ -114,7 +115,7 @@ export function OnboardingCompleteGuard({ children, fallback }: OnboardingComple
 
   // If onboarding is not complete, redirect to current step
   if (redirectInfo.shouldRedirect) {
-    return <Redirect href={redirectInfo.redirectPath} />;
+    return <Redirect href={redirectInfo.redirectPath as Href} />;
   }
 
   // User has completed onboarding, render protected content
