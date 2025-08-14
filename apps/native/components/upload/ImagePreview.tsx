@@ -1,5 +1,6 @@
-import { Pressable, View } from 'react-native';
+import { View } from 'react-native';
 import { Image } from 'expo-image';
+import Sortable from 'react-native-sortables';
 
 import XIcon from '~/lib/icons/X';
 import { cn } from '~/lib/utils';
@@ -24,12 +25,12 @@ export function ImagePreview({ imageUrl, onRemove, className }: ImagePreviewProp
           transition={150}
         />
       </View>
-      {/* Remove button */}
-      <Pressable
-        onPress={onRemove}
-        className="absolute -right-2 -top-2 rounded-full bg-red-500 p-1 shadow-sm">
-        <XIcon size={12} className="color-white" />
-      </Pressable>
+      {/* Remove button integrated with sortables gesture system */}
+      <View className="absolute -right-2 -top-2 rounded-full bg-red-500 p-1 shadow-sm">
+        <Sortable.Touchable onTap={onRemove}>
+          <XIcon size={12} className="color-white" />
+        </Sortable.Touchable>
+      </View>
     </View>
   );
 }

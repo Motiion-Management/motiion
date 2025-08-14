@@ -352,10 +352,11 @@ export function MultiImageUploadOptimized({ onImageCountChange }: MultiImageUplo
               onDragEnd={handleDragEnd}
               overflow="visible"
               bringToFrontWhenActive
-              customHandle
+              dimensionsAnimationType="layout"
+              itemsLayoutTransitionMode="reorder"
               activeItemScale={1.05}
-              inactiveItemOpacity={0.8}
-              dragActivationDelay={150}>
+              inactiveItemOpacity={0.9}
+              dragActivationDelay={250}>
               {(() => {
                 const headshots = sortableHeadshots;
                 const uploads = Array.from({ length: remainingSlots }).map((_, i) => ({
@@ -373,24 +374,16 @@ export function MultiImageUploadOptimized({ onImageCountChange }: MultiImageUplo
                   return (
                     <View key={item.key} style={{ width: itemWidth, height: 234, position: 'relative' }}>
                       {item.type === 'headshot' ? (
-                        <>
-                          {item.payload.url ? (
-                            <ImagePreview
-                              imageUrl={item.payload.url}
-                              onRemove={() => handleRemoveImage(item.payload.storageId)}
-                            />
-                          ) : (
-                            <View className="bg-bg-surface h-[234px] w-full items-center justify-center rounded">
-                              <ActivityIndicator size="small" />
-                            </View>
-                          )}
-                          {/* Small drag handle overlay that won't block the X button */}
-                          <View style={{ position: 'absolute', left: 8, bottom: 8 }}>
-                            <Sortable.Handle>
-                              <View className="h-6 w-6 rounded-full bg-black/20" />
-                            </Sortable.Handle>
+                        item.payload.url ? (
+                          <ImagePreview
+                            imageUrl={item.payload.url}
+                            onRemove={() => handleRemoveImage(item.payload.storageId)}
+                          />
+                        ) : (
+                          <View className="bg-bg-surface h-[234px] w-full items-center justify-center rounded">
+                            <ActivityIndicator size="small" />
                           </View>
-                        </>
+                        )
                       ) : (
                         (() => {
                           const isActiveUpload = headshots.length === 0 ? primary : true;
