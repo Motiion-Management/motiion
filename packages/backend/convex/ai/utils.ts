@@ -44,7 +44,9 @@ export async function validateFileAccess(fileUrl: string): Promise<string> {
 
     const contentType = response.headers?.get?.('content-type')
     if (!isValidResumeFileType(contentType || undefined)) {
-      throw new ConvexError('Invalid file format. Please use JPEG, PNG, HEIC, WebP, or PDF.')
+      throw new ConvexError(
+        'Invalid file format. Please use JPEG, PNG, HEIC, WebP, or PDF.'
+      )
     }
 
     const contentLength = response.headers?.get?.('content-length')
@@ -52,7 +54,9 @@ export async function validateFileAccess(fileUrl: string): Promise<string> {
       const sizeMB = parseInt(contentLength) / (1024 * 1024)
       if (sizeMB > 20) {
         // 20MB limit
-        throw new ConvexError('File is too large. Please upload a file smaller than 20MB.')
+        throw new ConvexError(
+          'File is too large. Please upload a file smaller than 20MB.'
+        )
       }
     }
 
@@ -129,14 +133,19 @@ export function createFallbackError(originalError: Error): ConvexError<any> {
     )
   }
 
-  if ((message.includes('image') || message.includes('file')) && message.includes('format')) {
+  if (
+    (message.includes('image') || message.includes('file')) &&
+    message.includes('format')
+  ) {
     return new ConvexError(
       'The file format is not supported. Please try with a JPEG/PNG image or a PDF.'
     )
   }
 
   if (message.includes('size') || message.includes('large')) {
-    return new ConvexError('The file is too large. Please try with a smaller file.')
+    return new ConvexError(
+      'The file is too large. Please try with a smaller file.'
+    )
   }
 
   if (message.includes('network') || message.includes('connection')) {
