@@ -54,7 +54,6 @@ export default function DisplayNameScreen() {
     <OnboardingStepGuard requiredStep="display-name">
       <BaseOnboardingScreen
         title="What name do you want displayed?"
-        description="This will be the name displayed on your public profile. If you go by another name professionally, you should enter it here."
         canProgress={canProgress}
         primaryAction={{
           onPress: () => form.handleSubmit(),
@@ -69,6 +68,10 @@ export default function DisplayNameScreen() {
                 <field.InputField
                   label="PREFERRED NAME"
                   placeholder="Enter your preferred name"
+                  helperTextProps={{
+                    message:
+                      'This will be the name displayed on your public profile. If you go by another name professionally, you should enter it here.',
+                  }}
                   autoCapitalize="words"
                   autoComplete="name"
                   autoFocus
