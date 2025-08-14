@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "main": "expo-router/entry",
   "scripts": {
-    "dev": "expo start --dev-client",
+    "dev": "APP_VARIANT=development expo start --dev-client --scheme=motiion-dev",
     "start": "expo start --dev-client",
     "ios": "expo run:ios",
     "android": "expo run:android",
