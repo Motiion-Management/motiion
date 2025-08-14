@@ -7,7 +7,7 @@ import OpenAI from 'openai'
 import { ConvexError } from 'convex/values'
 import {
   validateAIEnvironment,
-  validateImageAccess,
+  validateFileAccess,
   cleanExtractedText,
   cleanStringArray,
   validateYear,
@@ -139,14 +139,24 @@ export const parseResumeImage = internalAction({
       // Validate environment setup
       validateAIEnvironment()
 
-      // Get the image URL from storage
-      const imageUrl = await ctx.storage.getUrl(args.imageStorageId)
-      if (!imageUrl) {
-        throw new ConvexError('Image not found in storage')
+      // Get the file URL from storage
+      const fileUrl = await ctx.storage.getUrl(args.imageStorageId)
+      if (!fileUrl) {
+        throw new ConvexError('File not found in storage')
       }
 
-      // Validate image accessibility and format
-      await validateImageAccess(imageUrl)
+      // Validate accessibility and determine content type
+      const contentType = await validateFileAccess(fileUrl)
+
+      const isPdf = contentType.includes('application/pdf')
+      if (isPdf) {
+        // PDF support: The current implementation parses images using OpenAI Vision.
+        // For PDFs, we plan to either convert pages to images or extract text before parsing.
+        // Provide a clear error for now so the UI can prompt for alternate options.
+        throw new ConvexError(
+          'PDF upload received. Parsing PDFs is coming soon — please upload an image for now or enter details manually.'
+        )
+      }
 
       // Create the structured prompt for resume parsing
       const prompt = `
@@ -233,7 +243,7 @@ Return ONLY valid JSON matching this exact structure, no additional text:
                 {
                   type: 'image_url',
                   image_url: {
-                    url: imageUrl,
+                    url: fileUrl,
                     detail: 'high'
                   }
                 }
