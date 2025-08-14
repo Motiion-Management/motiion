@@ -1,14 +1,7 @@
 import type { SignUpResource } from '@clerk/types';
 import { router } from 'expo-router';
 
-export type SignupStep =
-  | 'phone'
-  | 'verify-phone'
-  | 'name'
-  | 'email'
-  | 'dob'
-  | 'username'
-  | 'complete';
+export type SignupStep = 'phone' | 'verify-phone' | 'name' | 'email' | 'dob' | 'complete';
 
 export interface SignupStepInfo {
   step: SignupStep;
@@ -131,20 +124,10 @@ export function analyzeSignupProgress(signUp: SignUpResource | null | undefined)
     };
   }
 
-  if (!preferredName) {
-    return {
-      step: 'username',
-      route: '/auth/(create-account)/username',
-      isComplete: false,
-      requiredData: defaultInfo.requiredData,
-      completedData,
-    };
-  }
-
   // All data present but not complete - go to username to finish
   return {
-    step: 'username',
-    route: '/auth/(create-account)/username',
+    step: 'dob',
+    route: '/auth/(create-account)/dob',
     isComplete: false,
     requiredData: defaultInfo.requiredData,
     completedData,
@@ -188,7 +171,6 @@ export function getSignupProgressText(signUp: SignUpResource | null | undefined)
     name: 'Enter your name',
     email: 'Enter email address',
     dob: 'Enter date of birth',
-    username: 'Choose username',
     complete: 'Complete',
   };
 

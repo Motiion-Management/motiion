@@ -1,4 +1,4 @@
-import { useSignUp } from '@clerk/clerk-expo';
+import { useClerk, useSignUp } from '@clerk/clerk-expo';
 import { useStore } from '@tanstack/react-store';
 import { router } from 'expo-router';
 import React, { useState, useMemo } from 'react';
@@ -44,7 +44,10 @@ const formValidator = z.object({
 
 export default function DOBScreen() {
   const { isLoaded, signUp } = useSignUp();
+  const [isCreatingAccount, setIsCreatingAccount] = useState(false);
   const [signupError, setSignupError] = useState<string | null>(null);
+
+  const clerk = useClerk();
 
   const form = useAppForm({
     defaultValues: {
@@ -59,6 +62,7 @@ export default function DOBScreen() {
         return;
       }
 
+      setIsCreatingAccount(true);
       setSignupError(null);
 
       try {
@@ -70,17 +74,41 @@ export default function DOBScreen() {
           },
         });
 
-        // Navigate to the next screen
-        router.push('/auth/(create-account)/username');
+        const { status, createdSessionId, missingFields, unverifiedFields } = await signUp.reload();
+        // Complete the signup process
+
+        if (status === 'complete') {
+          console.log('🎯 USERNAME: Signup complete, activating session and redirecting');
+          await clerk.setActive({ session: createdSessionId });
+          router.replace('/');
+        } else if (status === 'missing_requirements') {
+          const issues = [];
+          if (missingFields.length > 0) {
+            issues.push(`Missing fields: ${missingFields.join(', ')}`);
+          }
+          if (unverifiedFields.length > 0) {
+            issues.push(`Unverified fields: ${unverifiedFields.join(', ')}`);
+          }
+
+          if (issues.length > 0) {
+            setSignupError(issues.join('. '));
+          } else {
+            setSignupError('Account setup incomplete. Please try again.');
+          }
+        } else {
+          setSignupError(`Account creation incomplete. Please try again. Status: ${status}`);
+        }
       } catch (error: any) {
         const errorMessage =
-          error.errors?.[0]?.message || 'Failed to update date of birth. Please try again.';
+          error.errors?.[0]?.message || 'Failed to create account. Please try again.';
         setSignupError(errorMessage);
+      } finally {
+        setIsCreatingAccount(false);
       }
     },
   });
 
-  const isFormReady = useStore(form.store, (state) => state.canSubmit);
+  const isFormReady = useStore(form.store, (state) => state.canSubmit && !isCreatingAccount);
   const dob = useStore(form.store, (state) => state.values.dob);
   const age = useMemo(() => calculateAge(dob), [dob]);
 
@@ -117,6 +145,12 @@ export default function DOBScreen() {
             )}
           />
           {signupError && <Text className="text-sm text-text-error">{signupError}</Text>}
+          {isCreatingAccount && (
+            <View className="flex-row items-center gap-2">
+              <ActivityIndicator size="small" />
+              <Text className="text-sm text-text-disabled">Creating your account...</Text>
+            </View>
+          )}
         </View>
       </ValidationModeForm>
     </BaseAuthScreen>
