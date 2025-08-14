@@ -1,5 +1,5 @@
 import React, { useMemo, useState, useCallback } from 'react';
-import { View, ScrollView } from 'react-native';
+import { View, ScrollView, Alert } from 'react-native';
 import { Text } from '~/components/ui/text';
 import { Button } from '~/components/ui/button';
 import { useSimpleOnboardingFlow, ONBOARDING_FLOWS } from '~/hooks/useSimpleOnboardingFlow';
@@ -10,6 +10,16 @@ import { Sheet, useSheetState } from '~/components/ui/sheet';
 import { Tabs } from '~/components/ui/tabs/tabs';
 import { Input } from '~/components/ui/input';
 import { useRouter, Href } from 'expo-router';
+import * as ImagePicker from 'expo-image-picker';
+import { useAction } from 'convex/react';
+
+type ParsedResumeData = {
+  experiences: any[];
+  training: any[];
+  skills: string[];
+  genres: string[];
+  sagAftraId?: string;
+} | null;
 
 type ProfileType = keyof typeof ONBOARDING_FLOWS;
 
@@ -23,8 +33,12 @@ export function DevOnboardingTools() {
   const updateMyUser = useMutation(api.users.updateMyUser);
   const sheetState = useSheetState();
   const router = useRouter();
-  const [activeTab, setActiveTab] = useState<'onboarding' | 'home'>('onboarding');
+  const [activeTab, setActiveTab] = useState<'onboarding' | 'home' | 'resume'>('onboarding');
   const [routeInput, setRouteInput] = useState<string>('');
+  const [isProcessing, setIsProcessing] = useState(false);
+  const [parsedData, setParsedData] = useState<ParsedResumeData>(null);
+  const generateUploadUrlDev = useMutation(api.dev.resumeTest.generateUploadUrlDev);
+  const parseResumeImageDev = useAction(api.dev.resumeTest.parseResumeImageDev);
   const activeProfileType: ProfileType = (user?.profileType as ProfileType) || 'dancer';
   const activeSteps = useMemo(() => ONBOARDING_FLOWS[activeProfileType], [activeProfileType]);
   const handleGoToRoute = useCallback(() => {
@@ -48,9 +62,10 @@ export function DevOnboardingTools() {
             tabs={[
               { key: 'onboarding', label: 'Onboarding' },
               { key: 'home', label: 'Home' },
+              { key: 'resume', label: 'Resume' },
             ]}
             activeTab={activeTab}
-            onTabChange={(k) => setActiveTab(k as 'onboarding' | 'home')}
+            onTabChange={(k) => setActiveTab(k as 'onboarding' | 'home' | 'resume')}
             className="mb-3"
           />
 
@@ -144,6 +159,10 @@ export function DevOnboardingTools() {
                 <Text>Go to Home</Text>
               </Button>
 
+              <Button onPress={() => setActiveTab('resume')} variant="outline">
+                <Text>Open Resume Tester</Text>
+              </Button>
+
               <View className="gap-2">
                 <Input
                   label="Route"
@@ -157,6 +176,114 @@ export function DevOnboardingTools() {
                   <Text>Go</Text>
                 </Button>
               </View>
+            </View>
+          )}
+
+          {activeTab === 'resume' && (
+            <View className="mt-1 gap-3">
+              <Text variant="bodySm" className="text-text-secondary">
+                Dev-only resume parser: uploads to Convex and parses via AI. No user data is
+                modified.
+              </Text>
+
+              <View className="flex-row gap-8">
+                <Button
+                  size="sm"
+                  variant="outline"
+                  disabled={isProcessing}
+                  onPress={async () => {
+                    try {
+                      setIsProcessing(true);
+                      setParsedData(null);
+                      const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
+                      if (status !== 'granted') {
+                        Alert.alert('Permission Required', 'Allow photo access to upload.');
+                        return;
+                      }
+                      const result = await ImagePicker.launchImageLibraryAsync({
+                        mediaTypes: ImagePicker.MediaTypeOptions.Images,
+                        allowsMultipleSelection: false,
+                        quality: 0.9,
+                        allowsEditing: false,
+                      });
+                      if (result.canceled || !result.assets[0]) return;
+
+                      const asset = result.assets[0];
+                      const uploadUrl = await generateUploadUrlDev();
+                      const resp = await fetch(uploadUrl, {
+                        method: 'POST',
+                        headers: { 'Content-Type': asset.mimeType || 'image/jpeg' },
+                        body: await (await fetch(asset.uri)).blob(),
+                      });
+                      if (!resp.ok) throw new Error('Upload failed');
+                      const { storageId } = await resp.json();
+                      const parsed = await parseResumeImageDev({ imageStorageId: storageId });
+                      setParsedData(parsed);
+                    } catch (e) {
+                      console.error('Dev resume parse error:', e);
+                      Alert.alert('Error', 'Failed to parse resume. See console for details.');
+                    } finally {
+                      setIsProcessing(false);
+                    }
+                  }}>
+                  <Text variant="bodySm">Pick From Photos</Text>
+                </Button>
+
+                <Button
+                  size="sm"
+                  variant="outline"
+                  disabled={isProcessing}
+                  onPress={async () => {
+                    try {
+                      setIsProcessing(true);
+                      setParsedData(null);
+                      const { status } = await ImagePicker.requestCameraPermissionsAsync();
+                      if (status !== 'granted') {
+                        Alert.alert('Permission Required', 'Allow camera access to take photo.');
+                        return;
+                      }
+                      const result = await ImagePicker.launchCameraAsync({
+                        mediaTypes: ImagePicker.MediaTypeOptions.Images,
+                        quality: 0.9,
+                        allowsEditing: false,
+                      });
+                      if (result.canceled || !result.assets[0]) return;
+
+                      const asset = result.assets[0];
+                      const uploadUrl = await generateUploadUrlDev();
+                      const resp = await fetch(uploadUrl, {
+                        method: 'POST',
+                        headers: { 'Content-Type': asset.mimeType || 'image/jpeg' },
+                        body: await (await fetch(asset.uri)).blob(),
+                      });
+                      if (!resp.ok) throw new Error('Upload failed');
+                      const { storageId } = await resp.json();
+                      const parsed = await parseResumeImageDev({ imageStorageId: storageId });
+                      setParsedData(parsed);
+                    } catch (e) {
+                      console.error('Dev resume parse error:', e);
+                      Alert.alert('Error', 'Failed to parse resume. See console for details.');
+                    } finally {
+                      setIsProcessing(false);
+                    }
+                  }}>
+                  <Text variant="bodySm">Take Photo</Text>
+                </Button>
+              </View>
+
+              {isProcessing && (
+                <Text variant="bodySm" className="text-text-secondary">
+                  Processing…
+                </Text>
+              )}
+
+              {parsedData && (
+                <View style={{ maxHeight: 220 }} className="rounded-md border border-border p-2">
+                  <ScrollView>
+                    <Text variant="bodySm">{JSON.stringify(parsedData, null, 2)}</Text>
+                  </ScrollView>
+                </View>
+              )}
             </View>
           )}
         </View>
