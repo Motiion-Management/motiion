@@ -22,7 +22,9 @@ function StabilizedConvexProvider({ children }: { children: React.ReactNode }) {
 
 export default function ConvexClientProvider({ children }: { children: React.ReactNode }) {
   return (
-    <ClerkProvider tokenCache={tokenCache}>
+    <ClerkProvider
+      tokenCache={tokenCache}
+      publishableKey={process.env.EXPO_PUBLIC_CLERK_PUBLISHABLE_KEY!}>
       <ClerkLoaded>
         <StabilizedConvexProvider>{children}</StabilizedConvexProvider>
       </ClerkLoaded>
