@@ -8,6 +8,9 @@
       "channel": "monorepo"
     },
     "development": {
+      "env": {
+        "APP_VARIANT": "development"
+      },
       "extends": "monorepo",
       "developmentClient": true,
       "distribution": "internal",
@@ -27,19 +30,10 @@
       },
       "channel": "dev-sim"
     },
-    "preview": {
-      "extends": "monorepo",
-      "distribution": "store",
-      "android": {
-        "buildType": "app-bundle"
-      },
-      "ios": {
-        "resourceClass": "m-medium"
-      },
-      "environment": "preview",
-      "channel": "preview"
-    },
     "production": {
+      "env": {
+        "APP_VARIANT": "production"
+      },
       "extends": "monorepo",
       "distribution": "store",
       "autoIncrement": true,
