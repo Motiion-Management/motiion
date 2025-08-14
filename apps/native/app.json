@@ -34,7 +34,16 @@
           "cameraPermission": "Allow Motiion to access your camera to take photos and videos."
         }
       ],
-      "expo-asset"
+      "expo-asset",
+      [
+        "expo-notifications",
+        {
+          "icon": "./assets/icon.png",
+          "color": "#003D37",
+          "defaultChannel": "default",
+          "enableBackgroundRemoteNotifications": false
+        }
+      ]
     ],
     "experiments": {
       "typedRoutes": true,
@@ -52,10 +61,6 @@
     "updates": {
       "url": "https://u.expo.dev/26b62811-8f3e-4bab-9548-9ab85dfa7cb2",
       "assetPatternsToBeBundled": ["**/*", "**/*"]
-    },
-    "notification": {
-      "icon": "./assets/icon.png",
-      "color": "#003D37"
     },
     "ios": {
       "bundleIdentifier": "io.motiion.motiion",
