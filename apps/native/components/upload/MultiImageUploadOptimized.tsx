@@ -350,6 +350,8 @@ export function MultiImageUploadOptimized({ onImageCountChange }: MultiImageUplo
               width={containerWidth}
               sortEnabled={!uploadState.isUploading}
               onDragEnd={handleDragEnd}
+              overflow="visible"
+              bringToFrontWhenActive
               customHandle
               activeItemScale={1.05}
               inactiveItemOpacity={0.8}
@@ -369,9 +371,9 @@ export function MultiImageUploadOptimized({ onImageCountChange }: MultiImageUplo
                   const primary = index === 0;
                   const itemWidth = primary ? containerWidth : (containerWidth - 16) / 2;
                   return (
-                    <View key={item.key} style={{ width: itemWidth, height: 234 }}>
+                    <View key={item.key} style={{ width: itemWidth, height: 234, position: 'relative' }}>
                       {item.type === 'headshot' ? (
-                        <Sortable.Handle>
+                        <>
                           {item.payload.url ? (
                             <ImagePreview
                               imageUrl={item.payload.url}
@@ -382,7 +384,13 @@ export function MultiImageUploadOptimized({ onImageCountChange }: MultiImageUplo
                               <ActivityIndicator size="small" />
                             </View>
                           )}
-                        </Sortable.Handle>
+                          {/* Small drag handle overlay that won't block the X button */}
+                          <View style={{ position: 'absolute', left: 8, bottom: 8 }}>
+                            <Sortable.Handle>
+                              <View className="h-6 w-6 rounded-full bg-black/20" />
+                            </Sortable.Handle>
+                          </View>
+                        </>
                       ) : (
                         (() => {
                           const isActiveUpload = headshots.length === 0 ? primary : true;
