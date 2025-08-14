@@ -42,6 +42,7 @@
     "production": {
       "extends": "monorepo",
       "distribution": "store",
+      "autoIncrement": true,
       "android": {
         "buildType": "app-bundle"
       },
