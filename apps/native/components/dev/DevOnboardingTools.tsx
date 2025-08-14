@@ -1,8 +1,8 @@
 import React, { useMemo, useState, useCallback } from 'react';
-import { View, TouchableOpacity, ScrollView } from 'react-native';
+import { View, ScrollView } from 'react-native';
 import { Text } from '~/components/ui/text';
 import { Button } from '~/components/ui/button';
-import { useSimpleOnboardingFlow } from '~/hooks/useSimpleOnboardingFlow';
+import { useSimpleOnboardingFlow, ONBOARDING_FLOWS } from '~/hooks/useSimpleOnboardingFlow';
 import { useMutation } from 'convex/react';
 import { api } from '@packages/backend/convex/_generated/api';
 import { useUser } from '~/hooks/useUser';
@@ -10,41 +10,6 @@ import { Sheet, useSheetState } from '~/components/ui/sheet';
 import { Tabs } from '~/components/ui/tabs/tabs';
 import { Input } from '~/components/ui/input';
 import { useRouter, Href } from 'expo-router';
-
-// Local copy of step lists for quick navigation
-const ONBOARDING_FLOWS = {
-  dancer: [
-    'profile-type',
-    'headshots',
-    'height',
-    'ethnicity',
-    'hair-color',
-    'eye-color',
-    'gender',
-    'sizing',
-    'location',
-    'work-location',
-    'representation',
-    'agency',
-    'resume',
-    'experiences',
-    'training',
-    'skills',
-    'union',
-    'complete',
-  ],
-  choreographer: [
-    'profile-type',
-    'headshots',
-    'location',
-    'representation',
-    'agency',
-    'resume',
-    'experiences',
-    'complete',
-  ],
-  guest: ['profile-type', 'database-use', 'company', 'complete'],
-} as const;
 
 type ProfileType = keyof typeof ONBOARDING_FLOWS;
 

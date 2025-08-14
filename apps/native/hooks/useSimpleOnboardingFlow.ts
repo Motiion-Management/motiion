@@ -5,9 +5,10 @@ import { useMutation } from 'convex/react';
 import { useUser } from './useUser';
 
 // Define the static flow structure
-const ONBOARDING_FLOWS = {
+export const ONBOARDING_FLOWS = {
   dancer: [
     'profile-type',
+    'display-name',
     'headshots',
     'height',
     'ethnicity',
@@ -28,6 +29,7 @@ const ONBOARDING_FLOWS = {
   ],
   choreographer: [
     'profile-type',
+    'display-name',
     'headshots',
     'location',
     'representation',
@@ -170,7 +172,7 @@ export function useSimpleOnboardingFlow(): UseSimpleOnboardingFlowReturn {
       router.push(nextStepPath as Href);
       // Persist navigation position for server-side redirect support (fire-and-forget)
       if (!DO_NOT_PERSIST_STEPS.has(nextStepId)) {
-        setStep({ step: nextStepId }).catch(() => {});
+        setStep({ step: nextStepId }).catch(() => { });
       }
     }
   }, [nextStepPath, nextStepId, router, setStep]);
@@ -179,7 +181,7 @@ export function useSimpleOnboardingFlow(): UseSimpleOnboardingFlowReturn {
     if (previousStepPath && previousStepId) {
       router.push(previousStepPath as Href);
       if (!DO_NOT_PERSIST_STEPS.has(previousStepId)) {
-        setStep({ step: previousStepId }).catch(() => {});
+        setStep({ step: previousStepId }).catch(() => { });
       }
     }
   }, [previousStepPath, previousStepId, router, setStep]);
@@ -188,7 +190,7 @@ export function useSimpleOnboardingFlow(): UseSimpleOnboardingFlowReturn {
     (stepId: string) => {
       router.push(`/app/onboarding/${stepId}` as Href);
       if (!DO_NOT_PERSIST_STEPS.has(stepId)) {
-        setStep({ step: stepId }).catch(() => {});
+        setStep({ step: stepId }).catch(() => { });
       }
     },
     [router, setStep]

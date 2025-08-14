@@ -1,6 +1,11 @@
 import { query, mutation } from './_generated/server'
 import { ConvexError, v } from 'convex/values'
-import { CURRENT_ONBOARDING_VERSION, getOnboardingFlow, getStepRoute, ProfileType } from './onboardingConfig'
+import {
+  CURRENT_ONBOARDING_VERSION,
+  getOnboardingFlow,
+  getStepRoute,
+  ProfileType
+} from './onboardingConfig'
 import type { RegisteredMutation, RegisteredQuery } from 'convex/server'
 
 export const completeOnboarding: RegisteredMutation<

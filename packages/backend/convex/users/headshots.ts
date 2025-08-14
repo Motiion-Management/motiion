@@ -69,7 +69,9 @@ export const saveHeadshotIds = authMutation({
     }
 
     // Merge new headshots in front of existing, then cap at 5 and normalize positions
-    const merged = ctx.user.headshots ? [...args.headshots, ...ctx.user.headshots] : args.headshots
+    const merged = ctx.user.headshots
+      ? [...args.headshots, ...ctx.user.headshots]
+      : args.headshots
     const limited = await ensureOnlyFive(ctx, merged)
     const normalized = limited.map((h, idx) => ({ ...h, position: idx }))
     ctx.db.patch(ctx.user._id, {
@@ -89,7 +91,9 @@ export const removeHeadshot = authMutation({
 
     await ctx.storage.delete(args.headshotId)
 
-    const filtered = (ctx.user.headshots || []).filter((h) => h.storageId !== args.headshotId)
+    const filtered = (ctx.user.headshots || []).filter(
+      (h) => h.storageId !== args.headshotId
+    )
     const normalized = filtered.map((h, idx) => ({ ...h, position: idx }))
     await ctx.db.patch(ctx.user._id, { headshots: normalized })
   }
@@ -114,11 +118,14 @@ export const updateHeadshotPosition = authMutation({
 
     const inPayload = current
       .filter((h) => posMap.has(h.storageId))
-      .sort((a, b) => (posMap.get(a.storageId)! - posMap.get(b.storageId)!))
+      .sort((a, b) => posMap.get(a.storageId)! - posMap.get(b.storageId)!)
 
     const remaining = current.filter((h) => !posMap.has(h.storageId))
 
-    const next = [...inPayload, ...remaining].map((h, idx) => ({ ...h, position: idx }))
+    const next = [...inPayload, ...remaining].map((h, idx) => ({
+      ...h,
+      position: idx
+    }))
 
     await ctx.db.patch(ctx.user._id, { headshots: next })
   }
