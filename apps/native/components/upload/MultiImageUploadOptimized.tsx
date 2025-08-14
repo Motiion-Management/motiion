@@ -1,5 +1,5 @@
 import { api } from '@packages/backend/convex/_generated/api';
-import { useMutation, useQuery, useConvex } from 'convex/react';
+import { useMutation, useQuery } from 'convex/react';
 import { useCallback, useState, useEffect } from 'react';
 import { Alert, View } from 'react-native';
 import Sortable from 'react-native-sortables';
@@ -44,7 +44,7 @@ export function MultiImageUploadOptimized({ onImageCountChange }: MultiImageUplo
   const generateUploadUrl = useMutation(api.files.generateUploadUrl);
   const saveHeadshotIds = useMutation(api.users.headshots.saveHeadshotIds);
   const removeHeadshot = useMutation(api.users.headshots.removeHeadshot);
-  const convex = useConvex();
+  const updateHeadshotPosition = useMutation(api.users.headshots.updateHeadshotPosition);
 
   // Use optimized query that doesn't block on URL generation
   const headshotsMetadata = useQuery(api.users.headshotsOptimized.getMyHeadshotsMetadata);
@@ -269,23 +269,21 @@ export function MultiImageUploadOptimized({ onImageCountChange }: MultiImageUplo
       });
 
       // Persist; rollback on failure
-      convex
-        .mutation('users/headshots:updateHeadshotPosition', {
-          headshots: nextHeadshots.map((h, idx) => ({
-            storageId: h.storageId as any,
-            position: idx,
-          })),
-        })
-        .catch(() => {
-          setHeadshotsWithUrls((current) => {
-            const tail = current.slice(3);
-            const updatedFirst = prev.map((item, idx) => ({ ...item, position: idx }));
-            return [...updatedFirst, ...tail];
-          });
-          Alert.alert('Reorder failed', 'Your order change could not be saved.');
+      updateHeadshotPosition({
+        headshots: nextHeadshots.map((h, idx) => ({
+          storageId: h.storageId as any,
+          position: idx,
+        })),
+      }).catch(() => {
+        setHeadshotsWithUrls((current) => {
+          const tail = current.slice(3);
+          const updatedFirst = prev.map((item, idx) => ({ ...item, position: idx }));
+          return [...updatedFirst, ...tail];
         });
+        Alert.alert('Reorder failed', 'Your order change could not be saved.');
+      });
     },
-    [sortableHeadshots, remainingSlots, convex]
+    [sortableHeadshots, remainingSlots, updateHeadshotPosition]
   );
 
   // Show skeleton while initial metadata is loading
@@ -303,72 +301,78 @@ export function MultiImageUploadOptimized({ onImageCountChange }: MultiImageUplo
       <View onLayout={(e) => setContainerWidth(e.nativeEvent.layout.width)} className="w-full">
         {containerWidth != null && (
           <Sortable.Flex
-              gap={16}
-              flexDirection="row"
-              flexWrap="wrap"
-              width={containerWidth}
-              sortEnabled={!uploadState.isUploading}
-              onDragEnd={handleDragEnd}
-              overflow="visible"
-              bringToFrontWhenActive
-              dimensionsAnimationType="layout"
-              itemsLayoutTransitionMode="reorder"
-              activeItemScale={1.02}
-              inactiveItemOpacity={0.8}
-              dragActivationDelay={150}>
-              {(() => {
-                const headshots = sortableHeadshots;
-                const uploads = Array.from({ length: remainingSlots }).map((_, i) => ({
-                  type: 'upload' as const,
-                  key: `upload-${i}`,
-                }));
-                const allItems = [
-                  ...headshots.map((h) => ({
-                    type: 'headshot' as const,
-                    key: `h-${h.storageId}`,
-                    payload: h,
-                  })),
-                  ...uploads,
-                ];
+            customHandle
+            gap={16}
+            flexDirection="row"
+            flexWrap="wrap"
+            width={containerWidth}
+            sortEnabled={!uploadState.isUploading}
+            onDragEnd={handleDragEnd}
+            overflow="visible"
+            bringToFrontWhenActive
+            dimensionsAnimationType="layout"
+            itemsLayoutTransitionMode="reorder"
+            activeItemScale={1.02}
+            inactiveItemOpacity={0.8}
+            dragActivationDelay={150}>
+            {(() => {
+              const headshots = sortableHeadshots;
+              const uploads = Array.from({ length: remainingSlots }).map((_, i) => ({
+                type: 'upload' as const,
+                key: `upload-${i}`,
+              }));
+              const allItems = [
+                ...headshots.map((h) => ({
+                  type: 'headshot' as const,
+                  key: `h-${h.storageId}`,
+                  payload: h,
+                })),
+                ...uploads,
+              ];
 
-                let uploadIdx = 0;
-                return allItems.map((item, index) => {
-                  const primary = index === 0;
-                  const itemWidth = primary ? containerWidth : (containerWidth - 16) / 2;
-                  return (
-                    <View
-                      key={item.key}
-                      style={{ width: itemWidth, height: 234, position: 'relative' }}>
-                      {item.type === 'headshot' ? (
-                        item.payload.url ? (
+              let uploadIdx = 0;
+              return allItems.map((item, index) => {
+                const primary = index === 0;
+                const itemWidth = primary ? containerWidth : (containerWidth - 16) / 2;
+                return (
+                  <View
+                    key={item.key}
+                    style={{ width: itemWidth, height: 234, position: 'relative' }}>
+                    {item.type === 'headshot' ? (
+                      item.payload.url ? (
+                        <Sortable.Handle mode="draggable">
                           <ImagePreview
                             imageUrl={item.payload.url}
                             onRemove={() => handleRemoveImage(item.payload.storageId)}
                           />
-                        ) : (
-                          <View className="bg-bg-surface h-[234px] w-full items-center justify-center rounded">
-                            <ActivityIndicator size="small" />
-                          </View>
-                        )
+                        </Sortable.Handle>
                       ) : (
-                        (() => {
-                          const isFirstUpload = uploadIdx === 0;
-                          uploadIdx += 1;
-                          const shape = headshots.length === 0 && isFirstUpload ? 'primary' : 'secondary';
-                          return (
+                        <View className="bg-bg-surface h-[234px] w-full items-center justify-center rounded">
+                          <ActivityIndicator size="small" />
+                        </View>
+                      )
+                    ) : (
+                      (() => {
+                        const isFirstUpload = uploadIdx === 0;
+                        uploadIdx += 1;
+                        const shape =
+                          headshots.length === 0 && isFirstUpload ? 'primary' : 'secondary';
+                        return (
+                          <Sortable.Handle mode="fixed-order">
                             <ImageUploadCard
                               shape={shape}
                               onPress={handleImageUpload}
                               isActive={isFirstUpload}
                               disabled={uploadState.isUploading || !uiCanAddMore}
                             />
-                          );
-                        })()
-                      )}
-                    </View>
-                  );
-                });
-              })()}
+                          </Sortable.Handle>
+                        );
+                      })()
+                    )}
+                  </View>
+                );
+              });
+            })()}
           </Sortable.Flex>
         )}
       </View>
