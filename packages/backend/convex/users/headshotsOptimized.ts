@@ -20,12 +20,13 @@ export const getMyHeadshotsMetadata = query({
       return []
     }
 
-    // Return headshot metadata without URLs
+    // Return headshot metadata without URLs, including position (defaulting to index)
     return user.headshots.map((headshot, index) => ({
       id: `headshot-${index}`,
       storageId: headshot.storageId,
       title: headshot.title,
-      uploadDate: headshot.uploadDate
+      uploadDate: headshot.uploadDate,
+      position: (headshot as any).position ?? index
     }))
   }
 })

@@ -30,6 +30,11 @@ export const ONBOARDING_FLOWS: OnboardingFlows = {
         description: 'Select your profile type'
       },
       {
+        step: 'display-name',
+        required: ['displayName'],
+        description: 'Set your preferred display name'
+      },
+      {
         step: 'headshots',
         required: ['headshots'],
         minItems: 1,
@@ -119,6 +124,11 @@ export const ONBOARDING_FLOWS: OnboardingFlows = {
         description: 'Select your profile type'
       },
       {
+        step: 'display-name',
+        required: ['displayName'],
+        description: 'Set your preferred display name'
+      },
+      {
         step: 'headshots',
         required: ['headshots'],
         minItems: 1,
@@ -173,6 +183,7 @@ export const ONBOARDING_FLOWS: OnboardingFlows = {
 
 export const STEP_ROUTES = {
   'profile-type': '/app/onboarding/profile-type',
+  'display-name': '/app/onboarding/display-name',
   headshots: '/app/onboarding/headshots',
   height: '/app/onboarding/height',
   ethnicity: '/app/onboarding/ethnicity',

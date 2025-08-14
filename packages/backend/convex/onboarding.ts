@@ -1,6 +1,11 @@
 import { query, mutation } from './_generated/server'
 import { ConvexError, v } from 'convex/values'
-import { CURRENT_ONBOARDING_VERSION, getOnboardingFlow, getStepRoute, ProfileType } from './onboardingConfig'
+import {
+  CURRENT_ONBOARDING_VERSION,
+  getOnboardingFlow,
+  getStepRoute,
+  ProfileType
+} from './onboardingConfig'
 import type { RegisteredMutation, RegisteredQuery } from 'convex/server'
 
 export const completeOnboarding: RegisteredMutation<
@@ -60,7 +65,10 @@ export const resetOnboarding: RegisteredMutation<
     await ctx.db.patch(user._id, {
       onboardingCompleted: false,
       onboardingCompletedAt: undefined,
-      onboardingVersion: undefined
+      onboardingVersion: undefined,
+      // Also clear navigation position so redirects start at the beginning
+      currentOnboardingStep: undefined,
+      currentOnboardingStepIndex: undefined
     })
 
     return { success: true }

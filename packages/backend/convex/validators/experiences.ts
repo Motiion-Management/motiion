@@ -85,3 +85,6 @@ export const zExperiencesBase = zExperiences
 export const Experiences = Table('experiences', zodToConvexFields(experiences))
 
 export type ExperienceDoc = Doc<'experiences'>
+
+// Frontend form-friendly type (optional system fields)
+export type ExperienceFormDoc = z.infer<typeof zExperiencesDoc>

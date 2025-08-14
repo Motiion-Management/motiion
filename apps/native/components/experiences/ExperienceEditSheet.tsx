@@ -23,7 +23,10 @@ import { api } from '@packages/backend/convex/_generated/api';
 import { useMutation } from 'convex/react';
 import { normalizeForConvex } from '~/utils/convexHelpers';
 
-import { zExperiencesDoc } from '@packages/backend/convex/validators/experiences';
+import {
+  zExperiencesDoc,
+  type ExperienceFormDoc,
+} from '@packages/backend/convex/validators/experiences';
 
 // Constants
 const BOTTOM_OFFSET_CUSHION = 8;
@@ -34,7 +37,7 @@ interface ExperienceEditSheetProps {
   isOpen: boolean;
   onOpenChange: (isOpen: boolean) => void;
   // Prefer passing the whole experience to avoid refetching
-  experience?: Doc<'experiences'>;
+  experience?: ExperienceFormDoc;
   experienceId?: Id<'experiences'>;
 }
 

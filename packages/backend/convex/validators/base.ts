@@ -20,7 +20,8 @@ export const zProficiency = z.enum(PROFICIENCY)
 export const zFileUploadObject = z.object({
   storageId: zid('_storage'),
   title: z.string().optional(),
-  uploadDate: z.string()
+  uploadDate: z.string(),
+  position: z.number().optional()
 })
 
 export const zFileUploadObjectArray = z.array(zFileUploadObject)

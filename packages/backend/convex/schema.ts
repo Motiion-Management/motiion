@@ -33,7 +33,7 @@ const schema = defineSchema({
 
   // agency
   agents: Agents.table.index('userId', ['userId']),
-  agencies: Agencies.table.searchIndex('search_name', { searchField: 'name' }),
+  agencies: Agencies.table.searchIndex('search_name', { searchField: 'name' })
 
   // onboarding (no dynamic flow tables; client controls flow)
   // },

@@ -5,9 +5,10 @@ import { useMutation } from 'convex/react';
 import { useUser } from './useUser';
 
 // Define the static flow structure
-const ONBOARDING_FLOWS = {
+export const ONBOARDING_FLOWS = {
   dancer: [
     'profile-type',
+    'display-name',
     'headshots',
     'height',
     'ethnicity',
@@ -28,6 +29,7 @@ const ONBOARDING_FLOWS = {
   ],
   choreographer: [
     'profile-type',
+    'display-name',
     'headshots',
     'location',
     'representation',

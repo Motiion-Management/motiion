@@ -1,10 +1,11 @@
 import { api } from '@packages/backend/convex/_generated/api';
 import { useMutation, useQuery } from 'convex/react';
-import * as ImagePicker from 'expo-image-picker';
-import { useCallback, useState, useEffect, memo } from 'react';
+import { useCallback, useState, useEffect } from 'react';
 import { Alert, View } from 'react-native';
+import Sortable from 'react-native-sortables';
 
-import { optimizeImage } from '~/utils/imageOptimization';
+import * as ImagePicker from 'expo-image-picker';
+import * as ImageManipulator from 'expo-image-manipulator';
 
 import { ImagePreview } from './ImagePreview';
 import { ImageUploadCard } from './ImageUploadCard';
@@ -27,51 +28,8 @@ interface HeadshotWithUrl {
   title?: string;
   url?: string | null;
   isLoading?: boolean;
+  position?: number;
 }
-
-// Memoized image slot component to prevent unnecessary re-renders
-const ImageSlot = memo(
-  ({
-    image,
-    index,
-    onRemove,
-    onUpload,
-    canAdd,
-    isFirstEmpty,
-    shape,
-  }: {
-    image?: HeadshotWithUrl;
-    index: number;
-    onRemove: (storageId: string) => void;
-    onUpload: () => void;
-    canAdd: boolean;
-    isFirstEmpty: boolean;
-    shape: 'primary' | 'secondary';
-  }) => {
-    if (image?.url) {
-      return <ImagePreview imageUrl={image.url} onRemove={() => onRemove(image.storageId)} />;
-    }
-
-    if (image && image.isLoading) {
-      return (
-        <View className="bg-bg-surface h-[234px] w-full items-center justify-center rounded">
-          <ActivityIndicator size="small" />
-        </View>
-      );
-    }
-
-    return (
-      <ImageUploadCard
-        shape={shape}
-        onPress={onUpload}
-        disabled={!canAdd}
-        isActive={isFirstEmpty}
-      />
-    );
-  }
-);
-
-ImageSlot.displayName = 'ImageSlot';
 
 export function MultiImageUploadOptimized({ onImageCountChange }: MultiImageUploadProps) {
   const [uploadState, setUploadState] = useState<UploadState>({
@@ -80,11 +38,13 @@ export function MultiImageUploadOptimized({ onImageCountChange }: MultiImageUplo
     error: null,
   });
   const [headshotsWithUrls, setHeadshotsWithUrls] = useState<HeadshotWithUrl[]>([]);
+  const [containerWidth, setContainerWidth] = useState<number | null>(null);
 
   // Convex mutations and queries
   const generateUploadUrl = useMutation(api.files.generateUploadUrl);
   const saveHeadshotIds = useMutation(api.users.headshots.saveHeadshotIds);
   const removeHeadshot = useMutation(api.users.headshots.removeHeadshot);
+  const updateHeadshotPosition = useMutation(api.users.headshots.updateHeadshotPosition);
 
   // Use optimized query that doesn't block on URL generation
   const headshotsMetadata = useQuery(api.users.headshotsOptimized.getMyHeadshotsMetadata);
@@ -96,13 +56,18 @@ export function MultiImageUploadOptimized({ onImageCountChange }: MultiImageUplo
   // Update local state when metadata or URLs change
   useEffect(() => {
     if (headshotsMetadata) {
-      const updatedHeadshots = headshotsMetadata.map((metadata) => {
+      const sortedMeta = [...headshotsMetadata].sort((a: any, b: any) => {
+        const ap = a.position ?? 0;
+        const bp = b.position ?? 0;
+        return ap - bp;
+      });
+      const updatedHeadshots = sortedMeta.map((metadata) => {
         const urlData = getHeadshotUrls?.find((u) => u.storageId === metadata.storageId);
         return {
           ...metadata,
           url: urlData?.url,
           isLoading: !urlData,
-        };
+        } as HeadshotWithUrl;
       });
       setHeadshotsWithUrls(updatedHeadshots);
     }
@@ -114,7 +79,7 @@ export function MultiImageUploadOptimized({ onImageCountChange }: MultiImageUplo
     mediaTypes: ImagePicker.MediaTypeOptions.Images,
     allowsMultipleSelection: true,
     selectionLimit: 3 - headshotsWithUrls.length,
-    quality: 0.8, // Initial compression at selection time
+    quality: 1, // Keep original quality; we compress in optimizer
   };
 
   // Image picker functions
@@ -148,7 +113,7 @@ export function MultiImageUploadOptimized({ onImageCountChange }: MultiImageUplo
 
     const result = await ImagePicker.launchCameraAsync({
       mediaTypes: ImagePicker.MediaTypeOptions.Images,
-      quality: 0.8, // Initial compression at capture time
+      quality: 1, // Keep original quality; we compress in optimizer
     });
 
     if (!result.canceled && result.assets[0]) {
@@ -169,18 +134,18 @@ export function MultiImageUploadOptimized({ onImageCountChange }: MultiImageUplo
         for (let i = 0; i < totalImages; i++) {
           const asset = imageAssets[i];
 
-          // Optimize image before uploading
-          const optimizedImage = await optimizeImage(asset.uri, {
-            maxWidth: 1200,
-            maxHeight: 1200,
-            compressQuality: 0.8,
-          });
+          // Resize the image using Expo ImageManipulator
+          const manipResult = await ImageManipulator.manipulateAsync(
+            asset.uri,
+            [{ resize: { width: 800 } }],
+            { compress: 0.8, format: ImageManipulator.SaveFormat.JPEG }
+          );
 
           // Generate upload URL for each image
           const uploadUrl = await generateUploadUrl();
 
           // Upload optimized image to Convex storage
-          const response = await fetch(optimizedImage.uri);
+          const response = await fetch(manipResult.uri);
           const blob = await response.blob();
 
           const uploadResponse = await fetch(uploadUrl, {
@@ -264,15 +229,62 @@ export function MultiImageUploadOptimized({ onImageCountChange }: MultiImageUplo
     [removeHeadshot, headshotsWithUrls.length, onImageCountChange]
   );
 
-  // Create array of 3 slots for the grid
-  const slots = Array.from({ length: 3 }, (_, index) => {
-    const image = headshotsWithUrls[index];
-    return { index, image };
-  });
+  // Derive first 3 headshots for this UI and remaining slots
+  const sortableHeadshots = headshotsWithUrls.slice(0, 3);
+  const remainingSlots = Math.max(0, 3 - sortableHeadshots.length);
+  const uiCanAddMore = remainingSlots > 0 && canAddMore;
 
-  // Determine which slot is the first empty one for active state
-  const firstEmptySlotIndex = slots.findIndex((slot) => !slot.image);
-  const uiCanAddMore = firstEmptySlotIndex !== -1 && canAddMore;
+  const handleDragEnd = useCallback(
+    ({ order }: { order: <T>(data: T[]) => T[] }) => {
+      // Build combined list (headshots + upload placeholders) in current visual order
+      const headshots = sortableHeadshots;
+      const uploads = Array.from({ length: remainingSlots }).map((_, i) => ({
+        type: 'upload' as const,
+        key: `upload-${i}`,
+      }));
+      const items = [
+        ...headshots.map((h) => ({
+          type: 'headshot' as const,
+          key: `h-${h.storageId}`,
+          payload: h,
+        })),
+        ...uploads,
+      ];
+
+      // Let Sortable compute new child order, then filter back to headshots only
+      const reordered = order(items);
+      const nextHeadshots = reordered
+        .filter(
+          (i: any): i is { type: 'headshot'; key: string; payload: HeadshotWithUrl } =>
+            i.type === 'headshot'
+        )
+        .map((i) => i.payload);
+
+      const prev = headshots;
+      // Optimistic local update (first 3 only)
+      setHeadshotsWithUrls((current) => {
+        const tail = current.slice(3);
+        const updatedFirst = nextHeadshots.map((item, idx) => ({ ...item, position: idx }));
+        return [...updatedFirst, ...tail];
+      });
+
+      // Persist; rollback on failure
+      updateHeadshotPosition({
+        headshots: nextHeadshots.map((h, idx) => ({
+          storageId: h.storageId as any,
+          position: idx,
+        })),
+      }).catch(() => {
+        setHeadshotsWithUrls((current) => {
+          const tail = current.slice(3);
+          const updatedFirst = prev.map((item, idx) => ({ ...item, position: idx }));
+          return [...updatedFirst, ...tail];
+        });
+        Alert.alert('Reorder failed', 'Your order change could not be saved.');
+      });
+    },
+    [sortableHeadshots, remainingSlots, updateHeadshotPosition]
+  );
 
   // Show skeleton while initial metadata is loading
   if (headshotsMetadata === undefined) {
@@ -285,33 +297,87 @@ export function MultiImageUploadOptimized({ onImageCountChange }: MultiImageUplo
 
   return (
     <View className="flex-1 gap-4">
-      {/* Main upload area - first card full width */}
-      <ImageSlot
-        image={slots[0].image}
-        index={0}
-        onRemove={handleRemoveImage}
-        onUpload={handleImageUpload}
-        canAdd={uiCanAddMore}
-        isFirstEmpty={firstEmptySlotIndex === 0}
-        shape="primary"
-      />
+      {/* Sortable uploaded images */}
+      <View onLayout={(e) => setContainerWidth(e.nativeEvent.layout.width)} className="w-full">
+        {containerWidth != null && (
+          <Sortable.Flex
+            customHandle
+            gap={16}
+            flexDirection="row"
+            flexWrap="wrap"
+            width={containerWidth}
+            sortEnabled={!uploadState.isUploading}
+            onDragEnd={handleDragEnd}
+            overflow="visible"
+            bringToFrontWhenActive
+            dimensionsAnimationType="layout"
+            itemsLayoutTransitionMode="reorder"
+            activeItemScale={1.02}
+            inactiveItemOpacity={0.8}
+            dragActivationDelay={150}>
+            {(() => {
+              const headshots = sortableHeadshots;
+              const uploads = Array.from({ length: remainingSlots }).map((_, i) => ({
+                type: 'upload' as const,
+                key: `upload-${i}`,
+              }));
+              const allItems = [
+                ...headshots.map((h) => ({
+                  type: 'headshot' as const,
+                  key: `h-${h.storageId}`,
+                  payload: h,
+                })),
+                ...uploads,
+              ];
 
-      {/* Grid of two cards in a row */}
-      <View className="flex-row gap-4">
-        {slots.slice(1).map((slot) => (
-          <View key={`slot-${slot.index}`} className="flex-1">
-            <ImageSlot
-              image={slot.image}
-              index={slot.index}
-              onRemove={handleRemoveImage}
-              onUpload={handleImageUpload}
-              canAdd={uiCanAddMore}
-              isFirstEmpty={firstEmptySlotIndex === slot.index}
-              shape="secondary"
-            />
-          </View>
-        ))}
+              let uploadIdx = 0;
+              return allItems.map((item, index) => {
+                const primary = index === 0;
+                const itemWidth = primary ? containerWidth : (containerWidth - 16) / 2;
+                return (
+                  <View
+                    key={item.key}
+                    style={{ width: itemWidth, height: 234, position: 'relative' }}>
+                    {item.type === 'headshot' ? (
+                      item.payload.url ? (
+                        <Sortable.Handle mode="draggable">
+                          <ImagePreview
+                            imageUrl={item.payload.url}
+                            onRemove={() => handleRemoveImage(item.payload.storageId)}
+                          />
+                        </Sortable.Handle>
+                      ) : (
+                        <View className="bg-bg-surface h-[234px] w-full items-center justify-center rounded">
+                          <ActivityIndicator size="small" />
+                        </View>
+                      )
+                    ) : (
+                      (() => {
+                        const isFirstUpload = uploadIdx === 0;
+                        uploadIdx += 1;
+                        const shape =
+                          headshots.length === 0 && isFirstUpload ? 'primary' : 'secondary';
+                        return (
+                          <Sortable.Handle mode="fixed-order">
+                            <ImageUploadCard
+                              shape={shape}
+                              onPress={handleImageUpload}
+                              isActive={isFirstUpload}
+                              disabled={uploadState.isUploading || !uiCanAddMore}
+                            />
+                          </Sortable.Handle>
+                        );
+                      })()
+                    )}
+                  </View>
+                );
+              });
+            })()}
+          </Sortable.Flex>
+        )}
       </View>
+
+      {/* Upload cards are rendered inside Sortable flex */}
 
       {/* Upload progress indicator */}
       {uploadState.isUploading && (

@@ -1,5 +1,5 @@
 import { useMemo } from 'react';
-import { OnboardingStep } from '~/contexts/OnboardingFlowContext';
+import type { OnboardingStep } from '@packages/backend/convex/onboardingConfig';
 
 interface ValidationResult {
   isValid: boolean;
