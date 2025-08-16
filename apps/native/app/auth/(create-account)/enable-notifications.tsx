@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
-import { ActivityIndicator, View } from 'react-native';
+import { View } from 'react-native';
+import { Image } from 'expo-image';
 import { router } from 'expo-router';
 
 import { BaseAuthScreen } from '~/components/layouts/BaseAuthScreen';
@@ -60,7 +61,12 @@ export default function EnableNotificationsScreen() {
           </Button>
         </View>
       }>
-      <View className="min-h-12 flex-1 gap-6"></View>
+      <View className="flex-1 items-center justify-center">
+        <Image
+          style={{ width: 336, height: 290 }}
+          source={require('../../../assets/images/onboarding/notification-graphic.png')}
+        />
+      </View>
     </BaseAuthScreen>
   );
 }
