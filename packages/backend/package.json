@@ -11,10 +11,13 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@ai-sdk/openai": "^1.0.10",
     "@clerk/backend": "^2.5.0",
+    "ai": "^4.0.37",
     "convex": "^1.25.4",
     "convex-helpers": "0.1.99",
     "date-fns": "^3.6.0",
+    "mammoth": "^1.10.0",
     "openai": "^5.10.1",
     "svix": "^1.69.0",
     "zod": "^3.25.76"

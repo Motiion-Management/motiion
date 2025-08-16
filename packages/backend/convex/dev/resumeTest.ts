@@ -59,9 +59,9 @@ export const generateUploadUrlDev = mutation({
   }
 })
 
-// Dev-only: parse a resume image by storage id without touching user data
-export const parseResumeImageDev = action({
-  args: { imageStorageId: v.id('_storage') },
+// Dev-only: parse a resume document by storage id without touching user data
+export const parseResumeDocumentDev = action({
+  args: { storageId: v.id('_storage') },
   returns: v.object({
     experiences: v.array(
       v.object({
@@ -119,8 +119,8 @@ export const parseResumeImageDev = action({
     sagAftraId: v.optional(v.string())
   }),
   handler: async (ctx, args): Promise<ParsedResume> => {
-    return await ctx.runAction(internal.ai.resumeParser.parseResumeImage, {
-      imageStorageId: args.imageStorageId
+    return await ctx.runAction(internal.ai.documentProcessor.parseResumeDocument, {
+      storageId: args.storageId
     })
   }
 })

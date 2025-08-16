@@ -15,7 +15,10 @@ import type {
 } from "convex/server";
 import type * as agencies from "../agencies.js";
 import type * as agents from "../agents.js";
-import type * as ai_resumeParser from "../ai/resumeParser.js";
+import type * as ai_documentProcessor from "../ai/documentProcessor.js";
+import type * as ai_fileMetadata from "../ai/fileMetadata.js";
+import type * as ai_schemas from "../ai/schemas.js";
+import type * as ai_textParser from "../ai/textParser.js";
 import type * as ai_utils from "../ai/utils.js";
 import type * as clerk from "../clerk.js";
 import type * as dev_resumeTest from "../dev/resumeTest.js";
@@ -64,7 +67,10 @@ import type * as validators_users from "../validators/users.js";
 declare const fullApi: ApiFromModules<{
   agencies: typeof agencies;
   agents: typeof agents;
-  "ai/resumeParser": typeof ai_resumeParser;
+  "ai/documentProcessor": typeof ai_documentProcessor;
+  "ai/fileMetadata": typeof ai_fileMetadata;
+  "ai/schemas": typeof ai_schemas;
+  "ai/textParser": typeof ai_textParser;
   "ai/utils": typeof ai_utils;
   clerk: typeof clerk;
   "dev/resumeTest": typeof dev_resumeTest;

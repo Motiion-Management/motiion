@@ -32,7 +32,7 @@ export default function ResumeScreen() {
 
   const nav = useSimpleOnboardingFlow();
   const generateUploadUrl = useMutation(api.files.generateUploadUrl);
-  const parseResumeImage = useAction(api.users.resumeImport.parseResumeImageDirect);
+  const parseResumeDocument = useAction(api.users.resumeImport.parseResumeDocument);
 
   const handleImportIntent = () => {
     const options = ['Take Photo', 'Choose Image', 'Upload Document', 'Cancel'];
@@ -77,10 +77,15 @@ export default function ResumeScreen() {
       setIsProcessing(true);
       setHasError(false);
 
-      // Pick a document (support images and PDFs)
+      // Pick a document (support images, PDFs, and Word docs)
       const result = await DocumentPicker.getDocumentAsync({
         multiple: false,
-        type: ['image/*', 'application/pdf'],
+        type: [
+          'image/*', 
+          'application/pdf',
+          'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+          'application/msword'
+        ],
         copyToCacheDirectory: true,
       });
 
@@ -106,8 +111,8 @@ export default function ResumeScreen() {
 
       const { storageId } = await response.json();
 
-      // Parse the resume
-      const parsed = await parseResumeImage({ imageStorageId: storageId });
+      // Parse the resume using unified API
+      const parsed = await parseResumeDocument({ storageId });
       setParsedData(parsed);
     } catch (error) {
       console.error('Resume document upload error:', error);
@@ -123,7 +128,7 @@ export default function ResumeScreen() {
     } finally {
       setIsProcessing(false);
     }
-  }, [generateUploadUrl, parseResumeImage, handleSkip]);
+  }, [generateUploadUrl, parseResumeDocument, handleSkip]);
 
   const handleUploadResume = useCallback(async () => {
     try {
@@ -170,8 +175,8 @@ export default function ResumeScreen() {
 
       const { storageId } = await response.json();
 
-      // Parse the resume
-      const parsed = await parseResumeImage({ imageStorageId: storageId });
+      // Parse the resume using unified API
+      const parsed = await parseResumeDocument({ storageId });
       setParsedData(parsed);
     } catch (error) {
       console.error('Resume upload error:', error);
@@ -187,7 +192,7 @@ export default function ResumeScreen() {
     } finally {
       setIsProcessing(false);
     }
-  }, [generateUploadUrl, parseResumeImage]);
+  }, [generateUploadUrl, parseResumeDocument, handleSkip]);
 
   const handleTakePhoto = useCallback(async () => {
     try {
@@ -233,8 +238,8 @@ export default function ResumeScreen() {
 
       const { storageId } = await response.json();
 
-      // Parse the resume
-      const parsed = await parseResumeImage({ imageStorageId: storageId });
+      // Parse the resume using unified API
+      const parsed = await parseResumeDocument({ storageId });
       setParsedData(parsed);
     } catch (error) {
       console.error('Resume photo error:', error);
@@ -250,7 +255,7 @@ export default function ResumeScreen() {
     } finally {
       setIsProcessing(false);
     }
-  }, [generateUploadUrl, parseResumeImage, handleSkip]);
+  }, [generateUploadUrl, parseResumeDocument, handleSkip]);
 
   const handleReviewComplete = useCallback(() => {
     // After user reviews and confirms the data, proceed to next step

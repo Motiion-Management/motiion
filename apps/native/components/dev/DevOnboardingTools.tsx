@@ -11,6 +11,7 @@ import { Tabs } from '~/components/ui/tabs/tabs';
 import { Input } from '~/components/ui/input';
 import { useRouter, Href } from 'expo-router';
 import * as ImagePicker from 'expo-image-picker';
+import * as DocumentPicker from 'expo-document-picker';
 import { useAction } from 'convex/react';
 
 type ParsedResumeData = {
@@ -38,7 +39,7 @@ export function DevOnboardingTools() {
   const [isProcessing, setIsProcessing] = useState(false);
   const [parsedData, setParsedData] = useState<ParsedResumeData>(null);
   const generateUploadUrlDev = useMutation(api.dev.resumeTest.generateUploadUrlDev);
-  const parseResumeImageDev = useAction(api.dev.resumeTest.parseResumeImageDev);
+  const parseResumeDocumentDev = useAction(api.dev.resumeTest.parseResumeDocumentDev);
   const activeProfileType: ProfileType = (user?.profileType as ProfileType) || 'dancer';
   const activeSteps = useMemo(() => ONBOARDING_FLOWS[activeProfileType], [activeProfileType]);
   const handleGoToRoute = useCallback(() => {
@@ -182,8 +183,7 @@ export function DevOnboardingTools() {
           {activeTab === 'resume' && (
             <View className="mt-1 gap-3">
               <Text variant="bodySm" className="text-text-secondary">
-                Dev-only resume parser: uploads to Convex and parses via AI. No user data is
-                modified.
+                Dev-only resume parser: supports images, PDFs, and Word docs. Uploads to Convex and parses via unified AI processor. No user data is modified.
               </Text>
 
               <View className="flex-row gap-8">
@@ -217,7 +217,7 @@ export function DevOnboardingTools() {
                       });
                       if (!resp.ok) throw new Error('Upload failed');
                       const { storageId } = await resp.json();
-                      const parsed = await parseResumeImageDev({ imageStorageId: storageId });
+                      const parsed = await parseResumeDocumentDev({ storageId });
                       setParsedData(parsed);
                     } catch (e) {
                       console.error('Dev resume parse error:', e);
@@ -258,7 +258,7 @@ export function DevOnboardingTools() {
                       });
                       if (!resp.ok) throw new Error('Upload failed');
                       const { storageId } = await resp.json();
-                      const parsed = await parseResumeImageDev({ imageStorageId: storageId });
+                      const parsed = await parseResumeDocumentDev({ storageId });
                       setParsedData(parsed);
                     } catch (e) {
                       console.error('Dev resume parse error:', e);
@@ -268,6 +268,47 @@ export function DevOnboardingTools() {
                     }
                   }}>
                   <Text variant="bodySm">Take Photo</Text>
+                </Button>
+
+                <Button
+                  size="sm"
+                  variant="outline"
+                  disabled={isProcessing}
+                  onPress={async () => {
+                    try {
+                      setIsProcessing(true);
+                      setParsedData(null);
+                      const result = await DocumentPicker.getDocumentAsync({
+                        multiple: false,
+                        type: [
+                          'image/*',
+                          'application/pdf',
+                          'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+                          'application/msword'
+                        ],
+                        copyToCacheDirectory: true,
+                      });
+                      if (result.canceled || !result.assets[0]) return;
+
+                      const asset = result.assets[0];
+                      const uploadUrl = await generateUploadUrlDev();
+                      const resp = await fetch(uploadUrl, {
+                        method: 'POST',
+                        headers: { 'Content-Type': asset.mimeType || 'application/octet-stream' },
+                        body: await (await fetch(asset.uri)).blob(),
+                      });
+                      if (!resp.ok) throw new Error('Upload failed');
+                      const { storageId } = await resp.json();
+                      const parsed = await parseResumeDocumentDev({ storageId });
+                      setParsedData(parsed);
+                    } catch (e) {
+                      console.error('Dev resume parse error:', e);
+                      Alert.alert('Error', 'Failed to parse document. See console for details.');
+                    } finally {
+                      setIsProcessing(false);
+                    }
+                  }}>
+                  <Text variant="bodySm">Pick Document</Text>
                 </Button>
               </View>
 
