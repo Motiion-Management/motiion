@@ -28,6 +28,7 @@ import {
   zExperiencesDoc,
   type ExperienceFormDoc,
 } from '@packages/backend/convex/validators/experiences';
+import { useUser } from '~/hooks/useUser';
 
 // Constants
 const BOTTOM_OFFSET_CUSHION = 8;
@@ -59,12 +60,20 @@ export function ExperienceEditSheet({
   // Convex mutation to persist an experience for the current user
 
   // Combined UI state for better management
-  const [uiState, setUiState] = useState({
+  const initialUiState = {
     activeTab: 'details',
     pagerProgress: 0,
     actionsHeight: 0,
     isSaving: false,
-  });
+  };
+  const [uiState, setUiState] = useState(initialUiState);
+
+  const resetForm = () => {
+    sharedForm.reset();
+    setUiState(initialUiState);
+  };
+
+  const { user } = useUser();
 
   const pagerRef = useRef<React.ElementRef<typeof PagerView> | null>(null);
 
@@ -74,6 +83,7 @@ export function ExperienceEditSheet({
   // Type is managed by the form; no external setter required
 
   const handleClose = useCallback(() => {
+    resetForm();
     onOpenChange(false);
   }, [onOpenChange]);
 
@@ -98,19 +108,20 @@ export function ExperienceEditSheet({
   // Keep a plain object schema for UI introspection
   const uiSchema = zExperiencesDoc.passthrough();
   // Separate schema for validation: preprocess Dates -> ISO strings
-  const validateSchema = z.preprocess(
-    (v) => normalizeForConvex(v as any),
-    uiSchema
-  );
+  const validateSchema = uiSchema;
 
   // Initialize shared form controller with onSubmit handling
   const addMyExperience = useMutation(api.users.experiences.addMyExperience);
   const updateExperience = useMutation(api.experiences.update);
+  const destroyExperience = useMutation(api.experiences.destroy);
 
   const sharedForm = useAppForm({
-    defaultValues: experience,
+    defaultValues: {
+      userId: user?._id,
+      ...experience,
+    },
     validators: {
-      onChange: validateSchema as any,
+      onChange: validateSchema,
     },
     onSubmit: async ({ value }) => {
       console.log('Submitting experience:', value);
@@ -124,7 +135,6 @@ export function ExperienceEditSheet({
           await addMyExperience(payload);
         }
         // Reset via form controller and close
-        sharedForm.reset();
         handleClose();
       } catch (error) {
         const errorMessage = error instanceof Error ? error.message : 'Failed to save experience';
@@ -176,8 +186,8 @@ export function ExperienceEditSheet({
       isOpened={isOpen}
       label={title}
       onIsOpenedChange={(open) => {
+        resetForm();
         if (open) {
-          sharedForm.reset();
           pagerRef.current?.setPage?.(0);
         }
 
@@ -325,6 +335,41 @@ export function ExperienceEditSheet({
                 disabled={uiState.isSaving || !canSubmit}
                 className="w-full">
                 <Text>{uiState.isSaving ? 'Saving…' : 'Save'}</Text>
+              </Button>
+            )}
+            {experienceId && (
+              <Button
+                variant="plain"
+                className="w-full"
+                onPress={() => {
+                  Alert.alert(
+                    'Delete Experience',
+                    'Are you sure you want to delete this experience? This action cannot be undone.',
+                    [
+                      { text: 'Cancel', style: 'cancel' },
+                      {
+                        text: 'Delete',
+                        style: 'destructive',
+                        onPress: async () => {
+                          try {
+                            await destroyExperience({
+                              id: experienceId,
+                            });
+                            handleClose();
+                          } catch (error) {
+                            const errorMessage =
+                              error instanceof Error
+                                ? error.message
+                                : 'Failed to delete experience';
+                            console.error('Failed to delete experience:', error);
+                            Alert.alert('Error', errorMessage, [{ text: 'OK' }]);
+                          }
+                        },
+                      },
+                    ]
+                  );
+                }}>
+                <Text className="text-destructive">Delete Experience</Text>
               </Button>
             )}
 
