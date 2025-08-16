@@ -15,13 +15,14 @@ export const BaseAuthScreen = ({
   canProgress = false,
   primaryAction,
   secondaryAction,
+  bottomActionSlot,
 }: {
   title: string;
   description?: string;
   children: React.ReactNode;
   helpText?: string;
   canProgress?: boolean;
-  primaryAction: {
+  primaryAction?: {
     onPress: () => void;
     disabled?: boolean;
   };
@@ -29,6 +30,7 @@ export const BaseAuthScreen = ({
     onPress: () => void;
     text: string;
   };
+  bottomActionSlot?: React.ReactNode;
 }) => {
   const insets = useSafeAreaInsets();
 
@@ -70,27 +72,31 @@ export const BaseAuthScreen = ({
           <SafeAreaView
             edges={['bottom', 'left', 'right']}
             className="absolute bottom-0 right-0 flex-row items-center justify-between gap-4 px-4 pb-2">
-            <View className="flex-1 flex-row justify-start">
-              {secondaryAction && (
-                <Button variant="plain" onPress={secondaryAction.onPress}>
-                  <Text className="text-sm text-text-default">{secondaryAction.text}</Text>
-                </Button>
-              )}
-            </View>
+            {bottomActionSlot || (
+              <>
+                <View className="flex-1 flex-row justify-start">
+                  {secondaryAction && (
+                    <Button variant="plain" onPress={secondaryAction.onPress}>
+                      <Text className="text-sm text-text-default">{secondaryAction.text}</Text>
+                    </Button>
+                  )}
+                </View>
 
-            {/* Continue Button */}
-            <Button
-              disabled={!canProgress}
-              size="icon"
-              variant="accent"
-              onPress={() => {
-                if (!canProgress) {
-                  return;
-                }
-                primaryAction.onPress();
-              }}>
-              <ChevronRight size={24} className="color-icon-accent" />
-            </Button>
+                {/* Continue Button */}
+                <Button
+                  disabled={!canProgress}
+                  size="icon"
+                  variant="accent"
+                  onPress={() => {
+                    if (!canProgress) {
+                      return;
+                    }
+                    primaryAction?.onPress();
+                  }}>
+                  <ChevronRight size={24} className="color-icon-accent" />
+                </Button>
+              </>
+            )}
           </SafeAreaView>
         </KeyboardStickyView>
       </View>

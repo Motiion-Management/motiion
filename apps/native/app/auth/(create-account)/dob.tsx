@@ -78,9 +78,9 @@ export default function DOBScreen() {
         // Complete the signup process
 
         if (status === 'complete') {
-          console.log('🎯 USERNAME: Signup complete, activating session and redirecting');
+          console.log('🎯 USERNAME: Signup complete, activating session and continuing onboarding');
           await clerk.setActive({ session: createdSessionId });
-          router.replace('/');
+          router.push('/auth/(create-account)/enable-notifications');
         } else if (status === 'missing_requirements') {
           const issues = [];
           if (missingFields.length > 0) {

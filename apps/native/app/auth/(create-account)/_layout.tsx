@@ -1,4 +1,4 @@
-import { Stack, router, useNavigation } from 'expo-router';
+import { Stack, router, useNavigation, usePathname } from 'expo-router';
 import { useEffect } from 'react';
 import { View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -10,6 +10,7 @@ import X from '~/lib/icons/X';
 
 export default function CreateAccountLayout() {
   const navigation = useNavigation();
+  const pathname = usePathname();
   const progressData = useSignupProgress();
 
   // Map the signup steps to progress indices
@@ -20,12 +21,16 @@ export default function CreateAccountLayout() {
       name: 2,
       email: 3,
       dob: 4,
+      notifications: 5,
       complete: 6,
     };
     return stepMapping[step as keyof typeof stepMapping] || 0;
   };
 
   const currentStepIndex = getStepIndex(progressData.step);
+  const displayStepIndex = pathname?.includes('/auth/(create-account)/enable-notifications')
+    ? getStepIndex('notifications')
+    : currentStepIndex;
 
   // Update header when progress changes
   useEffect(() => {
@@ -36,7 +41,7 @@ export default function CreateAccountLayout() {
         return (
           <SafeAreaView style={{ position: 'absolute', top: 0, left: 0, right: 0, zIndex: 10 }}>
             <View className="h-8 flex-row items-center bg-transparent pl-4 pr-0">
-              <ProgressBar currentStep={currentStepIndex} totalSteps={6} label="ACCOUNT" />
+              <ProgressBar currentStep={displayStepIndex} totalSteps={6} label="ACCOUNT" />
               <Button
                 variant="plain"
                 size="icon"
@@ -52,7 +57,7 @@ export default function CreateAccountLayout() {
         );
       },
     });
-  }, [navigation, currentStepIndex]);
+  }, [navigation, displayStepIndex]);
 
   return (
     <>

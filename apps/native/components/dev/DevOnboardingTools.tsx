@@ -137,6 +137,9 @@ export function DevOnboardingTools() {
 
           {activeTab === 'home' && (
             <View className="mt-1 gap-3">
+              <Button onPress={() => router.push('/auth/(create-account)/enable-notifications' as Href)}>
+                <Text>Open Enable Notifications</Text>
+              </Button>
               <Button onPress={() => router.push('/app/home' as Href)}>
                 <Text>Go to Home</Text>
               </Button>
