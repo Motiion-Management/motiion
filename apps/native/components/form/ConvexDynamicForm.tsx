@@ -296,19 +296,12 @@ export const ConvexDynamicForm = React.memo(
         return undefined;
       };
 
-      const formatLocalDate = (date: Date): string => {
-        const y = date.getFullYear();
-        const m = String(date.getMonth() + 1).padStart(2, '0');
-        const d = String(date.getDate()).padStart(2, '0');
-        return `${y}-${m}-${d}`;
-      };
-
       const sdDate = parseToDate(sd);
       if (!sdDate) return;
 
       const setEnd = (date: Date) => {
-        // Always write normalized string values to match backend schema
-        (form as any).setFieldValue('endDate', formatLocalDate(date));
+        // Always store Date objects in the form layer
+        (form as any).setFieldValue('endDate', date);
       };
 
       if (!ed) {

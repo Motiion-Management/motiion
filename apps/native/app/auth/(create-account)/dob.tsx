@@ -78,9 +78,9 @@ export default function DOBScreen() {
         // Complete the signup process
 
         if (status === 'complete') {
-          console.log('🎯 USERNAME: Signup complete, activating session and redirecting');
+          console.log('🎯 USERNAME: Signup complete, activating session and continuing onboarding');
           await clerk.setActive({ session: createdSessionId });
-          router.replace('/');
+          router.push('/auth/(create-account)/enable-notifications');
         } else if (status === 'missing_requirements') {
           const issues = [];
           if (missingFields.length > 0) {
@@ -110,7 +110,7 @@ export default function DOBScreen() {
 
   const isFormReady = useStore(form.store, (state) => state.canSubmit && !isCreatingAccount);
   const dob = useStore(form.store, (state) => state.values.dob);
-  const age = useMemo(() => calculateAge(dob), [dob]);
+  const age = useMemo(() => (dob ? calculateAge(dob as Date) : 0), [dob]);
 
   const helpText = `By continuing, you are confirming that the above information is accurate and that you are ${age} years of age.`;
 

@@ -30,14 +30,14 @@ export const DatePickerField = ({
   formatDate,
   formatTime,
 }: DatePickerFieldProps) => {
-  // Store date values in the form as 'yyyy-MM-dd' strings for backend compatibility.
+  // Store Date objects in the form state for consistent typing.
   const field = useFieldContext<any>();
   const validationModeContext = useValidationModeContextSafe();
   const { errorMessage } = useFieldError(field, {
     fieldName: field.name,
   });
 
-  // Parse stored string/ISO into a local Date (avoid UTC off-by-one)
+  // Parse stored legacy string/ISO into a local Date (avoid UTC off-by-one)
   const parseToDate = (value?: unknown): Date | undefined => {
     if (!value) return undefined;
     if (value instanceof Date) return value;
@@ -56,14 +56,6 @@ export const DatePickerField = ({
     return undefined;
   };
 
-  // Format a Date into 'yyyy-MM-dd' using local calendar values
-  const formatLocalDate = (date: Date): string => {
-    const y = date.getFullYear();
-    const m = String(date.getMonth() + 1).padStart(2, '0');
-    const d = String(date.getDate()).padStart(2, '0');
-    return `${y}-${m}-${d}`;
-  };
-
   const handleBlur = useCallback(() => {
     field.handleBlur();
     if (validationModeContext) {
@@ -80,9 +72,8 @@ export const DatePickerField = ({
         value={dateValue}
         onChange={(d) => {
           if (!d) return;
-          // Always normalize to 'yyyy-MM-dd' strings for backend compatibility
-          const asString = formatLocalDate(d);
-          field.handleChange(asString as any);
+          // Normalize by always storing Date objects in the form
+          field.handleChange(d as any);
         }}
         onBlur={handleBlur}
         label={label}

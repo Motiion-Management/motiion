@@ -57,6 +57,15 @@ export const users = {
   pointsEarned: z.number(),
   profileType: z.enum(['dancer', 'choreographer', 'guest']).optional(),
   favoriteUsers: z.array(zid('users')).optional(),
+  pushTokens: z
+    .array(
+      z.object({
+        token: z.string(),
+        platform: z.enum(['ios', 'android']),
+        updatedAt: z.number()
+      })
+    )
+    .optional(),
 
   // New onboarding tracking
   onboardingCompleted: z.boolean().optional(),

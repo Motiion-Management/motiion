@@ -358,3 +358,24 @@ export const isFavoriteUser = authQuery({
     return ctx.user && (ctx.user.favoriteUsers || []).includes(userId)
   }
 })
+
+export const saveMyPushToken = authMutation({
+  args: {
+    token: v.string(),
+    platform: v.union(v.literal('ios'), v.literal('android'))
+  },
+  async handler(ctx, { token, platform }) {
+    const existing = ctx.user.pushTokens || []
+    // Remove duplicates of the same token
+    const filtered = existing.filter((t) => t.token !== token)
+    // Optionally keep only the latest per platform (dedupe by platform)
+    const withoutPlatform = filtered.filter((t) => t.platform !== platform)
+
+    const updated = [
+      ...withoutPlatform,
+      { token, platform, updatedAt: Date.now() }
+    ]
+
+    await ctx.db.patch(ctx.user._id, { pushTokens: updated as any })
+  }
+})
