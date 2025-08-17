@@ -15,12 +15,15 @@ export const getFileMetadata = internalQuery({
     }),
     v.null()
   ),
-  handler: async (ctx, args): Promise<{ 
-    _id: Id<'_storage'>; 
-    _creationTime: number; 
-    contentType?: string; 
-    size: number; 
-    sha256: string 
+  handler: async (
+    ctx,
+    args
+  ): Promise<{
+    _id: Id<'_storage'>
+    _creationTime: number
+    contentType?: string
+    size: number
+    sha256: string
   } | null> => {
     return await ctx.db.system.get(args.storageId)
   }

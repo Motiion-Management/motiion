@@ -3,11 +3,206 @@
 import { internalAction } from '../_generated/server'
 import { internal } from '../_generated/api'
 import { v } from 'convex/values'
-import { openai } from '@ai-sdk/openai'
-import { generateObject } from 'ai'
+import OpenAI from 'openai'
 import { ConvexError } from 'convex/values'
-import { resumeSchema, type ParsedResumeData } from './schemas'
+import {
+  resumeSchema,
+  resumeAISchema,
+  resumeAIJsonSchema,
+  type ParsedResumeData
+} from './schemas'
+import {
+  EXPERIENCE_TYPES,
+  LIVE_EVENT_SUBTYPES
+} from '../validators/experiences'
+import { TRAINING_TYPES } from '../validators/training'
 import mammoth from 'mammoth'
+import { trySalvageFromAIText } from './utils'
+
+// Helper function to sanitize AI responses by removing invalid fields
+function sanitizeAIResponse(
+  rawResponse: any,
+  aiSchema: any
+): ParsedResumeData | null {
+  try {
+    // First, try to validate the full response
+    const fullValidation = aiSchema.safeParse(rawResponse)
+    if (fullValidation.success) {
+      return fullValidation.data
+    }
+
+    console.log('Full validation failed, attempting field-level recovery...')
+
+    // Create a copy to work with
+    const sanitizedResponse = { ...rawResponse }
+
+    // Ensure required array fields exist
+    if (!Array.isArray(sanitizedResponse.experiences)) {
+      sanitizedResponse.experiences = []
+    }
+    if (!Array.isArray(sanitizedResponse.training)) {
+      sanitizedResponse.training = []
+    }
+    if (!Array.isArray(sanitizedResponse.skills)) {
+      sanitizedResponse.skills = []
+    }
+    if (!Array.isArray(sanitizedResponse.genres)) {
+      sanitizedResponse.genres = []
+    }
+
+    // Fix common field name issues
+    if (sanitizedResponse['SAG-AFTRA ID'] && !sanitizedResponse.sagAftraId) {
+      sanitizedResponse.sagAftraId = sanitizedResponse['SAG-AFTRA ID']
+      delete sanitizedResponse['SAG-AFTRA ID']
+    }
+
+    // Sanitize experiences array
+    if (Array.isArray(sanitizedResponse.experiences)) {
+      sanitizedResponse.experiences = sanitizedResponse.experiences
+        .map((exp: any) => {
+          const cleanExp = { ...exp }
+
+          // Remove invalid fields that aren't in our schema
+          const validExpFields = [
+            'type',
+            'title',
+            'startDate',
+            'endDate',
+            'roles',
+            'studio',
+            'artists',
+            'companyName',
+            'productionCompany',
+            'tourArtist',
+            'venue',
+            'subtype',
+            'mainTalent',
+            'choreographers',
+            'associateChoreographers',
+            'directors'
+          ]
+
+          Object.keys(cleanExp).forEach((key) => {
+            if (!validExpFields.includes(key)) {
+              delete cleanExp[key]
+            }
+          })
+
+          // Ensure required type field exists and is valid
+          if (!cleanExp.type || !EXPERIENCE_TYPES.includes(cleanExp.type)) {
+            return null // Invalid experience
+          }
+
+          return cleanExp
+        })
+        .filter(Boolean) // Remove null experiences
+    }
+
+    // Sanitize training array
+    if (Array.isArray(sanitizedResponse.training)) {
+      sanitizedResponse.training = sanitizedResponse.training
+        .map((training: any) => {
+          const cleanTraining = { ...training }
+
+          // Remove invalid fields
+          const validTrainingFields = [
+            'type',
+            'institution',
+            'instructors',
+            'startYear',
+            'endYear',
+            'degree'
+          ]
+          Object.keys(cleanTraining).forEach((key) => {
+            if (!validTrainingFields.includes(key)) {
+              delete cleanTraining[key]
+            }
+          })
+
+          // Ensure required fields and valid type
+          if (
+            !cleanTraining.type ||
+            !TRAINING_TYPES.includes(cleanTraining.type) ||
+            !cleanTraining.institution
+          ) {
+            return null // Invalid training entry
+          }
+
+          return cleanTraining
+        })
+        .filter(Boolean)
+    }
+
+    // Try validation again after sanitization
+    const sanitizedValidation = aiSchema.safeParse(sanitizedResponse)
+    if (sanitizedValidation.success) {
+      console.log('Field-level recovery successful')
+      return sanitizedValidation.data
+    }
+
+    console.log('Field-level recovery failed:', sanitizedValidation.error)
+    return null
+  } catch (error) {
+    console.error('Error during response sanitization:', error)
+    return null
+  }
+}
+
+// Helper function to create graceful fallback response
+function createGracefulFallback(): ParsedResumeData {
+  return {
+    experiences: [],
+    training: [],
+    skills: [],
+    genres: [],
+    sagAftraId: undefined
+  }
+}
+
+// Enhanced processing function that handles AI response parsing with recovery
+function processAIResponse(jsonText: string | undefined): ParsedResumeData {
+  if (!jsonText || jsonText.trim().length === 0) {
+    console.log('Empty AI response, returning graceful fallback')
+    return createGracefulFallback()
+  }
+
+  try {
+    const rawResponse = JSON.parse(jsonText)
+
+    // Try sanitization and validation
+    const sanitizedData = sanitizeAIResponse(rawResponse, resumeAISchema)
+    if (sanitizedData) {
+      return sanitizedData
+    }
+
+    // If sanitization fails, try the existing salvage method
+    console.log('Sanitization failed, trying salvage method...')
+    const salvaged = trySalvageFromAIText<ParsedResumeData>(
+      jsonText,
+      resumeSchema
+    )
+    if (salvaged) {
+      return salvaged
+    }
+
+    // Final fallback - return empty structure
+    console.log('All recovery methods failed, returning graceful fallback')
+    return createGracefulFallback()
+  } catch (parseError) {
+    console.error('JSON parsing failed:', parseError)
+
+    // Try salvage on the raw text
+    const salvaged = trySalvageFromAIText<ParsedResumeData>(
+      jsonText,
+      resumeSchema
+    )
+    if (salvaged) {
+      return salvaged
+    }
+
+    return createGracefulFallback()
+  }
+}
 
 export const parseResumeDocument = internalAction({
   args: {
@@ -86,9 +281,12 @@ export const parseResumeDocument = internalAction({
       }
 
       // Get file metadata using system query
-      const metadata = await ctx.runQuery(internal.ai.fileMetadata.getFileMetadata, {
-        storageId: args.storageId
-      })
+      const metadata = await ctx.runQuery(
+        internal.ai.fileMetadata.getFileMetadata,
+        {
+          storageId: args.storageId
+        }
+      )
 
       if (!metadata) {
         throw new ConvexError('File metadata not found')
@@ -105,7 +303,7 @@ export const parseResumeDocument = internalAction({
         // Images: Use Vision API
         return await processImageDocument(fileUrl)
       } else if (isPdfFile(contentType, fileName)) {
-        // PDFs: Use OpenAI's native PDF support
+        // PDFs: Use OpenAI Responses API with input_file
         return await processPdfDocument(fileUrl)
       } else {
         throw new ConvexError(
@@ -120,16 +318,25 @@ export const parseResumeDocument = internalAction({
       }
 
       if (error.status === 429 && retryCount < maxRetries) {
-        console.log(`Rate limited, retrying... (attempt ${retryCount + 1}/${maxRetries})`)
-        await new Promise(resolve => setTimeout(resolve, (retryCount + 1) * 2000))
-        
-        return await ctx.runAction(internal.ai.documentProcessor.parseResumeDocument, {
-          storageId: args.storageId,
-          retryCount: retryCount + 1
-        })
+        console.log(
+          `Rate limited, retrying... (attempt ${retryCount + 1}/${maxRetries})`
+        )
+        await new Promise((resolve) =>
+          setTimeout(resolve, (retryCount + 1) * 2000)
+        )
+
+        return await ctx.runAction(
+          internal.ai.documentProcessor.parseResumeDocument,
+          {
+            storageId: args.storageId,
+            retryCount: retryCount + 1
+          }
+        )
       }
 
-      throw new ConvexError(`Failed to process document: ${error.message || 'Unknown error'}`)
+      throw new ConvexError(
+        `Failed to process document: ${error.message || 'Unknown error'}`
+      )
     }
   }
 })
@@ -180,120 +387,131 @@ async function processWordDocument(fileUrl: string) {
     }
 
     // Process the extracted text using the cheaper text API
-    const aiResult = await generateObject({
-      model: openai('gpt-4o-mini'), // Cost-effective for text
-      schema: resumeSchema,
-      messages: [
+    const client = new OpenAI({ apiKey: process.env.OPENAI_API_KEY })
+    const rsp = await client.responses.create({
+      model: 'gpt-4o',
+      input: [
         {
+          type: 'message',
           role: 'system',
-          content: createTextExtractionPrompt()
+          content: [{ type: 'input_text', text: createTextExtractionPrompt() }]
         },
         {
+          type: 'message',
           role: 'user',
-          content: `Please parse this resume text extracted from a Word document:\n\n${text}`
+          content: [
+            {
+              type: 'input_text',
+              text: `Please parse this resume text extracted from a Word document:\n\n${text}`
+            }
+          ]
         }
       ],
+      text: {
+        format: { type: 'json_object' }
+      },
       temperature: 0.1
     })
-
-    // Convert null values to undefined for proper schema validation
-    const cleanedResult = {
-      ...aiResult.object,
-      sagAftraId: aiResult.object.sagAftraId === null ? undefined : aiResult.object.sagAftraId
-    }
-    return cleanedResult
+    // responses.create adds output_text; with json_object, output_text is JSON
+    const json = rsp.output_text
+    return processAIResponse(json)
   } catch (error: any) {
     console.error('Word document processing error:', error)
-    throw new ConvexError(`Failed to process Word document: ${error.message || 'Unknown error'}`)
+    // Attempt salvage from raw JSON text if available
+    const textOut: string | undefined =
+      error?.text || error?.response?.output_text
+    if (typeof textOut === 'string') {
+      return processAIResponse(textOut)
+    }
+    // Return graceful fallback instead of throwing
+    console.log('Word document processing failed, returning graceful fallback')
+    return createGracefulFallback()
   }
 }
 
 // Process images using Vision API
 async function processImageDocument(fileUrl: string) {
   try {
-    const result = await generateObject({
-      model: openai('gpt-4o'), // Vision capability needed
-      schema: resumeSchema,
-      messages: [
+    const client = new OpenAI({ apiKey: process.env.OPENAI_API_KEY })
+    const rsp = await client.responses.create({
+      model: 'gpt-4o',
+      input: [
         {
+          type: 'message',
           role: 'system',
-          content: createVisionExtractionPrompt()
+          content: [
+            { type: 'input_text', text: createVisionExtractionPrompt() }
+          ]
         },
         {
+          type: 'message',
           role: 'user',
           content: [
-            {
-              type: 'text',
-              text: 'Please parse this resume image:'
-            },
-            {
-              type: 'image',
-              image: fileUrl
-            }
+            { type: 'input_text', text: 'Please parse this resume image:' },
+            { type: 'input_image', image_url: fileUrl, detail: 'auto' }
           ]
         }
       ],
+      text: {
+        format: { type: 'json_object' }
+      },
       temperature: 0.1
     })
 
-    // Convert null values to undefined for proper schema validation
-    const cleanedResult = {
-      ...result.object,
-      sagAftraId: result.object.sagAftraId === null ? undefined : result.object.sagAftraId
-    }
-    return cleanedResult
+    const json = rsp.output_text
+    return processAIResponse(json)
   } catch (error: any) {
     console.error('Image processing error:', error)
-    throw new ConvexError(`Failed to process image: ${error.message || 'Unknown error'}`)
+    const text: string | undefined = error?.text || error?.response?.output_text
+    if (typeof text === 'string') {
+      return processAIResponse(text)
+    }
+    // Return graceful fallback instead of throwing
+    console.log('Image processing failed, returning graceful fallback')
+    return createGracefulFallback()
   }
 }
 
 // Process PDFs using OpenAI's native PDF support
 async function processPdfDocument(fileUrl: string) {
   try {
-    // Download the PDF file
-    const response = await fetch(fileUrl)
-    if (!response.ok) {
-      throw new Error(`Failed to download PDF: ${response.status}`)
-    }
-
-    const arrayBuffer = await response.arrayBuffer()
-    const base64Pdf = Buffer.from(arrayBuffer).toString('base64')
-
-    const result = await generateObject({
-      model: openai('gpt-4o'), // PDF support
-      schema: resumeSchema,
-      messages: [
+    const client = new OpenAI({ apiKey: process.env.OPENAI_API_KEY })
+    const rsp = await client.responses.create({
+      model: 'gpt-4o',
+      input: [
         {
+          type: 'message',
           role: 'system',
-          content: createVisionExtractionPrompt()
+          content: [
+            { type: 'input_text', text: createVisionExtractionPrompt() }
+          ]
         },
         {
+          type: 'message',
           role: 'user',
           content: [
-            {
-              type: 'text',
-              text: 'Please parse this resume PDF:'
-            },
-            {
-              type: 'image',
-              image: `data:application/pdf;base64,${base64Pdf}`
-            }
+            { type: 'input_text', text: 'Please parse this resume PDF:' },
+            { type: 'input_file', file_url: fileUrl }
           ]
         }
       ],
+      text: {
+        format: { type: 'json_object' }
+      },
       temperature: 0.1
     })
 
-    // Convert null values to undefined for proper schema validation
-    const cleanedResult = {
-      ...result.object,
-      sagAftraId: result.object.sagAftraId === null ? undefined : result.object.sagAftraId
-    }
-    return cleanedResult
+    const json = rsp.output_text
+    return processAIResponse(json)
   } catch (error: any) {
     console.error('PDF processing error:', error)
-    throw new ConvexError(`Failed to process PDF: ${error.message || 'Unknown error'}`)
+    const text: string | undefined = error?.text || error?.response?.output_text
+    if (typeof text === 'string') {
+      return processAIResponse(text)
+    }
+    // Return graceful fallback instead of throwing
+    console.log('PDF processing failed, returning graceful fallback')
+    return createGracefulFallback()
   }
 }
 
@@ -319,7 +537,30 @@ Analyze this resume text and extract structured information. Focus on:
 4. **Genres** - Music genres, dance styles, performance categories
 5. **SAG-AFTRA ID** - Union membership number if mentioned
 
-Extract only information that is clearly present in the text. Do not infer or assume data.`
+**CRITICAL Field Requirements:**
+- ALWAYS include ALL required fields: "experiences", "training", "skills", "genres", and optionally "sagAftraId"
+- Use "sagAftraId" as the field name (not "SAG-AFTRA ID")
+- Extract "roles" as an array of strings (e.g., ["Dancer", "Choreographer"]), not "role"
+- Extract "artists" as an array of strings (e.g., ["Justin Bieber", "Ariana Grande"]), not "artist"
+- Extract "choreographers" as an array of strings (e.g., ["Tucker Barkley"]), not "choreographer"
+- Extract "instructors" as an array of strings for training, not "instructor"
+- All array fields should contain arrays even if there's only one item
+
+**Example JSON structure:**
+{
+  "experiences": [...],
+  "training": [...],
+  "skills": ["Hip Hop", "Jazz", "Contemporary"],
+  "genres": ["Pop", "R&B", "Hip Hop"],
+  "sagAftraId": "1234567890"
+}
+
+Output rules:
+- Do not output null values. If a field is unknown, omit the key entirely.
+- For required array fields (experiences, training, skills, genres), ALWAYS include them - use empty arrays when no items are present.
+- Use the exact enum labels for types as specified above.
+- Extract only information that is clearly present in the text. Do not infer or assume data.
+- Return the extracted information in valid JSON format.`
 }
 
 function createVisionExtractionPrompt() {
@@ -351,6 +592,28 @@ For experiences, extract:
 - Key collaborators (artists, choreographers, directors, main talent)
 - Venue/studio/company information
 
-Extract only information that is clearly visible in the document. Do not infer or assume data.`
+**CRITICAL Field Requirements:**
+- ALWAYS include ALL required fields: "experiences", "training", "skills", "genres", and optionally "sagAftraId"
+- Use "sagAftraId" as the field name (not "SAG-AFTRA ID")
+- Extract "roles" as an array of strings (e.g., ["Dancer", "Choreographer"]), not "role"
+- Extract "artists" as an array of strings (e.g., ["Justin Bieber", "Ariana Grande"]), not "artist"
+- Extract "choreographers" as an array of strings (e.g., ["Tucker Barkley"]), not "choreographer"
+- Extract "instructors" as an array of strings for training, not "instructor"
+- All array fields should contain arrays even if there's only one item
+
+**Example JSON structure:**
+{
+  "experiences": [...],
+  "training": [...],
+  "skills": ["Hip Hop", "Jazz", "Contemporary"],
+  "genres": ["Pop", "R&B", "Hip Hop"],
+  "sagAftraId": "1234567890"
 }
 
+Output rules:
+- Do not output null values. If a field is unknown, omit the key entirely.
+- For required array fields (experiences, training, skills, genres), ALWAYS include them - use empty arrays when no items are present.
+- Use the exact enum labels for types as specified above.
+- Extract only information that is clearly visible in the document. Do not infer or assume data.
+- Return the extracted information in valid JSON format.`
+}

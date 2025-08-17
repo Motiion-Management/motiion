@@ -81,10 +81,10 @@ export default function ResumeScreen() {
       const result = await DocumentPicker.getDocumentAsync({
         multiple: false,
         type: [
-          'image/*', 
+          'image/*',
           'application/pdf',
           'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
-          'application/msword'
+          'application/msword',
         ],
         copyToCacheDirectory: true,
       });

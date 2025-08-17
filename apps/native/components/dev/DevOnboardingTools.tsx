@@ -153,7 +153,8 @@ export function DevOnboardingTools() {
 
           {activeTab === 'home' && (
             <View className="mt-1 gap-3">
-              <Button onPress={() => router.push('/auth/(create-account)/enable-notifications' as Href)}>
+              <Button
+                onPress={() => router.push('/auth/(create-account)/enable-notifications' as Href)}>
                 <Text>Open Enable Notifications</Text>
               </Button>
               <Button onPress={() => router.push('/app/home' as Href)}>
@@ -183,7 +184,8 @@ export function DevOnboardingTools() {
           {activeTab === 'resume' && (
             <View className="mt-1 gap-3">
               <Text variant="bodySm" className="text-text-secondary">
-                Dev-only resume parser: supports images, PDFs, and Word docs. Uploads to Convex and parses via unified AI processor. No user data is modified.
+                Dev-only resume parser: supports images, PDFs, and Word docs. Uploads to Convex and
+                parses via unified AI processor. No user data is modified.
               </Text>
 
               <View className="flex-row gap-8">
@@ -284,7 +286,7 @@ export function DevOnboardingTools() {
                           'image/*',
                           'application/pdf',
                           'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
-                          'application/msword'
+                          'application/msword',
                         ],
                         copyToCacheDirectory: true,
                       });

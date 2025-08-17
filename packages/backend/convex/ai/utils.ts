@@ -44,7 +44,9 @@ export async function validateFileAccess(fileUrl: string): Promise<string> {
 
     const contentType = response.headers?.get?.('content-type')
     if (!isValidResumeFileType(contentType || undefined)) {
-      throw new ConvexError('Invalid file format. Please use JPEG, PNG, HEIC, WebP, or PDF.')
+      throw new ConvexError(
+        'Invalid file format. Please use JPEG, PNG, HEIC, WebP, or PDF.'
+      )
     }
 
     const contentLength = response.headers?.get?.('content-length')
@@ -52,7 +54,9 @@ export async function validateFileAccess(fileUrl: string): Promise<string> {
       const sizeMB = parseInt(contentLength) / (1024 * 1024)
       if (sizeMB > 20) {
         // 20MB limit
-        throw new ConvexError('File is too large. Please upload a file smaller than 20MB.')
+        throw new ConvexError(
+          'File is too large. Please upload a file smaller than 20MB.'
+        )
       }
     }
 
@@ -129,14 +133,19 @@ export function createFallbackError(originalError: Error): ConvexError<any> {
     )
   }
 
-  if ((message.includes('image') || message.includes('file')) && message.includes('format')) {
+  if (
+    (message.includes('image') || message.includes('file')) &&
+    message.includes('format')
+  ) {
     return new ConvexError(
       'The file format is not supported. Please try with a JPEG/PNG image or a PDF.'
     )
   }
 
   if (message.includes('size') || message.includes('large')) {
-    return new ConvexError('The file is too large. Please try with a smaller file.')
+    return new ConvexError(
+      'The file is too large. Please try with a smaller file.'
+    )
   }
 
   if (message.includes('network') || message.includes('connection')) {
@@ -148,4 +157,49 @@ export function createFallbackError(originalError: Error): ConvexError<any> {
   return new ConvexError(
     'Could not process your resume. Please try with a clearer image/PDF or enter information manually.'
   )
+}
+
+/**
+ * Recursively converts nulls to undefined in an object/array.
+ */
+export function nullsToUndefinedDeep<T = any>(value: T): T {
+  if (value === null) return undefined as unknown as T
+  if (Array.isArray(value)) {
+    return value.map((v) => nullsToUndefinedDeep(v)) as unknown as T
+  }
+  if (typeof value === 'object' && value) {
+    const out: any = {}
+    for (const [k, v] of Object.entries(value as any)) {
+      const nv = nullsToUndefinedDeep(v as any)
+      out[k] = nv
+    }
+    return out
+  }
+  return value
+}
+
+/**
+ * Attempts to salvage a model JSON string by sanitizing nulls and
+ * validating against the strict app schema. Returns parsed data or null.
+ */
+export function trySalvageFromAIText<T>(
+  jsonText: string,
+  strictSchema: { safeParse: (v: unknown) => { success: boolean; data?: any } }
+): T | null {
+  try {
+    const raw = JSON.parse(jsonText)
+    const sanitized = nullsToUndefinedDeep(raw)
+    // Provide defaults for required arrays if omitted/null
+    if (sanitized && typeof sanitized === 'object') {
+      ;(sanitized as any).experiences = (sanitized as any).experiences ?? []
+      ;(sanitized as any).training = (sanitized as any).training ?? []
+      ;(sanitized as any).skills = (sanitized as any).skills ?? []
+      ;(sanitized as any).genres = (sanitized as any).genres ?? []
+    }
+    const parsed = strictSchema.safeParse(sanitized)
+    if (parsed.success) return parsed.data as T
+    return null
+  } catch {
+    return null
+  }
 }

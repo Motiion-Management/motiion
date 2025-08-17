@@ -119,8 +119,11 @@ export const parseResumeDocumentDev = action({
     sagAftraId: v.optional(v.string())
   }),
   handler: async (ctx, args): Promise<ParsedResume> => {
-    return await ctx.runAction(internal.ai.documentProcessor.parseResumeDocument, {
-      storageId: args.storageId
-    })
+    return await ctx.runAction(
+      internal.ai.documentProcessor.parseResumeDocument,
+      {
+        storageId: args.storageId
+      }
+    )
   }
 })

@@ -14,7 +14,7 @@ export const TRAINING_TYPES = [
 // Frontend-facing fields (what users can edit)
 export const trainingInput = {
   type: z.enum(TRAINING_TYPES),
-  institution: z.string(),
+  institution: z.string().optional(),
   instructors: z.array(z.string()).optional(),
   startYear: z.number().optional(),
   endYear: z.number().optional(),

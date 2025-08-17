@@ -4,7 +4,6 @@ import { internal } from '../_generated/api'
 import { ConvexError } from 'convex/values'
 import { Id } from '../_generated/dataModel'
 
-
 type Experience = {
   type: 'tv-film' | 'music-video' | 'live-performance' | 'commercial'
   title?: string
@@ -52,7 +51,6 @@ type ParsedResume = {
   genres: string[]
   sagAftraId?: string
 }
-
 
 // New unified document parsing action
 export const parseResumeDocument = authAction({
@@ -117,9 +115,12 @@ export const parseResumeDocument = authAction({
   }),
   handler: async (ctx, args): Promise<ParsedResume> => {
     // Call the new unified document processor
-    return await ctx.runAction(internal.ai.documentProcessor.parseResumeDocument, {
-      storageId: args.storageId
-    })
+    return await ctx.runAction(
+      internal.ai.documentProcessor.parseResumeDocument,
+      {
+        storageId: args.storageId
+      }
+    )
   }
 })
 

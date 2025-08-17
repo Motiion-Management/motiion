@@ -1,10 +1,14 @@
 import { internalAction } from '../_generated/server'
 import { internal } from '../_generated/api'
 import { v } from 'convex/values'
-import { openai } from '@ai-sdk/openai'
-import { generateObject } from 'ai'
+import OpenAI from 'openai'
 import { ConvexError } from 'convex/values'
-import { resumeSchema, type ParsedResumeData } from './schemas'
+import {
+  resumeSchema,
+  resumeAIJsonSchema,
+  type ParsedResumeData
+} from './schemas'
+import { trySalvageFromAIText } from './utils'
 
 export const parseResumeText = internalAction({
   args: {
@@ -108,27 +112,41 @@ For experiences, extract:
 - Key collaborators (artists, choreographers, directors, main talent)
 - Venue/studio/company information
 
-Extract only information that is clearly present in the text. Do not infer or assume data.`
+Output rules:
+- Do not output null values. If a field is unknown, omit the key entirely.
+- For array fields (experiences, training, skills, genres), use empty arrays when no items are present.
+- Use the exact enum labels for types as specified above.
+- Extract only information that is clearly present in the text. Do not infer or assume data.`
 
-      const result = await generateObject({
-        model: openai('gpt-4o-mini'), // Cost-effective for text processing
-        schema: resumeSchema,
-        prompt,
-        messages: [
+      const client = new OpenAI({ apiKey: process.env.OPENAI_API_KEY })
+      const rsp = await client.responses.create({
+        model: 'gpt-4o',
+        input: [
           {
+            type: 'message',
+            role: 'system',
+            content: [{ type: 'input_text', text: prompt }]
+          },
+          {
+            type: 'message',
             role: 'user',
-            content: `Please parse this resume text:\n\n${args.text}`
+            content: [
+              {
+                type: 'input_text',
+                text: `Please parse this resume text:\n\n${args.text}`
+              }
+            ]
           }
         ],
-        temperature: 0.1 // Low temperature for consistent extraction
+        text: { format: { type: 'json_object' } },
+        temperature: 0.1
       })
 
-      // Convert null values to undefined for proper schema validation
-      const cleanedResult = {
-        ...result.object,
-        sagAftraId: result.object.sagAftraId === null ? undefined : result.object.sagAftraId
+      const json = rsp.output_text
+      if (json && json.trim().length > 0) {
+        return JSON.parse(json)
       }
-      return cleanedResult
+      throw new Error('Empty response')
     } catch (error: any) {
       console.error('Text parsing error:', error)
 
@@ -139,23 +157,44 @@ Extract only information that is clearly present in the text. Do not infer or as
       // Handle AI SDK specific errors
       if (error.status === 429) {
         if (retryCount < maxRetries) {
-          console.log(`Rate limited, retrying... (attempt ${retryCount + 1}/${maxRetries})`)
-          await new Promise(resolve => setTimeout(resolve, (retryCount + 1) * 2000))
-          
+          console.log(
+            `Rate limited, retrying... (attempt ${retryCount + 1}/${maxRetries})`
+          )
+          await new Promise((resolve) =>
+            setTimeout(resolve, (retryCount + 1) * 2000)
+          )
+
           // Recursive retry
           return await ctx.runAction(internal.ai.textParser.parseResumeText, {
             text: args.text,
             retryCount: retryCount + 1
           })
         }
-        throw new ConvexError('Service is temporarily busy. Please try again in a few minutes.')
+        throw new ConvexError(
+          'Service is temporarily busy. Please try again in a few minutes.'
+        )
       }
 
       if (error.status === 400) {
-        throw new ConvexError('The provided text could not be processed. Please check the content and try again.')
+        throw new ConvexError(
+          'The provided text could not be processed. Please check the content and try again.'
+        )
       }
 
-      throw new ConvexError(`Failed to parse resume text: ${error.message || 'Unknown error'}`)
+      // Attempt salvage from raw AI JSON if available
+      const text: string | undefined =
+        error?.text || error?.response?.output_text
+      if (typeof text === 'string') {
+        const salvaged = trySalvageFromAIText<ParsedResumeData>(
+          text,
+          resumeSchema
+        )
+        if (salvaged) return salvaged
+      }
+
+      throw new ConvexError(
+        `Failed to parse resume text: ${error.message || 'Unknown error'}`
+      )
     }
   }
 })
