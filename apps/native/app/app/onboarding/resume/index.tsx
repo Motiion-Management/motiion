@@ -6,6 +6,7 @@ import * as DocumentPicker from 'expo-document-picker';
 import { api } from '@packages/backend/convex/_generated/api';
 import { useMutation, useAction } from 'convex/react';
 import { useActionSheet } from '@expo/react-native-action-sheet';
+import mammoth from 'mammoth';
 
 import { BaseOnboardingScreen } from '~/components/layouts/BaseOnboardingScreen';
 import { OnboardingStepGuard } from '~/components/onboarding/OnboardingGuard';
@@ -33,6 +34,17 @@ export default function ResumeScreen() {
   const nav = useSimpleOnboardingFlow();
   const generateUploadUrl = useMutation(api.files.generateUploadUrl);
   const parseResumeDocument = useAction(api.users.resumeImport.parseResumeDocument);
+  const parseResumeTextDirect = useAction(api.users.resumeImport.parseResumeTextDirect);
+
+  // Helper function to check if file is a Word document
+  const isWordDocument = (mimeType: string, fileName: string): boolean => {
+    return (
+      mimeType?.includes('wordprocessingml') ||
+      mimeType?.includes('msword') ||
+      fileName?.toLowerCase().endsWith('.docx') ||
+      fileName?.toLowerCase().endsWith('.doc')
+    );
+  };
 
   const handleImportIntent = () => {
     const options = ['Take Photo', 'Choose Image', 'Upload Document', 'Cancel'];
@@ -95,21 +107,54 @@ export default function ResumeScreen() {
 
       const asset = result.assets[0];
 
+      // Check if this is a Word document - if so, process on-device
+      if (isWordDocument(asset.mimeType || '', asset.name || '')) {
+        try {
+          console.log('Processing Word document on-device...');
+          
+          // Read the file as array buffer
+          const response = await fetch(asset.uri);
+          const arrayBuffer = await response.arrayBuffer();
+          
+          // Extract text using Mammoth
+          const result = await mammoth.extractRawText({ arrayBuffer });
+          const extractedText = result.value;
+          
+          if (!extractedText || extractedText.trim().length === 0) {
+            throw new Error('No text could be extracted from the Word document');
+          }
+          
+          console.log('Text extracted successfully, parsing with AI...');
+          
+          // Parse the extracted text directly
+          const parsed = await parseResumeTextDirect({ text: extractedText });
+          setParsedData(parsed);
+          return;
+        } catch (wordError) {
+          console.error('Word document processing failed:', wordError);
+          // Fall through to the upload method as fallback
+          console.log('Falling back to server-side processing...');
+        }
+      }
+
+      // For non-Word documents or if Word processing failed, upload and process server-side
+      console.log('Processing document server-side...');
+      
       // Generate upload URL
       const uploadUrl = await generateUploadUrl();
 
       // Upload the file
-      const response = await fetch(uploadUrl, {
+      const uploadResponse = await fetch(uploadUrl, {
         method: 'POST',
         headers: { 'Content-Type': asset.mimeType || 'application/octet-stream' },
         body: await (await fetch(asset.uri)).blob(),
       });
 
-      if (!response.ok) {
+      if (!uploadResponse.ok) {
         throw new Error('Upload failed');
       }
 
-      const { storageId } = await response.json();
+      const { storageId } = await uploadResponse.json();
 
       // Parse the resume using unified API
       const parsed = await parseResumeDocument({ storageId });
@@ -128,7 +173,7 @@ export default function ResumeScreen() {
     } finally {
       setIsProcessing(false);
     }
-  }, [generateUploadUrl, parseResumeDocument, handleSkip]);
+  }, [generateUploadUrl, parseResumeDocument, parseResumeTextDirect, handleSkip]);
 
   const handleUploadResume = useCallback(async () => {
     try {

@@ -101,7 +101,7 @@ export function ParsedResumeReview({
           {isSaving ? (
             <View className="flex-row items-center justify-center p-4">
               <ActivityIndicator size="small" className="mr-2" />
-              <Text variant="body" className="text-text-secondary">
+              <Text variant="body" className="">
                 Saving your resume...
               </Text>
             </View>
@@ -131,11 +131,11 @@ export function ParsedResumeReview({
           {/* SAG-AFTRA ID */}
           {editedData.sagAftraId && (
             <View className="gap-2">
-              <Text variant="header3" className="text-text-primary font-semibold">
+              <Text variant="header3" className="font-semibold">
                 SAG - AFTRA ID
               </Text>
               <View className="bg-background-secondary rounded-lg p-3">
-                <Text variant="body" className="text-text-primary">
+                <Text variant="body" className="">
                   {editedData.sagAftraId}
                 </Text>
               </View>
@@ -145,11 +145,11 @@ export function ParsedResumeReview({
           {/* Skills */}
           {editedData.skills.length > 0 && (
             <View className="gap-2">
-              <Text variant="header3" className="text-text-primary font-semibold">
+              <Text variant="header3" className="font-semibold">
                 Skills({editedData.skills.length})
               </Text>
               <View className="bg-background-secondary rounded-lg p-3">
-                <Text variant="body" className="text-text-primary">
+                <Text variant="body" className="">
                   {editedData.skills.join(', ')}
                 </Text>
               </View>
@@ -159,11 +159,11 @@ export function ParsedResumeReview({
           {/* Genres */}
           {editedData.genres.length > 0 && (
             <View className="gap-2">
-              <Text variant="header3" className="text-text-primary font-semibold">
+              <Text variant="header3" className="font-semibold">
                 Genres({editedData.genres.length})
               </Text>
               <View className="bg-background-secondary rounded-lg p-3">
-                <Text variant="body" className="text-text-primary">
+                <Text variant="body" className="">
                   {editedData.genres.join(', ')}
                 </Text>
               </View>
@@ -173,37 +173,37 @@ export function ParsedResumeReview({
           {/* Experiences */}
           {editedData.experiences.length > 0 && (
             <View className="gap-2">
-              <Text variant="header3" className="text-text-primary font-semibold">
+              <Text variant="header3" className="font-semibold">
                 Experience({editedData.experiences.length})
               </Text>
               <View className="gap-3">
                 {editedData.experiences.map((exp, index) => (
                   <View key={index} className="bg-background-secondary gap-2 rounded-lg p-3">
                     <View className="flex-row items-start justify-between">
-                      <Text variant="body" className="text-text-primary flex-1 font-medium">
+                      <Text variant="body" className="flex-1 font-medium">
                         {exp.title || 'Untitled Project'}
                       </Text>
                       <View className="bg-accent-primary/10 rounded px-2 py-1">
-                        <Text variant="caption1" className="text-accent-primary">
+                        <Text variant="caption1" className="">
                           {formatExperienceType(exp.type)}
                         </Text>
                       </View>
                     </View>
 
                     {(exp.startDate || exp.endDate) && (
-                      <Text variant="footnote" className="text-text-secondary">
+                      <Text variant="footnote" className="">
                         {exp.startDate} {exp.endDate && exp.startDate ? ' - ' : ''} {exp.endDate}
                       </Text>
                     )}
 
                     {exp.roles && exp.roles.length > 0 && (
-                      <Text variant="footnote" className="text-text-secondary">
+                      <Text variant="footnote" className="">
                         Roles: {exp.roles.join(', ')}
                       </Text>
                     )}
 
                     {(exp.studio || exp.artists || exp.companyName || exp.venue) && (
-                      <Text variant="footnote" className="text-text-secondary">
+                      <Text variant="footnote" className="">
                         {exp.studio ||
                           (exp.artists && exp.artists.join(', ')) ||
                           exp.companyName ||
@@ -219,38 +219,38 @@ export function ParsedResumeReview({
           {/* Training */}
           {editedData.training.length > 0 && (
             <View className="gap-2">
-              <Text variant="header3" className="text-text-primary font-semibold">
+              <Text variant="header3" className="font-semibold">
                 Training({editedData.training.length})
               </Text>
               <View className="gap-3">
                 {editedData.training.map((train, index) => (
                   <View key={index} className="bg-background-secondary gap-2 rounded-lg p-3">
                     <View className="flex-row items-start justify-between">
-                      <Text variant="body" className="text-text-primary flex-1 font-medium">
+                      <Text variant="body" className="flex-1 font-medium">
                         {train.institution}
                       </Text>
                       <View className="bg-accent-primary/10 rounded px-2 py-1">
-                        <Text variant="caption1" className="text-accent-primary">
+                        <Text variant="caption1" className="">
                           {formatTrainingType(train.type)}
                         </Text>
                       </View>
                     </View>
 
                     {(train.startYear || train.endYear) && (
-                      <Text variant="footnote" className="text-text-secondary">
+                      <Text variant="footnote" className="">
                         {train.startYear} {train.endYear && train.startYear ? ' - ' : ''}{' '}
                         {train.endYear}
                       </Text>
                     )}
 
                     {train.degree && (
-                      <Text variant="footnote" className="text-text-secondary">
+                      <Text variant="footnote" className="">
                         {train.degree}
                       </Text>
                     )}
 
                     {train.instructors && train.instructors.length > 0 && (
-                      <Text variant="footnote" className="text-text-secondary">
+                      <Text variant="footnote" className="">
                         Instructors: {train.instructors.join(', ')}
                       </Text>
                     )}
@@ -267,17 +267,17 @@ export function ParsedResumeReview({
             editedData.genres.length === 0 &&
             !editedData.sagAftraId && (
               <View className="bg-background-secondary items-center gap-2 rounded-lg p-6">
-                <Text variant="body" className="text-text-secondary text-center">
+                <Text variant="body" className="text-center">
                   We couldn't extract much information from your resume.
                 </Text>
-                <Text variant="footnote" className="text-text-secondary text-center">
+                <Text variant="footnote" className="text-center">
                   You can try uploading a different image or enter your information manually.
                 </Text>
               </View>
             )}
 
           <View className="bg-accent-primary/5 gap-2 rounded-lg p-4">
-            <Text variant="footnote" className="text-text-secondary text-center">
+            <Text variant="footnote" className="text-center">
               💡 Tip: This information will be added to your existing profile.You can always edit or
               add more details later in your profile settings.
             </Text>

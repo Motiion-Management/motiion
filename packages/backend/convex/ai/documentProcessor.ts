@@ -367,26 +367,9 @@ function isPdfFile(contentType: string, fileName: string): boolean {
   )
 }
 
-// Process Word documents by extracting text
+// Process Word documents using OpenAI's direct file support
 async function processWordDocument(fileUrl: string) {
   try {
-    // Download the file
-    const response = await fetch(fileUrl)
-    if (!response.ok) {
-      throw new Error(`Failed to download file: ${response.status}`)
-    }
-
-    const arrayBuffer = await response.arrayBuffer()
-
-    // Extract text using Mammoth
-    const result = await mammoth.extractRawText({ arrayBuffer })
-    const text = result.value
-
-    if (!text || text.trim().length === 0) {
-      throw new ConvexError('No text could be extracted from the Word document')
-    }
-
-    // Process the extracted text using the cheaper text API
     const client = new OpenAI({ apiKey: process.env.OPENAI_API_KEY })
     const rsp = await client.responses.create({
       model: 'gpt-4o',
@@ -394,7 +377,9 @@ async function processWordDocument(fileUrl: string) {
         {
           type: 'message',
           role: 'system',
-          content: [{ type: 'input_text', text: createTextExtractionPrompt() }]
+          content: [
+            { type: 'input_text', text: createVisionExtractionPrompt() }
+          ]
         },
         {
           type: 'message',
@@ -402,8 +387,9 @@ async function processWordDocument(fileUrl: string) {
           content: [
             {
               type: 'input_text',
-              text: `Please parse this resume text extracted from a Word document:\n\n${text}`
-            }
+              text: 'Please parse this resume Word document:'
+            },
+            { type: 'input_file', file_url: fileUrl }
           ]
         }
       ],
@@ -412,20 +398,82 @@ async function processWordDocument(fileUrl: string) {
       },
       temperature: 0.1
     })
-    // responses.create adds output_text; with json_object, output_text is JSON
+
     const json = rsp.output_text
     return processAIResponse(json)
   } catch (error: any) {
     console.error('Word document processing error:', error)
-    // Attempt salvage from raw JSON text if available
-    const textOut: string | undefined =
-      error?.text || error?.response?.output_text
-    if (typeof textOut === 'string') {
-      return processAIResponse(textOut)
+
+    // Try fallback with Mammoth text extraction if OpenAI direct processing fails
+    try {
+      console.log('Attempting fallback with Mammoth text extraction...')
+
+      // Download the file
+      const response = await fetch(fileUrl)
+      if (!response.ok) {
+        throw new Error(`Failed to download file: ${response.status}`)
+      }
+
+      const arrayBuffer = await response.arrayBuffer()
+
+      // Extract text using Mammoth
+      const result = await mammoth.extractRawText({ arrayBuffer })
+      const text = result.value
+
+      if (!text || text.trim().length === 0) {
+        throw new Error('No text could be extracted from the Word document')
+      }
+
+      // Process the extracted text using text API
+      const client = new OpenAI({ apiKey: process.env.OPENAI_API_KEY })
+      const rsp = await client.responses.create({
+        model: 'gpt-4o',
+        input: [
+          {
+            type: 'message',
+            role: 'system',
+            content: [
+              { type: 'input_text', text: createTextExtractionPrompt() }
+            ]
+          },
+          {
+            type: 'message',
+            role: 'user',
+            content: [
+              {
+                type: 'input_text',
+                text: `Please parse this resume text extracted from a Word document:\n\n${text}`
+              }
+            ]
+          }
+        ],
+        text: {
+          format: { type: 'json_object' }
+        },
+        temperature: 0.1
+      })
+
+      const json = rsp.output_text
+      return processAIResponse(json)
+    } catch (fallbackError: any) {
+      console.error('Mammoth fallback also failed:', fallbackError)
+
+      // Check for any available response text
+      const textOut: string | undefined =
+        error?.text ||
+        error?.response?.output_text ||
+        fallbackError?.text ||
+        fallbackError?.response?.output_text
+      if (typeof textOut === 'string') {
+        return processAIResponse(textOut)
+      }
+
+      // Return graceful fallback instead of throwing
+      console.log(
+        'Word document processing failed completely, returning graceful fallback'
+      )
+      return createGracefulFallback()
     }
-    // Return graceful fallback instead of throwing
-    console.log('Word document processing failed, returning graceful fallback')
-    return createGracefulFallback()
   }
 }
 
