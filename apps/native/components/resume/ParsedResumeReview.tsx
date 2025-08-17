@@ -7,14 +7,8 @@ import { BaseOnboardingScreen } from '~/components/layouts/BaseOnboardingScreen'
 import { Button } from '~/components/ui/button';
 import { Text } from '~/components/ui/text';
 import { ActivityIndicator } from '~/components/ui/activity-indicator';
-
-interface ParsedResumeData {
-  experiences: any[];
-  training: any[];
-  skills: string[];
-  genres: string[];
-  sagAftraId?: string;
-}
+import { type ParsedResumeData } from '@packages/backend/convex/ai/schemas';
+import { EXPERIENCE_TITLE_MAP } from '@packages/backend/convex/validators/experiences';
 
 interface ParsedResumeReviewProps {
   parsedData: ParsedResumeData;
@@ -56,35 +50,18 @@ export function ParsedResumeReview({
   }, [editedData, applyParsedData, onComplete]);
 
   const formatExperienceType = (type: string) => {
-    switch (type) {
-      case 'tv-film':
-        return 'Television & Film';
-      case 'music-video':
-        return 'Music Videos';
-      case 'live-performance':
-        return 'Live Performances';
-      case 'commercial':
-        return 'Commercials';
-      default:
-        return type;
-    }
+    return EXPERIENCE_TITLE_MAP[type as keyof typeof EXPERIENCE_TITLE_MAP] || type;
   };
 
   const formatTrainingType = (type: string) => {
-    switch (type) {
-      case 'education':
-        return 'Education';
-      case 'dance-school':
-        return 'Dance School';
-      case 'programs-intensives':
-        return 'Programs & Intensives';
-      case 'scholarships':
-        return 'Scholarships';
-      case 'other':
-        return 'Other';
-      default:
-        return type;
-    }
+    const typeMap = {
+      education: 'Education',
+      'dance-school': 'Dance School',
+      'programs-intensives': 'Programs & Intensives',
+      scholarships: 'Scholarships',
+      other: 'Other',
+    };
+    return typeMap[type as keyof typeof typeMap] || type;
   };
 
   return (

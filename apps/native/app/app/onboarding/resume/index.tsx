@@ -1,306 +1,61 @@
 import React, { useState, useCallback } from 'react';
-import { View, Alert } from 'react-native';
+import { View } from 'react-native';
 import { Image } from 'expo-image';
-import * as ImagePicker from 'expo-image-picker';
-import * as DocumentPicker from 'expo-document-picker';
-import { api } from '@packages/backend/convex/_generated/api';
-import { useMutation, useAction } from 'convex/react';
 import { useActionSheet } from '@expo/react-native-action-sheet';
-import mammoth from 'mammoth';
+import { router } from 'expo-router';
 
 import { BaseOnboardingScreen } from '~/components/layouts/BaseOnboardingScreen';
 import { OnboardingStepGuard } from '~/components/onboarding/OnboardingGuard';
 import { Button } from '~/components/ui/button';
 import { Text } from '~/components/ui/text';
 import { ActivityIndicator } from '~/components/ui/activity-indicator';
-import { router } from 'expo-router';
 import { useSimpleOnboardingFlow } from '~/hooks/useSimpleOnboardingFlow';
 import { ParsedResumeReview } from '~/components/resume/ParsedResumeReview';
-
-interface ParsedResumeData {
-  experiences: any[];
-  training: any[];
-  skills: string[];
-  genres: string[];
-  sagAftraId?: string;
-}
+import { useResumeUpload } from '~/hooks/useResumeUpload';
+import { type ParsedResumeData } from '@packages/backend/convex/ai/schemas';
 
 export default function ResumeScreen() {
   const { showActionSheetWithOptions } = useActionSheet();
-  const [isProcessing, setIsProcessing] = useState(false);
   const [parsedData, setParsedData] = useState<ParsedResumeData | null>(null);
-  const [hasError, setHasError] = useState(false);
 
   const nav = useSimpleOnboardingFlow();
-  const generateUploadUrl = useMutation(api.files.generateUploadUrl);
-  const parseResumeDocument = useAction(api.users.resumeImport.parseResumeDocument);
-  const parseResumeTextDirect = useAction(api.users.resumeImport.parseResumeTextDirect);
 
-  // Helper function to check if file is a Word document
-  const isWordDocument = (mimeType: string, fileName: string): boolean => {
-    return (
-      mimeType?.includes('wordprocessingml') ||
-      mimeType?.includes('msword') ||
-      fileName?.toLowerCase().endsWith('.docx') ||
-      fileName?.toLowerCase().endsWith('.doc')
-    );
-  };
+  const handleSkip = useCallback(() => {
+    router.push('/app/onboarding/experiences');
+  }, []);
+
+  const resumeUpload = useResumeUpload({
+    onSuccess: setParsedData,
+    onSkip: handleSkip,
+  });
 
   const handleImportIntent = () => {
     const options = ['Take Photo', 'Choose Image', 'Upload Document', 'Cancel'];
-    // const destructiveButtonIndex = 0;
     const cancelButtonIndex = 3;
 
     showActionSheetWithOptions(
       {
         options,
         cancelButtonIndex,
-        // destructiveButtonIndex,
       },
       (selectedIndex?: number) => {
         switch (selectedIndex) {
           case 0:
-            // Take Photo
-            handleTakePhoto();
+            resumeUpload.actions.handleTakePhoto();
             break;
           case 1:
-            // Choose Image
-            handleUploadResume();
+            resumeUpload.actions.handleUploadImage();
             break;
-
           case 2:
-            // Upload Document
-            handlePickDocument();
+            resumeUpload.actions.handlePickDocument();
             break;
-
           case cancelButtonIndex:
-          // Canceled
+            // Canceled
+            break;
         }
       }
     );
   };
-
-  const handleSkip = useCallback(() => {
-    router.push('/app/onboarding/experiences');
-  }, []);
-
-  const handlePickDocument = useCallback(async () => {
-    try {
-      setIsProcessing(true);
-      setHasError(false);
-
-      // Pick a document (support images, PDFs, and Word docs)
-      const result = await DocumentPicker.getDocumentAsync({
-        multiple: false,
-        type: [
-          'image/*',
-          'application/pdf',
-          'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
-          'application/msword',
-        ],
-        copyToCacheDirectory: true,
-      });
-
-      if (result.canceled || !result.assets?.[0]) {
-        return;
-      }
-
-      const asset = result.assets[0];
-
-      // Check if this is a Word document - if so, process on-device
-      if (isWordDocument(asset.mimeType || '', asset.name || '')) {
-        try {
-          console.log('Processing Word document on-device...');
-          
-          // Read the file as array buffer
-          const response = await fetch(asset.uri);
-          const arrayBuffer = await response.arrayBuffer();
-          
-          // Extract text using Mammoth
-          const result = await mammoth.extractRawText({ arrayBuffer });
-          const extractedText = result.value;
-          
-          if (!extractedText || extractedText.trim().length === 0) {
-            throw new Error('No text could be extracted from the Word document');
-          }
-          
-          console.log('Text extracted successfully, parsing with AI...');
-          
-          // Parse the extracted text directly
-          const parsed = await parseResumeTextDirect({ text: extractedText });
-          setParsedData(parsed);
-          return;
-        } catch (wordError) {
-          console.error('Word document processing failed:', wordError);
-          // Fall through to the upload method as fallback
-          console.log('Falling back to server-side processing...');
-        }
-      }
-
-      // For non-Word documents or if Word processing failed, upload and process server-side
-      console.log('Processing document server-side...');
-      
-      // Generate upload URL
-      const uploadUrl = await generateUploadUrl();
-
-      // Upload the file
-      const uploadResponse = await fetch(uploadUrl, {
-        method: 'POST',
-        headers: { 'Content-Type': asset.mimeType || 'application/octet-stream' },
-        body: await (await fetch(asset.uri)).blob(),
-      });
-
-      if (!uploadResponse.ok) {
-        throw new Error('Upload failed');
-      }
-
-      const { storageId } = await uploadResponse.json();
-
-      // Parse the resume using unified API
-      const parsed = await parseResumeDocument({ storageId });
-      setParsedData(parsed);
-    } catch (error) {
-      console.error('Resume document upload error:', error);
-      setHasError(true);
-      Alert.alert(
-        'Upload Failed',
-        "Sorry, we couldn't process your file. Please try again or enter your information manually.",
-        [
-          { text: 'Try Again', onPress: () => setHasError(false) },
-          { text: 'Enter Manually', onPress: handleSkip },
-        ]
-      );
-    } finally {
-      setIsProcessing(false);
-    }
-  }, [generateUploadUrl, parseResumeDocument, parseResumeTextDirect, handleSkip]);
-
-  const handleUploadResume = useCallback(async () => {
-    try {
-      setIsProcessing(true);
-      setHasError(false);
-
-      // Request permissions
-      const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
-      if (status !== 'granted') {
-        Alert.alert(
-          'Permission Required',
-          'We need camera roll permissions to upload your resume.'
-        );
-        return;
-      }
-
-      // Pick image
-      const result = await ImagePicker.launchImageLibraryAsync({
-        mediaTypes: ImagePicker.MediaTypeOptions.Images,
-        allowsMultipleSelection: false,
-        quality: 0.9,
-        allowsEditing: false,
-      });
-
-      if (result.canceled || !result.assets[0]) {
-        return;
-      }
-
-      const asset = result.assets[0];
-
-      // Generate upload URL
-      const uploadUrl = await generateUploadUrl();
-
-      // Upload the file
-      const response = await fetch(uploadUrl, {
-        method: 'POST',
-        headers: { 'Content-Type': asset.mimeType || 'image/jpeg' },
-        body: await (await fetch(asset.uri)).blob(),
-      });
-
-      if (!response.ok) {
-        throw new Error('Upload failed');
-      }
-
-      const { storageId } = await response.json();
-
-      // Parse the resume using unified API
-      const parsed = await parseResumeDocument({ storageId });
-      setParsedData(parsed);
-    } catch (error) {
-      console.error('Resume upload error:', error);
-      setHasError(true);
-      Alert.alert(
-        'Upload Failed',
-        "Sorry, we couldn't process your resume. Please try again or enter your information manually.",
-        [
-          { text: 'Try Again', onPress: () => setHasError(false) },
-          { text: 'Enter Manually', onPress: handleSkip },
-        ]
-      );
-    } finally {
-      setIsProcessing(false);
-    }
-  }, [generateUploadUrl, parseResumeDocument, handleSkip]);
-
-  const handleTakePhoto = useCallback(async () => {
-    try {
-      setIsProcessing(true);
-      setHasError(false);
-
-      // Request camera permissions
-      const { status } = await ImagePicker.requestCameraPermissionsAsync();
-      if (status !== 'granted') {
-        Alert.alert(
-          'Permission Required',
-          'We need camera permissions to take a photo of your resume.'
-        );
-        return;
-      }
-
-      // Take photo
-      const result = await ImagePicker.launchCameraAsync({
-        mediaTypes: ImagePicker.MediaTypeOptions.Images,
-        quality: 0.9,
-        allowsEditing: false,
-      });
-
-      if (result.canceled || !result.assets[0]) {
-        return;
-      }
-
-      const asset = result.assets[0];
-
-      // Generate upload URL
-      const uploadUrl = await generateUploadUrl();
-
-      // Upload the file
-      const response = await fetch(uploadUrl, {
-        method: 'POST',
-        headers: { 'Content-Type': asset.mimeType || 'image/jpeg' },
-        body: await (await fetch(asset.uri)).blob(),
-      });
-
-      if (!response.ok) {
-        throw new Error('Upload failed');
-      }
-
-      const { storageId } = await response.json();
-
-      // Parse the resume using unified API
-      const parsed = await parseResumeDocument({ storageId });
-      setParsedData(parsed);
-    } catch (error) {
-      console.error('Resume photo error:', error);
-      setHasError(true);
-      Alert.alert(
-        'Photo Failed',
-        "Sorry, we couldn't process your resume photo. Please try again or enter your information manually.",
-        [
-          { text: 'Try Again', onPress: () => setHasError(false) },
-          { text: 'Enter Manually', onPress: handleSkip },
-        ]
-      );
-    } finally {
-      setIsProcessing(false);
-    }
-  }, [generateUploadUrl, parseResumeDocument, handleSkip]);
 
   const handleReviewComplete = useCallback(() => {
     // After user reviews and confirms the data, proceed to next step
@@ -329,7 +84,7 @@ export default function ResumeScreen() {
         }}
         bottomActionSlot={
           <View className="w-full gap-3">
-            {isProcessing ? (
+            {resumeUpload.models.isProcessing ? (
               <View className="flex-row items-center justify-center p-4">
                 <ActivityIndicator size="small" className="mr-2" />
                 <Text variant="body" className="text-text-secondary">
@@ -342,11 +97,15 @@ export default function ResumeScreen() {
                   size="lg"
                   className="w-full"
                   onPress={handleImportIntent}
-                  disabled={isProcessing}>
+                  disabled={resumeUpload.models.isProcessing}>
                   <Text>Import</Text>
                 </Button>
 
-                <Button size="lg" variant="secondary" onPress={handleSkip} disabled={isProcessing}>
+                <Button
+                  size="lg"
+                  variant="secondary"
+                  onPress={handleSkip}
+                  disabled={resumeUpload.models.isProcessing}>
                   <Text>Enter Manually</Text>
                 </Button>
               </>

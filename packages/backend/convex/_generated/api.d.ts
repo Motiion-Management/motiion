@@ -18,6 +18,7 @@ import type * as agents from "../agents.js";
 import type * as ai_documentProcessor from "../ai/documentProcessor.js";
 import type * as ai_fileMetadata from "../ai/fileMetadata.js";
 import type * as ai_schemas from "../ai/schemas.js";
+import type * as ai_shared from "../ai/shared.js";
 import type * as ai_textParser from "../ai/textParser.js";
 import type * as ai_utils from "../ai/utils.js";
 import type * as clerk from "../clerk.js";
@@ -70,6 +71,7 @@ declare const fullApi: ApiFromModules<{
   "ai/documentProcessor": typeof ai_documentProcessor;
   "ai/fileMetadata": typeof ai_fileMetadata;
   "ai/schemas": typeof ai_schemas;
+  "ai/shared": typeof ai_shared;
   "ai/textParser": typeof ai_textParser;
   "ai/utils": typeof ai_utils;
   clerk: typeof clerk;
