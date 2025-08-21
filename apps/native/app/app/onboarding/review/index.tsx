@@ -1,4 +1,4 @@
-import React, { useCallback } from 'react';
+import React, { useCallback, useMemo, useState } from 'react';
 import { View, ScrollView, Alert } from 'react-native';
 import { api } from '@packages/backend/convex/_generated/api';
 import { useQuery } from 'convex/react';
@@ -9,6 +9,7 @@ import { OnboardingStepGuard } from '~/components/onboarding/OnboardingGuard';
 import { Text } from '~/components/ui/text';
 import { Button } from '~/components/ui/button';
 import { useUser } from '~/hooks/useUser';
+import { Tabs } from '~/components/ui/tabs/tabs';
 
 interface ProfileFieldProps {
   label: string;
@@ -75,6 +76,17 @@ export default function ReviewScreen() {
   const { user } = useUser();
   const experiences = useQuery(api.users.experiences.getMyExperiences) || [];
   const training = useQuery(api.training.getMyTraining) || [];
+  const [activeTab, setActiveTab] = useState<'attributes' | 'work' | 'experiences' | 'training' | 'additional'>('attributes');
+  const tabs = useMemo(
+    () => [
+      { key: 'attributes', label: 'Attributes' },
+      { key: 'work', label: 'Work' },
+      { key: 'experiences', label: 'Experience' },
+      { key: 'training', label: 'Training' },
+      { key: 'additional', label: 'Additional' },
+    ],
+    []
+  );
 
   const handleEditField = useCallback((fieldName: string) => {
     // Navigate to the specific onboarding step for editing
@@ -127,133 +139,157 @@ export default function ReviewScreen() {
         }>
         <ScrollView className="flex-1" showsVerticalScrollIndicator={false}>
           <View className="pb-8">
-            {/* Attributes Section */}
-            <Section title="Attributes" hasErrors={hasAttributeErrors}>
-              <ProfileField
-                label="Display Name"
-                value={user?.displayName}
-                onEdit={() => handleEditField('display-name')}
-              />
-              <ProfileField
-                label="Height"
-                value={
-                  user?.attributes?.height
-                    ? `${user.attributes.height.feet}'${user.attributes.height.inches}"`
-                    : undefined
-                }
-                onEdit={() => handleEditField('height')}
-              />
-              <ProfileField
-                label="Ethnicity"
-                value={user?.attributes?.ethnicity}
-                onEdit={() => handleEditField('ethnicity')}
-              />
-              <ProfileField
-                label="Hair Color"
-                value={user?.attributes?.hairColor}
-                onEdit={() => handleEditField('hair-color')}
-              />
-              <ProfileField
-                label="Eye Color"
-                value={user?.attributes?.eyeColor}
-                onEdit={() => handleEditField('eye-color')}
-              />
-              <ProfileField
-                label="Gender"
-                value={user?.attributes?.gender}
-                onEdit={() => handleEditField('gender')}
-              />
-            </Section>
+            <Tabs tabs={tabs} activeTab={activeTab} onTabChange={(k) => setActiveTab(k as typeof activeTab)} className="mb-4" />
+            {activeTab === 'attributes' && (
+              <Section title="Attributes" hasErrors={hasAttributeErrors}>
+                <ProfileField
+                  label="Display Name"
+                  value={user?.displayName}
+                  onEdit={() => handleEditField('display-name')}
+                />
+                <ProfileField
+                  label="Height"
+                  value={
+                    user?.attributes?.height
+                      ? `${user.attributes.height.feet}'${user.attributes.height.inches}"`
+                      : undefined
+                  }
+                  onEdit={() => handleEditField('height')}
+                />
+                <ProfileField
+                  label="Ethnicity"
+                  value={user?.attributes?.ethnicity}
+                  onEdit={() => handleEditField('ethnicity')}
+                />
+                <ProfileField
+                  label="Hair Color"
+                  value={user?.attributes?.hairColor}
+                  onEdit={() => handleEditField('hair-color')}
+                />
+                <ProfileField
+                  label="Eye Color"
+                  value={user?.attributes?.eyeColor}
+                  onEdit={() => handleEditField('eye-color')}
+                />
+                <ProfileField
+                  label="Gender"
+                  value={user?.attributes?.gender}
+                  onEdit={() => handleEditField('gender')}
+                />
+              </Section>
+            )}
 
-            {/* Work Details Section */}
-            <Section title="Work Details" hasErrors={hasWorkDetailErrors}>
-              <ProfileField
-                label="Headshots"
-                value={user?.headshots?.length ? `${user.headshots.length} photos` : undefined}
-                onEdit={() => handleEditField('headshots')}
-              />
-              <ProfileField
-                label="Sizing"
-                value={user?.sizing ? `General sizing information provided` : undefined}
-                onEdit={() => handleEditField('sizing')}
-              />
-              <ProfileField
-                label="Primary Location"
-                value={user?.location ? `${user.location.city}, ${user.location.state}` : undefined}
-                onEdit={() => handleEditField('location')}
-              />
-              <ProfileField
-                label="Work Locations"
-                value={user?.workLocation}
-                isArray={true}
-                onEdit={() => handleEditField('work-location')}
-              />
-              <ProfileField
-                label="Agency"
-                value={user?.representation?.agencyId ? 'Set' : 'Independent'}
-                onEdit={() => handleEditField('representation')}
-              />
-            </Section>
+            {activeTab === 'work' && (
+              <Section title="Work Details" hasErrors={hasWorkDetailErrors}>
+                <ProfileField
+                  label="Headshots"
+                  value={user?.headshots?.length ? `${user.headshots.length} photos` : undefined}
+                  onEdit={() => handleEditField('headshots')}
+                />
+                <ProfileField
+                  label="Sizing"
+                  value={user?.sizing ? `General sizing information provided` : undefined}
+                  onEdit={() => handleEditField('sizing')}
+                />
+                <ProfileField
+                  label="Primary Location"
+                  value={user?.location ? `${user.location.city}, ${user.location.state}` : undefined}
+                  onEdit={() => handleEditField('location')}
+                />
+                <ProfileField
+                  label="Work Locations"
+                  value={user?.workLocation}
+                  isArray={true}
+                  onEdit={() => handleEditField('work-location')}
+                />
+                <ProfileField
+                  label="Agency"
+                  value={user?.representation?.agencyId ? 'Set' : 'Independent'}
+                  onEdit={() => handleEditField('representation')}
+                />
+              </Section>
+            )}
 
-            {/* Experiences Section */}
-            {experiences.length > 0 && (
+            {activeTab === 'experiences' && (
               <Section title={`Experience (${experiences.length})`}>
-                {experiences.slice(0, 3).map((exp: any, index: number) => (
-                  <ProfileField
-                    key={exp._id}
-                    label={exp.title || 'Untitled Project'}
-                    value={exp.type}
-                    onEdit={() => handleEditField('experiences')}
-                  />
-                ))}
-                {experiences.length > 3 && (
-                  <ProfileField
-                    label={`+${experiences.length - 3} more experiences`}
-                    value=""
-                    onEdit={() => handleEditField('experiences')}
-                  />
+                {experiences.length === 0 ? (
+                  <Text variant="footnote" className="text-text-secondary">
+                    No experiences added yet.
+                  </Text>
+                ) : (
+                  <>
+                    {experiences.slice(0, 3).map((exp: any) => (
+                      <ProfileField
+                        key={exp._id}
+                        label={exp.title || 'Untitled Project'}
+                        value={exp.type}
+                        onEdit={() => handleEditField('experiences')}
+                      />
+                    ))}
+                    {experiences.length > 3 && (
+                      <ProfileField
+                        label={`+${experiences.length - 3} more experiences`}
+                        value=""
+                        onEdit={() => handleEditField('experiences')}
+                      />
+                    )}
+                  </>
                 )}
               </Section>
             )}
 
-            {/* Training Section */}
-            {training.length > 0 && (
+            {activeTab === 'training' && (
               <Section title={`Training (${training.length})`}>
-                {training.slice(0, 3).map((train: any, index: number) => (
-                  <ProfileField
-                    key={train._id}
-                    label={train.institution}
-                    value={train.type}
-                    onEdit={() => handleEditField('training')}
-                  />
-                ))}
-                {training.length > 3 && (
-                  <ProfileField
-                    label={`+${training.length - 3} more training`}
-                    value=""
-                    onEdit={() => handleEditField('training')}
-                  />
+                {training.length === 0 ? (
+                  <Text variant="footnote" className="text-text-secondary">
+                    No training added yet.
+                  </Text>
+                ) : (
+                  <>
+                    {training.slice(0, 3).map((train: any) => (
+                      <ProfileField
+                        key={train._id}
+                        label={train.institution}
+                        value={train.type}
+                        onEdit={() => handleEditField('training')}
+                      />
+                    ))}
+                    {training.length > 3 && (
+                      <ProfileField
+                        label={`+${training.length - 3} more training`}
+                        value=""
+                        onEdit={() => handleEditField('training')}
+                      />
+                    )}
+                  </>
                 )}
               </Section>
             )}
 
-            {/* Skills & Union Section */}
-            {(user?.resume?.skills?.length || user?.sagAftraId) && (
+            {activeTab === 'additional' && (
               <Section title="Additional Info">
-                {user?.resume?.skills && (
-                  <ProfileField
-                    label="Skills"
-                    value={user.resume.skills}
-                    isArray={true}
-                    onEdit={() => handleEditField('skills')}
-                  />
-                )}
-                {user?.sagAftraId && (
-                  <ProfileField
-                    label="SAG-AFTRA ID"
-                    value={user.sagAftraId}
-                    onEdit={() => handleEditField('union')}
-                  />
+                {(user?.resume?.skills?.length || user?.sagAftraId) ? (
+                  <>
+                    {user?.resume?.skills && (
+                      <ProfileField
+                        label="Skills"
+                        value={user.resume.skills}
+                        isArray={true}
+                        onEdit={() => handleEditField('skills')}
+                      />
+                    )}
+                    {user?.sagAftraId && (
+                      <ProfileField
+                        label="SAG-AFTRA ID"
+                        value={user.sagAftraId}
+                        onEdit={() => handleEditField('union')}
+                      />
+                    )}
+                  </>
+                ) : (
+                  <Text variant="footnote" className="text-text-secondary">
+                    No additional information provided yet.
+                  </Text>
                 )}
               </Section>
             )}
