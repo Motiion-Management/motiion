@@ -7,7 +7,7 @@ import { useMutation } from 'convex/react';
 import { api } from '@packages/backend/convex/_generated/api';
 import { useUser } from '~/hooks/useUser';
 import { Sheet, useSheetState } from '~/components/ui/sheet';
-import { TabView, type TabRoute } from '~/components/ui/tabs/TabView';
+import { Tabs } from '~/components/ui/tabs/tabs';
 import { Input } from '~/components/ui/input';
 import { useRouter, Href } from 'expo-router';
 import * as ImagePicker from 'expo-image-picker';
@@ -59,128 +59,15 @@ export function DevOnboardingTools() {
         }}
         stackBehavior="push">
         <View className="min-h-[260px] px-4 pb-4 pt-1">
-          <TabView
-            routes={[
-              { key: 'onboarding', title: 'Onboarding' },
-              { key: 'home', title: 'Home' },
-              { key: 'resume', title: 'Resume' },
+          <Tabs
+            tabs={[
+              { key: 'onboarding', label: 'Onboarding' },
+              { key: 'home', label: 'Home' },
+              { key: 'resume', label: 'Resume' },
             ]}
-            initialKey={activeTab}
-            onIndexChange={(_, key) => setActiveTab(key as 'onboarding' | 'home' | 'resume')}
+            activeTab={activeTab}
+            onTabChange={(k) => setActiveTab(k as 'onboarding' | 'home' | 'resume')}
             className="mb-3"
-            renderScene={(route: TabRoute) => {
-              switch (route.key) {
-                case 'onboarding':
-                  return (
-                    <View className="mt-1">
-                      <View className="mb-2 flex-row gap-2">
-                        <Button
-                          size="sm"
-                          variant="outline"
-                          onPress={async () => {
-                            await resetOnboarding({});
-                            onboarding.navigateToStep('profile-type');
-                          }}>
-                          <Text variant="bodySm">Reset</Text>
-                        </Button>
-                        <Button
-                          size="sm"
-                          variant="outline"
-                          onPress={async () => {
-                            await completeOnboarding({});
-                          }}>
-                          <Text variant="bodySm">Complete</Text>
-                        </Button>
-                      </View>
-
-                      <Text className="mb-1" variant="bodySm">
-                        Profile Type
-                      </Text>
-                      <View className="mb-2 flex-row gap-2">
-                        {(['dancer', 'choreographer', 'guest'] as ProfileType[]).map((pt) => (
-                          <Button
-                            key={pt}
-                            size="sm"
-                            variant={activeProfileType === pt ? 'primary' : 'outline'}
-                            onPress={async () => {
-                              await updateMyUser({ profileType: pt });
-                              const flow = ONBOARDING_FLOWS[pt];
-                              const next = flow[1] || 'profile-type';
-                              onboarding.navigateToStep(next);
-                            }}>
-                            <Text>{pt}</Text>
-                          </Button>
-                        ))}
-                      </View>
-
-                      <Text className="mb-1" variant="bodySm">
-                        Representation Status
-                      </Text>
-                      <View className="mb-2 flex-row gap-2">
-                        {(['represented', 'seeking', 'independent'] as const).map((rs) => (
-                          <Button
-                            key={rs}
-                            size="sm"
-                            variant={user?.representationStatus === rs ? 'primary' : 'outline'}
-                            onPress={async () => {
-                              await updateMyUser({ representationStatus: rs });
-                            }}>
-                            <Text>{rs}</Text>
-                          </Button>
-                        ))}
-                      </View>
-
-                      <Text className="mb-1" variant="bodySm">
-                        Steps ({activeProfileType})
-                      </Text>
-                      <View style={{ maxHeight: 220 }}>
-                        <ScrollView
-                          horizontal
-                          showsHorizontalScrollIndicator={false}
-                          contentContainerStyle={{ gap: 4, paddingVertical: 6 }}>
-                          {activeSteps.map((step) => (
-                            <Button
-                              size="sm"
-                              variant="outline"
-                              key={step}
-                              onPress={() => onboarding.navigateToStep(step)}>
-                              <Text>{step}</Text>
-                            </Button>
-                          ))}
-                        </ScrollView>
-                      </View>
-                    </View>
-                  )
-                case 'home':
-                  return (
-                    <View className="mt-1 gap-3">
-                      <Button
-                        onPress={() => router.push('/auth/(create-account)/enable-notifications' as Href)}>
-                        <Text>Open Enable Notifications</Text>
-                      </Button>
-                      <Button onPress={() => router.push('/app/home' as Href)}>
-                        <Text>Open Home</Text>
-                      </Button>
-                      <View className="flex-row items-center gap-2">
-                        <Input value={routeInput} onChangeText={setRouteInput} placeholder="/app/onboarding" />
-                        <Button onPress={handleGoToRoute}>
-                          <Text>Go</Text>
-                        </Button>
-                      </View>
-                    </View>
-                  )
-                case 'resume':
-                  return (
-                    <View className="mt-1 gap-3">
-                      <Button onPress={() => router.push('/app/onboarding/resume' as Href)}>
-                        <Text>Open Resume Import</Text>
-                      </Button>
-                    </View>
-                  )
-                default:
-                  return null
-              }
-            }}
           />
 
           {activeTab === 'onboarding' && (
@@ -264,7 +151,7 @@ export function DevOnboardingTools() {
             </View>
           )}
 
-          {false && activeTab === 'home' && (
+          {activeTab === 'home' && (
             <View className="mt-1 gap-3">
               <Button
                 onPress={() => router.push('/auth/(create-account)/enable-notifications' as Href)}>
@@ -294,7 +181,7 @@ export function DevOnboardingTools() {
             </View>
           )}
 
-          {false && activeTab === 'resume' && (
+          {activeTab === 'resume' && (
             <View className="mt-1 gap-3">
               <Text variant="bodySm">
                 Dev-only resume parser: supports images, PDFs, and Word docs. Uploads to Convex and

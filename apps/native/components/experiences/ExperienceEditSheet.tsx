@@ -62,7 +62,6 @@ export function ExperienceEditSheet({
   // Combined UI state for better management
   const initialUiState = {
     activeTab: 'details',
-    pagerProgress: 0,
     actionsHeight: 0,
     isSaving: false,
   };
@@ -199,7 +198,6 @@ export function ExperienceEditSheet({
           tabs={TABS}
           activeTab={uiState.activeTab}
           onTabChange={handleTabChange}
-          progress={uiState.pagerProgress}
           disabledKeys={!selectedType ? ['team'] : []}
         />
 
@@ -210,10 +208,7 @@ export function ExperienceEditSheet({
             initialPage={0}
             style={{ flex: 1 }}
             scrollEnabled={true}
-            onPageScroll={(e) => {
-              const { position = 0, offset = 0 } = e.nativeEvent || {};
-              setUiState((prev) => ({ ...prev, pagerProgress: position + offset }));
-            }}
+            // Do not update state on every frame to keep header springy
             onPageSelected={async (e) => {
               const idx = e.nativeEvent.position ?? 0;
               const nextTab = idx === 1 ? 'team' : 'details';
