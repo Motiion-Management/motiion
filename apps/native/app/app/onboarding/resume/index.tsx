@@ -11,21 +11,40 @@ import { Text } from '~/components/ui/text';
 import { ActivityIndicator } from '~/components/ui/activity-indicator';
 import { useSimpleOnboardingFlow } from '~/hooks/useSimpleOnboardingFlow';
 import { ParsedResumeReview } from '~/components/resume/ParsedResumeReview';
+import { ResumeImportStatus } from '~/components/resume/ResumeImportStatus';
 import { useResumeUpload } from '~/hooks/useResumeUpload';
 import { type ParsedResumeData } from '@packages/backend/convex/ai/schemas';
 
 export default function ResumeScreen() {
   const { showActionSheetWithOptions } = useActionSheet();
   const [parsedData, setParsedData] = useState<ParsedResumeData | null>(null);
+  const [showImportStatus, setShowImportStatus] = useState(false);
 
   const nav = useSimpleOnboardingFlow();
 
   const handleSkip = useCallback(() => {
-    router.push('/app/onboarding/experiences');
+    nav.navigateNext();
+  }, [nav]);
+
+  const handleResumeUploadStart = useCallback(() => {
+    setShowImportStatus(true);
+  }, []);
+
+  const handleImportComplete = useCallback(() => {
+    setShowImportStatus(false);
+    // This would normally be triggered by actual resume processing
+    // For now, we'll simulate the completion
+    setTimeout(() => {
+      // In real implementation, this would come from the upload hook
+      // setParsedData(actualParsedData);
+    }, 100);
   }, []);
 
   const resumeUpload = useResumeUpload({
-    onSuccess: setParsedData,
+    onSuccess: (data) => {
+      setShowImportStatus(false);
+      setParsedData(data);
+    },
     onSkip: handleSkip,
   });
 
@@ -59,8 +78,13 @@ export default function ResumeScreen() {
 
   const handleReviewComplete = useCallback(() => {
     // After user reviews and confirms the data, proceed to next step
-    router.push('/app/onboarding/experiences');
-  }, []);
+    nav.navigateNext();
+  }, [nav]);
+
+  // Show import status screen
+  if (showImportStatus) {
+    return <ResumeImportStatus onComplete={handleImportComplete} />;
+  }
 
   // Show parsed data review screen
   if (parsedData) {

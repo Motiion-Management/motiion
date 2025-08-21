@@ -106,7 +106,12 @@ export const users = {
   databaseUse: z.string().optional(), // How user intends to use the database
   representationStatus: z
     .enum(['represented', 'seeking', 'independent'])
-    .optional() // Representation status
+    .optional(), // Representation status
+
+  // Resume import tracking
+  resumeImportedFields: z.array(z.string()).optional(), // Fields that were populated from resume import
+  resumeImportVersion: z.string().optional(), // Version of import logic used
+  resumeImportedAt: z.string().optional() // ISO date string when resume was imported
 }
 export const zUsers = z.object(users)
 

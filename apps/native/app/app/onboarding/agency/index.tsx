@@ -1,18 +1,17 @@
 import { api } from '@packages/backend/convex/_generated/api';
-import { useMutation, useQuery } from 'convex/react';
-import { router } from 'expo-router';
-import React, { useCallback } from 'react';
+import { useMutation } from 'convex/react';
+import React from 'react';
 import { View } from 'react-native';
 import * as z from 'zod';
 
 import { ValidationModeForm } from '~/components/form/ValidationModeForm';
 import { useAppForm } from '~/components/form/appForm';
 import { BaseOnboardingScreen } from '~/components/layouts/BaseOnboardingScreen';
+import { OnboardingStepGuard } from '~/components/onboarding/OnboardingGuard';
 import { useStore } from '@tanstack/react-form';
-import { Text } from '~/components/ui/text';
 import { useUser } from '~/hooks/useUser';
-import { BottomSheetComboboxField } from '~/components/form/BottomSheetComboboxField';
 import { useConvex } from 'convex/react';
+import { useSimpleOnboardingFlow } from '~/hooks/useSimpleOnboardingFlow';
 
 const agencyValidator = z.object({
   agencyId: z.string().min(1, 'Please select an agency'),
@@ -30,6 +29,7 @@ interface AgencyResult {
 
 export default function AgencySelectionScreen() {
   const addMyRepresentation = useMutation(api.users.representation.addMyRepresentation);
+  const nav = useSimpleOnboardingFlow();
 
   const { user } = useUser();
   const convex = useConvex();
@@ -46,7 +46,7 @@ export default function AgencySelectionScreen() {
         if (value.agencyId) {
           await addMyRepresentation({ agencyId: value.agencyId as any });
         }
-        router.push('/app/onboarding/resume'); // Navigate to next step
+        nav.navigateNext(); // Navigate to next step in flow
       } catch (error) {
         console.error('Error saving agency:', error);
       }
@@ -56,15 +56,16 @@ export default function AgencySelectionScreen() {
   const canProgress = useStore(form.store, (s) => !!s.values.agencyId && s.canSubmit);
 
   return (
-    <BaseOnboardingScreen
-      title="Select Agency"
-      description="Search and select your representation agency"
-      canProgress={canProgress}
-      primaryAction={{
-        onPress: () => form.handleSubmit(),
-        handlesNavigation: true,
-      }}>
-      <ValidationModeForm form={form}>
+    <OnboardingStepGuard requiredStep="agency">
+      <BaseOnboardingScreen
+        title="Select Agency"
+        description="Search and select your representation agency"
+        canProgress={canProgress}
+        primaryAction={{
+          onPress: () => form.handleSubmit(),
+          handlesNavigation: true,
+        }}>
+        <ValidationModeForm form={form}>
         <View className="gap-4">
           <form.AppField
             name="agencyId"
@@ -96,7 +97,8 @@ export default function AgencySelectionScreen() {
           />
           {/* Optional: message when a user wants to add a new agency can go here */}
         </View>
-      </ValidationModeForm>
-    </BaseOnboardingScreen>
+        </ValidationModeForm>
+      </BaseOnboardingScreen>
+    </OnboardingStepGuard>
   );
 }

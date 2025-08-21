@@ -30,15 +30,14 @@ export const ONBOARDING_FLOWS: OnboardingFlows = {
         description: 'Select your profile type'
       },
       {
+        step: 'resume',
+        required: [],
+        description: 'Import or attach your resume (optional)'
+      },
+      {
         step: 'display-name',
         required: ['displayName'],
         description: 'Set your preferred display name'
-      },
-      {
-        step: 'headshots',
-        required: ['headshots'],
-        minItems: 1,
-        description: 'Upload professional headshots'
       },
       {
         step: 'height',
@@ -66,6 +65,12 @@ export const ONBOARDING_FLOWS: OnboardingFlows = {
         description: 'Your gender'
       },
       {
+        step: 'headshots',
+        required: ['headshots'],
+        minItems: 1,
+        description: 'Upload professional headshots'
+      },
+      {
         step: 'sizing',
         required: ['sizing'],
         description: 'Clothing and measurement details'
@@ -91,20 +96,15 @@ export const ONBOARDING_FLOWS: OnboardingFlows = {
         description: 'Agency selection (conditional)'
       },
       {
-        step: 'resume',
-        required: [],
-        description: 'Import or attach your resume (optional)'
+        step: 'training',
+        required: ['training'],
+        description: 'Training and education'
       },
       {
         step: 'experiences',
         required: ['experiences'],
         minItems: 1,
         description: 'Professional experience'
-      },
-      {
-        step: 'training',
-        required: ['training'],
-        description: 'Training and education'
       },
       {
         step: 'skills',
@@ -115,6 +115,11 @@ export const ONBOARDING_FLOWS: OnboardingFlows = {
         step: 'union',
         required: [],
         description: 'SAG-AFTRA membership (optional)'
+      },
+      {
+        step: 'review',
+        required: [],
+        description: 'Review profile information'
       }
     ],
     choreographer: [
@@ -122,6 +127,11 @@ export const ONBOARDING_FLOWS: OnboardingFlows = {
         step: 'profile-type',
         required: ['profileType'],
         description: 'Select your profile type'
+      },
+      {
+        step: 'resume',
+        required: [],
+        description: 'Import or attach your resume (optional)'
       },
       {
         step: 'display-name',
@@ -150,15 +160,20 @@ export const ONBOARDING_FLOWS: OnboardingFlows = {
         description: 'Agency selection (conditional)'
       },
       {
-        step: 'resume',
-        required: [],
-        description: 'Import or attach your resume (optional)'
+        step: 'training',
+        required: ['training'],
+        description: 'Training and education'
       },
       {
         step: 'experiences',
         required: ['experiences'],
         minItems: 1,
         description: 'Professional experience'
+      },
+      {
+        step: 'review',
+        required: [],
+        description: 'Review profile information'
       }
     ],
     guest: [
@@ -176,6 +191,11 @@ export const ONBOARDING_FLOWS: OnboardingFlows = {
         step: 'company',
         required: ['companyName'],
         description: 'Company or organization information'
+      },
+      {
+        step: 'review',
+        required: [],
+        description: 'Review profile information'
       }
     ]
   }
@@ -201,7 +221,8 @@ export const STEP_ROUTES = {
   skills: '/app/onboarding/skills',
   union: '/app/onboarding/union',
   'database-use': '/app/onboarding/database-use',
-  company: '/app/onboarding/company'
+  company: '/app/onboarding/company',
+  review: '/app/onboarding/review'
 } as const
 
 export function getOnboardingFlow(

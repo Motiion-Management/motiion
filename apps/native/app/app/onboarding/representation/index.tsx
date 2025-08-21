@@ -7,6 +7,8 @@ import * as z from 'zod';
 import { ValidationModeForm } from '~/components/form/ValidationModeForm';
 import { useAppForm } from '~/components/form/appForm';
 import { BaseOnboardingScreen } from '~/components/layouts/BaseOnboardingScreen';
+import { OnboardingStepGuard } from '~/components/onboarding/OnboardingGuard';
+import { useSimpleOnboardingFlow } from '~/hooks/useSimpleOnboardingFlow';
 
 const representationStatusOptions = [
   { value: 'represented', label: "Yes, I'm represented" },
@@ -23,6 +25,7 @@ const representationValidator = z.object({
 export default function RepresentationScreen() {
   const updateUser = useMutation(api.users.updateMyUser);
   const user = useQuery(api.users.getMyUser);
+  const nav = useSimpleOnboardingFlow();
 
   const form = useAppForm({
     defaultValues: {
@@ -41,30 +44,32 @@ export default function RepresentationScreen() {
       if (value.representationStatus === 'represented') {
         router.push('/app/onboarding/agency');
       } else {
-        router.push('/app/onboarding/resume');
+        nav.navigateNext(); // Navigate to next step in flow
       }
     },
   });
 
   return (
-    <BaseOnboardingScreen
-      title="Are you represented by an agent?"
-      description="Select one"
-      canProgress={form.state.canSubmit && !form.state.isSubmitting}
-      primaryAction={{
-        onPress: () => form.handleSubmit(),
-        handlesNavigation: true,
-      }}
-      secondaryAction={{
-        onPress: () => {},
-        text: 'Requires Verification',
+    <OnboardingStepGuard requiredStep="representation">
+      <BaseOnboardingScreen
+        title="Are you represented by an agent?"
+        description="Select one"
+        canProgress={form.state.canSubmit && !form.state.isSubmitting}
+        primaryAction={{
+          onPress: () => form.handleSubmit(),
+          handlesNavigation: true,
+        }}
+        secondaryAction={{
+          onPress: () => {},
+          text: 'Requires Verification',
       }}>
-      <ValidationModeForm form={form}>
-        <form.AppField
-          name="representationStatus"
-          children={(field) => <field.RadioGroupField options={representationStatusOptions} />}
-        />
-      </ValidationModeForm>
-    </BaseOnboardingScreen>
+        <ValidationModeForm form={form}>
+          <form.AppField
+            name="representationStatus"
+            children={(field) => <field.RadioGroupField options={representationStatusOptions} />}
+          />
+        </ValidationModeForm>
+      </BaseOnboardingScreen>
+    </OnboardingStepGuard>
   );
 }
