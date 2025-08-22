@@ -6,7 +6,7 @@ export function BackgroundGradientView({ children }: { children: React.ReactNode
 
   const isDarkMode = colorScheme === 'dark';
 
-  const gradientRGB = '21, 25, 28';
+  const gradientRGB = '0, 0, 0';
 
   const opaqueStop = isDarkMode ? 1 : 0;
   return (

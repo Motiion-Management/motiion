@@ -18,12 +18,8 @@ const OnboardingHeaderV1 = () => {
     return null;
   }
 
-  // Match previous label behavior: PROFILE on first step, else profile type
-  const label = (() => {
-    if (flow.currentStepId === 'profile-type') return 'PROFILE';
-    const type = user?.profileType || 'dancer';
-    return String(type).toUpperCase();
-  })();
+  // Use section-based labels from the flow
+  const label = flow.currentSectionLabel;
 
   return (
     <SafeAreaView style={{ position: 'absolute', top: 0, left: 0, right: 0, zIndex: 10 }}>

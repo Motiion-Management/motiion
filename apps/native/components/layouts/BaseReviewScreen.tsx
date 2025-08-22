@@ -11,7 +11,7 @@ import ChevronLeft from '~/lib/icons/ChevronLeft';
 import ChevronRight from '~/lib/icons/ChevronRight';
 import { perfLog } from '~/utils/performanceDebug';
 
-export const BaseOnboardingScreen = ({
+export const BaseReviewScreen = ({
   title,
   description,
   children,
@@ -57,7 +57,7 @@ export const BaseOnboardingScreen = ({
           scrollEnabled={scrollEnabled}
           contentContainerClassName="px-4 ">
           <View className="relative flex-1 justify-center">
-            <Text variant="title1">{title}</Text>
+            <Text variant="title2">{title}</Text>
             {description && (
               <Text variant="body" className="mt-6 text-text-low">
                 {description}

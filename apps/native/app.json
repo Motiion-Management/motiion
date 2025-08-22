@@ -9,9 +9,7 @@
       "output": "static",
       "favicon": "./assets/favicon.png"
     },
-    "platforms": [
-      "ios"
-    ],
+    "platforms": ["ios"],
     "plugins": [
       "expo-router",
       [
@@ -63,18 +61,13 @@
     },
     "updates": {
       "url": "https://u.expo.dev/26b62811-8f3e-4bab-9548-9ab85dfa7cb2",
-      "assetPatternsToBeBundled": [
-        "**/*",
-        "**/*"
-      ]
+      "assetPatternsToBeBundled": ["**/*", "**/*"]
     },
     "ios": {
       "bundleIdentifier": "io.motiion.motiion",
       "supportsTablet": true,
       "entitlements": {
-        "com.apple.developer.associated-domains": [
-          "applinks:motiion.io"
-        ],
+        "com.apple.developer.associated-domains": ["applinks:motiion.io"],
         "aps-environment": "production"
       },
       "infoPlist": {
