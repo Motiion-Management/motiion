@@ -1,5 +1,5 @@
-import React, { useMemo, useState, useEffect } from 'react';
-import { View, TouchableOpacity, LayoutChangeEvent } from 'react-native';
+import React, { useMemo, useState, useEffect, useRef } from 'react';
+import { View, TouchableOpacity, LayoutChangeEvent, ScrollView } from 'react-native';
 import Animated, {
   useSharedValue,
   useAnimatedStyle,
@@ -24,6 +24,8 @@ interface TabsProps {
   progress?: number;
   // Optional: disable certain tabs by key
   disabledKeys?: string[];
+  // Optional: make header horizontally scrollable
+  scrollable?: boolean;
 }
 
 export function Tabs({
@@ -33,10 +35,14 @@ export function Tabs({
   className,
   progress,
   disabledKeys = [],
+  scrollable = false,
 }: TabsProps) {
   const [tabMeasurements, setTabMeasurements] = useState<{
     [key: string]: { x: number; width: number };
   }>({});
+  const scrollRef = useRef<ScrollView>(null);
+  const [containerWidth, setContainerWidth] = useState(0);
+  const [contentWidth, setContentWidth] = useState(0);
 
   const activeIndex = useMemo(
     () =>
@@ -108,6 +114,16 @@ export function Tabs({
             stiffness: 300,
             mass: 0.8,
           });
+          // Auto-center active tab on selection when scrollable
+          if (scrollable) {
+            const center = targetX + targetWidth / 2;
+            const maxOffset = Math.max(contentWidth - containerWidth, 0);
+            let desiredX = Math.max(0, center - containerWidth / 2);
+            desiredX = Math.min(desiredX, maxOffset);
+            if (Number.isFinite(desiredX)) {
+              scrollRef.current?.scrollTo({ x: desiredX, animated: true });
+            }
+          }
         }
       }
     }
@@ -128,38 +144,54 @@ export function Tabs({
     }));
   };
 
+  const HeaderInner = (
+    <View className="relative flex-row border-b border-border-low">
+      {tabs.map((tab, index) => {
+        const isActive = tab.key === activeTab;
+        const disabled = disabledKeys.includes(tab.key);
+        return (
+          <TouchableOpacity
+            key={tab.key}
+            disabled={disabled}
+            onPress={() => onTabChange(tab.key)}
+            onLayout={(e) => handleTabLayout(tab.key, e)}>
+            <View className={cn('px-4 py-2.5', disabled && 'opacity-50')}>
+              <Text
+                variant="body"
+                className={cn(
+                  'font-medium',
+                  isActive ? 'text-text-default' : 'text-text-disabled'
+                )}>
+                {tab.label}
+              </Text>
+            </View>
+          </TouchableOpacity>
+        );
+      })}
+      {/* Animated indicator */}
+      <Animated.View
+        pointerEvents="none"
+        className="absolute -bottom-[0.5px] h-[1.5px] bg-border-high"
+        style={animatedIndicatorStyle}
+      />
+    </View>
+  );
+
   return (
-    <View className={cn('', className)}>
-      <View className="relative flex-row border-b border-border-low">
-        {tabs.map((tab, index) => {
-          const isActive = tab.key === activeTab;
-          const disabled = disabledKeys.includes(tab.key);
-          return (
-            <TouchableOpacity
-              key={tab.key}
-              disabled={disabled}
-              onPress={() => onTabChange(tab.key)}
-              onLayout={(e) => handleTabLayout(tab.key, e)}>
-              <View className={cn('px-4 py-2.5', disabled && 'opacity-50')}>
-                <Text
-                  variant="body"
-                  className={cn(
-                    'font-medium',
-                    isActive ? 'text-text-default' : 'text-text-disabled'
-                  )}>
-                  {tab.label}
-                </Text>
-              </View>
-            </TouchableOpacity>
-          );
-        })}
-        {/* Animated indicator */}
-        <Animated.View
-          pointerEvents="none"
-          className="absolute -bottom-[0.5px] h-[1.5px] bg-border-high"
-          style={animatedIndicatorStyle}
-        />
-      </View>
+    <View className={cn('', className)} onLayout={(e) => setContainerWidth(e.nativeEvent.layout.width)}>
+      {scrollable ? (
+        <ScrollView
+          ref={scrollRef}
+          horizontal
+          showsHorizontalScrollIndicator={false}
+          bounces={false}
+          onContentSizeChange={(w) => setContentWidth(w)}
+          contentContainerStyle={{}}>
+          {HeaderInner}
+        </ScrollView>
+      ) : (
+        HeaderInner
+      )}
     </View>
   );
 }
