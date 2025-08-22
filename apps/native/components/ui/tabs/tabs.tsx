@@ -1,11 +1,6 @@
 import React, { useMemo, useState, useEffect, useRef } from 'react';
 import { View, TouchableOpacity, LayoutChangeEvent, ScrollView } from 'react-native';
-import Animated, {
-  useSharedValue,
-  useAnimatedStyle,
-  withSpring,
-  interpolate,
-} from 'react-native-reanimated';
+import Animated, { useSharedValue, useAnimatedStyle, withSpring } from 'react-native-reanimated';
 
 import { Text } from '~/components/ui/text';
 import { cn } from '~/lib/cn';
@@ -146,7 +141,7 @@ export function Tabs({
 
   const HeaderInner = (
     <View className="relative flex-row border-b border-border-low">
-      {tabs.map((tab, index) => {
+      {tabs.map((tab) => {
         const isActive = tab.key === activeTab;
         const disabled = disabledKeys.includes(tab.key);
         return (
@@ -178,7 +173,9 @@ export function Tabs({
   );
 
   return (
-    <View className={cn('', className)} onLayout={(e) => setContainerWidth(e.nativeEvent.layout.width)}>
+    <View
+      className={cn('', className)}
+      onLayout={(e) => setContainerWidth(e.nativeEvent.layout.width)}>
       {scrollable ? (
         <ScrollView
           ref={scrollRef}
@@ -207,5 +204,3 @@ export function TabPanel({ isActive, children, className }: TabPanelProps) {
 
   return <View className={cn('flex-1', className)}>{children}</View>;
 }
-
- 

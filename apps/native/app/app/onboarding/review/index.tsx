@@ -1,16 +1,15 @@
 import React, { useCallback, useMemo, useState } from 'react';
-import { View, ScrollView, Alert } from 'react-native';
+import { View, ScrollView, Alert, Pressable } from 'react-native';
 import { api } from '@packages/backend/convex/_generated/api';
 import { useQuery } from 'convex/react';
 import { router } from 'expo-router';
 
-import { BaseOnboardingScreen } from '~/components/layouts/BaseOnboardingScreen';
-import { OnboardingStepGuard } from '~/components/onboarding/OnboardingGuard';
 import { Text } from '~/components/ui/text';
 import { Button } from '~/components/ui/button';
 import { useUser } from '~/hooks/useUser';
 import { Tabs } from '~/components/ui/tabs/tabs';
 import ChevronRight from '~/lib/icons/ChevronRight';
+import { BaseReviewScreen } from '~/components/layouts/BaseReviewScreen';
 
 interface ProfileFieldProps {
   label: string;
@@ -29,48 +28,30 @@ function ProfileField({ label, value, onEdit, isArray = false }: ProfileFieldPro
   })();
 
   return (
-    <View className="flex-row items-center justify-between border-b border-border-tint py-4">
+    <Pressable
+      onPress={onEdit}
+      className="flex-row items-center justify-between border-b border-border-tint py-4">
       <View className="flex-1 gap-1">
         <Text variant="labelXs" className="text-text-low">
           {label}
         </Text>
-        <Text variant="body" className="">
+        <Text variant="body" className="text-text-default">
           {displayValue}
         </Text>
       </View>
-      {onEdit && (
-        <Button variant="secondary" size="sm" onPress={onEdit}>
-          <ChevronRight className="color-icon-default" />
-        </Button>
-      )}
-    </View>
+      {onEdit && <ChevronRight className="color-icon-default" />}
+    </Pressable>
   );
 }
 
 interface SectionProps {
-  title: string;
   children: React.ReactNode;
-  hasErrors?: boolean;
 }
 
-function Section({ title, children, hasErrors = false }: SectionProps) {
+function Section({ children }: SectionProps) {
   return (
-    <ScrollView className="flex-1" showsVerticalScrollIndicator={false}>
-      <View className="mb-6">
-        <View className="mb-3 flex-row items-center">
-          <Text variant="header3" className="flex-1 font-semibold">
-            {title}
-          </Text>
-          {hasErrors && (
-            <View className="bg-error/10 rounded px-2 py-1">
-              <Text variant="caption1" className="text-error">
-                ⚠ Incomplete
-              </Text>
-            </View>
-          )}
-        </View>
-        <View className="bg-background-secondary rounded-lg p-4">{children}</View>
-      </View>
+    <ScrollView className="mt-2 flex-1" showsVerticalScrollIndicator={false}>
+      {children}
     </ScrollView>
   );
 }
@@ -124,12 +105,8 @@ export default function ReviewScreen() {
     router.push('/app/onboarding/complete');
   }, []);
 
-  // Check for missing required fields
-  const hasAttributeErrors = !user?.displayName || !user?.attributes?.height;
-  const hasWorkDetailErrors = !user?.headshots?.length || !user?.location?.city;
-
   return (
-    <BaseOnboardingScreen
+    <BaseReviewScreen
       title="Review your profile information"
       canProgress={true}
       scrollEnabled={false}
@@ -146,11 +123,10 @@ export default function ReviewScreen() {
           tabs={tabs}
           activeTab={activeTab}
           onTabChange={(k) => setActiveTab(k as typeof activeTab)}
-          className="mb-4"
           scrollable
         />
         {activeTab === 'attributes' && (
-          <Section title="Attributes" hasErrors={hasAttributeErrors}>
+          <Section>
             <ProfileField
               label="Display Name"
               value={user?.displayName}
@@ -189,7 +165,7 @@ export default function ReviewScreen() {
         )}
 
         {activeTab === 'work' && (
-          <Section title="Work Details" hasErrors={hasWorkDetailErrors}>
+          <Section>
             <ProfileField
               label="Headshots"
               value={user?.headshots?.length ? `${user.headshots.length} photos` : undefined}
@@ -220,7 +196,7 @@ export default function ReviewScreen() {
         )}
 
         {activeTab === 'experiences' && (
-          <Section title={`Experience (${experiences.length})`}>
+          <Section>
             {experiences.length === 0 ? (
               <Text variant="footnote" className="text-text-secondary">
                 No experiences added yet.
@@ -248,7 +224,7 @@ export default function ReviewScreen() {
         )}
 
         {activeTab === 'training' && (
-          <Section title={`Training (${training.length})`}>
+          <Section>
             {training.length === 0 ? (
               <Text variant="footnote" className="text-text-secondary">
                 No training added yet.
@@ -276,7 +252,7 @@ export default function ReviewScreen() {
         )}
 
         {activeTab === 'additional' && (
-          <Section title="Additional Info">
+          <Section>
             {user?.resume?.skills?.length || user?.sagAftraId ? (
               <>
                 {user?.resume?.skills && (
@@ -315,6 +291,6 @@ export default function ReviewScreen() {
           </View>
         )}
       </View>
-    </BaseOnboardingScreen>
+    </BaseReviewScreen>
   );
 }
