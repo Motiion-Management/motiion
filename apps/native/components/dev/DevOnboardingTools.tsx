@@ -2,7 +2,7 @@ import React, { useMemo, useState, useCallback } from 'react';
 import { View, ScrollView, Alert } from 'react-native';
 import { Text } from '~/components/ui/text';
 import { Button } from '~/components/ui/button';
-import { useSimpleOnboardingFlow, ONBOARDING_FLOWS } from '~/hooks/useSimpleOnboardingFlow';
+import { useOnboardingGroupFlow, ONBOARDING_GROUPS, ONBOARDING_GROUP_FLOWS } from '~/hooks/useOnboardingGroupFlow';
 import { useMutation } from 'convex/react';
 import { api } from '@packages/backend/convex/_generated/api';
 import { useUser } from '~/hooks/useUser';
@@ -22,13 +22,13 @@ type ParsedResumeData = {
   sagAftraId?: string;
 } | null;
 
-type ProfileType = keyof typeof ONBOARDING_FLOWS;
+type ProfileType = keyof typeof ONBOARDING_GROUP_FLOWS;
 
 export function DevOnboardingTools() {
   if (!__DEV__) return null;
 
   const { user } = useUser();
-  const onboarding = useSimpleOnboardingFlow();
+  const onboarding = useOnboardingGroupFlow();
   const completeOnboarding = useMutation(api.onboarding.completeOnboarding);
   const resetOnboarding = useMutation(api.onboarding.resetOnboarding);
   const updateMyUser = useMutation(api.users.updateMyUser);
@@ -41,7 +41,10 @@ export function DevOnboardingTools() {
   const generateUploadUrlDev = useMutation(api.dev.resumeTest.generateUploadUrlDev);
   const parseResumeDocumentDev = useAction(api.dev.resumeTest.parseResumeDocumentDev);
   const activeProfileType: ProfileType = (user?.profileType as ProfileType) || 'dancer';
-  const activeSteps = useMemo(() => ONBOARDING_FLOWS[activeProfileType], [activeProfileType]);
+  const activeGroups = useMemo(() => ONBOARDING_GROUP_FLOWS[activeProfileType], [activeProfileType]);
+  const allSteps = useMemo(() => {
+    return activeGroups.flatMap(groupKey => ONBOARDING_GROUPS[groupKey].steps);
+  }, [activeGroups]);
   const handleGoToRoute = useCallback(() => {
     if (!routeInput) return;
     router.push(routeInput as Href);
@@ -72,13 +75,18 @@ export function DevOnboardingTools() {
 
           {activeTab === 'onboarding' && (
             <View className="mt-1">
+              <View className="mb-2">
+                <Text variant="bodySm" className="text-text-secondary mb-1">
+                  Progress: {onboarding.overallProgress}% • Group: {onboarding.currentGroup || 'None'} • Step: {onboarding.currentStepId || 'None'}
+                </Text>
+              </View>
               <View className="mb-2 flex-row gap-2">
                 <Button
                   size="sm"
                   variant="outline"
                   onPress={async () => {
                     await resetOnboarding({});
-                    onboarding.navigateToStep('profile-type');
+                    onboarding.navigateToGroup('profile');
                   }}>
                   <Text variant="bodySm">Reset</Text>
                 </Button>
@@ -103,9 +111,8 @@ export function DevOnboardingTools() {
                     variant={activeProfileType === pt ? 'primary' : 'outline'}
                     onPress={async () => {
                       await updateMyUser({ profileType: pt });
-                      const flow = ONBOARDING_FLOWS[pt];
-                      const next = flow[1] || 'profile-type';
-                      onboarding.navigateToStep(next);
+                      // Navigate to profile group which contains profile-type
+                      onboarding.navigateToGroup('profile');
                     }}>
                     <Text>{pt}</Text>
                   </Button>
@@ -130,20 +137,35 @@ export function DevOnboardingTools() {
               </View>
 
               <Text className="mb-1" variant="bodySm">
-                Steps ({activeProfileType})
+                Groups ({activeProfileType})
               </Text>
-              <View style={{ maxHeight: 220 }}>
+              <View className="mb-2 flex-row gap-2 flex-wrap">
+                {activeGroups.map((groupKey) => (
+                  <Button
+                    key={groupKey}
+                    size="sm"
+                    variant={onboarding.currentGroup === groupKey ? 'primary' : 'outline'}
+                    onPress={() => onboarding.navigateToGroup(groupKey)}>
+                    <Text variant="bodySm">{ONBOARDING_GROUPS[groupKey].label}</Text>
+                  </Button>
+                ))}
+              </View>
+
+              <Text className="mb-1" variant="bodySm">
+                All Steps
+              </Text>
+              <View style={{ maxHeight: 180 }}>
                 <ScrollView
                   horizontal
                   showsHorizontalScrollIndicator={false}
                   contentContainerStyle={{ gap: 4, paddingVertical: 6 }}>
-                  {activeSteps.map((step) => (
+                  {allSteps.map((step) => (
                     <Button
                       size="sm"
-                      variant="outline"
+                      variant={onboarding.currentStepId === step ? 'primary' : 'outline'}
                       key={step}
                       onPress={() => onboarding.navigateToStep(step)}>
-                      <Text>{step}</Text>
+                      <Text variant="bodySm">{step}</Text>
                     </Button>
                   ))}
                 </ScrollView>

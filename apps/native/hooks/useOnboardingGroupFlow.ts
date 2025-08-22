@@ -139,6 +139,10 @@ export function useOnboardingGroupFlow(): UseOnboardingGroupFlowReturn {
   const currentStepInGroup = useMemo(() => {
     if (!currentGroup || !currentStepId) return 0
     const groupConfig = ONBOARDING_GROUPS[currentGroup]
+    if (!groupConfig) {
+      console.warn(`Invalid onboarding group: ${currentGroup}. Available groups:`, Object.keys(ONBOARDING_GROUPS))
+      return 0
+    }
     return (groupConfig.steps as unknown as string[]).indexOf(currentStepId)
   }, [currentGroup, currentStepId])
 
@@ -184,6 +188,10 @@ export function useOnboardingGroupFlow(): UseOnboardingGroupFlowReturn {
     if (!currentGroup) return
     
     const groupConfig = ONBOARDING_GROUPS[currentGroup]
+    if (!groupConfig) {
+      console.warn(`Cannot navigate: invalid group ${currentGroup}`)
+      return
+    }
     const nextStepIndex = currentStepInGroup + 1
     
     if (nextStepIndex < groupConfig.steps.length) {
@@ -200,6 +208,10 @@ export function useOnboardingGroupFlow(): UseOnboardingGroupFlowReturn {
     if (!currentGroup) return
     
     const groupConfig = ONBOARDING_GROUPS[currentGroup]
+    if (!groupConfig) {
+      console.warn(`Cannot navigate: invalid group ${currentGroup}`)
+      return
+    }
     const prevStepIndex = currentStepInGroup - 1
     
     if (prevStepIndex >= 0) {
@@ -230,6 +242,10 @@ export function useOnboardingGroupFlow(): UseOnboardingGroupFlowReturn {
 
   const navigateToGroup = useCallback((groupKey: GroupKey) => {
     const groupConfig = ONBOARDING_GROUPS[groupKey]
+    if (!groupConfig) {
+      console.warn(`Cannot navigate to invalid group: ${groupKey}`)
+      return
+    }
     router.push(groupConfig.basePath as Href)
   }, [router])
 
@@ -263,7 +279,7 @@ export function useOnboardingGroupFlow(): UseOnboardingGroupFlowReturn {
     // Current state
     currentGroup,
     currentStepInGroup,
-    totalStepsInGroup: currentGroup ? ONBOARDING_GROUPS[currentGroup].steps.length : 0,
+    totalStepsInGroup: currentGroup && ONBOARDING_GROUPS[currentGroup] ? ONBOARDING_GROUPS[currentGroup].steps.length : 0,
     currentStepId,
     
     // Group-level state
@@ -272,7 +288,7 @@ export function useOnboardingGroupFlow(): UseOnboardingGroupFlowReturn {
     groups,
     
     // Navigation state
-    canNavigateNext: currentStepInGroup < (currentGroup ? ONBOARDING_GROUPS[currentGroup].steps.length - 1 : 0) || 
+    canNavigateNext: currentStepInGroup < (currentGroup && ONBOARDING_GROUPS[currentGroup] ? ONBOARDING_GROUPS[currentGroup].steps.length - 1 : 0) || 
                     currentGroupIndex < activeFlow.length - 1,
     canNavigatePrevious: currentStepInGroup > 0 || currentGroupIndex > 0,
     canNavigateToNextGroup: currentGroupIndex < activeFlow.length - 1,

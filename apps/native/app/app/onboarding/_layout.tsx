@@ -4,20 +4,27 @@ import { View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { UserButton } from '~/components/auth/UserButton';
-import { GroupProgressBar } from '~/components/onboarding/GroupProgressBar';
+import { ProgressBar } from '~/components/ui/progress-bar';
+import { useOnboardingGroupFlow, ONBOARDING_GROUPS } from '~/hooks/useOnboardingGroupFlow';
+import { useUser } from '~/hooks/useUser';
 
-const OnboardingHeader = () => {
-  const pathname = usePathname();
+const OnboardingHeaderV1 = () => {
+  const stepName = usePathname();
+  const flow = useOnboardingGroupFlow();
+  const { user } = useUser();
 
   // Hide the onboarding header on the complete screen
-  if (pathname && pathname.includes('/onboarding/complete')) {
+  if (stepName && stepName.includes('/onboarding/complete')) {
     return null;
   }
+
+  // Use group-based labels from the flow
+  const label = flow.currentGroup ? ONBOARDING_GROUPS[flow.currentGroup]?.label || 'PROFILE' : 'PROFILE';
 
   return (
     <SafeAreaView style={{ position: 'absolute', top: 0, left: 0, right: 0, zIndex: 10 }}>
       <View className="h-8 flex-row items-center bg-transparent px-4">
-        <GroupProgressBar />
+        <ProgressBar currentStep={flow.currentStepInGroup} totalSteps={flow.totalStepsInGroup} label={label} />
         <UserButton />
       </View>
     </SafeAreaView>
@@ -27,7 +34,7 @@ const OnboardingHeader = () => {
 export default function OnboardingLayout() {
   return (
     <View className="flex-1">
-      <OnboardingHeader />
+      <OnboardingHeaderV1 />
       <Stack
         screenOptions={{
           headerShown: false,
