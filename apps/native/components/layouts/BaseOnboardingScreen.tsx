@@ -20,12 +20,14 @@ export const BaseOnboardingScreen = ({
   primaryAction,
   secondaryAction,
   bottomActionSlot,
+  scrollEnabled = true,
 }: {
   title: string;
   description?: string;
   children: React.ReactNode;
   helpText?: string;
   canProgress?: boolean;
+  scrollEnabled?: boolean;
   primaryAction?: {
     onPress: () => void | Promise<void>;
     disabled?: boolean;
@@ -52,6 +54,7 @@ export const BaseOnboardingScreen = ({
           contentInsetAdjustmentBehavior="never"
           keyboardDismissMode="interactive"
           keyboardShouldPersistTaps="handled"
+          scrollEnabled={scrollEnabled}
           contentContainerClassName="px-4 ">
           <View className="relative flex-1 justify-center">
             <Text variant="title1">{title}</Text>
