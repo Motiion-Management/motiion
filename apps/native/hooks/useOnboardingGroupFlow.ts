@@ -10,31 +10,31 @@ export const ONBOARDING_GROUPS = {
     key: 'profile',
     label: 'Profile',
     steps: ['profile-type', 'resume'],
-    basePath: '/app/onboarding-v2/profile',
+    basePath: '/app/onboarding/profile',
   },
   attributes: {
     key: 'attributes', 
     label: 'Attributes',
     steps: ['display-name', 'height', 'ethnicity', 'hair-color', 'eye-color', 'gender'],
-    basePath: '/app/onboarding-v2/attributes',
+    basePath: '/app/onboarding/attributes',
   },
-  workDetails: {
+  'work-details': {
     key: 'work-details',
     label: 'Work',
     steps: ['headshots', 'sizing', 'location', 'work-location', 'representation', 'agency', 'training', 'skills'],
-    basePath: '/app/onboarding-v2/work-details',
+    basePath: '/app/onboarding/work-details',
   },
   experiences: {
     key: 'experiences',
     label: 'Experience', 
     steps: ['experiences'],
-    basePath: '/app/onboarding-v2/experiences',
+    basePath: '/app/onboarding/experiences',
   },
   review: {
     key: 'review',
     label: 'Review',
     steps: ['review', 'experiences-review'],
-    basePath: '/app/onboarding-v2/review',
+    basePath: '/app/onboarding/review',
   },
 } as const
 
@@ -98,7 +98,7 @@ export function useOnboardingGroupFlow(): UseOnboardingGroupFlowReturn {
 
   // Extract current path info
   const { currentGroup, currentStepId } = useMemo(() => {
-    if (segments.length >= 3 && segments[1] === 'onboarding-v2') {
+    if (segments.length >= 3 && segments[1] === 'onboarding') {
       const groupSegment = segments[2] as GroupKey
       const stepSegment = segments[3] || 'index'
       
@@ -109,7 +109,9 @@ export function useOnboardingGroupFlow(): UseOnboardingGroupFlowReturn {
                  groupSegment === 'work-details' ? 'headshots' :
                  groupSegment === 'experiences' ? 'experiences' :
                  'review',
+        'type': 'profile-type',
         'resume': 'resume',
+        'general': 'review',
         'experiences': 'experiences-review',
       }
       
@@ -137,7 +139,7 @@ export function useOnboardingGroupFlow(): UseOnboardingGroupFlowReturn {
   const currentStepInGroup = useMemo(() => {
     if (!currentGroup || !currentStepId) return 0
     const groupConfig = ONBOARDING_GROUPS[currentGroup]
-    return groupConfig.steps.indexOf(currentStepId)
+    return (groupConfig.steps as unknown as string[]).indexOf(currentStepId)
   }, [currentGroup, currentStepId])
 
   // Progress calculations
@@ -234,12 +236,16 @@ export function useOnboardingGroupFlow(): UseOnboardingGroupFlowReturn {
   const navigateToStep = useCallback((stepId: string) => {
     // Find which group contains this step
     for (const [groupKey, groupConfig] of Object.entries(ONBOARDING_GROUPS)) {
-      if (groupConfig.steps.includes(stepId)) {
+      if ((groupConfig.steps as unknown as string[]).includes(stepId)) {
         let path = groupConfig.basePath
         
         // Handle special routing cases
-        if (groupKey === 'profile' && stepId === 'resume') {
+        if (groupKey === 'profile' && stepId === 'profile-type') {
+          path += '/type'
+        } else if (groupKey === 'profile' && stepId === 'resume') {
           path += '/resume'
+        } else if (groupKey === 'review' && stepId === 'review') {
+          path += '/general'
         } else if (groupKey === 'review' && stepId === 'experiences-review') {
           path += '/experiences'
         }

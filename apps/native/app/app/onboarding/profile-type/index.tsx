@@ -6,7 +6,6 @@ import * as z from 'zod';
 import { ValidationModeForm } from '~/components/form/ValidationModeForm';
 import { useAppForm } from '~/components/form/appForm';
 import { BaseOnboardingScreen } from '~/components/layouts/BaseOnboardingScreen';
-import { OnboardingStepGuard } from '~/components/onboarding/OnboardingGuard';
 
 const profileTypeValidator = z.object({
   profileType: z.enum(['dancer', 'choreographer'], {
@@ -62,8 +61,7 @@ export default function ProfileTypeScreen() {
   ];
 
   return (
-    <OnboardingStepGuard requiredStep="profile-type">
-      <BaseOnboardingScreen
+    <BaseOnboardingScreen
         title="Your journey is unique. Your profile should be too."
         description="Select your main account type."
         canProgress={form.state.canSubmit && !form.state.isSubmitting}
@@ -81,6 +79,5 @@ export default function ProfileTypeScreen() {
           />
         </ValidationModeForm>
       </BaseOnboardingScreen>
-    </OnboardingStepGuard>
   );
 }

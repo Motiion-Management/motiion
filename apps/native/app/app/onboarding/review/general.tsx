@@ -5,6 +5,8 @@ import { View, ScrollView, Pressable } from 'react-native'
 import { Text } from '~/components/ui/text'
 import { Button } from '~/components/ui/button'
 import { useUser } from '~/hooks/useUser'
+import { useReviewFormSheet } from '~/hooks/useReviewFormSheet'
+import { ReviewFormSheet } from '~/components/onboarding/ReviewFormSheet'
 import ChevronRight from '~/lib/icons/ChevronRight'
 import { BaseOnboardingScreen } from '~/components/layouts/BaseOnboardingScreen'
 
@@ -43,14 +45,39 @@ function ProfileField({ label, value, onEdit, isArray = false }: ProfileFieldPro
 
 export default function GeneralReviewScreen() {
   const { user } = useUser()
+  
+  const formSheet = useReviewFormSheet({
+    onFormComplete: (formType, data) => {
+      console.log('Form completed:', formType, data)
+      // Data is automatically saved by the form, so we just need to close
+    }
+  })
 
   const handleEditField = useCallback((fieldName: string) => {
-    // TODO: Open form in sheet modal
-    console.log('Edit field:', fieldName)
-  }, [])
+    // Map field names to form types
+    const fieldToFormMap = {
+      'display-name': 'display-name',
+      'height': 'height',
+      'ethnicity': 'ethnicity',
+      'hair-color': 'hair-color',
+      'eye-color': 'eye-color',
+      'gender': 'gender',
+      'headshots': 'headshots',
+      'sizing': 'sizing',
+      'location': 'location',
+      'work-location': 'work-location',
+      'representation': 'representation',
+      'agency': 'agency',
+    } as const
+
+    const formType = fieldToFormMap[fieldName as keyof typeof fieldToFormMap]
+    if (formType) {
+      formSheet.openForm(formType)
+    }
+  }, [formSheet])
 
   const handleContinue = useCallback(() => {
-    router.push('/app/onboarding-v2/review/experiences')
+    router.push('/app/onboarding/review/experiences')
   }, [])
 
   return (
@@ -136,6 +163,13 @@ export default function GeneralReviewScreen() {
           </View>
         </View>
       </ScrollView>
+      
+      <ReviewFormSheet
+        isOpen={formSheet.isOpen}
+        onClose={formSheet.closeForm}
+        formType={formSheet.currentFormType}
+        onFormComplete={formSheet.handleFormComplete}
+      />
     </BaseOnboardingScreen>
   )
 }

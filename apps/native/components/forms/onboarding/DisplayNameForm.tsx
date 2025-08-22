@@ -27,7 +27,7 @@ export interface DisplayNameFormData {
 }
 
 export const DisplayNameForm = forwardRef<OnboardingFormRef, OnboardingFormProps<DisplayNameFormData>>(
-  ({ initialData, onComplete, onCancel, mode = 'fullscreen', autoFocus = true }, ref) => {
+  ({ initialData, onComplete, onCancel, mode = 'fullscreen', autoFocus = true, ...props }, ref) => {
     const updateMyUser = useMutation(api.users.updateMyUser)
     const { user } = useUser()
 
@@ -67,7 +67,8 @@ export const DisplayNameForm = forwardRef<OnboardingFormRef, OnboardingFormProps
         canProgress={canProgress}
         mode={mode}
         onCancel={onCancel}
-        onSubmit={handleSubmit}>
+        onSubmit={handleSubmit}
+        {...props}>
         <ValidationModeForm form={form}>
           <View className="gap-6">
             <form.AppField
