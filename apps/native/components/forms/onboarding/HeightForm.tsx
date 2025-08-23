@@ -1,6 +1,6 @@
 import { api } from '@packages/backend/convex/_generated/api'
 import { useMutation, useQuery } from 'convex/react'
-import React, { forwardRef, useState, useCallback, useEffect } from 'react'
+import React, { forwardRef, useState, useCallback, useEffect, useMemo } from 'react'
 import { View } from 'react-native'
 
 import { HeightPicker, HeightValue } from '~/components/ui/height-picker'
@@ -14,7 +14,7 @@ export interface HeightFormData {
 }
 
 export const HeightForm = forwardRef<OnboardingFormRef, OnboardingFormProps<HeightFormData>>(
-  ({ initialData, onComplete, onCancel, mode = 'fullscreen' }, ref) => {
+  ({ initialData, onComplete, onCancel, mode = 'fullscreen', onValidationChange }, ref) => {
     const user = useQuery(api.users.getMyUser)
     const patchUserAttributes = useMutation(api.users.patchUserAttributes)
 
@@ -62,6 +62,7 @@ export const HeightForm = forwardRef<OnboardingFormRef, OnboardingFormProps<Heig
 
     const handleHeightChange = useCallback((newHeight: HeightValue) => {
       setHeight(newHeight)
+      // Clear any existing errors when user changes height
       setError(null)
     }, [])
 
@@ -92,14 +93,30 @@ export const HeightForm = forwardRef<OnboardingFormRef, OnboardingFormProps<Heig
       }
     }, [height, validateHeight, patchUserAttributes, onComplete])
 
-    const isValid = validateHeight(height) && !isSubmitting
+    // Compute validation state without side effects
+    const isValid = useMemo(() => {
+      // Basic validation - ensure reasonable height range
+      if (height.feet < 3 || height.feet > 7) return false
+      if (height.inches < 0 || height.inches > 11) return false
+      
+      // Check minimum height (3'0") and maximum height (7'11")
+      const totalInches = height.feet * 12 + height.inches
+      if (totalInches < 36 || totalInches > 95) return false
+      
+      return true
+    }, [height])
+
+    // Notify parent of validation state changes
+    useEffect(() => {
+      onValidationChange?.(isValid && !isSubmitting)
+    }, [isValid, isSubmitting, onValidationChange])
 
     return (
       <BaseOnboardingForm
         ref={ref}
         title="How tall are you?"
         description="Select height"
-        canProgress={isValid}
+        canProgress={isValid && !isSubmitting}
         mode={mode}
         onCancel={onCancel}
         onSubmit={handleSubmit}>

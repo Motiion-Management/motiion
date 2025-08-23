@@ -1,7 +1,7 @@
 import { api } from '@packages/backend/convex/_generated/api'
 import { EYECOLOR } from '@packages/backend/convex/validators/attributes'
 import { useMutation } from 'convex/react'
-import React, { forwardRef } from 'react'
+import React, { forwardRef, useEffect } from 'react'
 import { toast } from 'sonner-native'
 import * as z from 'zod'
 
@@ -25,7 +25,7 @@ export interface EyeColorFormData {
 }
 
 export const EyeColorForm = forwardRef<OnboardingFormRef, OnboardingFormProps<EyeColorFormData>>(
-  ({ initialData, onComplete, onCancel, mode = 'fullscreen' }, ref) => {
+  ({ initialData, onComplete, onCancel, mode = 'fullscreen', onValidationChange }, ref) => {
     const patchUserAttributes = useMutation(api.users.patchUserAttributes)
     const { user } = useUser()
 
@@ -64,6 +64,11 @@ export const EyeColorForm = forwardRef<OnboardingFormRef, OnboardingFormProps<Ey
     }))
 
     const isFormReady = form.state.canSubmit && !form.state.isSubmitting
+
+    // Notify parent of validation state changes
+    useEffect(() => {
+      onValidationChange?.(isFormReady)
+    }, [isFormReady, onValidationChange])
 
     const handleSubmit = () => {
       form.handleSubmit()

@@ -1,6 +1,6 @@
 import { api } from '@packages/backend/convex/_generated/api'
 import { useMutation } from 'convex/react'
-import React, { forwardRef } from 'react'
+import React, { forwardRef, useEffect } from 'react'
 import { View } from 'react-native'
 import * as z from 'zod'
 
@@ -27,7 +27,7 @@ export interface DisplayNameFormData {
 }
 
 export const DisplayNameForm = forwardRef<OnboardingFormRef, OnboardingFormProps<DisplayNameFormData>>(
-  ({ initialData, onComplete, onCancel, mode = 'fullscreen', autoFocus = true, ...props }, ref) => {
+  ({ initialData, onComplete, onCancel, mode = 'fullscreen', autoFocus = true, onValidationChange, ...props }, ref) => {
     const updateMyUser = useMutation(api.users.updateMyUser)
     const { user } = useUser()
 
@@ -55,6 +55,11 @@ export const DisplayNameForm = forwardRef<OnboardingFormRef, OnboardingFormProps
     })
 
     const canProgress = useStore(form.store, (s) => s.canSubmit)
+
+    // Notify parent of validation state changes
+    useEffect(() => {
+      onValidationChange?.(canProgress)
+    }, [canProgress, onValidationChange])
 
     const handleSubmit = () => {
       form.handleSubmit()

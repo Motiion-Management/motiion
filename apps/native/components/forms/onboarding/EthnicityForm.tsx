@@ -2,7 +2,7 @@ import { api } from '@packages/backend/convex/_generated/api'
 import { ETHNICITY } from '@packages/backend/convex/validators/attributes'
 import { useStore } from '@tanstack/react-form'
 import { useMutation } from 'convex/react'
-import React, { forwardRef } from 'react'
+import React, { forwardRef, useEffect } from 'react'
 import { toast } from 'sonner-native'
 import * as z from 'zod'
 
@@ -24,7 +24,7 @@ export interface EthnicityFormData {
 }
 
 export const EthnicityForm = forwardRef<OnboardingFormRef, OnboardingFormProps<EthnicityFormData>>(
-  ({ initialData, onComplete, onCancel, mode = 'fullscreen' }, ref) => {
+  ({ initialData, onComplete, onCancel, mode = 'fullscreen', onValidationChange }, ref) => {
     const { user } = useUser()
     const patchUserAttributes = useMutation(api.users.patchUserAttributes)
 
@@ -63,6 +63,11 @@ export const EthnicityForm = forwardRef<OnboardingFormRef, OnboardingFormProps<E
     const isFormReady =
       useStore(form.store, (state) => state.canSubmit && state.isDirty) ||
       !!(user?.attributes?.ethnicity?.length && user.attributes.ethnicity.length > 0)
+
+    // Notify parent of validation state changes
+    useEffect(() => {
+      onValidationChange?.(isFormReady)
+    }, [isFormReady, onValidationChange])
 
     const handleSubmit = () => {
       form.handleSubmit()

@@ -246,8 +246,38 @@ export function useOnboardingGroupFlow(): UseOnboardingGroupFlowReturn {
       console.warn(`Cannot navigate to invalid group: ${groupKey}`)
       return
     }
-    router.push(groupConfig.basePath as Href)
-  }, [router])
+    
+    // Navigate to the first step of the group
+    if (groupConfig.steps && groupConfig.steps.length > 0) {
+      const firstStep = groupConfig.steps[0]
+      let path = groupConfig.basePath
+      
+      // Handle routing for the first step of each group
+      if (groupKey === 'profile' && firstStep === 'profile-type') {
+        path += '/type'
+      } else if (groupKey === 'profile' && firstStep === 'resume') {
+        path += '/resume'
+      } else if (groupKey === 'attributes') {
+        // Attributes group uses individual routes for each step
+        path += `/${firstStep}`
+      } else if (groupKey === 'work-details') {
+        // Work-details group uses individual routes for each step
+        path += `/${firstStep}`
+      } else if (groupKey === 'review' && firstStep === 'review') {
+        path += '/general'
+      } else if (groupKey === 'review' && firstStep === 'experiences-review') {
+        path += '/experiences'
+      }
+      
+      router.push(path as Href)
+      
+      // Persist step for server-side redirect support
+      setStep({ step: firstStep }).catch(() => {})
+    } else {
+      // Fallback to base path if no steps defined
+      router.push(groupConfig.basePath as Href)
+    }
+  }, [router, setStep])
 
   const navigateToStep = useCallback((stepId: string) => {
     // Find which group contains this step
@@ -260,6 +290,12 @@ export function useOnboardingGroupFlow(): UseOnboardingGroupFlowReturn {
           path += '/type'
         } else if (groupKey === 'profile' && stepId === 'resume') {
           path += '/resume'
+        } else if (groupKey === 'attributes') {
+          // Attributes group uses individual routes for each step
+          path += `/${stepId}`
+        } else if (groupKey === 'work-details') {
+          // Work-details group uses individual routes for each step
+          path += `/${stepId}`
         } else if (groupKey === 'review' && stepId === 'review') {
           path += '/general'
         } else if (groupKey === 'review' && stepId === 'experiences-review') {

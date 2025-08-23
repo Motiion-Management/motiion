@@ -1,6 +1,6 @@
 import { api } from '@packages/backend/convex/_generated/api'
 import { useMutation, useQuery } from 'convex/react'
-import React, { forwardRef } from 'react'
+import React, { forwardRef, useEffect } from 'react'
 import * as z from 'zod'
 
 import { ValidationModeForm } from '~/components/form/ValidationModeForm'
@@ -22,7 +22,7 @@ export interface ProfileTypeFormData {
 }
 
 export const ProfileTypeForm = forwardRef<OnboardingFormRef, OnboardingFormProps<ProfileTypeFormData>>(
-  ({ initialData, onComplete, onCancel, mode = 'fullscreen' }, ref) => {
+  ({ initialData, onComplete, onCancel, mode = 'fullscreen', onValidationChange }, ref) => {
     const user = useQuery(api.users.getMyUser)
     const updateUser = useMutation(api.users.updateMyUser)
 
@@ -58,6 +58,11 @@ export const ProfileTypeForm = forwardRef<OnboardingFormRef, OnboardingFormProps
     ]
 
     const isFormReady = form.state.canSubmit && !form.state.isSubmitting
+
+    // Notify parent of validation state changes
+    useEffect(() => {
+      onValidationChange?.(isFormReady)
+    }, [isFormReady, onValidationChange])
 
     const handleSubmit = () => {
       form.handleSubmit()

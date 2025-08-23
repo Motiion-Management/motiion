@@ -9,6 +9,8 @@ export interface OnboardingFormProps<T = any> {
   mode?: 'fullscreen' | 'sheet'
   /** Whether form should auto-focus first field */
   autoFocus?: boolean
+  /** Called when validation state changes */
+  onValidationChange?: (isValid: boolean) => void
 }
 
 export interface OnboardingFormRef {
