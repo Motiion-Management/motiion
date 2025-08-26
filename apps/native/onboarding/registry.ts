@@ -25,8 +25,9 @@ export interface StepDef<T = any> {
   Component: ComponentType<FormProps<T>>
   // Optional validation schema (e.g., Zod) exposed for reuse.
   schema?: unknown
-  // Read initial values from the source of truth (store/server).
-  getInitialValues: (data: OnboardingData) => T | Promise<T>
+  // Read initial values from the source of truth (store).
+  // Keep this synchronous to avoid modal open delays.
+  getInitialValues: (data: OnboardingData) => T
   // Persist values; may perform optimistic update externally.
   save: (values: T) => void | Promise<void>
 }

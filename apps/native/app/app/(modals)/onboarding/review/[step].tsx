@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useMemo, useRef, useState } from 'react';
 import { View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useLocalSearchParams, router, Stack } from 'expo-router';
@@ -17,13 +17,12 @@ export default function ReviewEditModal() {
 
   const formRef = useRef<FormHandle>(null);
   const { data, isLoading } = useOnboardingData();
-  const [initialValues, setInitialValues] = useState<any | null>(null);
   const [canSubmit, setCanSubmit] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  useEffect(() => {
-    if (!def || isLoading) return;
-    Promise.resolve(def.getInitialValues(data)).then(setInitialValues);
+  const initialValues = useMemo(() => {
+    if (!def || isLoading) return null;
+    return def.getInitialValues(data);
   }, [def, data, isLoading]);
 
   const handleClose = () => {
