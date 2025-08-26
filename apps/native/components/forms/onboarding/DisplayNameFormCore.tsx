@@ -18,8 +18,8 @@ export const displayNameSchema = z.object({
 
 export type DisplayNameValues = z.infer<typeof displayNameSchema>
 
-export const DisplayNameFormV2 = forwardRef<FormHandle, FormProps<DisplayNameValues>>(function DisplayNameFormV2(
-  { mode, initialValues, onSubmit, onDirtyChange, onCancel },
+export const DisplayNameFormCore = forwardRef<FormHandle, FormProps<DisplayNameValues>>(function DisplayNameFormCore(
+  { mode, initialValues, onSubmit, onDirtyChange },
   ref
 ) {
   const form = useAppForm({

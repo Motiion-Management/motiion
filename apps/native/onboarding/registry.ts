@@ -1,7 +1,7 @@
 import type { ComponentType } from 'react'
 import type { FormProps } from '~/components/forms/onboarding/contracts'
 import type { OnboardingData } from '~/hooks/useOnboardingData'
-import { DisplayNameFormV2, displayNameSchema } from '~/components/forms/onboarding/v2/DisplayNameFormV2'
+import { DisplayNameFormCore, displayNameSchema } from '~/components/forms/onboarding/DisplayNameFormCore'
 import { selectDisplayName } from './selectors'
 
 // Step definition used by the dynamic review modal and wrappers.
@@ -24,7 +24,7 @@ export const STEP_REGISTRY = {
     key: 'display-name',
     title: 'Display name',
     description: 'Choose how your name appears.',
-    Component: DisplayNameFormV2 as unknown as ComponentType<FormProps<any>>, // keep loose until all forms migrate
+    Component: DisplayNameFormCore as unknown as ComponentType<FormProps<any>>, // keep loose until all forms migrate
     schema: displayNameSchema,
     getInitialValues: (data: OnboardingData) => ({ displayName: selectDisplayName(data) }),
     save: async (_values: any) => {
