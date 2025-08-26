@@ -12,6 +12,7 @@ import { BaseFormContainer } from '~/components/onboarding/BaseFormContainer';
 import X from '~/lib/icons/X';
 import { api } from '@packages/backend/convex/_generated/api'
 import { useMutation } from 'convex/react'
+import { BottomSheetModalProvider } from '@gorhom/bottom-sheet'
 
 export default function ReviewEditModal() {
   const { step } = useLocalSearchParams<{ step: string }>();
@@ -59,7 +60,7 @@ export default function ReviewEditModal() {
   const FormComponent = def.Component as any;
 
   return (
-    <>
+    <BottomSheetModalProvider>
       <View className="flex-1 bg-surface-default">
         {/* Close */}
         <SafeAreaView edges={['top', 'left', 'right']}>
@@ -101,6 +102,6 @@ export default function ReviewEditModal() {
           </View>
         </SafeAreaView>
       </View>
-    </>
+    </BottomSheetModalProvider>
   );
 }
