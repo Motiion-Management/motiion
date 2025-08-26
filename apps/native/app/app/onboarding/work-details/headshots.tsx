@@ -1,19 +1,27 @@
-import React from 'react'
+import React, { useRef, useState } from 'react'
 
-import { HeadshotsForm } from '~/components/forms/onboarding'
+import { BaseOnboardingScreen } from '~/components/layouts/BaseOnboardingScreen'
+import { HeadshotsFormCore } from '~/components/forms/onboarding/HeadshotsFormCore'
 import { useOnboardingGroupFlow } from '~/hooks/useOnboardingGroupFlow'
+import type { FormHandle } from '~/components/forms/onboarding/contracts'
 
 export default function HeadshotsScreen() {
   const flow = useOnboardingGroupFlow()
+  const formRef = useRef<FormHandle>(null)
+  const [canSubmit, setCanSubmit] = useState(false)
 
-  const handleComplete = async () => {
+  const handleSubmit = async () => {
     flow.navigateToNextStep()
   }
 
   return (
-    <HeadshotsForm
-      mode="fullscreen"
-      onComplete={handleComplete}
-    />
+    <BaseOnboardingScreen
+      title="Headshots"
+      description="Upload your professional headshots to showcase your look."
+      canProgress={canSubmit}
+      primaryAction={{ onPress: () => formRef.current?.submit(), handlesNavigation: true }}
+    >
+      <HeadshotsFormCore ref={formRef} initialValues={{}} onSubmit={handleSubmit} onValidChange={setCanSubmit} />
+    </BaseOnboardingScreen>
   )
 }

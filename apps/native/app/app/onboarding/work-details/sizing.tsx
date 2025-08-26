@@ -1,19 +1,27 @@
-import React from 'react'
+import React, { useRef, useState } from 'react'
 
-import { SizingForm } from '~/components/forms/onboarding'
+import { BaseOnboardingScreen } from '~/components/layouts/BaseOnboardingScreen'
+import { SizingFormCore } from '~/components/forms/onboarding/SizingFormCore'
 import { useOnboardingGroupFlow } from '~/hooks/useOnboardingGroupFlow'
+import type { FormHandle } from '~/components/forms/onboarding/contracts'
 
 export default function SizingScreen() {
   const flow = useOnboardingGroupFlow()
+  const formRef = useRef<FormHandle>(null)
+  const [canSubmit, setCanSubmit] = useState(true)
 
-  const handleComplete = async () => {
+  const handleSubmit = async () => {
     flow.navigateToNextStep()
   }
 
   return (
-    <SizingForm
-      mode="fullscreen"
-      onComplete={handleComplete}
-    />
+    <BaseOnboardingScreen
+      title="Size Card"
+      description="Optional - Not all sizing metrics may apply to you. Only input what is relevant to you."
+      canProgress={canSubmit}
+      primaryAction={{ onPress: () => formRef.current?.submit(), handlesNavigation: true }}
+    >
+      <SizingFormCore ref={formRef} initialValues={{}} onSubmit={handleSubmit} />
+    </BaseOnboardingScreen>
   )
 }

@@ -7,7 +7,13 @@ import { EthnicityFormCore, ethnicitySchema } from '~/components/forms/onboardin
 import { HairColorFormCore, hairColorSchema } from '~/components/forms/onboarding/HairColorFormCore'
 import { EyeColorFormCore, eyeColorSchema } from '~/components/forms/onboarding/EyeColorFormCore'
 import { GenderFormCore, genderSchema } from '~/components/forms/onboarding/GenderFormCore'
-import { selectDisplayName, selectHeight, selectEthnicity, selectHairColor, selectEyeColor, selectGender } from './selectors'
+import { LocationFormCore } from '~/components/forms/onboarding/LocationFormCore'
+import { WorkLocationFormCore } from '~/components/forms/onboarding/WorkLocationFormCore'
+import { HeadshotsFormCore } from '~/components/forms/onboarding/HeadshotsFormCore'
+import { SkillsFormCore, skillsSchema } from '~/components/forms/onboarding/SkillsFormCore'
+import { RepresentationFormCore, representationSchema } from '~/components/forms/onboarding/RepresentationFormCore'
+import { AgencyFormCore, agencySchema } from '~/components/forms/onboarding/AgencyFormCore'
+import { selectDisplayName, selectHeight, selectEthnicity, selectHairColor, selectEyeColor, selectGender, selectPrimaryPlaceKitLocation, selectWorkLocations, selectSkills, selectRepresentationStatus, selectAgencyId } from './selectors'
 
 // Step definition used by the dynamic review modal and wrappers.
 export interface StepDef<T = any> {
@@ -78,6 +84,57 @@ export const STEP_REGISTRY = {
     Component: GenderFormCore as unknown as ComponentType<FormProps<any>>,
     schema: genderSchema,
     getInitialValues: (data: OnboardingData) => ({ gender: selectGender(data) }),
+    save: async (_values: any) => {},
+  },
+  'location': {
+    key: 'location',
+    title: 'Where are you located?',
+    description: '',
+    Component: LocationFormCore as unknown as ComponentType<FormProps<any>>,
+    getInitialValues: (data: OnboardingData) => ({ primaryLocation: selectPrimaryPlaceKitLocation(data) }),
+    save: async (_values: any) => {},
+  },
+  'work-location': {
+    key: 'work-location',
+    title: 'Where can you work as a local?',
+    description: '',
+    Component: WorkLocationFormCore as unknown as ComponentType<FormProps<any>>,
+    getInitialValues: (data: OnboardingData) => ({ locations: [selectPrimaryPlaceKitLocation(data), ...selectWorkLocations(data)] }),
+    save: async (_values: any) => {},
+  },
+  'headshots': {
+    key: 'headshots',
+    title: 'Headshots',
+    description: 'Upload your professional headshots to showcase your look.',
+    Component: HeadshotsFormCore as unknown as ComponentType<FormProps<any>>,
+    getInitialValues: (_data: OnboardingData) => ({}),
+    save: async (_values: any) => {},
+  },
+  'skills': {
+    key: 'skills',
+    title: 'Add your skills',
+    description: 'What genre and special skills are you proficient in?',
+    Component: SkillsFormCore as unknown as ComponentType<FormProps<any>>,
+    schema: skillsSchema,
+    getInitialValues: (data: OnboardingData) => selectSkills(data),
+    save: async (_values: any) => {},
+  },
+  'representation': {
+    key: 'representation',
+    title: 'Are you represented by an agent?',
+    description: 'Select one',
+    Component: RepresentationFormCore as unknown as ComponentType<FormProps<any>>,
+    schema: representationSchema,
+    getInitialValues: (data: OnboardingData) => selectRepresentationStatus(data),
+    save: async (_values: any) => {},
+  },
+  'agency': {
+    key: 'agency',
+    title: 'Select Agency',
+    description: 'Search and select your representation agency',
+    Component: AgencyFormCore as unknown as ComponentType<FormProps<any>>,
+    schema: agencySchema,
+    getInitialValues: (data: OnboardingData) => selectAgencyId(data),
     save: async (_values: any) => {},
   },
 } as const
