@@ -5,8 +5,6 @@ import { View, ScrollView, Pressable } from 'react-native';
 import { Text } from '~/components/ui/text';
 import { Tabs } from '~/components/ui/tabs/tabs';
 import { useUser } from '~/hooks/useUser';
-import { useReviewFormSheet } from '~/hooks/useReviewFormSheet';
-import { ReviewFormSheet } from '~/components/onboarding/ReviewFormSheet';
 import ChevronRight from '~/lib/icons/ChevronRight';
 import { BaseOnboardingScreen } from '~/components/layouts/BaseOnboardingScreen';
 
@@ -52,13 +50,6 @@ export default function GeneralReviewScreen() {
     { key: 'work', label: 'Work' },
   ];
 
-  const formSheet = useReviewFormSheet({
-    onFormComplete: (formType, data) => {
-      console.log('Form completed:', formType, data);
-      // Data is automatically saved by the form, so we just need to close
-    },
-  });
-
   const handleEditField = useCallback(
     (fieldName: string) => {
       // Map field names to form types
@@ -78,11 +69,9 @@ export default function GeneralReviewScreen() {
       } as const;
 
       const formType = fieldToFormMap[fieldName as keyof typeof fieldToFormMap];
-      if (formType) {
-        formSheet.openForm(formType);
-      }
+      if (formType) router.push(`/app/onboarding/review/${formType}`);
     },
-    [formSheet]
+    []
   );
 
   const handleContinue = useCallback(() => {
@@ -183,12 +172,7 @@ export default function GeneralReviewScreen() {
         </ScrollView>
       </View>
 
-      <ReviewFormSheet
-        isOpen={formSheet.isOpen}
-        onClose={formSheet.closeForm}
-        formType={formSheet.currentFormType}
-        onFormComplete={formSheet.handleFormComplete}
-      />
+      {/* Modal edits navigate to /app/onboarding/review/[step] */}
     </BaseOnboardingScreen>
   );
 }

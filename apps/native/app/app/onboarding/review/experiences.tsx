@@ -6,8 +6,6 @@ import { useQuery } from 'convex/react'
 
 import { Text } from '~/components/ui/text'
 import { Button } from '~/components/ui/button'
-import { useReviewFormSheet } from '~/hooks/useReviewFormSheet'
-import { ReviewFormSheet } from '~/components/onboarding/ReviewFormSheet'
 import ChevronRight from '~/lib/icons/ChevronRight'
 import { BaseOnboardingScreen } from '~/components/layouts/BaseOnboardingScreen'
 
@@ -39,20 +37,13 @@ export default function ExperiencesReviewScreen() {
   const experiences = useQuery(api.users.experiences.getMyExperiences) || []
   const training = useQuery(api.training.getMyTraining) || []
 
-  const formSheet = useReviewFormSheet({
-    onFormComplete: (formType, data) => {
-      console.log('Form completed:', formType, data)
-      // Data is automatically saved by the form
-    }
-  })
-
   const handleEditExperiences = useCallback(() => {
-    formSheet.openForm('experiences')
-  }, [formSheet])
+    router.push('/app/onboarding/review/training') // Placeholder: route to training editor or experiences editor if/when added
+  }, [])
 
   const handleEditTraining = useCallback(() => {
-    formSheet.openForm('training')
-  }, [formSheet])
+    router.push('/app/onboarding/review/training')
+  }, [])
 
   const handleComplete = useCallback(() => {
     router.push('/app/onboarding/complete')
@@ -144,12 +135,7 @@ export default function ExperiencesReviewScreen() {
         </View>
       </ScrollView>
       
-      <ReviewFormSheet
-        isOpen={formSheet.isOpen}
-        onClose={formSheet.closeForm}
-        formType={formSheet.currentFormType}
-        onFormComplete={formSheet.handleFormComplete}
-      />
+      {/* Edits navigate to /app/onboarding/review/[step] */}
     </BaseOnboardingScreen>
   )
 }
