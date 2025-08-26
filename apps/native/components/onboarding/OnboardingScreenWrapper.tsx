@@ -8,11 +8,11 @@ import ChevronLeft from '~/lib/icons/ChevronLeft'
 import ChevronRight from '~/lib/icons/ChevronRight'
 import { GroupProgressBar } from './GroupProgressBar'
 import { useOnboardingGroupFlow } from '~/hooks/useOnboardingGroupFlow'
-import type { OnboardingFormRef } from '~/components/forms/onboarding/types'
+import type { FormHandle } from '~/components/forms/onboarding/contracts'
 
 interface OnboardingScreenWrapperProps {
   children: React.ReactNode
-  formRef?: React.RefObject<OnboardingFormRef>
+  formRef?: React.RefObject<FormHandle>
   canSubmit?: boolean
   onSubmitOverride?: () => void | Promise<void>
   showProgress?: boolean
@@ -30,7 +30,7 @@ export function OnboardingScreenWrapper({
   className,
 }: OnboardingScreenWrapperProps) {
   const onboarding = useOnboardingGroupFlow()
-  const internalRef = useRef<OnboardingFormRef>(null)
+  const internalRef = useRef<FormHandle>(null)
   const activeFormRef = formRef ?? internalRef
 
   const isValid = useMemo(() => {

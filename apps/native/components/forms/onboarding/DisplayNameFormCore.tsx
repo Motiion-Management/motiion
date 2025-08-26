@@ -5,7 +5,6 @@ import { useStore } from '@tanstack/react-form'
 
 import { useAppForm } from '~/components/form/appForm'
 import { ValidationModeForm } from '~/components/form/ValidationModeForm'
-import { BaseFormContainer } from '~/components/onboarding/BaseFormContainer'
 import type { FormHandle, FormProps } from '~/components/forms/onboarding/contracts'
 
 export const displayNameSchema = z.object({
@@ -19,7 +18,7 @@ export const displayNameSchema = z.object({
 export type DisplayNameValues = z.infer<typeof displayNameSchema>
 
 export const DisplayNameFormCore = forwardRef<FormHandle, FormProps<DisplayNameValues>>(function DisplayNameFormCore(
-  { mode, initialValues, onSubmit, onDirtyChange },
+  { initialValues, onSubmit, onDirtyChange, onValidChange },
   ref
 ) {
   const form = useAppForm({
@@ -43,34 +42,30 @@ export const DisplayNameFormCore = forwardRef<FormHandle, FormProps<DisplayNameV
     onDirtyChange?.(!!isDirty)
   }, [isDirty, onDirtyChange])
 
+  useEffect(() => {
+    onValidChange?.(!!canSubmit)
+  }, [canSubmit, onValidChange])
+
   return (
-    <BaseFormContainer
-      title={mode === 'fullscreen' ? 'What name do you want displayed?' : undefined}
-      description={undefined}
-      footer={null}
-      gradientBackground={mode === 'fullscreen'}
-    >
-      <ValidationModeForm form={form}>
-        <View className="gap-6">
-          <form.AppField
-            name="displayName"
-            children={(field: any) => (
-              <field.InputField
-                label="PREFERRED NAME"
-                placeholder="Enter your preferred name"
-                helperTextProps={{
-                  message:
-                    'This will be the name displayed on your public profile. If you go by another name professionally, you should enter it here.',
-                }}
-                autoCapitalize="words"
-                autoComplete="name"
-                autoFocus
-              />
-            )}
-          />
-        </View>
-      </ValidationModeForm>
-    </BaseFormContainer>
+    <ValidationModeForm form={form}>
+      <View className="gap-6">
+        <form.AppField
+          name="displayName"
+          children={(field: any) => (
+            <field.InputField
+              label="PREFERRED NAME"
+              placeholder="Enter your preferred name"
+              helperTextProps={{
+                message:
+                  'This will be the name displayed on your public profile. If you go by another name professionally, you should enter it here.',
+              }}
+              autoCapitalize="words"
+              autoComplete="name"
+              autoFocus
+            />
+          )}
+        />
+      </View>
+    </ValidationModeForm>
   )
 })
-
