@@ -28,8 +28,16 @@ export interface StepDef<T = any> {
   // Read initial values from the source of truth (store).
   // Keep this synchronous to avoid modal open delays.
   getInitialValues: (data: OnboardingData) => T
-  // Persist values; may perform optimistic update externally.
-  save: (values: T) => void | Promise<void>
+  // Persist values; route provides mutations via ctx to avoid hooks here.
+  save?: (values: T, ctx: SaveContext) => void | Promise<void>
+}
+
+export interface SaveContext {
+  data: OnboardingData
+  updateMyUser: (args: any) => Promise<any>
+  patchUserAttributes: (args: any) => Promise<any>
+  updateMyResume: (args: any) => Promise<any>
+  addMyRepresentation: (args: any) => Promise<any>
 }
 
 export const STEP_REGISTRY = {
@@ -42,8 +50,8 @@ export const STEP_REGISTRY = {
     Component: DisplayNameForm as unknown as ComponentType<FormProps<any>>, // keep loose until all forms migrate
     schema: displayNameSchema,
     getInitialValues: (data: OnboardingData) => ({ displayName: selectDisplayName(data) }),
-    save: async (_values: any) => {
-      // Route/screen should provide the actual save via onSubmit for now
+    save: async (values: any, ctx) => {
+      await ctx.updateMyUser({ displayName: values.displayName.trim() })
     },
   },
   'height': {
@@ -53,7 +61,9 @@ export const STEP_REGISTRY = {
     helpText: 'Use feet and inches. Be accurate to help casting directors.',
     Component: HeightForm as unknown as ComponentType<FormProps<any>>,
     getInitialValues: (data: OnboardingData) => ({ height: selectHeight(data) }),
-    save: async (_values: any) => {},
+    save: async (values: any, ctx) => {
+      await ctx.patchUserAttributes({ attributes: { height: values.height } })
+    },
   },
   'ethnicity': {
     key: 'ethnicity',
@@ -63,7 +73,9 @@ export const STEP_REGISTRY = {
     Component: EthnicityForm as unknown as ComponentType<FormProps<any>>,
     schema: ethnicitySchema,
     getInitialValues: (data: OnboardingData) => ({ ethnicity: selectEthnicity(data) }),
-    save: async (_values: any) => {},
+    save: async (values: any, ctx) => {
+      await ctx.patchUserAttributes({ attributes: { ethnicity: values.ethnicity } })
+    },
   },
   'hair-color': {
     key: 'hair-color',
@@ -73,7 +85,9 @@ export const STEP_REGISTRY = {
     Component: HairColorForm as unknown as ComponentType<FormProps<any>>,
     schema: hairColorSchema,
     getInitialValues: (data: OnboardingData) => ({ hairColor: selectHairColor(data) }),
-    save: async (_values: any) => {},
+    save: async (values: any, ctx) => {
+      await ctx.patchUserAttributes({ attributes: { hairColor: values.hairColor } })
+    },
   },
   'eye-color': {
     key: 'eye-color',
@@ -83,7 +97,9 @@ export const STEP_REGISTRY = {
     Component: EyeColorForm as unknown as ComponentType<FormProps<any>>,
     schema: eyeColorSchema,
     getInitialValues: (data: OnboardingData) => ({ eyeColor: selectEyeColor(data) }),
-    save: async (_values: any) => {},
+    save: async (values: any, ctx) => {
+      await ctx.patchUserAttributes({ attributes: { eyeColor: values.eyeColor } })
+    },
   },
   'gender': {
     key: 'gender',
@@ -93,7 +109,9 @@ export const STEP_REGISTRY = {
     Component: GenderForm as unknown as ComponentType<FormProps<any>>,
     schema: genderSchema,
     getInitialValues: (data: OnboardingData) => ({ gender: selectGender(data) }),
-    save: async (_values: any) => {},
+    save: async (values: any, ctx) => {
+      await ctx.patchUserAttributes({ attributes: { gender: values.gender } })
+    },
   },
   'location': {
     key: 'location',
@@ -102,7 +120,16 @@ export const STEP_REGISTRY = {
     helpText: 'Search for your city and state to set your primary location.',
     Component: LocationForm as unknown as ComponentType<FormProps<any>>,
     getInitialValues: (data: OnboardingData) => ({ primaryLocation: selectPrimaryPlaceKitLocation(data) }),
-    save: async (_values: any) => {},
+    save: async (values: any, ctx) => {
+      if (!values.primaryLocation) return
+      await ctx.updateMyUser({
+        location: {
+          city: values.primaryLocation.city,
+          state: values.primaryLocation.state,
+          country: 'United States',
+        },
+      })
+    },
   },
   'work-location': {
     key: 'work-location',
@@ -111,7 +138,12 @@ export const STEP_REGISTRY = {
     helpText: 'Add cities where you can work without travel/lodging needs. Avoid duplicates.',
     Component: WorkLocationForm as unknown as ComponentType<FormProps<any>>,
     getInitialValues: (data: OnboardingData) => ({ locations: [selectPrimaryPlaceKitLocation(data), ...selectWorkLocations(data)] }),
-    save: async (_values: any) => {},
+    save: async (values: any, ctx) => {
+      const workLocations = (values.locations || [])
+        .filter(Boolean)
+        .map((loc: any) => `${loc.city}, ${loc.state}`)
+      await ctx.updateMyUser({ workLocation: workLocations })
+    },
   },
   'headshots': {
     key: 'headshots',
@@ -120,7 +152,9 @@ export const STEP_REGISTRY = {
     helpText: 'Upload at least one clear, well-lit headshot.',
     Component: HeadshotsForm as unknown as ComponentType<FormProps<any>>,
     getInitialValues: (_data: OnboardingData) => ({}),
-    save: async (_values: any) => {},
+    save: async (_values: any) => {
+      // No-op; images saved via upload component
+    },
   },
   'skills': {
     key: 'skills',
@@ -130,7 +164,12 @@ export const STEP_REGISTRY = {
     Component: SkillsForm as unknown as ComponentType<FormProps<any>>,
     schema: skillsSchema,
     getInitialValues: (data: OnboardingData) => selectSkills(data),
-    save: async (_values: any) => {},
+    save: async (values: any, ctx) => {
+      await ctx.updateMyResume({
+        ...values,
+        experiences: ctx.data.user?.resume?.experiences,
+      })
+    },
   },
   'representation': {
     key: 'representation',
@@ -140,7 +179,9 @@ export const STEP_REGISTRY = {
     Component: RepresentationForm as unknown as ComponentType<FormProps<any>>,
     schema: representationSchema,
     getInitialValues: (data: OnboardingData) => selectRepresentationStatus(data),
-    save: async (_values: any) => {},
+    save: async (values: any, ctx) => {
+      await ctx.updateMyUser({ representationStatus: values.representationStatus })
+    },
   },
   'agency': {
     key: 'agency',
@@ -150,7 +191,11 @@ export const STEP_REGISTRY = {
     Component: AgencyForm as unknown as ComponentType<FormProps<any>>,
     schema: agencySchema,
     getInitialValues: (data: OnboardingData) => selectAgencyId(data),
-    save: async (_values: any) => {},
+    save: async (values: any, ctx) => {
+      if (values.agencyId) {
+        await ctx.addMyRepresentation({ agencyId: values.agencyId as any })
+      }
+    },
   },
 } as const
 

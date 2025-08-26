@@ -16,7 +16,7 @@ components/
     ├── OnboardingGroupPager.tsx    # Enhanced pager with gestures
     ├── GroupProgressBar.tsx        # Progress visualization
     ├── GroupPageIndicator.tsx      # Page dots
-    ├── ReviewFormSheet.tsx         # Modal form editing
+    ├── (modals)/onboarding/review  # Dynamic modal edit routes
     ├── GestureTutorial.tsx         # User guidance
     └── index.ts                    # Exports
 ```
@@ -58,20 +58,10 @@ components/
 />
 ```
 
-### Form Sheet
+### Edit Modal
 ```tsx
-const formSheet = useReviewFormSheet({
-  onFormComplete: (formType, data) => {
-    console.log('Updated:', formType, data)
-  }
-})
-
-<ReviewFormSheet
-  isOpen={formSheet.isOpen}
-  onClose={formSheet.closeForm}
-  formType={formSheet.currentFormType}
-  onFormComplete={formSheet.handleFormComplete}
-/>
+// Navigate to a step-specific modal for editing
+router.push('/app/onboarding/review/display-name')
 ```
 
 ### Progress Tracking
