@@ -3,7 +3,7 @@ import { api } from '@packages/backend/convex/_generated/api'
 import { useMutation } from 'convex/react'
 
 import { BaseOnboardingScreen } from '~/components/layouts/BaseOnboardingScreen'
-import { HeightFormCore, type HeightValues } from '~/components/forms/onboarding/HeightFormCore'
+import { HeightForm, type HeightValues } from '~/components/forms/onboarding/HeightForm'
 import { useOnboardingGroupFlow } from '~/hooks/useOnboardingGroupFlow'
 import { useOnboardingData } from '~/hooks/useOnboardingData'
 import { STEP_REGISTRY } from '~/onboarding/registry'
@@ -38,7 +38,7 @@ export default function HeightScreen() {
       canProgress={canSubmit}
       primaryAction={{ onPress: () => formRef.current?.submit(), handlesNavigation: true }}
     >
-      <HeightFormCore
+      <HeightForm
         ref={formRef}
         initialValues={initialValues}
         onSubmit={handleSubmit}

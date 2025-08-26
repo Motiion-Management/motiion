@@ -1,97 +1,46 @@
-import { api } from '@packages/backend/convex/_generated/api'
-import { EYECOLOR } from '@packages/backend/convex/validators/attributes'
-import { useMutation } from 'convex/react'
-import React, { forwardRef, useEffect } from 'react'
-import { toast } from 'sonner-native'
+import React, { forwardRef, useEffect, useImperativeHandle } from 'react'
 import * as z from 'zod'
+import { useStore } from '@tanstack/react-form'
 
+import { EYECOLOR } from '@packages/backend/convex/validators/attributes'
 import { ValidationModeForm } from '~/components/form/ValidationModeForm'
 import { useAppForm } from '~/components/form/appForm'
-import { useUser } from '~/hooks/useUser'
+import type { FormHandle, FormProps } from '~/components/forms/onboarding/contracts'
 
-import { BaseOnboardingForm } from './BaseOnboardingForm'
-import { OnboardingFormProps, OnboardingFormRef } from './types'
-
-const eyeColorValidator = z.object({
-  eyeColor: z.enum(EYECOLOR, {
-    required_error: 'Please select an eye color',
-  }),
+export const eyeColorSchema = z.object({
+  eyeColor: z.enum(EYECOLOR, { required_error: 'Please select an eye color' }),
 })
 
-type EyeColorSchema = z.infer<typeof eyeColorValidator>
+export type EyeColorValues = z.infer<typeof eyeColorSchema>
 
-export interface EyeColorFormData {
-  eyeColor: string
-}
+export const EyeColorForm = forwardRef<FormHandle, FormProps<EyeColorValues>>(function EyeColorForm(
+  { initialValues, onSubmit, onValidChange },
+  ref
+) {
+  const form = useAppForm({
+    defaultValues: initialValues,
+    validators: { onChange: eyeColorSchema },
+    onSubmit: async ({ value }) => onSubmit(value),
+  })
 
-export const EyeColorForm = forwardRef<OnboardingFormRef, OnboardingFormProps<EyeColorFormData>>(
-  ({ initialData, onComplete, onCancel, mode = 'fullscreen', onValidationChange }, ref) => {
-    const patchUserAttributes = useMutation(api.users.patchUserAttributes)
-    const { user } = useUser()
+  const isValid = useStore(form.store, (s: any) => s.canSubmit && !s.isSubmitting)
 
-    // Get existing value from user
-    const existingEyeColor = initialData?.eyeColor || user?.attributes?.eyeColor
+  useImperativeHandle(ref, () => ({
+    submit: () => form.handleSubmit(),
+    isDirty: () => !!useStore(form.store, (s: any) => s.isDirty),
+    isValid: () => !!isValid,
+  }))
 
-    const form = useAppForm({
-      defaultValues: {
-        eyeColor: existingEyeColor,
-      } as EyeColorSchema,
-      validators: {
-        onChange: eyeColorValidator,
-      },
-      onSubmit: async ({ value }) => {
-        if (!value.eyeColor) return
+  useEffect(() => {
+    onValidChange?.(!!isValid)
+  }, [isValid, onValidChange])
 
-        try {
-          await patchUserAttributes({
-            attributes: { eyeColor: value.eyeColor },
-          })
+  const options = EYECOLOR.map((c) => ({ value: c, label: c }))
 
-          await onComplete({
-            eyeColor: value.eyeColor,
-          })
-        } catch (error) {
-          console.error('Error updating eye color:', error)
-          toast.error('Failed to update eye color. Please try again.')
-          throw error
-        }
-      },
-    })
+  return (
+    <ValidationModeForm form={form}>
+      <form.AppField name="eyeColor" children={(field: any) => <field.RadioGroupField options={options} />} />
+    </ValidationModeForm>
+  )
+})
 
-    const radioOptions = EYECOLOR.map((color) => ({
-      value: color,
-      label: color,
-    }))
-
-    const isFormReady = form.state.canSubmit && !form.state.isSubmitting
-
-    // Notify parent of validation state changes
-    useEffect(() => {
-      onValidationChange?.(isFormReady)
-    }, [isFormReady, onValidationChange])
-
-    const handleSubmit = () => {
-      form.handleSubmit()
-    }
-
-    return (
-      <BaseOnboardingForm
-        ref={ref}
-        title="What color are your eyes?"
-        description="Select one"
-        canProgress={isFormReady}
-        mode={mode}
-        onCancel={onCancel}
-        onSubmit={handleSubmit}>
-        <ValidationModeForm form={form}>
-          <form.AppField
-            name="eyeColor"
-            children={(field) => <field.RadioGroupField options={radioOptions} />}
-          />
-        </ValidationModeForm>
-      </BaseOnboardingForm>
-    )
-  }
-)
-
-EyeColorForm.displayName = 'EyeColorForm'

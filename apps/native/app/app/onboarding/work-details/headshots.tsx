@@ -1,7 +1,7 @@
 import React, { useRef, useState } from 'react'
 
 import { BaseOnboardingScreen } from '~/components/layouts/BaseOnboardingScreen'
-import { HeadshotsFormCore } from '~/components/forms/onboarding/HeadshotsFormCore'
+import { HeadshotsForm } from '~/components/forms/onboarding/HeadshotsForm'
 import { useOnboardingGroupFlow } from '~/hooks/useOnboardingGroupFlow'
 import type { FormHandle } from '~/components/forms/onboarding/contracts'
 
@@ -21,7 +21,7 @@ export default function HeadshotsScreen() {
       canProgress={canSubmit}
       primaryAction={{ onPress: () => formRef.current?.submit(), handlesNavigation: true }}
     >
-      <HeadshotsFormCore ref={formRef} initialValues={{}} onSubmit={handleSubmit} onValidChange={setCanSubmit} />
+      <HeadshotsForm ref={formRef} initialValues={{}} onSubmit={handleSubmit} onValidChange={setCanSubmit} />
     </BaseOnboardingScreen>
   )
 }

@@ -1,115 +1,42 @@
-import { api } from '@packages/backend/convex/_generated/api'
-import { useMutation } from 'convex/react'
-import React, { forwardRef, useCallback, useEffect } from 'react'
-import { View } from 'react-native'
+import React, { forwardRef, useEffect, useImperativeHandle } from 'react'
 import * as z from 'zod'
+import { useStore } from '@tanstack/react-form'
+import { zResume } from '@packages/backend/convex/validators/users'
 
 import { ValidationModeForm } from '~/components/form/ValidationModeForm'
 import { useAppForm } from '~/components/form/appForm'
-import { useStore } from '@tanstack/react-form'
-import { useSimpleOnboardingFlow } from '~/hooks/useSimpleOnboardingFlow'
-import { useUser } from '~/hooks/useUser'
-import { zResume } from '@packages/backend/convex/validators/users'
+import type { FormHandle, FormProps } from '~/components/forms/onboarding/contracts'
 
-import { BaseOnboardingScreen } from '~/components/layouts/BaseOnboardingScreen'
-import { OnboardingFormProps, OnboardingFormRef } from './types'
+export const skillsSchema = zResume.pick({ skills: true, genres: true })
+export type SkillsValues = z.infer<typeof skillsSchema>
 
-export interface SkillsFormData {
-  skills?: string[]
-  genres?: string[]
-}
+export const SkillsForm = forwardRef<FormHandle, FormProps<SkillsValues>>(function SkillsForm(
+  { initialValues, onSubmit, onValidChange },
+  ref
+) {
+  const form = useAppForm({
+    defaultValues: initialValues,
+    validators: { onChange: skillsSchema },
+    onSubmit: async ({ value }) => onSubmit(value),
+  })
 
-const skillsValidator = zResume.pick({ skills: true, genres: true })
-type SkillsSchema = z.infer<typeof skillsValidator>
+  const canProgress = useStore(form.store, (s) => (s.values.genres?.length ?? 0) > 0 && (s.values.skills?.length ?? 0) > 0 && s.canSubmit)
 
-export const SkillsForm = forwardRef<OnboardingFormRef, OnboardingFormProps<SkillsFormData>>(
-  ({ initialData, onComplete, onCancel, mode = 'fullscreen', onValidationChange }, ref) => {
-    const onboarding = useSimpleOnboardingFlow()
-    const updateMyResume = useMutation(api.users.resume.updateMyResume)
-    const { user } = useUser()
+  useImperativeHandle(ref, () => ({
+    submit: () => form.handleSubmit(),
+    isDirty: () => !!useStore(form.store, (s) => s.isDirty),
+    isValid: () => !!canProgress && !form.state.isSubmitting,
+  }))
 
-    const form = useAppForm({
-      defaultValues: {
-        genres: initialData?.genres || user?.resume?.genres,
-        skills: initialData?.skills || user?.resume?.skills,
-      } as SkillsSchema,
-      validators: {
-        onChange: skillsValidator,
-      },
-      onSubmit: async ({ value }) => {
-        try {
-          await updateMyResume({
-            ...value,
-            experiences: user?.resume?.experiences,
-          })
+  useEffect(() => {
+    onValidChange?.(!!canProgress && !form.state.isSubmitting)
+  }, [canProgress, form.state.isSubmitting, onValidChange])
 
-          await onComplete({ 
-            skills: value.skills || [], 
-            genres: value.genres || [] 
-          })
-        } catch (error) {
-          console.error('Error saving skills:', error)
-        }
-      },
-    })
+  return (
+    <ValidationModeForm form={form}>
+      <form.AppField name="genres" children={(field: any) => <field.ChipsField label="GENRES" placeholder="Hip Hop, Musical Theater, Tap Dance..." autoCapitalize="words" />} />
+      <form.AppField name="skills" children={(field: any) => <field.ChipsField label="SKILLS" placeholder="Breaking, Juggling, Skateboarding..." autoCapitalize="words" />} />
+    </ValidationModeForm>
+  )
+})
 
-    const canProgress = useStore(
-      form.store,
-      (s) => (s.values.genres?.length ?? 0) > 0 && (s.values.skills?.length ?? 0) > 0 && s.canSubmit
-    )
-
-    // Notify parent of validation state changes
-    useEffect(() => {
-      onValidationChange?.(canProgress && !form.state.isSubmitting)
-    }, [canProgress, form.state.isSubmitting, onValidationChange])
-
-    const handleSkip = useCallback(() => {
-      onboarding.navigateNext()
-      onComplete({ skills: [], genres: [] })
-    }, [onboarding, onComplete])
-
-    return (
-      <BaseOnboardingScreen
-        title="Add your skills"
-        description="What genre and special skills are you proficient in?"
-        canProgress={canProgress}
-        primaryAction={{
-          onPress: () => form.handleSubmit(),
-          disabled: !canProgress,
-          handlesNavigation: true,
-        }}
-        secondaryAction={{
-          text: 'Skip for now',
-          onPress: handleSkip,
-        }}>
-        <ValidationModeForm form={form}>
-          <View className="gap-6">
-            <form.AppField
-              name="genres"
-              children={(field) => (
-                <field.ChipsField
-                  label="GENRES"
-                  placeholder="Hip Hop, Musical Theater, Tap Dance..."
-                  autoCapitalize="words"
-                />
-              )}
-            />
-
-            <form.AppField
-              name="skills"
-              children={(field) => (
-                <field.ChipsField
-                  label="SKILLS"
-                  placeholder="Breaking, Juggling, Skateboarding..."
-                  autoCapitalize="words"
-                />
-              )}
-            />
-          </View>
-        </ValidationModeForm>
-      </BaseOnboardingScreen>
-    )
-  }
-)
-
-SkillsForm.displayName = 'SkillsForm'

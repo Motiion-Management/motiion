@@ -1,18 +1,18 @@
 import type { ComponentType } from 'react'
 import type { FormProps } from '~/components/forms/onboarding/contracts'
 import type { OnboardingData } from '~/hooks/useOnboardingData'
-import { DisplayNameFormCore, displayNameSchema } from '~/components/forms/onboarding/DisplayNameFormCore'
-import { HeightFormCore } from '~/components/forms/onboarding/HeightFormCore'
-import { EthnicityFormCore, ethnicitySchema } from '~/components/forms/onboarding/EthnicityFormCore'
-import { HairColorFormCore, hairColorSchema } from '~/components/forms/onboarding/HairColorFormCore'
-import { EyeColorFormCore, eyeColorSchema } from '~/components/forms/onboarding/EyeColorFormCore'
-import { GenderFormCore, genderSchema } from '~/components/forms/onboarding/GenderFormCore'
-import { LocationFormCore } from '~/components/forms/onboarding/LocationFormCore'
-import { WorkLocationFormCore } from '~/components/forms/onboarding/WorkLocationFormCore'
-import { HeadshotsFormCore } from '~/components/forms/onboarding/HeadshotsFormCore'
-import { SkillsFormCore, skillsSchema } from '~/components/forms/onboarding/SkillsFormCore'
-import { RepresentationFormCore, representationSchema } from '~/components/forms/onboarding/RepresentationFormCore'
-import { AgencyFormCore, agencySchema } from '~/components/forms/onboarding/AgencyFormCore'
+import { DisplayNameForm, displayNameSchema } from '~/components/forms/onboarding/DisplayNameForm'
+import { HeightForm } from '~/components/forms/onboarding/HeightForm'
+import { EthnicityForm, ethnicitySchema } from '~/components/forms/onboarding/EthnicityForm'
+import { HairColorForm, hairColorSchema } from '~/components/forms/onboarding/HairColorForm'
+import { EyeColorForm, eyeColorSchema } from '~/components/forms/onboarding/EyeColorForm'
+import { GenderForm, genderSchema } from '~/components/forms/onboarding/GenderForm'
+import { LocationForm } from '~/components/forms/onboarding/LocationForm'
+import { WorkLocationForm } from '~/components/forms/onboarding/WorkLocationForm'
+import { HeadshotsForm } from '~/components/forms/onboarding/HeadshotsForm'
+import { SkillsForm, skillsSchema } from '~/components/forms/onboarding/SkillsForm'
+import { RepresentationForm, representationSchema } from '~/components/forms/onboarding/RepresentationForm'
+import { AgencyForm, agencySchema } from '~/components/forms/onboarding/AgencyForm'
 import { selectDisplayName, selectHeight, selectEthnicity, selectHairColor, selectEyeColor, selectGender, selectPrimaryPlaceKitLocation, selectWorkLocations, selectSkills, selectRepresentationStatus, selectAgencyId } from './selectors'
 
 // Step definition used by the dynamic review modal and wrappers.
@@ -35,7 +35,7 @@ export const STEP_REGISTRY = {
     key: 'display-name',
     title: 'Display name',
     description: 'Choose how your name appears.',
-    Component: DisplayNameFormCore as unknown as ComponentType<FormProps<any>>, // keep loose until all forms migrate
+    Component: DisplayNameForm as unknown as ComponentType<FormProps<any>>, // keep loose until all forms migrate
     schema: displayNameSchema,
     getInitialValues: (data: OnboardingData) => ({ displayName: selectDisplayName(data) }),
     save: async (_values: any) => {
@@ -46,7 +46,7 @@ export const STEP_REGISTRY = {
     key: 'height',
     title: 'How tall are you?',
     description: 'Select height',
-    Component: HeightFormCore as unknown as ComponentType<FormProps<any>>,
+    Component: HeightForm as unknown as ComponentType<FormProps<any>>,
     getInitialValues: (data: OnboardingData) => ({ height: selectHeight(data) }),
     save: async (_values: any) => {},
   },
@@ -54,7 +54,7 @@ export const STEP_REGISTRY = {
     key: 'ethnicity',
     title: "What's your ethnicity?",
     description: 'Select all that apply',
-    Component: EthnicityFormCore as unknown as ComponentType<FormProps<any>>,
+    Component: EthnicityForm as unknown as ComponentType<FormProps<any>>,
     schema: ethnicitySchema,
     getInitialValues: (data: OnboardingData) => ({ ethnicity: selectEthnicity(data) }),
     save: async (_values: any) => {},
@@ -63,7 +63,7 @@ export const STEP_REGISTRY = {
     key: 'hair-color',
     title: 'What color is your hair?',
     description: 'Select one',
-    Component: HairColorFormCore as unknown as ComponentType<FormProps<any>>,
+    Component: HairColorForm as unknown as ComponentType<FormProps<any>>,
     schema: hairColorSchema,
     getInitialValues: (data: OnboardingData) => ({ hairColor: selectHairColor(data) }),
     save: async (_values: any) => {},
@@ -72,7 +72,7 @@ export const STEP_REGISTRY = {
     key: 'eye-color',
     title: 'What color are your eyes?',
     description: 'Select one',
-    Component: EyeColorFormCore as unknown as ComponentType<FormProps<any>>,
+    Component: EyeColorForm as unknown as ComponentType<FormProps<any>>,
     schema: eyeColorSchema,
     getInitialValues: (data: OnboardingData) => ({ eyeColor: selectEyeColor(data) }),
     save: async (_values: any) => {},
@@ -81,7 +81,7 @@ export const STEP_REGISTRY = {
     key: 'gender',
     title: 'What best describes your gender?',
     description: 'Select one',
-    Component: GenderFormCore as unknown as ComponentType<FormProps<any>>,
+    Component: GenderForm as unknown as ComponentType<FormProps<any>>,
     schema: genderSchema,
     getInitialValues: (data: OnboardingData) => ({ gender: selectGender(data) }),
     save: async (_values: any) => {},
@@ -90,7 +90,7 @@ export const STEP_REGISTRY = {
     key: 'location',
     title: 'Where are you located?',
     description: '',
-    Component: LocationFormCore as unknown as ComponentType<FormProps<any>>,
+    Component: LocationForm as unknown as ComponentType<FormProps<any>>,
     getInitialValues: (data: OnboardingData) => ({ primaryLocation: selectPrimaryPlaceKitLocation(data) }),
     save: async (_values: any) => {},
   },
@@ -98,7 +98,7 @@ export const STEP_REGISTRY = {
     key: 'work-location',
     title: 'Where can you work as a local?',
     description: '',
-    Component: WorkLocationFormCore as unknown as ComponentType<FormProps<any>>,
+    Component: WorkLocationForm as unknown as ComponentType<FormProps<any>>,
     getInitialValues: (data: OnboardingData) => ({ locations: [selectPrimaryPlaceKitLocation(data), ...selectWorkLocations(data)] }),
     save: async (_values: any) => {},
   },
@@ -106,7 +106,7 @@ export const STEP_REGISTRY = {
     key: 'headshots',
     title: 'Headshots',
     description: 'Upload your professional headshots to showcase your look.',
-    Component: HeadshotsFormCore as unknown as ComponentType<FormProps<any>>,
+    Component: HeadshotsForm as unknown as ComponentType<FormProps<any>>,
     getInitialValues: (_data: OnboardingData) => ({}),
     save: async (_values: any) => {},
   },
@@ -114,7 +114,7 @@ export const STEP_REGISTRY = {
     key: 'skills',
     title: 'Add your skills',
     description: 'What genre and special skills are you proficient in?',
-    Component: SkillsFormCore as unknown as ComponentType<FormProps<any>>,
+    Component: SkillsForm as unknown as ComponentType<FormProps<any>>,
     schema: skillsSchema,
     getInitialValues: (data: OnboardingData) => selectSkills(data),
     save: async (_values: any) => {},
@@ -123,7 +123,7 @@ export const STEP_REGISTRY = {
     key: 'representation',
     title: 'Are you represented by an agent?',
     description: 'Select one',
-    Component: RepresentationFormCore as unknown as ComponentType<FormProps<any>>,
+    Component: RepresentationForm as unknown as ComponentType<FormProps<any>>,
     schema: representationSchema,
     getInitialValues: (data: OnboardingData) => selectRepresentationStatus(data),
     save: async (_values: any) => {},
@@ -132,7 +132,7 @@ export const STEP_REGISTRY = {
     key: 'agency',
     title: 'Select Agency',
     description: 'Search and select your representation agency',
-    Component: AgencyFormCore as unknown as ComponentType<FormProps<any>>,
+    Component: AgencyForm as unknown as ComponentType<FormProps<any>>,
     schema: agencySchema,
     getInitialValues: (data: OnboardingData) => selectAgencyId(data),
     save: async (_values: any) => {},

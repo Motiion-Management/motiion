@@ -3,7 +3,7 @@ import { api } from '@packages/backend/convex/_generated/api'
 import { useMutation } from 'convex/react'
 
 import { BaseOnboardingScreen } from '~/components/layouts/BaseOnboardingScreen'
-import { LocationFormCore, type LocationValues } from '~/components/forms/onboarding/LocationFormCore'
+import { LocationForm, type LocationValues } from '~/components/forms/onboarding/LocationForm'
 import { useOnboardingGroupFlow } from '~/hooks/useOnboardingGroupFlow'
 import { useOnboardingData } from '~/hooks/useOnboardingData'
 import { STEP_REGISTRY } from '~/onboarding/registry'
@@ -45,7 +45,7 @@ export default function LocationScreen() {
       canProgress={canSubmit}
       primaryAction={{ onPress: () => formRef.current?.submit(), handlesNavigation: true }}
     >
-      <LocationFormCore
+      <LocationForm
         ref={formRef}
         initialValues={initialValues}
         onSubmit={handleSubmit}

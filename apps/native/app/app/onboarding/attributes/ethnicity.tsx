@@ -3,7 +3,7 @@ import { api } from '@packages/backend/convex/_generated/api'
 import { useMutation } from 'convex/react'
 
 import { BaseOnboardingScreen } from '~/components/layouts/BaseOnboardingScreen'
-import { EthnicityFormCore, type EthnicityValues } from '~/components/forms/onboarding/EthnicityFormCore'
+import { EthnicityForm, type EthnicityValues } from '~/components/forms/onboarding/EthnicityForm'
 import { useOnboardingGroupFlow } from '~/hooks/useOnboardingGroupFlow'
 import { useOnboardingData } from '~/hooks/useOnboardingData'
 import { STEP_REGISTRY } from '~/onboarding/registry'
@@ -38,7 +38,7 @@ export default function EthnicityScreen() {
       canProgress={canSubmit}
       primaryAction={{ onPress: () => formRef.current?.submit(), handlesNavigation: true }}
     >
-      <EthnicityFormCore
+      <EthnicityForm
         ref={formRef}
         initialValues={initialValues}
         onSubmit={handleSubmit}

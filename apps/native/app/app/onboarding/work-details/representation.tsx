@@ -3,7 +3,7 @@ import { api } from '@packages/backend/convex/_generated/api'
 import { useMutation, useQuery } from 'convex/react'
 
 import { BaseOnboardingScreen } from '~/components/layouts/BaseOnboardingScreen'
-import { RepresentationFormCore, type RepresentationValues } from '~/components/forms/onboarding/RepresentationFormCore'
+import { RepresentationForm, type RepresentationValues } from '~/components/forms/onboarding/RepresentationForm'
 import { useOnboardingGroupFlow } from '~/hooks/useOnboardingGroupFlow'
 import { useOnboardingData } from '~/hooks/useOnboardingData'
 import { STEP_REGISTRY } from '~/onboarding/registry'
@@ -44,7 +44,7 @@ export default function RepresentationScreen() {
       primaryAction={{ onPress: () => formRef.current?.submit(), handlesNavigation: true }}
       secondaryAction={{ onPress: () => {}, text: 'Requires Verification' }}
     >
-      <RepresentationFormCore
+      <RepresentationForm
         ref={formRef}
         initialValues={initialValues}
         onSubmit={handleSubmit}

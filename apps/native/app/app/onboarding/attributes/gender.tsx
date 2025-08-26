@@ -3,7 +3,7 @@ import { api } from '@packages/backend/convex/_generated/api'
 import { useMutation } from 'convex/react'
 
 import { BaseOnboardingScreen } from '~/components/layouts/BaseOnboardingScreen'
-import { GenderFormCore, type GenderValues } from '~/components/forms/onboarding/GenderFormCore'
+import { GenderForm, type GenderValues } from '~/components/forms/onboarding/GenderForm'
 import { useOnboardingGroupFlow } from '~/hooks/useOnboardingGroupFlow'
 import { useOnboardingData } from '~/hooks/useOnboardingData'
 import { STEP_REGISTRY } from '~/onboarding/registry'
@@ -38,7 +38,7 @@ export default function GenderScreen() {
       canProgress={canSubmit}
       primaryAction={{ onPress: () => formRef.current?.submit(), handlesNavigation: true }}
     >
-      <GenderFormCore
+      <GenderForm
         ref={formRef}
         initialValues={initialValues}
         onSubmit={handleSubmit}

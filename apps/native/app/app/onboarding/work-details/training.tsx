@@ -1,7 +1,7 @@
 import React, { useRef, useState } from 'react'
 
 import { BaseOnboardingScreen } from '~/components/layouts/BaseOnboardingScreen'
-import { TrainingFormCore } from '~/components/forms/onboarding/TrainingFormCore'
+import { TrainingForm } from '~/components/forms/onboarding/TrainingForm'
 import { useOnboardingGroupFlow } from '~/hooks/useOnboardingGroupFlow'
 import type { FormHandle } from '~/components/forms/onboarding/contracts'
 
@@ -21,7 +21,7 @@ export default function TrainingScreen() {
       canProgress={canSubmit}
       primaryAction={{ onPress: () => formRef.current?.submit(), handlesNavigation: true }}
     >
-      <TrainingFormCore ref={formRef} initialValues={{}} onSubmit={handleSubmit} />
+      <TrainingForm ref={formRef} initialValues={{}} onSubmit={handleSubmit} />
     </BaseOnboardingScreen>
   )
 }

@@ -1,88 +1,51 @@
-import { api } from '@packages/backend/convex/_generated/api'
-import { useMutation, useQuery } from 'convex/react'
-import { router } from 'expo-router'
-import React, { forwardRef, useEffect } from 'react'
+import React, { forwardRef, useEffect, useImperativeHandle } from 'react'
 import * as z from 'zod'
+import { useStore } from '@tanstack/react-form'
 
 import { ValidationModeForm } from '~/components/form/ValidationModeForm'
 import { useAppForm } from '~/components/form/appForm'
-import { useSimpleOnboardingFlow } from '~/hooks/useSimpleOnboardingFlow'
+import type { FormHandle, FormProps } from '~/components/forms/onboarding/contracts'
 
-import { BaseOnboardingScreen } from '~/components/layouts/BaseOnboardingScreen'
-import { OnboardingFormProps, OnboardingFormRef } from './types'
-
-export interface RepresentationFormData {
-  representationStatus: 'represented' | 'seeking' | 'independent'
-}
-
-const representationStatusOptions = [
-  { value: 'represented', label: "Yes, I'm represented" },
-  { value: 'seeking', label: 'No, but looking for representation' },
-  { value: 'independent', label: "No, I'm an independent artist" },
-]
-
-const representationValidator = z.object({
+export const representationSchema = z.object({
   representationStatus: z.enum(['represented', 'seeking', 'independent'], {
     required_error: 'Please select your representation status',
   }),
 })
 
-export const RepresentationForm = forwardRef<OnboardingFormRef, OnboardingFormProps<RepresentationFormData>>(
-  ({ initialData, onComplete, onCancel, mode = 'fullscreen', onValidationChange }, ref) => {
-    const updateUser = useMutation(api.users.updateMyUser)
-    const user = useQuery(api.users.getMyUser)
-    const nav = useSimpleOnboardingFlow()
+export type RepresentationValues = z.infer<typeof representationSchema>
 
-    const form = useAppForm({
-      defaultValues: {
-        representationStatus: initialData?.representationStatus || user?.representationStatus,
-      },
-      validators: {
-        onChange: representationValidator,
-      },
-      onSubmit: async ({ value }) => {
-        if (!value.representationStatus) return
+const options = [
+  { value: 'represented', label: "Yes, I'm represented" },
+  { value: 'seeking', label: 'No, but looking for representation' },
+  { value: 'independent', label: "No, I'm an independent artist" },
+]
 
-        await updateUser({
-          representationStatus: value.representationStatus,
-        })
+export const RepresentationForm = forwardRef<FormHandle, FormProps<RepresentationValues>>(function RepresentationForm(
+  { initialValues, onSubmit, onValidChange },
+  ref
+) {
+  const form = useAppForm({
+    defaultValues: initialValues,
+    validators: { onChange: representationSchema },
+    onSubmit: async ({ value }) => onSubmit(value),
+  })
 
-        await onComplete({ representationStatus: value.representationStatus })
+  const isValid = useStore(form.store, (s) => s.canSubmit && !s.isSubmitting)
 
-        // If represented, navigate to agency screen
-        if (value.representationStatus === 'represented') {
-          router.push('/app/onboarding/work-details/agency')
-        }
-      },
-    })
+  useImperativeHandle(ref, () => ({
+    submit: () => form.handleSubmit(),
+    isDirty: () => !!useStore(form.store, (s) => s.isDirty),
+    isValid: () => !!isValid,
+  }))
 
-    // Notify parent of validation state changes
-    useEffect(() => {
-      onValidationChange?.(form.state.canSubmit && !form.state.isSubmitting)
-    }, [form.state.canSubmit, form.state.isSubmitting, onValidationChange])
+  useEffect(() => {
+    onValidChange?.(!!isValid)
+  }, [isValid, onValidChange])
 
-    return (
-      <BaseOnboardingScreen
-        title="Are you represented by an agent?"
-        description="Select one"
-        canProgress={form.state.canSubmit && !form.state.isSubmitting}
-        primaryAction={{
-          onPress: () => form.handleSubmit(),
-          handlesNavigation: true,
-        }}
-        secondaryAction={{
-          onPress: () => {},
-          text: 'Requires Verification',
-        }}>
-        <ValidationModeForm form={form}>
-          <form.AppField
-            name="representationStatus"
-            children={(field) => <field.RadioGroupField options={representationStatusOptions} />}
-          />
-        </ValidationModeForm>
-      </BaseOnboardingScreen>
-    )
-  }
-)
+  return (
+    <ValidationModeForm form={form}>
+      <form.AppField name="representationStatus" children={(field: any) => <field.RadioGroupField options={options} />} />
+    </ValidationModeForm>
+  )
+})
 
-RepresentationForm.displayName = 'RepresentationForm'

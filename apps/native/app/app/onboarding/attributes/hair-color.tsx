@@ -3,7 +3,7 @@ import { api } from '@packages/backend/convex/_generated/api'
 import { useMutation } from 'convex/react'
 
 import { BaseOnboardingScreen } from '~/components/layouts/BaseOnboardingScreen'
-import { HairColorFormCore, type HairColorValues } from '~/components/forms/onboarding/HairColorFormCore'
+import { HairColorForm, type HairColorValues } from '~/components/forms/onboarding/HairColorForm'
 import { useOnboardingGroupFlow } from '~/hooks/useOnboardingGroupFlow'
 import { useOnboardingData } from '~/hooks/useOnboardingData'
 import { STEP_REGISTRY } from '~/onboarding/registry'
@@ -38,7 +38,7 @@ export default function HairColorScreen() {
       canProgress={canSubmit}
       primaryAction={{ onPress: () => formRef.current?.submit(), handlesNavigation: true }}
     >
-      <HairColorFormCore
+      <HairColorForm
         ref={formRef}
         initialValues={initialValues}
         onSubmit={handleSubmit}

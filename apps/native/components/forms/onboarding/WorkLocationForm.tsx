@@ -1,114 +1,67 @@
-import { api } from '@packages/backend/convex/_generated/api'
-import { useMutation, useQuery } from 'convex/react'
-import React, { forwardRef, useEffect } from 'react'
+import React, { forwardRef, useEffect, useImperativeHandle } from 'react'
 import { View, ScrollView, Pressable, Keyboard } from 'react-native'
 
 import { WorkLocationPicker } from '~/components/ui/work-location-picker'
 import { useWorkLocationForm } from '~/hooks/useWorkLocationForm'
+import type { FormHandle, FormProps } from '~/components/forms/onboarding/contracts'
 
-import { BaseOnboardingForm } from './BaseOnboardingForm'
-import { OnboardingFormProps, OnboardingFormRef } from './types'
-
-export interface WorkLocationFormData {
-  workLocation: string[]
+export interface PlaceKitLocation {
+  city: string
+  state: string
+  stateCode?: string
+  country: string
 }
 
-export const WorkLocationForm = forwardRef<OnboardingFormRef, OnboardingFormProps<WorkLocationFormData>>(
-  ({ initialData, onComplete, onCancel, mode = 'fullscreen', onValidationChange }, ref) => {
-    const updateUser = useMutation(api.users.updateMyUser)
-    const user = useQuery(api.users.getMyUser)
+export interface WorkLocationValues {
+  locations: (PlaceKitLocation | null)[]
+}
 
-    // Get primary location from previous step
-    const primaryLocation = user?.location
-      ? {
-          city: user.location.city || '',
-          state: user.location.state || '',
-          stateCode: user.location.state || '',
-          country: user.location.country || 'United States',
-        }
-      : null
+export const WorkLocationForm = forwardRef<FormHandle, FormProps<WorkLocationValues>>(function WorkLocationForm(
+  { initialValues, onSubmit, onValidChange },
+  ref
+) {
+  const form = useWorkLocationForm({
+    primaryLocation: initialValues.locations[0] || null,
+    existingWorkLocations: (initialValues.locations.filter(Boolean) as PlaceKitLocation[]).slice(1),
+    onSubmit: async (data) => {
+      await onSubmit({ locations: data.locations })
+    },
+  })
 
-    // Convert existing work locations back to PlaceKitLocation format
-    const existingWorkLocations =
-      user?.workLocation?.map((locationString) => {
-        const [city, state] = locationString.split(', ')
-        return {
-          city,
-          state,
-          stateCode: state,
-          country: 'United States',
-        }
-      }) || []
+  useImperativeHandle(ref, () => ({
+    submit: () => form.actions.submit(),
+    isDirty: () => false,
+    isValid: () => form.isValid && !form.isSubmitting,
+  }))
 
-    const workLocationForm = useWorkLocationForm({
-      primaryLocation,
-      existingWorkLocations,
-      onSubmit: async (data) => {
-        // Convert locations to array of strings for the backend
-        const workLocations = data.locations
-          .filter(Boolean)
-          .map((location) => `${location!.city}, ${location!.state}`)
+  useEffect(() => {
+    onValidChange?.(form.isValid && !form.isSubmitting)
+  }, [form.isValid, form.isSubmitting, onValidChange])
 
-        await updateUser({
-          workLocation: workLocations,
-        })
+  return (
+    <Pressable className="w-full flex-1" onPress={Keyboard.dismiss}>
+      <ScrollView
+        className="w-full flex-1"
+        showsVerticalScrollIndicator={false}
+        keyboardShouldPersistTaps="handled"
+        nestedScrollEnabled={true}
+        contentContainerStyle={{ paddingBottom: 300 }}
+        style={{ overflow: 'visible' }}>
+        <View className="gap-6" style={{ overflow: 'visible' }}>
+          {form.data.locations.map((location, index) => (
+            <WorkLocationPicker
+              key={index}
+              index={index}
+              value={location}
+              onValueChange={(newLocation) => form.actions.setLocation(index, newLocation)}
+              onRemove={() => form.actions.removeLocation(index)}
+              excludeLocations={form.selectedLocations.filter((_, i) => i !== index)}
+              error={form.errors.locations?.[index]}
+            />
+          ))}
+        </View>
+      </ScrollView>
+    </Pressable>
+  )
+})
 
-        await onComplete({ workLocation: workLocations })
-      },
-    })
-
-    // Notify parent of validation state changes
-    useEffect(() => {
-      onValidationChange?.(workLocationForm.isValid && !workLocationForm.isSubmitting)
-    }, [workLocationForm.isValid, workLocationForm.isSubmitting, onValidationChange])
-
-    return (
-      <BaseOnboardingForm
-        ref={ref}
-        title="Where can you work as a local?"
-        description=""
-        canProgress={workLocationForm.isValid}
-        mode={mode}
-        onCancel={onCancel}
-        onSubmit={workLocationForm.actions.submit}
-        secondaryAction={
-          workLocationForm.canAddMore
-            ? {
-                text: 'Add a location',
-                onPress: workLocationForm.actions.addLocation,
-              }
-            : undefined
-        }>
-        
-        <Pressable className="w-full flex-1" onPress={Keyboard.dismiss}>
-          <ScrollView
-            className="w-full flex-1"
-            showsVerticalScrollIndicator={false}
-            keyboardShouldPersistTaps="handled"
-            nestedScrollEnabled={true}
-            contentContainerStyle={{ paddingBottom: 300 }}
-            style={{ overflow: 'visible' }}>
-            <View className="gap-6" style={{ overflow: 'visible' }}>
-              {/* Location inputs */}
-              {workLocationForm.data.locations.map((location, index) => (
-                <WorkLocationPicker
-                  key={index}
-                  index={index}
-                  value={location}
-                  onValueChange={(newLocation) =>
-                    workLocationForm.actions.setLocation(index, newLocation)
-                  }
-                  onRemove={() => workLocationForm.actions.removeLocation(index)}
-                  excludeLocations={workLocationForm.selectedLocations.filter((_, i) => i !== index)}
-                  error={workLocationForm.errors.locations?.[index]}
-                />
-              ))}
-            </View>
-          </ScrollView>
-        </Pressable>
-      </BaseOnboardingForm>
-    )
-  }
-)
-
-WorkLocationForm.displayName = 'WorkLocationForm'

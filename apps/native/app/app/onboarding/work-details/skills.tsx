@@ -3,7 +3,7 @@ import { api } from '@packages/backend/convex/_generated/api'
 import { useMutation } from 'convex/react'
 
 import { BaseOnboardingScreen } from '~/components/layouts/BaseOnboardingScreen'
-import { SkillsFormCore, type SkillsValues } from '~/components/forms/onboarding/SkillsFormCore'
+import { SkillsForm, type SkillsValues } from '~/components/forms/onboarding/SkillsForm'
 import { useOnboardingGroupFlow } from '~/hooks/useOnboardingGroupFlow'
 import { useOnboardingData } from '~/hooks/useOnboardingData'
 import { STEP_REGISTRY } from '~/onboarding/registry'
@@ -41,7 +41,7 @@ export default function SkillsScreen() {
       canProgress={canSubmit}
       primaryAction={{ onPress: () => formRef.current?.submit(), handlesNavigation: true }}
     >
-      <SkillsFormCore
+      <SkillsForm
         ref={formRef}
         initialValues={initialValues}
         onSubmit={handleSubmit}

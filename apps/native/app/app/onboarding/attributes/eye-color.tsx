@@ -3,7 +3,7 @@ import { api } from '@packages/backend/convex/_generated/api'
 import { useMutation } from 'convex/react'
 
 import { BaseOnboardingScreen } from '~/components/layouts/BaseOnboardingScreen'
-import { EyeColorFormCore, type EyeColorValues } from '~/components/forms/onboarding/EyeColorFormCore'
+import { EyeColorForm, type EyeColorValues } from '~/components/forms/onboarding/EyeColorForm'
 import { useOnboardingGroupFlow } from '~/hooks/useOnboardingGroupFlow'
 import { useOnboardingData } from '~/hooks/useOnboardingData'
 import { STEP_REGISTRY } from '~/onboarding/registry'
@@ -38,7 +38,7 @@ export default function EyeColorScreen() {
       canProgress={canSubmit}
       primaryAction={{ onPress: () => formRef.current?.submit(), handlesNavigation: true }}
     >
-      <EyeColorFormCore
+      <EyeColorForm
         ref={formRef}
         initialValues={initialValues}
         onSubmit={handleSubmit}

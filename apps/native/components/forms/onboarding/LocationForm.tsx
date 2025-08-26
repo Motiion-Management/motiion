@@ -1,76 +1,53 @@
-import { api } from '@packages/backend/convex/_generated/api'
-import { useMutation, useQuery } from 'convex/react'
-import React, { forwardRef, useEffect } from 'react'
+import React, { forwardRef, useEffect, useImperativeHandle } from 'react'
 import { View } from 'react-native'
+import { useMutation } from 'convex/react'
+import { api } from '@packages/backend/convex/_generated/api'
 
 import { LocationPicker } from '~/components/ui/location-picker-placekit'
 import { useLocationForm } from '~/hooks/useLocationForm'
+import type { FormHandle, FormProps } from '~/components/forms/onboarding/contracts'
 
-import { BaseOnboardingForm } from './BaseOnboardingForm'
-import { OnboardingFormProps, OnboardingFormRef } from './types'
-
-export interface LocationFormData {
-  location: any
+export interface PlaceKitLocation {
+  city: string
+  state: string
+  stateCode?: string
+  country: string
 }
 
-export const LocationForm = forwardRef<OnboardingFormRef, OnboardingFormProps<LocationFormData>>(
-  ({ initialData, onComplete, onCancel, mode = 'fullscreen', onValidationChange }, ref) => {
-    const updateUser = useMutation(api.users.updateMyUser)
-    const user = useQuery(api.users.getMyUser)
+export interface LocationValues {
+  primaryLocation: PlaceKitLocation | null
+}
 
-    // Initialize form with user's current location if available
-    const initialLocation = user?.location
-      ? {
-          city: user.location.city || '',
-          state: user.location.state || '',
-          stateCode: user.location.state || '', // Use state as fallback since stateCode doesn't exist in schema
-          country: user.location.country || 'United States',
-        }
-      : null
+export const LocationForm = forwardRef<FormHandle, FormProps<LocationValues>>(function LocationForm(
+  { initialValues, onSubmit, onValidChange },
+  ref
+) {
+  const form = useLocationForm({
+    initialValue: initialValues.primaryLocation,
+    onSubmit: async (data) => {
+      if (!data.primaryLocation) return
+      await onSubmit({ primaryLocation: data.primaryLocation })
+    },
+  })
 
-    const locationForm = useLocationForm({
-      initialValue: initialLocation,
-      onSubmit: async (data) => {
-        if (!data.primaryLocation) return
+  useImperativeHandle(ref, () => ({
+    submit: () => form.actions.submit(),
+    isDirty: () => false, // local-only form; not tracking dirtiness here
+    isValid: () => form.isValid && !form.isSubmitting,
+  }))
 
-        // Update user location in database
-        await updateUser({
-          location: {
-            city: data.primaryLocation.city,
-            state: data.primaryLocation.state,
-            country: 'United States',
-          },
-        })
+  useEffect(() => {
+    onValidChange?.(form.isValid && !form.isSubmitting)
+  }, [form.isValid, form.isSubmitting, onValidChange])
 
-        await onComplete({ location: data.primaryLocation })
-      },
-    })
+  return (
+    <View className="w-full">
+      <LocationPicker
+        value={form.data.primaryLocation}
+        onValueChange={form.actions.setLocation}
+        error={form.errors.primaryLocation}
+      />
+    </View>
+  )
+})
 
-    // Notify parent of validation state changes
-    useEffect(() => {
-      onValidationChange?.(locationForm.isValid && !locationForm.isSubmitting)
-    }, [locationForm.isValid, locationForm.isSubmitting, onValidationChange])
-
-    return (
-      <BaseOnboardingForm
-        ref={ref}
-        title="Where are you located?"
-        description=""
-        canProgress={locationForm.isValid}
-        mode={mode}
-        onCancel={onCancel}
-        onSubmit={locationForm.actions.submit}>
-        
-        <View className="w-full">
-          <LocationPicker
-            value={locationForm.data.primaryLocation}
-            onValueChange={locationForm.actions.setLocation}
-            error={locationForm.errors.primaryLocation}
-          />
-        </View>
-      </BaseOnboardingForm>
-    )
-  }
-)
-
-LocationForm.displayName = 'LocationForm'

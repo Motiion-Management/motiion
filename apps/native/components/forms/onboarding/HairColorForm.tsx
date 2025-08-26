@@ -1,97 +1,46 @@
-import { api } from '@packages/backend/convex/_generated/api'
-import { HAIRCOLOR } from '@packages/backend/convex/validators/attributes'
-import { useMutation } from 'convex/react'
-import React, { forwardRef, useEffect } from 'react'
-import { toast } from 'sonner-native'
+import React, { forwardRef, useEffect, useImperativeHandle } from 'react'
 import * as z from 'zod'
+import { useStore } from '@tanstack/react-form'
 
+import { HAIRCOLOR } from '@packages/backend/convex/validators/attributes'
 import { ValidationModeForm } from '~/components/form/ValidationModeForm'
 import { useAppForm } from '~/components/form/appForm'
-import { useUser } from '~/hooks/useUser'
+import type { FormHandle, FormProps } from '~/components/forms/onboarding/contracts'
 
-import { BaseOnboardingForm } from './BaseOnboardingForm'
-import { OnboardingFormProps, OnboardingFormRef } from './types'
-
-const hairColorValidator = z.object({
-  hairColor: z.enum(HAIRCOLOR, {
-    required_error: 'Please select a hair color',
-  }),
+export const hairColorSchema = z.object({
+  hairColor: z.enum(HAIRCOLOR, { required_error: 'Please select a hair color' }),
 })
 
-type HairColorSchema = z.infer<typeof hairColorValidator>
+export type HairColorValues = z.infer<typeof hairColorSchema>
 
-export interface HairColorFormData {
-  hairColor: string
-}
+export const HairColorForm = forwardRef<FormHandle, FormProps<HairColorValues>>(function HairColorForm(
+  { initialValues, onSubmit, onValidChange },
+  ref
+) {
+  const form = useAppForm({
+    defaultValues: initialValues,
+    validators: { onChange: hairColorSchema },
+    onSubmit: async ({ value }) => onSubmit(value),
+  })
 
-export const HairColorForm = forwardRef<OnboardingFormRef, OnboardingFormProps<HairColorFormData>>(
-  ({ initialData, onComplete, onCancel, mode = 'fullscreen', onValidationChange }, ref) => {
-    const patchUserAttributes = useMutation(api.users.patchUserAttributes)
-    const { user } = useUser()
+  const isValid = useStore(form.store, (s: any) => s.canSubmit && !s.isSubmitting)
 
-    // Get existing value from user
-    const existingHairColor = initialData?.hairColor || user?.attributes?.hairColor
+  useImperativeHandle(ref, () => ({
+    submit: () => form.handleSubmit(),
+    isDirty: () => !!useStore(form.store, (s: any) => s.isDirty),
+    isValid: () => !!isValid,
+  }))
 
-    const form = useAppForm({
-      defaultValues: {
-        hairColor: existingHairColor,
-      } as HairColorSchema,
-      validators: {
-        onChange: hairColorValidator,
-      },
-      onSubmit: async ({ value }) => {
-        if (!value.hairColor) return
+  useEffect(() => {
+    onValidChange?.(!!isValid)
+  }, [isValid, onValidChange])
 
-        try {
-          await patchUserAttributes({
-            attributes: { hairColor: value.hairColor },
-          })
+  const options = HAIRCOLOR.map((c) => ({ value: c, label: c }))
 
-          await onComplete({
-            hairColor: value.hairColor,
-          })
-        } catch (error) {
-          console.error('Error updating hair color:', error)
-          toast.error('Failed to update hair color. Please try again.')
-          throw error
-        }
-      },
-    })
+  return (
+    <ValidationModeForm form={form}>
+      <form.AppField name="hairColor" children={(field: any) => <field.RadioGroupField options={options} />} />
+    </ValidationModeForm>
+  )
+})
 
-    const radioOptions = HAIRCOLOR.map((color) => ({
-      value: color,
-      label: color,
-    }))
-
-    const isFormReady = form.state.canSubmit && !form.state.isSubmitting
-
-    // Notify parent of validation state changes
-    useEffect(() => {
-      onValidationChange?.(isFormReady)
-    }, [isFormReady, onValidationChange])
-
-    const handleSubmit = () => {
-      form.handleSubmit()
-    }
-
-    return (
-      <BaseOnboardingForm
-        ref={ref}
-        title="What color is your hair?"
-        description="Select one"
-        canProgress={isFormReady}
-        mode={mode}
-        onCancel={onCancel}
-        onSubmit={handleSubmit}>
-        <ValidationModeForm form={form}>
-          <form.AppField
-            name="hairColor"
-            children={(field) => <field.RadioGroupField options={radioOptions} />}
-          />
-        </ValidationModeForm>
-      </BaseOnboardingForm>
-    )
-  }
-)
-
-HairColorForm.displayName = 'HairColorForm'

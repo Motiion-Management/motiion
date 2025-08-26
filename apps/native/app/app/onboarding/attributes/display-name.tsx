@@ -3,10 +3,7 @@ import { api } from '@packages/backend/convex/_generated/api';
 import { useMutation } from 'convex/react';
 
 import { BaseOnboardingScreen } from '~/components/layouts/BaseOnboardingScreen';
-import {
-  DisplayNameFormCore,
-  type DisplayNameValues,
-} from '~/components/forms/onboarding/DisplayNameFormCore';
+import { DisplayNameForm, type DisplayNameValues } from '~/components/forms/onboarding/DisplayNameForm';
 import { useOnboardingGroupFlow } from '~/hooks/useOnboardingGroupFlow';
 import { useOnboardingData } from '~/hooks/useOnboardingData';
 import { STEP_REGISTRY } from '~/onboarding/registry';
@@ -42,7 +39,7 @@ export default function DisplayNameScreen() {
       canProgress={canSubmit}
       primaryAction={{ onPress: () => formRef.current?.submit(), handlesNavigation: true }}
     >
-      <DisplayNameFormCore
+      <DisplayNameForm
         ref={formRef}
         initialValues={initialValues}
         onSubmit={handleSubmit}

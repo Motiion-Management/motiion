@@ -1,18 +1,13 @@
-import { api } from '@packages/backend/convex/_generated/api'
-import { useMutation } from 'convex/react'
-import React, { forwardRef, useEffect } from 'react'
-import { View } from 'react-native'
+import React, { forwardRef, useEffect, useImperativeHandle } from 'react'
 import * as z from 'zod'
-
-import { ValidationModeForm } from '~/components/form/ValidationModeForm'
-import { useAppForm } from '~/components/form/appForm'
+import { View } from 'react-native'
 import { useStore } from '@tanstack/react-form'
-import { useUser } from '~/hooks/useUser'
 
-import { BaseOnboardingForm } from './BaseOnboardingForm'
-import { OnboardingFormProps, OnboardingFormRef } from './types'
+import { useAppForm } from '~/components/form/appForm'
+import { ValidationModeForm } from '~/components/form/ValidationModeForm'
+import type { FormHandle, FormProps } from '~/components/forms/onboarding/contracts'
 
-const displayNameValidator = z.object({
+export const displayNameSchema = z.object({
   displayName: z
     .string()
     .min(1, { message: 'Preferred name is required' })
@@ -20,83 +15,57 @@ const displayNameValidator = z.object({
     .max(50, { message: 'Preferred name must be less than 50 characters' }),
 })
 
-type DisplayNameSchema = z.infer<typeof displayNameValidator>
+export type DisplayNameValues = z.infer<typeof displayNameSchema>
 
-export interface DisplayNameFormData {
-  displayName: string
-}
+export const DisplayNameForm = forwardRef<FormHandle, FormProps<DisplayNameValues>>(function DisplayNameForm(
+  { initialValues, onSubmit, onDirtyChange, onValidChange },
+  ref
+) {
+  const form = useAppForm({
+    defaultValues: initialValues,
+    validators: { onChange: displayNameSchema },
+    onSubmit: async ({ value }) => {
+      await onSubmit({ displayName: value.displayName.trim() })
+    },
+  })
 
-export const DisplayNameForm = forwardRef<OnboardingFormRef, OnboardingFormProps<DisplayNameFormData>>(
-  ({ initialData, onComplete, onCancel, mode = 'fullscreen', autoFocus = true, onValidationChange, ...props }, ref) => {
-    const updateMyUser = useMutation(api.users.updateMyUser)
-    const { user } = useUser()
+  const canSubmit = useStore(form.store, (s: any) => s.canSubmit && !s.isSubmitting)
+  const isDirty = useStore(form.store, (s: any) => s.isDirty)
 
-    const form = useAppForm({
-      defaultValues: {
-        displayName: initialData?.displayName || user?.displayName || user?.fullName || '',
-      } as DisplayNameSchema,
-      validators: {
-        onChange: displayNameValidator,
-      },
-      onSubmit: async ({ value }) => {
-        try {
-          await updateMyUser({
-            displayName: value.displayName.trim(),
-          })
+  useImperativeHandle(ref, () => ({
+    submit: () => form.handleSubmit(),
+    isDirty: () => !!isDirty,
+    isValid: () => !!canSubmit,
+  }))
 
-          await onComplete({
-            displayName: value.displayName.trim(),
-          })
-        } catch (error) {
-          console.error('Error saving display name:', error)
-          throw error
-        }
-      },
-    })
+  useEffect(() => {
+    onDirtyChange?.(!!isDirty)
+  }, [isDirty, onDirtyChange])
 
-    const canProgress = useStore(form.store, (s) => s.canSubmit)
+  useEffect(() => {
+    onValidChange?.(!!canSubmit)
+  }, [canSubmit, onValidChange])
 
-    // Notify parent of validation state changes
-    useEffect(() => {
-      onValidationChange?.(canProgress)
-    }, [canProgress, onValidationChange])
-
-    const handleSubmit = () => {
-      form.handleSubmit()
-    }
-
-    return (
-      <BaseOnboardingForm
-        ref={ref}
-        title="What name do you want displayed?"
-        canProgress={canProgress}
-        mode={mode}
-        onCancel={onCancel}
-        onSubmit={handleSubmit}
-        {...props}>
-        <ValidationModeForm form={form}>
-          <View className="gap-6">
-            <form.AppField
-              name="displayName"
-              children={(field) => (
-                <field.InputField
-                  label="PREFERRED NAME"
-                  placeholder="Enter your preferred name"
-                  helperTextProps={{
-                    message:
-                      'This will be the name displayed on your public profile. If you go by another name professionally, you should enter it here.',
-                  }}
-                  autoCapitalize="words"
-                  autoComplete="name"
-                  autoFocus={autoFocus}
-                />
-              )}
+  return (
+    <ValidationModeForm form={form}>
+      <View className="gap-6">
+        <form.AppField
+          name="displayName"
+          children={(field: any) => (
+            <field.InputField
+              label="PREFERRED NAME"
+              placeholder="Enter your preferred name"
+              helperTextProps={{
+                message:
+                  'This will be the name displayed on your public profile. If you go by another name professionally, you should enter it here.',
+              }}
+              autoCapitalize="words"
+              autoComplete="name"
+              autoFocus
             />
-          </View>
-        </ValidationModeForm>
-      </BaseOnboardingForm>
-    )
-  }
-)
-
-DisplayNameForm.displayName = 'DisplayNameForm'
+          )}
+        />
+      </View>
+    </ValidationModeForm>
+  )
+})

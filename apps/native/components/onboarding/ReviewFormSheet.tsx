@@ -1,42 +1,14 @@
-import React, { useState, useRef } from 'react'
+import React, { useEffect, useMemo, useRef, useState } from 'react'
 import { View } from 'react-native'
 
 import { Sheet } from '~/components/ui/sheet/sheet'
-import { OnboardingFormRef } from '~/components/forms/onboarding/types'
-import {
-  DisplayNameForm,
-  HeightForm,
-  EthnicityForm,
-  HairColorForm,
-  EyeColorForm,
-  GenderForm,
-  HeadshotsForm,
-  SizingForm,
-  LocationForm,
-  WorkLocationForm,
-  RepresentationForm,
-  AgencyForm,
-  TrainingForm,
-  SkillsForm,
-  ExperiencesForm,
-} from '~/components/forms/onboarding'
+import { Button } from '~/components/ui/button'
+import { Text } from '~/components/ui/text'
+import type { FormHandle } from '~/components/forms/onboarding/contracts'
+import { useOnboardingData } from '~/hooks/useOnboardingData'
+import { STEP_REGISTRY } from '~/onboarding/registry'
 
-type FormType = 
-  | 'display-name'
-  | 'height'
-  | 'ethnicity'
-  | 'hair-color'
-  | 'eye-color'
-  | 'gender'
-  | 'headshots'
-  | 'sizing'
-  | 'location'
-  | 'work-location'
-  | 'representation'
-  | 'agency'
-  | 'training'
-  | 'skills'
-  | 'experiences'
+type FormType = keyof typeof STEP_REGISTRY
 
 interface ReviewFormSheetProps {
   isOpen: boolean
@@ -115,14 +87,12 @@ export function ReviewFormSheet({
   onFormComplete 
 }: ReviewFormSheetProps) {
   const [isSubmitting, setIsSubmitting] = useState(false)
-  const formRef = useRef<OnboardingFormRef>(null)
+  const [canSubmit, setCanSubmit] = useState(false)
+  const formRef = useRef<FormHandle>(null)
+  const { data, isLoading } = useOnboardingData()
 
-  if (!formType || !FORM_CONFIGS[formType]) {
-    return null
-  }
-
-  const config = FORM_CONFIGS[formType]
-  const FormComponent = config.component
+  const def = formType ? STEP_REGISTRY[formType] : undefined
+  const FormComponent = def?.Component as any
 
   const handleFormComplete = async (data: any) => {
     try {
@@ -142,6 +112,17 @@ export function ReviewFormSheet({
     }
   }
 
+  if (!formType || !def) return null
+
+  const [initialValues, setInitialValues] = useState<any | null>(null)
+
+  useEffect(() => {
+    if (isLoading || !def) return
+    Promise.resolve(def.getInitialValues(data)).then(setInitialValues)
+  }, [data, isLoading, def])
+
+  if (isLoading || !initialValues) return null
+
   return (
     <Sheet
       isOpened={isOpen}
@@ -150,18 +131,22 @@ export function ReviewFormSheet({
           handleClose()
         }
       }}
-      snapPoints={config.snapPoints}
+      snapPoints={['80%']}
       enableDynamicSizing={false}
       enableContentPanningGesture={false}
     >
       <View className="flex-1">
         <FormComponent
           ref={formRef}
-          mode="sheet"
-          onComplete={handleFormComplete}
-          onCancel={handleClose}
-          autoFocus={true}
+          initialValues={initialValues}
+          onSubmit={handleFormComplete}
+          onValidChange={setCanSubmit}
         />
+        <View className="border-t border-border-default bg-surface-default px-4 py-4">
+          <Button disabled={!canSubmit || isSubmitting} size="lg" className="w-full" onPress={() => formRef.current?.submit()}>
+            <Text>Save</Text>
+          </Button>
+        </View>
       </View>
     </Sheet>
   )
