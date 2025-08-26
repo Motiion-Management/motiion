@@ -9,10 +9,12 @@ import { Text } from '~/components/ui/text'
 interface BaseFormContainerProps {
   title?: string
   description?: string
+  helpText?: string
   children: React.ReactNode
   scrollEnabled?: boolean
   footer?: React.ReactNode
   gradientBackground?: boolean
+  padTop?: boolean
 }
 
 // Minimal, keyboard-safe container with optional title/description and footer slot.
@@ -20,15 +22,17 @@ interface BaseFormContainerProps {
 export function BaseFormContainer({
   title,
   description,
+  helpText,
   children,
   scrollEnabled = true,
   footer,
   gradientBackground = true,
+  padTop = true,
 }: BaseFormContainerProps) {
   const insets = useSafeAreaInsets()
 
   const content = (
-    <View className="relative flex-1" style={{ paddingTop: insets.top + 48 }}>
+    <View className="relative flex-1" style={{ paddingTop: padTop ? insets.top + 48 : 0 }}>
       <KeyboardAwareScrollView
         bounces={false}
         disableScrollOnKeyboardHide
@@ -45,7 +49,16 @@ export function BaseFormContainer({
               {description}
             </Text>
           )}
-          <View className={`mt-${title || description ? '8' : '0'} gap-4`}>{children}</View>
+          <View className={`mt-${title || description ? '8' : '0'} gap-4`}>
+            {children}
+            {!!helpText && (
+              <View className="items-center pt-2">
+                <Text className="text-text-low" variant="bodySm">
+                  {helpText}
+                </Text>
+              </View>
+            )}
+          </View>
         </View>
       </KeyboardAwareScrollView>
 
@@ -67,4 +80,3 @@ export function BaseFormContainer({
   if (!gradientBackground) return content
   return <BackgroundGradientView>{content}</BackgroundGradientView>
 }
-

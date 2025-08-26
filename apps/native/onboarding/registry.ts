@@ -20,6 +20,7 @@ export interface StepDef<T = any> {
   key: string
   title: string
   description?: string
+  helpText?: string
   // The form component implementing the unified contract.
   Component: ComponentType<FormProps<T>>
   // Optional validation schema (e.g., Zod) exposed for reuse.
@@ -35,6 +36,8 @@ export const STEP_REGISTRY = {
     key: 'display-name',
     title: 'Display name',
     description: 'Choose how your name appears.',
+    helpText:
+      'This will be the name displayed on your public profile. If you go by another name professionally, enter it here.',
     Component: DisplayNameForm as unknown as ComponentType<FormProps<any>>, // keep loose until all forms migrate
     schema: displayNameSchema,
     getInitialValues: (data: OnboardingData) => ({ displayName: selectDisplayName(data) }),
@@ -46,6 +49,7 @@ export const STEP_REGISTRY = {
     key: 'height',
     title: 'How tall are you?',
     description: 'Select height',
+    helpText: 'Use feet and inches. Be accurate to help casting directors.',
     Component: HeightForm as unknown as ComponentType<FormProps<any>>,
     getInitialValues: (data: OnboardingData) => ({ height: selectHeight(data) }),
     save: async (_values: any) => {},
@@ -54,6 +58,7 @@ export const STEP_REGISTRY = {
     key: 'ethnicity',
     title: "What's your ethnicity?",
     description: 'Select all that apply',
+    helpText: 'Select all ethnicities that best represent you.',
     Component: EthnicityForm as unknown as ComponentType<FormProps<any>>,
     schema: ethnicitySchema,
     getInitialValues: (data: OnboardingData) => ({ ethnicity: selectEthnicity(data) }),
@@ -63,6 +68,7 @@ export const STEP_REGISTRY = {
     key: 'hair-color',
     title: 'What color is your hair?',
     description: 'Select one',
+    helpText: 'Choose the hair color that best matches your current appearance.',
     Component: HairColorForm as unknown as ComponentType<FormProps<any>>,
     schema: hairColorSchema,
     getInitialValues: (data: OnboardingData) => ({ hairColor: selectHairColor(data) }),
@@ -72,6 +78,7 @@ export const STEP_REGISTRY = {
     key: 'eye-color',
     title: 'What color are your eyes?',
     description: 'Select one',
+    helpText: 'Pick the eye color that appears most accurate in person.',
     Component: EyeColorForm as unknown as ComponentType<FormProps<any>>,
     schema: eyeColorSchema,
     getInitialValues: (data: OnboardingData) => ({ eyeColor: selectEyeColor(data) }),
@@ -81,6 +88,7 @@ export const STEP_REGISTRY = {
     key: 'gender',
     title: 'What best describes your gender?',
     description: 'Select one',
+    helpText: 'Choose the option that best describes you.',
     Component: GenderForm as unknown as ComponentType<FormProps<any>>,
     schema: genderSchema,
     getInitialValues: (data: OnboardingData) => ({ gender: selectGender(data) }),
@@ -90,6 +98,7 @@ export const STEP_REGISTRY = {
     key: 'location',
     title: 'Where are you located?',
     description: '',
+    helpText: 'Search for your city and state to set your primary location.',
     Component: LocationForm as unknown as ComponentType<FormProps<any>>,
     getInitialValues: (data: OnboardingData) => ({ primaryLocation: selectPrimaryPlaceKitLocation(data) }),
     save: async (_values: any) => {},
@@ -98,6 +107,7 @@ export const STEP_REGISTRY = {
     key: 'work-location',
     title: 'Where can you work as a local?',
     description: '',
+    helpText: 'Add cities where you can work without travel/lodging needs. Avoid duplicates.',
     Component: WorkLocationForm as unknown as ComponentType<FormProps<any>>,
     getInitialValues: (data: OnboardingData) => ({ locations: [selectPrimaryPlaceKitLocation(data), ...selectWorkLocations(data)] }),
     save: async (_values: any) => {},
@@ -106,6 +116,7 @@ export const STEP_REGISTRY = {
     key: 'headshots',
     title: 'Headshots',
     description: 'Upload your professional headshots to showcase your look.',
+    helpText: 'Upload at least one clear, well-lit headshot.',
     Component: HeadshotsForm as unknown as ComponentType<FormProps<any>>,
     getInitialValues: (_data: OnboardingData) => ({}),
     save: async (_values: any) => {},
@@ -114,6 +125,7 @@ export const STEP_REGISTRY = {
     key: 'skills',
     title: 'Add your skills',
     description: 'What genre and special skills are you proficient in?',
+    helpText: 'Add at least one genre and one skill to help others understand your strengths.',
     Component: SkillsForm as unknown as ComponentType<FormProps<any>>,
     schema: skillsSchema,
     getInitialValues: (data: OnboardingData) => selectSkills(data),
@@ -123,6 +135,7 @@ export const STEP_REGISTRY = {
     key: 'representation',
     title: 'Are you represented by an agent?',
     description: 'Select one',
+    helpText: 'Your representation status helps tailor your opportunities.',
     Component: RepresentationForm as unknown as ComponentType<FormProps<any>>,
     schema: representationSchema,
     getInitialValues: (data: OnboardingData) => selectRepresentationStatus(data),
@@ -132,6 +145,7 @@ export const STEP_REGISTRY = {
     key: 'agency',
     title: 'Select Agency',
     description: 'Search and select your representation agency',
+    helpText: 'Search by agency name. If you cannot find it, contact support.',
     Component: AgencyForm as unknown as ComponentType<FormProps<any>>,
     schema: agencySchema,
     getInitialValues: (data: OnboardingData) => selectAgencyId(data),
