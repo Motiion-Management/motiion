@@ -1,6 +1,8 @@
 import type { ComponentType } from 'react'
 import type { FormProps } from '~/components/forms/onboarding/contracts'
 import type { OnboardingData } from '~/hooks/useOnboardingData'
+import { DisplayNameFormV2, displayNameSchema } from '~/components/forms/onboarding/v2/DisplayNameFormV2'
+import { selectDisplayName } from './selectors'
 
 // Step definition used by the dynamic review modal and wrappers.
 export interface StepDef<T = any> {
@@ -18,16 +20,17 @@ export interface StepDef<T = any> {
 }
 
 export const STEP_REGISTRY = {
-  // Example (to be added during migration):
-  // 'display-name': {
-  //   key: 'display-name',
-  //   title: 'Display name',
-  //   description: 'Choose how your name appears.',
-  //   Component: DisplayNameForm,
-  //   schema: displayNameSchema,
-  //   getInitialValues: selectDisplayName,
-  //   save: saveDisplayName,
-  // },
+  'display-name': {
+    key: 'display-name',
+    title: 'Display name',
+    description: 'Choose how your name appears.',
+    Component: DisplayNameFormV2 as unknown as ComponentType<FormProps<any>>, // keep loose until all forms migrate
+    schema: displayNameSchema,
+    getInitialValues: (data: OnboardingData) => ({ displayName: selectDisplayName(data) }),
+    save: async (_values: any) => {
+      // Route/screen should provide the actual save via onSubmit for now
+    },
+  },
 } as const
 
 export type StepKey = keyof typeof STEP_REGISTRY
