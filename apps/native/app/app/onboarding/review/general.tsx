@@ -1,5 +1,5 @@
 import { router } from 'expo-router';
-import React, { useCallback, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { View, ScrollView, Pressable } from 'react-native';
 
 import { Text } from '~/components/ui/text';
@@ -76,6 +76,11 @@ export default function GeneralReviewScreen() {
 
   const handleContinue = useCallback(() => {
     router.push('/app/onboarding/review/experiences');
+  }, []);
+
+  // Preload modal module to reduce first-open latency
+  useEffect(() => {
+    import('../../(modals)/onboarding/review/[step]').catch(() => {})
   }, []);
 
   return (

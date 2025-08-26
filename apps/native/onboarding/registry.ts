@@ -8,6 +8,7 @@ import { HairColorForm, hairColorSchema } from '~/components/forms/onboarding/Ha
 import { EyeColorForm, eyeColorSchema } from '~/components/forms/onboarding/EyeColorForm'
 import { GenderForm, genderSchema } from '~/components/forms/onboarding/GenderForm'
 import { LocationForm } from '~/components/forms/onboarding/LocationForm'
+import { SizingForm } from '~/components/forms/onboarding/SizingForm'
 import { WorkLocationForm } from '~/components/forms/onboarding/WorkLocationForm'
 import { HeadshotsForm } from '~/components/forms/onboarding/HeadshotsForm'
 import { SkillsForm, skillsSchema } from '~/components/forms/onboarding/SkillsForm'
@@ -154,6 +155,17 @@ export const STEP_REGISTRY = {
     getInitialValues: (_data: OnboardingData) => ({}),
     save: async (_values: any) => {
       // No-op; images saved via upload component
+    },
+  },
+  'sizing': {
+    key: 'sizing',
+    title: 'Size Card',
+    description:
+      'Optional - Not all sizing metrics may apply to you. Only input what is relevant to you.',
+    Component: SizingForm as unknown as ComponentType<FormProps<any>>,
+    getInitialValues: (_data: OnboardingData) => ({}),
+    save: async (_values: any) => {
+      // No-op; sizing sections manage their own persistence
     },
   },
   'skills': {

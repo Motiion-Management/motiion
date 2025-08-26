@@ -1,5 +1,5 @@
 import { router } from 'expo-router'
-import React, { useCallback } from 'react'
+import React, { useCallback, useEffect } from 'react'
 import { View, ScrollView, Pressable } from 'react-native'
 import { api } from '@packages/backend/convex/_generated/api'
 import { useQuery } from 'convex/react'
@@ -47,6 +47,11 @@ export default function ExperiencesReviewScreen() {
 
   const handleComplete = useCallback(() => {
     router.push('/app/onboarding/complete')
+  }, [])
+
+  // Preload modal module
+  useEffect(() => {
+    import('../../(modals)/onboarding/review/[step]').catch(() => {})
   }, [])
 
   return (

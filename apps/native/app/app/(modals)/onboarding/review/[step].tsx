@@ -1,7 +1,7 @@
 import React, { useMemo, useRef, useState } from 'react';
 import { View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { useLocalSearchParams, router, Stack } from 'expo-router';
+import { useLocalSearchParams, router } from 'expo-router';
 
 import type { FormHandle } from '~/components/forms/onboarding/contracts';
 import { useOnboardingData } from '~/hooks/useOnboardingData';
@@ -34,7 +34,7 @@ export default function ReviewEditModal() {
   }, [def, data, isLoading]);
 
   const handleClose = () => {
-    if (!isSubmitting) router.back();
+    router.back();
   };
 
   const handleSubmit = async (values: any) => {
@@ -60,12 +60,11 @@ export default function ReviewEditModal() {
 
   return (
     <>
-      <Stack.Screen />
       <View className="flex-1 bg-surface-default">
         {/* Close */}
         <SafeAreaView edges={['top', 'left', 'right']}>
           <View className="absolute right-2 top-2 z-10">
-            <Button size="icon" variant="plain" onPress={handleClose}>
+            <Button size="icon" variant="plain" onPress={() => router.back()}>
               <X size={24} className="color-icon-default" />
             </Button>
           </View>
