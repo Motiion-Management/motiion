@@ -1,12 +1,18 @@
 import { router } from 'expo-router';
-import React, { useCallback, useEffect, useState } from 'react';
+
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { View, ScrollView, Pressable } from 'react-native';
+import { Image } from 'expo-image';
 
 import { Text } from '~/components/ui/text';
 import { Tabs } from '~/components/ui/tabs/tabs';
 import { useUser } from '~/hooks/useUser';
 import ChevronRight from '~/lib/icons/ChevronRight';
 import { BaseOnboardingScreen } from '~/components/layouts/BaseOnboardingScreen';
+import { Chips } from '~/components/ui/chips/chips';
+import { api } from '@packages/backend/convex/_generated/api';
+import { useQuery } from 'convex/react';
+import { useProgressiveImage } from '~/hooks/useProgressiveImage';
 
 interface ProfileFieldProps {
   label: string;
@@ -44,35 +50,52 @@ function ProfileField({ label, value, onEdit, isArray = false }: ProfileFieldPro
 export default function GeneralReviewScreen() {
   const { user } = useUser();
   const [activeTab, setActiveTab] = useState<'personal' | 'work'>('personal');
+  const agencyId = user?.representation?.agencyId as any | undefined;
+  const agency = useQuery(api.agencies.getAgency, agencyId ? { id: agencyId } : 'skip') as
+    | { name: string }
+    | undefined;
 
   const tabs = [
     { key: 'personal', label: 'Personal' },
     { key: 'work', label: 'Work' },
   ];
 
-  const handleEditField = useCallback(
-    (fieldName: string) => {
-      // Map field names to form types
-      const fieldToFormMap = {
-        'display-name': 'display-name',
-        height: 'height',
-        ethnicity: 'ethnicity',
-        'hair-color': 'hair-color',
-        'eye-color': 'eye-color',
-        gender: 'gender',
-        headshots: 'headshots',
-        sizing: 'sizing',
-        location: 'location',
-        'work-location': 'work-location',
-        representation: 'representation',
-        agency: 'agency',
-      } as const;
+  // Headshot previews derived from user.headshots with progressive URL loading
+  const headshotStorageIds = useMemo(() => {
+    const list: any[] = (user?.headshots as any[]) || [];
+    return list.map((h) => (typeof h === 'string' ? h : h?.storageId)).filter(Boolean) as string[];
+  }, [user?.headshots]);
 
-      const formType = fieldToFormMap[fieldName as keyof typeof fieldToFormMap];
-      if (formType) router.push(`/app/onboarding/review/${formType}`);
-    },
-    []
-  );
+  function HeadshotThumb({ storageId }: { storageId: any }) {
+    const { url } = useProgressiveImage(storageId);
+    if (!url) {
+      return (
+        <View style={{ width: 40, height: 40, borderRadius: 8 }} className="bg-surface-high" />
+      );
+    }
+    return <Image source={{ uri: url }} style={{ width: 40, height: 40, borderRadius: 8 }} />;
+  }
+
+  const handleEditField = useCallback((fieldName: string) => {
+    // Map field names to form types
+    const fieldToFormMap = {
+      'display-name': 'display-name',
+      height: 'height',
+      ethnicity: 'ethnicity',
+      'hair-color': 'hair-color',
+      'eye-color': 'eye-color',
+      gender: 'gender',
+      headshots: 'headshots',
+      sizing: 'sizing',
+      location: 'location',
+      'work-location': 'work-location',
+      representation: 'representation',
+      agency: 'agency',
+    } as const;
+
+    const formType = fieldToFormMap[fieldName as keyof typeof fieldToFormMap];
+    if (formType) router.push(`/app/onboarding/review/${formType}`);
+  }, []);
 
   const handleContinue = useCallback(() => {
     router.push('/app/onboarding/review/experiences');
@@ -80,7 +103,7 @@ export default function GeneralReviewScreen() {
 
   // Preload modal module to reduce first-open latency
   useEffect(() => {
-    import('../../(modals)/onboarding/review/[step]').catch(() => {})
+    import('../../(modals)/onboarding/review/[step]').catch(() => { });
   }, []);
 
   return (
@@ -146,14 +169,36 @@ export default function GeneralReviewScreen() {
           {/* Work Information Tab */}
           {activeTab === 'work' && (
             <View>
-              <ProfileField
-                label="Headshots"
-                value={user?.headshots?.length ? `${user.headshots.length} photos` : undefined}
-                onEdit={() => handleEditField('headshots')}
-              />
+              {/* Headshots with inline previews */}
+              <Pressable
+                onPress={() => handleEditField('headshots')}
+                className="flex-row items-center justify-between border-b border-border-tint py-4">
+                <View className="flex-1 gap-1">
+                  <Text variant="labelXs" className="text-text-low">
+                    Headshots
+                  </Text>
+                  <View className="mt-1 flex-row items-center gap-2">
+                    {headshotStorageIds.length > 0 ? (
+                      headshotStorageIds
+                        .slice(0, 3)
+                        .map((id) => <HeadshotThumb key={id} storageId={id} />)
+                    ) : (
+                      <Text variant="body" className="text-text-default">
+                        None
+                      </Text>
+                    )}
+                    {headshotStorageIds.length > 3 && (
+                      <Text variant="bodySm" className="text-text-secondary">
+                        +{headshotStorageIds.length - 3}
+                      </Text>
+                    )}
+                  </View>
+                </View>
+                <ChevronRight className="color-icon-default" />
+              </Pressable>
               <ProfileField
                 label="Sizing"
-                value={user?.sizing ? `General sizing information provided` : undefined}
+                value={user?.sizing ? `Edit sizing info` : `Edit sizing info`}
                 onEdit={() => handleEditField('sizing')}
               />
               <ProfileField
@@ -161,15 +206,28 @@ export default function GeneralReviewScreen() {
                 value={user?.location ? `${user.location.city}, ${user.location.state}` : undefined}
                 onEdit={() => handleEditField('location')}
               />
-              <ProfileField
-                label="Work Locations"
-                value={user?.workLocation}
-                isArray={true}
-                onEdit={() => handleEditField('work-location')}
-              />
+              {/* Work Locations with city chips */}
+              <Pressable
+                onPress={() => handleEditField('work-location')}
+                className="flex-row items-center justify-between border-b border-border-tint py-4">
+                <View className="flex-1 gap-1">
+                  <Text variant="labelXs" className="text-text-low">
+                    Work Locations
+                  </Text>
+                  <View>
+                    <Chips
+                      variant="filter"
+                      items={(user?.workLocation || [])
+                        .map((s) => s.split(',')[0].trim())
+                        .filter(Boolean)}
+                    />
+                  </View>
+                </View>
+                <ChevronRight className="color-icon-default" />
+              </Pressable>
               <ProfileField
                 label="Agency"
-                value={user?.representation?.agencyId ? 'Set' : 'Independent'}
+                value={agencyId ? agency?.name || 'Loading…' : 'Independent'}
                 onEdit={() => handleEditField('representation')}
               />
             </View>
