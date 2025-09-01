@@ -132,7 +132,10 @@ export const TrainingEditForm = forwardRef<TrainingEditFormHandle, TrainingEditF
           offset={{ closed: 0, opened: Platform.select({ ios: insets.bottom, default: insets.bottom }) }}>
           <View
             className="gap-2 border-t border-t-border-low bg-surface-default px-4 pb-8 pt-4"
-            onLayout={(e) => setUiState((prev) => ({ ...prev, actionsHeight: e.nativeEvent.layout.height }))}>
+            onLayout={(e) => {
+              const height = e.nativeEvent?.layout?.height ?? 0;
+              setUiState((prev) => ({ ...prev, actionsHeight: height }));
+            }}>
             <Button onPress={sharedForm.handleSubmit} disabled={uiState.isSaving || !canSubmit} className="w-full">
               <Text>{uiState.isSaving ? 'Saving…' : 'Save'}</Text>
             </Button>

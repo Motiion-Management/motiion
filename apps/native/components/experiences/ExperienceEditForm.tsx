@@ -103,15 +103,14 @@ export const ExperienceEditForm = forwardRef<ExperienceEditFormHandle, Experienc
     const title = experienceId ? 'Edit Experience' : 'Add Experience';
 
     const uiSchema = zExperiencesDoc.passthrough();
-    // NOTE: Intentionally not accepting Date objects here to reproduce validation failure for toast testing
-    // const validateSchema = zExperiencesDoc
-    //   .omit({ userId: true })
-    //   .extend({
-    //     startDate: z.union([z.string(), z.date()]).optional(),
-    //     endDate: z.union([z.string(), z.date()]).optional(),
-    //   })
-    //   .passthrough();
-    const validateSchema = zExperiencesDoc.omit({ userId: true }).passthrough();
+    // Accept Date objects from the UI for start/end dates; backend normalization converts to ISO
+    const validateSchema = zExperiencesDoc
+      .omit({ userId: true })
+      .extend({
+        startDate: z.union([z.string(), z.date()]).optional(),
+        endDate: z.union([z.string(), z.date()]).optional(),
+      })
+      .passthrough();
 
     const addMyExperience = useMutation(api.users.experiences.addMyExperience);
     const updateExperience = useMutation(api.experiences.update);
@@ -149,7 +148,7 @@ export const ExperienceEditForm = forwardRef<ExperienceEditFormHandle, Experienc
     });
 
     const canSubmit = useStore(sharedForm.store, (state) => state.canSubmit as boolean);
-    type ExperienceValues = z.infer<typeof zExperiencesDoc>;
+    type ExperienceValues = z.infer<typeof validateSchema>;
     const formValues = useStore(sharedForm.store, (state) => state.values as ExperienceValues);
     const valuesRef = useRef<ExperienceValues>(formValues);
     useEffect(() => {
@@ -308,9 +307,10 @@ export const ExperienceEditForm = forwardRef<ExperienceEditFormHandle, Experienc
             }}>
             <View
               className="gap-2 border-t border-t-border-low bg-surface-default px-4 pb-8 pt-4"
-              onLayout={(e) =>
-                setUiState((prev) => ({ ...prev, actionsHeight: e.nativeEvent.layout.height }))
-              }>
+              onLayout={(e) => {
+                const height = e.nativeEvent?.layout?.height ?? 0;
+                setUiState((prev) => ({ ...prev, actionsHeight: height }));
+              }}>
               {uiState.activeTab === 'details' ? (
                 <Button onPress={handleNext} disabled={!selectedType} className="w-full">
                   <Text>Next</Text>
