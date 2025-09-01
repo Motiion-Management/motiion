@@ -1,11 +1,12 @@
 import { router } from 'expo-router'
-import React, { useCallback, useEffect } from 'react'
+import React, { useCallback, useEffect, useState } from 'react'
 import { View, ScrollView, Pressable } from 'react-native'
 import { api } from '@packages/backend/convex/_generated/api'
 import { useQuery } from 'convex/react'
 
 import { Text } from '~/components/ui/text'
 import { Button } from '~/components/ui/button'
+import { Tabs } from '~/components/ui/tabs/tabs'
 import ChevronRight from '~/lib/icons/ChevronRight'
 import { BaseOnboardingScreen } from '~/components/layouts/BaseOnboardingScreen'
 
@@ -36,13 +37,14 @@ function ExperienceItem({ title, type, onEdit }: ExperienceItemProps) {
 export default function ExperiencesReviewScreen() {
   const experiences = useQuery(api.users.experiences.getMyExperiences) || []
   const training = useQuery(api.training.getMyTraining) || []
+  const [activeTab, setActiveTab] = useState<'experience' | 'training'>('experience')
 
   const handleEditExperiences = useCallback(() => {
-    router.push('/app/onboarding/review/training') // Placeholder: route to training editor or experiences editor if/when added
+    router.push('/app/onboarding/review/experience/new')
   }, [])
 
   const handleEditTraining = useCallback(() => {
-    router.push('/app/onboarding/review/training')
+    router.push('/app/onboarding/review/training/new')
   }, [])
 
   const handleComplete = useCallback(() => {
@@ -64,81 +66,93 @@ export default function ExperiencesReviewScreen() {
           <Text>Complete Profile</Text>
         </Button>
       }>
-      <ScrollView className="flex-1" showsVerticalScrollIndicator={false}>
-        <View className="gap-6">
-          {/* Experiences Section */}
-          <View>
-            <View className="flex-row items-center justify-between mb-4">
-              <Text variant="title3">Experience</Text>
-              <Button variant="plain" onPress={handleEditExperiences}>
-                <Text className="text-accent-primary">Edit</Text>
-              </Button>
-            </View>
-            
-            {experiences.length === 0 ? (
-              <View className="p-4 bg-surface-secondary rounded-lg">
-                <Text variant="footnote" className="text-text-secondary text-center">
-                  No experiences added yet.
-                </Text>
-              </View>
-            ) : (
-              <View>
-                {experiences.slice(0, 5).map((exp: any) => (
-                  <ExperienceItem
-                    key={exp._id}
-                    title={exp.title}
-                    type={exp.type}
-                    onEdit={handleEditExperiences}
-                  />
-                ))}
-                {experiences.length > 5 && (
-                  <Pressable onPress={handleEditExperiences} className="py-4">
-                    <Text className="text-accent-primary text-center">
-                      +{experiences.length - 5} more experiences
-                    </Text>
-                  </Pressable>
-                )}
-              </View>
-            )}
-          </View>
+      <View className="flex-1">
+        <Tabs
+          tabs={[
+            { key: 'experience', label: 'Experience' },
+            { key: 'training', label: 'Training' },
+          ]}
+          activeTab={activeTab}
+          onTabChange={(k) => setActiveTab(k as 'experience' | 'training')}
+          className="mb-4"
+        />
 
-          {/* Training Section */}
-          <View>
-            <View className="flex-row items-center justify-between mb-4">
-              <Text variant="title3">Training</Text>
-              <Button variant="plain" onPress={handleEditTraining}>
-                <Text className="text-accent-primary">Edit</Text>
-              </Button>
+        <ScrollView className="flex-1" showsVerticalScrollIndicator={false}>
+          {activeTab === 'experience' && (
+            <View>
+              <View className="flex-row items-center justify-between mb-4">
+                <Text variant="title3">Experience</Text>
+                <Button variant="plain" onPress={handleEditExperiences}>
+                  <Text className="text-accent-primary">Edit</Text>
+                </Button>
+              </View>
+
+              {experiences.length === 0 ? (
+                <View className="p-4 bg-surface-secondary rounded-lg">
+                  <Text variant="footnote" className="text-text-secondary text-center">
+                    No experiences added yet.
+                  </Text>
+                </View>
+              ) : (
+                <View>
+                  {experiences.slice(0, 5).map((exp: any) => (
+                    <ExperienceItem
+                      key={exp._id}
+                      title={exp.title}
+                      type={exp.type}
+                      onEdit={() => router.push(`/app/onboarding/review/experience/${exp._id}`)}
+                    />
+                  ))}
+                  {experiences.length > 5 && (
+                    <Pressable onPress={handleEditExperiences} className="py-4">
+                      <Text className="text-accent-primary text-center">
+                        +{experiences.length - 5} more experiences
+                      </Text>
+                    </Pressable>
+                  )}
+                </View>
+              )}
             </View>
-            
-            {training.length === 0 ? (
-              <View className="p-4 bg-surface-secondary rounded-lg">
-                <Text variant="footnote" className="text-text-secondary text-center">
-                  No training added yet.
-                </Text>
+          )}
+
+          {activeTab === 'training' && (
+            <View>
+              <View className="flex-row items-center justify-between mb-4">
+                <Text variant="title3">Training</Text>
+                <Button variant="plain" onPress={handleEditTraining}>
+                  <Text className="text-accent-primary">Edit</Text>
+                </Button>
               </View>
-            ) : (
-              <View>
-                {training.slice(0, 5).map((train: any) => (
-                  <ExperienceItem
-                    key={train._id}
-                    title={train.institution}
-                    type={train.type}
-                    onEdit={handleEditTraining}
-                  />
-                ))}
-                {training.length > 5 && (
-                  <Pressable onPress={handleEditTraining} className="py-4">
-                    <Text className="text-accent-primary text-center">
-                      +{training.length - 5} more training
-                    </Text>
-                  </Pressable>
-                )}
-              </View>
-            )}
-          </View>
-        </View>
-      </ScrollView>
+
+              {training.length === 0 ? (
+                <View className="p-4 bg-surface-secondary rounded-lg">
+                  <Text variant="footnote" className="text-text-secondary text-center">
+                    No training added yet.
+                  </Text>
+                </View>
+              ) : (
+                <View>
+                  {training.slice(0, 5).map((train: any) => (
+                    <ExperienceItem
+                      key={train._id}
+                      title={train.institution}
+                      type={train.type}
+                      onEdit={() => router.push(`/app/onboarding/review/training/${train._id}`)}
+                    />
+                  ))}
+                  {training.length > 5 && (
+                    <Pressable onPress={handleEditTraining} className="py-4">
+                      <Text className="text-accent-primary text-center">
+                        +{training.length - 5} more training
+                      </Text>
+                    </Pressable>
+                  )}
+                </View>
+              )}
+            </View>
+          )}
+        </ScrollView>
+      </View>
       
       {/* Edits navigate to /app/onboarding/review/[step] */}
     </BaseOnboardingScreen>

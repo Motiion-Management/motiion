@@ -14,6 +14,7 @@ import { AlertAnchor } from '~/components/ui/alert';
 import { AlertRef } from '~/components/ui/alert/types';
 import { useColorScheme, useInitialAndroidBarSync } from '~/lib/useColorScheme';
 import { PortalHost } from '@rn-primitives/portal';
+import { Toaster } from 'sonner-native';
 
 export {
   // Catch any errors thrown by the Layout component.
@@ -40,6 +41,7 @@ export default function RootLayout() {
               </ActionSheetProvider>
             </BottomSheetModalProvider>
             <AlertAnchor ref={alertRef} />
+            <Toaster position="top-center" richColors />
           </KeyboardProvider>
         </GestureHandlerRootView>
         <PortalHost />
