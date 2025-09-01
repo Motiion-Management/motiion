@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from 'react';
+import React, { useCallback } from 'react';
 import { View } from 'react-native';
 import { Sheet } from '~/components/ui/sheet';
 
@@ -13,11 +13,8 @@ interface TrainingEditSheetProps {
   trainingId?: Id<'training'>;
 }
 
-type TrainingType = (typeof TRAINING_TYPES)[number];
-
 export function TrainingEditSheet({ isOpen, onOpenChange, training, trainingId: trainingIdProp }: TrainingEditSheetProps) {
   const trainingId = training?._id ?? trainingIdProp;
-  const [uiState] = useState({});
   const handleClose = useCallback(() => onOpenChange(false), [onOpenChange]);
   const title = trainingId ? 'Edit Training' : 'Add Training';
 
@@ -27,13 +24,15 @@ export function TrainingEditSheet({ isOpen, onOpenChange, training, trainingId: 
       isOpened={isOpen}
       label={title}
       onIsOpenedChange={(open) => {
-        if (open) {
-          sharedForm.reset();
-        }
         onOpenChange(open);
       }}>
       <View className="h-[80vh]">
-        <TrainingEditForm onClose={handleClose} training={training} trainingId={trainingIdProp} />
+        <TrainingEditForm
+          key={`${training?._id ?? trainingIdProp ?? 'new'}-${isOpen ? 'open' : 'closed'}`}
+          onClose={handleClose}
+          training={training}
+          trainingId={trainingIdProp}
+        />
       </View>
     </Sheet>
   );

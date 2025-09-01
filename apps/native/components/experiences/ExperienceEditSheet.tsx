@@ -24,15 +24,15 @@ export function ExperienceEditSheet({ isOpen, onOpenChange, experience, experien
       isOpened={isOpen}
       label={title}
       onIsOpenedChange={(open) => {
-        resetForm();
-        if (open) {
-          pagerRef.current?.setPage?.(0);
-        }
-
         onOpenChange(open);
       }}>
       <View className="h-[80vh]">
-        <ExperienceEditForm onClose={handleClose} experience={experience} experienceId={experienceIdProp} />
+        <ExperienceEditForm
+          key={`${experience?._id ?? experienceIdProp ?? 'new'}-${isOpen ? 'open' : 'closed'}`}
+          onClose={handleClose}
+          experience={experience}
+          experienceId={experienceIdProp}
+        />
       </View>
     </Sheet>
   );
