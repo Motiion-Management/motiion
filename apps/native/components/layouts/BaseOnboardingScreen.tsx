@@ -6,7 +6,7 @@ import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context'
 import { BackgroundGradientView } from '~/components/ui/background-gradient-view';
 import { Button } from '~/components/ui/button';
 import { Text } from '~/components/ui/text';
-import { useSimpleOnboardingFlow } from '~/hooks/useSimpleOnboardingFlow';
+import { useOnboardingGroupFlow } from '~/hooks/useOnboardingGroupFlow';
 import ChevronLeft from '~/lib/icons/ChevronLeft';
 import ChevronRight from '~/lib/icons/ChevronRight';
 import { perfLog } from '~/utils/performanceDebug';
@@ -20,12 +20,14 @@ export const BaseOnboardingScreen = ({
   primaryAction,
   secondaryAction,
   bottomActionSlot,
+  scrollEnabled = true,
 }: {
   title: string;
   description?: string;
   children: React.ReactNode;
   helpText?: string;
   canProgress?: boolean;
+  scrollEnabled?: boolean;
   primaryAction?: {
     onPress: () => void | Promise<void>;
     disabled?: boolean;
@@ -38,7 +40,7 @@ export const BaseOnboardingScreen = ({
   bottomActionSlot?: React.ReactNode;
 }) => {
   const insets = useSafeAreaInsets();
-  const onboardingFlow = useSimpleOnboardingFlow();
+  const onboardingFlow = useOnboardingGroupFlow();
   const [isNavigating, setIsNavigating] = useState(false);
 
   return (
@@ -52,6 +54,7 @@ export const BaseOnboardingScreen = ({
           contentInsetAdjustmentBehavior="never"
           keyboardDismissMode="interactive"
           keyboardShouldPersistTaps="handled"
+          scrollEnabled={scrollEnabled}
           contentContainerClassName="px-4 ">
           <View className="relative flex-1 justify-center">
             <Text variant="title1">{title}</Text>
@@ -91,14 +94,14 @@ export const BaseOnboardingScreen = ({
                   )}
                 </View>
 
-                {onboardingFlow.canGoPrevious && (
+                {onboardingFlow.canNavigatePrevious && (
                   <Button
                     size="icon"
                     variant="plain"
                     onPress={() => {
                       perfLog('button:previousPressed', { title });
                       setIsNavigating(true);
-                      onboardingFlow.navigatePrevious();
+                      onboardingFlow.navigateToPreviousStep();
                       setTimeout(() => setIsNavigating(false), 300);
                     }}
                     disabled={onboardingFlow.isLoading}>
@@ -107,7 +110,7 @@ export const BaseOnboardingScreen = ({
                 )}
                 {/* Continue Button */}
                 <Button
-                  disabled={!canProgress || !onboardingFlow.canGoNext}
+                  disabled={!canProgress || !onboardingFlow.canNavigateNext}
                   size="icon"
                   variant="accent"
                   onPress={async () => {
@@ -120,8 +123,8 @@ export const BaseOnboardingScreen = ({
                         primaryAction.onPress();
                       }
                       // Only navigate if primary action doesn't handle navigation
-                      if (onboardingFlow.canGoNext && !primaryAction?.handlesNavigation) {
-                        onboardingFlow.navigateNext();
+                      if (onboardingFlow.canNavigateNext && !primaryAction?.handlesNavigation) {
+                        onboardingFlow.navigateToNextStep();
                       }
                     } finally {
                       // Reset state after a brief delay to prevent flicker

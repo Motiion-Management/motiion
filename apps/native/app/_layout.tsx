@@ -12,9 +12,9 @@ import { KeyboardProvider } from 'react-native-keyboard-controller';
 import ConvexClientProvider from '~/components/providers/ConvexClientProvider';
 import { AlertAnchor } from '~/components/ui/alert';
 import { AlertRef } from '~/components/ui/alert/types';
-import { useAuthenticated } from '~/hooks/useAuthenticated';
 import { useColorScheme, useInitialAndroidBarSync } from '~/lib/useColorScheme';
 import { PortalHost } from '@rn-primitives/portal';
+import { Toaster } from 'sonner-native';
 
 export {
   // Catch any errors thrown by the Layout component.
@@ -27,25 +27,26 @@ export default function RootLayout() {
   const alertRef = React.useRef<AlertRef>(null);
 
   return (
-    <>
-      <StatusBar
-        key={`root-status-bar-${isDarkColorScheme ? 'light' : 'dark'}`}
-        style={isDarkColorScheme ? 'light' : 'dark'}
-      />
-      <GestureHandlerRootView style={{ flex: 1 }} className="bg-surface-default">
-        <KeyboardProvider statusBarTranslucent navigationBarTranslucent>
-          <BottomSheetModalProvider>
-            <ActionSheetProvider>
-              <ConvexClientProvider>
+    <ConvexClientProvider>
+      <>
+        <StatusBar
+          key={`root-status-bar-${isDarkColorScheme ? 'light' : 'dark'}`}
+          style={isDarkColorScheme ? 'light' : 'dark'}
+        />
+        <GestureHandlerRootView style={{ flex: 1 }} className="bg-surface-default">
+          <KeyboardProvider statusBarTranslucent navigationBarTranslucent>
+            <BottomSheetModalProvider>
+              <ActionSheetProvider>
                 <RootStack />
-                <AlertAnchor ref={alertRef} />
-              </ConvexClientProvider>
-            </ActionSheetProvider>
-          </BottomSheetModalProvider>
-        </KeyboardProvider>
-      </GestureHandlerRootView>
-      <PortalHost />
-    </>
+              </ActionSheetProvider>
+            </BottomSheetModalProvider>
+            <AlertAnchor ref={alertRef} />
+            <Toaster position="top-center" richColors />
+          </KeyboardProvider>
+        </GestureHandlerRootView>
+        <PortalHost />
+      </>
+    </ConvexClientProvider>
   );
 }
 

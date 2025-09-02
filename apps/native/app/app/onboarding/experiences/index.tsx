@@ -1,14 +1,13 @@
+import { router } from 'expo-router'
 import React, { useMemo } from 'react';
 import { View } from 'react-native';
 
 import { BaseOnboardingScreen } from '~/components/layouts/BaseOnboardingScreen';
 import { ExperienceCard } from '~/components/experiences/ExperienceCard';
-import { useSimpleOnboardingFlow } from '~/hooks/useSimpleOnboardingFlow';
 import { useQuery } from 'convex/react';
 import { api } from '@packages/backend/convex/_generated/api';
 
 export default function ExperiencesScreen() {
-  const onboarding = useSimpleOnboardingFlow();
   const experiences = useQuery(api.users.experiences.getMyExperiences, {});
 
   const slots = useMemo(() => {
@@ -18,24 +17,31 @@ export default function ExperiencesScreen() {
 
   const firstEmptyIndex = useMemo(() => slots.findIndex((s) => !s), [slots]);
 
-  const handleContinue = async () => {};
+  const handleContinue = async () => {
+    // Navigate to review group
+    router.push('/app/onboarding/review')
+  };
+
+  const handleSkip = () => {
+    router.push('/app/onboarding/review')
+  }
 
   return (
     <BaseOnboardingScreen
-      title="Add your experience"
-      description="Add up to 3 projects you've worked on that you would like displayed on your profile."
-      canProgress
-      primaryAction={{
-        onPress: handleContinue,
-      }}
-      secondaryAction={
-        !experiences?.length
-          ? {
-              text: 'Skip for now',
-              onPress: () => onboarding.navigateNext(),
-            }
-          : undefined
-      }>
+        title="Add your experience"
+        description="Add up to 3 projects you've worked on that you would like displayed on your profile."
+        canProgress
+        primaryAction={{
+          onPress: handleContinue,
+        }}
+        secondaryAction={
+          !experiences?.length
+            ? {
+                text: 'Skip for now',
+                onPress: handleSkip,
+              }
+            : undefined
+        }>
       <View className="flex-1 gap-4">
         {slots.map((exp, index) => {
           const isCompleted = !!exp;
@@ -57,6 +63,6 @@ export default function ExperiencesScreen() {
           );
         })}
       </View>
-    </BaseOnboardingScreen>
+      </BaseOnboardingScreen>
   );
 }

@@ -14,7 +14,16 @@ export default function AppLayout() {
             animation: 'fade',
             contentStyle: { backgroundColor: 'transparent' },
           }}
-        />
+        >
+          <Stack.Screen
+            name="(modals)"
+            options={{
+              presentation: 'modal',
+              headerShown: false,
+              animation: 'slide_from_bottom',
+            }}
+          />
+        </Stack>
         {/* Dev-only floating tools for onboarding iteration */}
         <DevOnboardingTools />
       </BackgroundGradientView>
