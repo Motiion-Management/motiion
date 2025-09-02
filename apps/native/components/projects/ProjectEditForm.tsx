@@ -15,7 +15,7 @@ import { ConvexDynamicForm } from '~/components/form/ConvexDynamicForm';
 import { Button } from '~/components/ui/button';
 import { Text } from '~/components/ui/text';
 import { Tabs } from '~/components/ui/tabs/tabs';
-import { type ExperienceType, type Experience } from '~/types/experiences';
+import { type ProjectType, type Project } from '~/types/projects';
 import { type Id } from '@packages/backend/convex/_generated/dataModel';
 import {
   experienceMetadata,
@@ -26,15 +26,11 @@ import { useAppForm } from '~/components/form/appForm';
 import { useStore } from '@tanstack/react-form';
 import * as Haptics from 'expo-haptics';
 import { api } from '@packages/backend/convex/_generated/api';
-import { useMutation } from 'convex/react';
+import { useMutation, useQuery } from 'convex/react';
 import { normalizeForConvex } from '~/utils/convexHelpers';
-import {
-  zExperiencesDoc,
-  type ExperienceFormDoc,
-} from '@packages/backend/convex/validators/experiences';
-import { useQuery } from 'convex/react';
-import { toast } from 'sonner-native';
 import { z } from 'zod';
+import { toast } from 'sonner-native';
+import { zProjectsDoc, type ProjectFormDoc } from '@packages/backend/convex/validators/projects';
 
 const BOTTOM_OFFSET_CUSHION = 8;
 const HAPTIC_MEDIUM = Haptics.ImpactFeedbackStyle.Medium;
@@ -45,43 +41,32 @@ const TABS = [
   { key: 'team', label: 'Team' },
 ];
 
-interface ExperienceEditFormProps {
-  onClose: () => void;
-  experience?: ExperienceFormDoc;
-  experienceId?: Id<'experiences'>;
+interface ProjectEditFormProps {
+  onComplete?: () => void;
+  project?: ProjectFormDoc;
+  projectId?: Id<'projects'>;
   showActions?: boolean;
   onValidChange?: (valid: boolean) => void;
-  afterSubmit?: () => void;
 }
 
-export interface ExperienceEditFormHandle {
+export interface ProjectEditFormHandle {
   submit: () => void;
 }
 
-export const ExperienceEditForm = forwardRef<ExperienceEditFormHandle, ExperienceEditFormProps>(
-  (
-    {
-      onClose,
-      experience,
-      experienceId: experienceIdProp,
-      showActions = true,
-      onValidChange,
-      afterSubmit,
-    },
-    ref
-  ) => {
+export const ProjectEditForm = forwardRef<ProjectEditFormHandle, ProjectEditFormProps>(
+  ({ onComplete, project, projectId: projectIdProp, showActions = true, onValidChange }, ref) => {
     const insets = useSafeAreaInsets();
 
     // Allow fetching existing doc by id if not provided
-    const myExperiences = useQuery(api.users.experiences.getMyExperiences, {});
-    const experienceFromQuery = useMemo<ExperienceFormDoc | undefined>(() => {
-      const id = experience?._id ?? experienceIdProp;
-      if (!id || !Array.isArray(myExperiences)) return undefined;
-      const list = myExperiences as unknown as ExperienceFormDoc[];
-      return list.find((e) => e._id === id);
-    }, [experience?._id, experienceIdProp, myExperiences]);
+    const myProjects = useQuery(api.users.projects.getMyProjects, {});
+    const projectFromQuery = useMemo<ProjectFormDoc | undefined>(() => {
+      const id = project?._id ?? projectIdProp;
+      if (!id || !Array.isArray(myProjects)) return undefined;
+      const list = myProjects as unknown as ProjectFormDoc[];
+      return list.find((p) => p._id === id);
+    }, [project?._id, projectIdProp, myProjects]);
 
-    const experienceId = (experience?._id ?? experienceIdProp) as Id<'experiences'> | undefined;
+    const projectId = (project?._id ?? projectIdProp) as Id<'projects'> | undefined;
 
     const initialUiState = { activeTab: 'details', actionsHeight: 0, isSaving: false };
     const [uiState, setUiState] = useState(initialUiState);
@@ -96,15 +81,16 @@ export const ExperienceEditForm = forwardRef<ExperienceEditFormHandle, Experienc
         pagerRef.current?.setPage?.(1);
         try {
           await Haptics.impactAsync(HAPTIC_MEDIUM);
-        } catch {}
+        } catch {
+          // ignore haptic errors on unsupported devices
+          void 0;
+        }
       }
     }, [uiState.activeTab]);
 
-    const title = experienceId ? 'Edit Experience' : 'Add Experience';
-
-    const uiSchema = zExperiencesDoc.passthrough();
+    const uiSchema = zProjectsDoc.passthrough();
     // Accept Date objects from the UI for start/end dates; backend normalization converts to ISO
-    const validateSchema = zExperiencesDoc
+    const validateSchema = zProjectsDoc
       .omit({ userId: true })
       .extend({
         startDate: z.union([z.string(), z.date()]).optional(),
@@ -112,34 +98,31 @@ export const ExperienceEditForm = forwardRef<ExperienceEditFormHandle, Experienc
       })
       .passthrough();
 
-    const addMyExperience = useMutation(api.users.experiences.addMyExperience);
-    const updateExperience = useMutation(api.experiences.update);
-    const destroyExperience = useMutation(api.experiences.destroy);
+    const addMyProject = useMutation(api.users.projects.addMyProject);
+    const updateProject = useMutation(api.projects.update);
+    const destroyProject = useMutation(api.projects.destroy);
 
-    const selectedExperience = experience ?? (experienceFromQuery as ExperienceFormDoc | undefined);
+    const selectedProject = project ?? (projectFromQuery as ProjectFormDoc | undefined);
 
     const sharedForm = useAppForm({
       defaultValues: {
-        ...selectedExperience,
+        ...selectedProject,
       },
-      validators: { onChange: validateSchema, onSubmit: validateSchema },
+      // Relax validator typing for Date unions; runtime safeParse handles details
+      validators: { onChange: validateSchema as any, onSubmit: validateSchema as any },
       onSubmit: async ({ value }) => {
-        console.log('Submitting experience form with value:', value);
-        const payload = normalizeForConvex(value as Experience);
+        const payload = normalizeForConvex(value as Project);
         try {
           setUiState((prev) => ({ ...prev, isSaving: true }));
-          const idToUpdate = selectedExperience?._id ?? experienceId;
+          const idToUpdate = selectedProject?._id ?? projectId;
           if (idToUpdate) {
-            await updateExperience({ id: idToUpdate, patch: payload });
+            await updateProject({ id: idToUpdate, patch: payload as any });
           } else {
-            await addMyExperience(payload);
+            await addMyProject(payload as any);
           }
-          console.log('Experience saved successfully');
-          if (afterSubmit) afterSubmit();
-          else onClose();
+          onComplete?.();
         } catch (error) {
-          const errorMessage = error instanceof Error ? error.message : 'Failed to save experience';
-          console.error('Failed to save experience:', error);
+          const errorMessage = error instanceof Error ? error.message : 'Failed to save project';
           Alert.alert('Error', errorMessage, [{ text: 'OK' }]);
         } finally {
           setUiState((prev) => ({ ...prev, isSaving: false }));
@@ -148,9 +131,9 @@ export const ExperienceEditForm = forwardRef<ExperienceEditFormHandle, Experienc
     });
 
     const canSubmit = useStore(sharedForm.store, (state) => state.canSubmit as boolean);
-    type ExperienceValues = z.infer<typeof validateSchema>;
-    const formValues = useStore(sharedForm.store, (state) => state.values as ExperienceValues);
-    const valuesRef = useRef<ExperienceValues>(formValues);
+    type ProjectValues = z.infer<typeof validateSchema>;
+    const formValues = useStore(sharedForm.store, (state) => state.values as ProjectValues);
+    const valuesRef = useRef<ProjectValues>(formValues);
     useEffect(() => {
       valuesRef.current = formValues;
     }, [formValues]);
@@ -158,8 +141,9 @@ export const ExperienceEditForm = forwardRef<ExperienceEditFormHandle, Experienc
     useEffect(() => {
       onValidChange?.(!!canSubmit);
     }, [canSubmit, onValidChange]);
+
     const selectedType = useStore(sharedForm.store, (state: any) => state.values?.type) as
-      | ExperienceType
+      | ProjectType
       | undefined;
 
     const metadata = useMemo(() => {
@@ -183,11 +167,8 @@ export const ExperienceEditForm = forwardRef<ExperienceEditFormHandle, Experienc
 
     useImperativeHandle(ref, () => ({ submit: () => sharedForm.handleSubmit() }));
 
-    // No monkey-patching handleSubmit; validation feedback is tied to submit press below
-
     return (
       <View className="flex-1">
-        {/* Tabs */}
         <Tabs
           tabs={TABS}
           activeTab={uiState.activeTab}
@@ -195,7 +176,6 @@ export const ExperienceEditForm = forwardRef<ExperienceEditFormHandle, Experienc
           disabledKeys={!selectedType ? ['team'] : []}
         />
 
-        {/* Content */}
         {selectedType ? (
           <PagerView
             ref={pagerRef}
@@ -213,7 +193,6 @@ export const ExperienceEditForm = forwardRef<ExperienceEditFormHandle, Experienc
                 // no-op
               }
             }}>
-            {/* Details Page */}
             <View key="details" className="flex-1">
               <KeyboardAwareScrollView
                 bounces={false}
@@ -241,7 +220,6 @@ export const ExperienceEditForm = forwardRef<ExperienceEditFormHandle, Experienc
               </KeyboardAwareScrollView>
             </View>
 
-            {/* Team Page */}
             <View key="team" className="flex-1">
               <KeyboardAwareScrollView
                 bounces={false}
@@ -318,7 +296,7 @@ export const ExperienceEditForm = forwardRef<ExperienceEditFormHandle, Experienc
               ) : (
                 <Button
                   onPress={() => {
-                    const parsed = validateSchema.safeParse(valuesRef.current);
+                    const parsed = (validateSchema as any).safeParse(valuesRef.current);
                     if (!parsed.success) {
                       const msg =
                         parsed.error.errors?.[0]?.message ||
@@ -332,14 +310,14 @@ export const ExperienceEditForm = forwardRef<ExperienceEditFormHandle, Experienc
                   <Text>{uiState.isSaving ? 'Saving…' : 'Save'}</Text>
                 </Button>
               )}
-              {selectedExperience?._id && (
+              {selectedProject?._id && (
                 <Button
                   variant="plain"
                   className="w-full"
                   onPress={() => {
                     Alert.alert(
-                      'Delete Experience',
-                      'Are you sure you want to delete this experience? This action cannot be undone.',
+                      'Delete Project',
+                      'Are you sure you want to delete this project? This action cannot be undone.',
                       [
                         { text: 'Cancel', style: 'cancel' },
                         {
@@ -347,16 +325,13 @@ export const ExperienceEditForm = forwardRef<ExperienceEditFormHandle, Experienc
                           style: 'destructive',
                           onPress: async () => {
                             try {
-                              if (selectedExperience?._id) {
-                                await destroyExperience({ id: selectedExperience._id });
+                              if (selectedProject?._id) {
+                                await destroyProject({ id: selectedProject._id });
                               }
-                              onClose();
+                              onComplete?.();
                             } catch (error) {
                               const errorMessage =
-                                error instanceof Error
-                                  ? error.message
-                                  : 'Failed to delete experience';
-                              console.error('Failed to delete experience:', error);
+                                error instanceof Error ? error.message : 'Failed to delete project';
                               Alert.alert('Error', errorMessage, [{ text: 'OK' }]);
                             }
                           },
@@ -364,7 +339,7 @@ export const ExperienceEditForm = forwardRef<ExperienceEditFormHandle, Experienc
                       ]
                     );
                   }}>
-                  <Text className="text-destructive">Delete Experience</Text>
+                  <Text className="text-destructive">Delete Project</Text>
                 </Button>
               )}
             </View>

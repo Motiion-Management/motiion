@@ -47,7 +47,9 @@
       "WebFetch(domain:stack.convex.dev)",
       "mcp__convex__runOneoffQuery",
       "WebFetch(domain:react-native-sortables-docs.vercel.app)",
-      "WebFetch(domain:platform.openai.com)"
+      "WebFetch(domain:platform.openai.com)",
+      "Bash(npx convex dev:*)",
+      "Bash(npx convex run:*)"
     ]
   },
   "enableAllProjectMcpServers": true

@@ -1,17 +1,17 @@
-import React, { forwardRef } from 'react'
-import { View } from 'react-native'
+import React, { forwardRef } from 'react';
+import { View } from 'react-native';
 
-import { Text } from '~/components/ui/text'
+import { Text } from '~/components/ui/text';
 
-import { BaseOnboardingForm } from './BaseOnboardingForm'
-import { OnboardingFormProps, OnboardingFormRef } from './types'
+import { BaseOnboardingForm } from './BaseOnboardingForm';
+import { OnboardingFormProps, OnboardingFormRef } from './types';
 
 // Placeholder form for Resume
 export const ResumeForm = forwardRef<OnboardingFormRef, OnboardingFormProps<any>>(
   ({ initialData, onComplete, onCancel, mode = 'fullscreen' }, ref) => {
     const handleSubmit = async () => {
-      await onComplete({})
-    }
+      await onComplete({});
+    };
 
     return (
       <BaseOnboardingForm
@@ -22,20 +22,20 @@ export const ResumeForm = forwardRef<OnboardingFormRef, OnboardingFormProps<any>
         mode={mode}
         onCancel={onCancel}
         onSubmit={handleSubmit}>
-        <View className="p-4 bg-gray-100 rounded-lg">
+        <View className="rounded-lg bg-gray-100 p-4">
           <Text>Resume upload placeholder - will be implemented later</Text>
         </View>
       </BaseOnboardingForm>
-    )
+    );
   }
-)
+);
 
 // Placeholder form for Headshots
 export const HeadshotsForm = forwardRef<OnboardingFormRef, OnboardingFormProps<any>>(
   ({ initialData, onComplete, onCancel, mode = 'fullscreen' }, ref) => {
     const handleSubmit = async () => {
-      await onComplete({})
-    }
+      await onComplete({});
+    };
 
     return (
       <BaseOnboardingForm
@@ -46,20 +46,20 @@ export const HeadshotsForm = forwardRef<OnboardingFormRef, OnboardingFormProps<a
         mode={mode}
         onCancel={onCancel}
         onSubmit={handleSubmit}>
-        <View className="p-4 bg-gray-100 rounded-lg">
+        <View className="rounded-lg bg-gray-100 p-4">
           <Text>Headshots upload placeholder - will be implemented later</Text>
         </View>
       </BaseOnboardingForm>
-    )
+    );
   }
-)
+);
 
 // Placeholder form for Sizing
 export const SizingForm = forwardRef<OnboardingFormRef, OnboardingFormProps<any>>(
   ({ initialData, onComplete, onCancel, mode = 'fullscreen' }, ref) => {
     const handleSubmit = async () => {
-      await onComplete({})
-    }
+      await onComplete({});
+    };
 
     return (
       <BaseOnboardingForm
@@ -70,20 +70,20 @@ export const SizingForm = forwardRef<OnboardingFormRef, OnboardingFormProps<any>
         mode={mode}
         onCancel={onCancel}
         onSubmit={handleSubmit}>
-        <View className="p-4 bg-gray-100 rounded-lg">
+        <View className="rounded-lg bg-gray-100 p-4">
           <Text>Sizing form placeholder - will be implemented later</Text>
         </View>
       </BaseOnboardingForm>
-    )
+    );
   }
-)
+);
 
 // Placeholder form for Location
 export const LocationForm = forwardRef<OnboardingFormRef, OnboardingFormProps<any>>(
   ({ initialData, onComplete, onCancel, mode = 'fullscreen' }, ref) => {
     const handleSubmit = async () => {
-      await onComplete({})
-    }
+      await onComplete({});
+    };
 
     return (
       <BaseOnboardingForm
@@ -94,20 +94,20 @@ export const LocationForm = forwardRef<OnboardingFormRef, OnboardingFormProps<an
         mode={mode}
         onCancel={onCancel}
         onSubmit={handleSubmit}>
-        <View className="p-4 bg-gray-100 rounded-lg">
+        <View className="rounded-lg bg-gray-100 p-4">
           <Text>Location form placeholder - will be implemented later</Text>
         </View>
       </BaseOnboardingForm>
-    )
+    );
   }
-)
+);
 
 // Placeholder form for Work Location
 export const WorkLocationForm = forwardRef<OnboardingFormRef, OnboardingFormProps<any>>(
   ({ initialData, onComplete, onCancel, mode = 'fullscreen' }, ref) => {
     const handleSubmit = async () => {
-      await onComplete({})
-    }
+      await onComplete({});
+    };
 
     return (
       <BaseOnboardingForm
@@ -118,20 +118,20 @@ export const WorkLocationForm = forwardRef<OnboardingFormRef, OnboardingFormProp
         mode={mode}
         onCancel={onCancel}
         onSubmit={handleSubmit}>
-        <View className="p-4 bg-gray-100 rounded-lg">
+        <View className="rounded-lg bg-gray-100 p-4">
           <Text>Work location form placeholder - will be implemented later</Text>
         </View>
       </BaseOnboardingForm>
-    )
+    );
   }
-)
+);
 
 // Placeholder form for Representation
 export const RepresentationForm = forwardRef<OnboardingFormRef, OnboardingFormProps<any>>(
   ({ initialData, onComplete, onCancel, mode = 'fullscreen' }, ref) => {
     const handleSubmit = async () => {
-      await onComplete({})
-    }
+      await onComplete({});
+    };
 
     return (
       <BaseOnboardingForm
@@ -142,20 +142,20 @@ export const RepresentationForm = forwardRef<OnboardingFormRef, OnboardingFormPr
         mode={mode}
         onCancel={onCancel}
         onSubmit={handleSubmit}>
-        <View className="p-4 bg-gray-100 rounded-lg">
+        <View className="rounded-lg bg-gray-100 p-4">
           <Text>Representation form placeholder - will be implemented later</Text>
         </View>
       </BaseOnboardingForm>
-    )
+    );
   }
-)
+);
 
 // Placeholder form for Agency
 export const AgencyForm = forwardRef<OnboardingFormRef, OnboardingFormProps<any>>(
   ({ initialData, onComplete, onCancel, mode = 'fullscreen' }, ref) => {
     const handleSubmit = async () => {
-      await onComplete({})
-    }
+      await onComplete({});
+    };
 
     return (
       <BaseOnboardingForm
@@ -166,20 +166,20 @@ export const AgencyForm = forwardRef<OnboardingFormRef, OnboardingFormProps<any>
         mode={mode}
         onCancel={onCancel}
         onSubmit={handleSubmit}>
-        <View className="p-4 bg-gray-100 rounded-lg">
+        <View className="rounded-lg bg-gray-100 p-4">
           <Text>Agency form placeholder - will be implemented later</Text>
         </View>
       </BaseOnboardingForm>
-    )
+    );
   }
-)
+);
 
 // Placeholder form for Training
 export const TrainingForm = forwardRef<OnboardingFormRef, OnboardingFormProps<any>>(
   ({ initialData, onComplete, onCancel, mode = 'fullscreen' }, ref) => {
     const handleSubmit = async () => {
-      await onComplete({})
-    }
+      await onComplete({});
+    };
 
     return (
       <BaseOnboardingForm
@@ -190,20 +190,20 @@ export const TrainingForm = forwardRef<OnboardingFormRef, OnboardingFormProps<an
         mode={mode}
         onCancel={onCancel}
         onSubmit={handleSubmit}>
-        <View className="p-4 bg-gray-100 rounded-lg">
+        <View className="rounded-lg bg-gray-100 p-4">
           <Text>Training form placeholder - will be implemented later</Text>
         </View>
       </BaseOnboardingForm>
-    )
+    );
   }
-)
+);
 
 // Placeholder form for Skills
 export const SkillsForm = forwardRef<OnboardingFormRef, OnboardingFormProps<any>>(
   ({ initialData, onComplete, onCancel, mode = 'fullscreen' }, ref) => {
     const handleSubmit = async () => {
-      await onComplete({})
-    }
+      await onComplete({});
+    };
 
     return (
       <BaseOnboardingForm
@@ -214,34 +214,34 @@ export const SkillsForm = forwardRef<OnboardingFormRef, OnboardingFormProps<any>
         mode={mode}
         onCancel={onCancel}
         onSubmit={handleSubmit}>
-        <View className="p-4 bg-gray-100 rounded-lg">
+        <View className="rounded-lg bg-gray-100 p-4">
           <Text>Skills form placeholder - will be implemented later</Text>
         </View>
       </BaseOnboardingForm>
-    )
+    );
   }
-)
+);
 
-// Placeholder form for Experiences
-export const ExperiencesForm = forwardRef<OnboardingFormRef, OnboardingFormProps<any>>(
+// Placeholder form for Projects
+export const ProjectsForm = forwardRef<OnboardingFormRef, OnboardingFormProps<any>>(
   ({ initialData, onComplete, onCancel, mode = 'fullscreen' }, ref) => {
     const handleSubmit = async () => {
-      await onComplete({})
-    }
+      await onComplete({});
+    };
 
     return (
       <BaseOnboardingForm
         ref={ref}
-        title="Performance experience"
+        title="Performance projects"
         description="Add your performance history"
         canProgress={true}
         mode={mode}
         onCancel={onCancel}
         onSubmit={handleSubmit}>
-        <View className="p-4 bg-gray-100 rounded-lg">
-          <Text>Experiences form placeholder - will be implemented later</Text>
+        <View className="rounded-lg bg-gray-100 p-4">
+          <Text>Projects form placeholder - will be implemented later</Text>
         </View>
       </BaseOnboardingForm>
-    )
+    );
   }
-)
+);

@@ -19,12 +19,18 @@ const OnboardingHeaderV1 = () => {
   }
 
   // Use group-based labels from the flow
-  const label = flow.currentGroup ? ONBOARDING_GROUPS[flow.currentGroup]?.label || 'PROFILE' : 'PROFILE';
+  const label = flow.currentGroup
+    ? ONBOARDING_GROUPS[flow.currentGroup]?.label || 'PROFILE'
+    : 'PROFILE';
 
   return (
     <SafeAreaView style={{ position: 'absolute', top: 0, left: 0, right: 0, zIndex: 10 }}>
       <View className="h-8 flex-row items-center bg-transparent px-4">
-        <ProgressBar currentStep={flow.currentStepInGroup} totalSteps={flow.totalStepsInGroup} label={label} />
+        <ProgressBar
+          currentStep={flow.currentStepInGroup}
+          totalSteps={flow.totalStepsInGroup}
+          label={label}
+        />
         <UserButton />
       </View>
     </SafeAreaView>

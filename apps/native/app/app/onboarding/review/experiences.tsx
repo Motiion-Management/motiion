@@ -1,22 +1,22 @@
-import { router } from 'expo-router'
-import React, { useCallback, useEffect, useState } from 'react'
-import { View, ScrollView, Pressable } from 'react-native'
-import { api } from '@packages/backend/convex/_generated/api'
-import { useQuery } from 'convex/react'
+import { router } from 'expo-router';
+import React, { useCallback, useEffect, useState } from 'react';
+import { View, ScrollView, Pressable } from 'react-native';
+import { api } from '@packages/backend/convex/_generated/api';
+import { useQuery } from 'convex/react';
 
-import { Text } from '~/components/ui/text'
-import { Button } from '~/components/ui/button'
-import { Tabs } from '~/components/ui/tabs/tabs'
-import ChevronRight from '~/lib/icons/ChevronRight'
-import { BaseOnboardingScreen } from '~/components/layouts/BaseOnboardingScreen'
+import { Text } from '~/components/ui/text';
+import { Button } from '~/components/ui/button';
+import { Tabs } from '~/components/ui/tabs/tabs';
+import ChevronRight from '~/lib/icons/ChevronRight';
+import { BaseOnboardingScreen } from '~/components/layouts/BaseOnboardingScreen';
 
-interface ExperienceItemProps {
-  title: string
-  type: string
-  onEdit?: () => void
+interface ProjectItemProps {
+  title: string;
+  type: string;
+  onEdit?: () => void;
 }
 
-function ExperienceItem({ title, type, onEdit }: ExperienceItemProps) {
+function ProjectItem({ title, type, onEdit }: ProjectItemProps) {
   return (
     <Pressable
       onPress={onEdit}
@@ -31,34 +31,34 @@ function ExperienceItem({ title, type, onEdit }: ExperienceItemProps) {
       </View>
       {onEdit && <ChevronRight className="color-icon-default" />}
     </Pressable>
-  )
+  );
 }
 
 export default function ExperiencesReviewScreen() {
-  const experiences = useQuery(api.users.experiences.getMyExperiences) || []
-  const training = useQuery(api.training.getMyTraining) || []
-  const [activeTab, setActiveTab] = useState<'experience' | 'training'>('experience')
+  const experiences = useQuery(api.users.projects.getMyProjects) || [];
+  const training = useQuery(api.training.getMyTraining) || [];
+  const [activeTab, setActiveTab] = useState<'projects' | 'training'>('projects');
 
   const handleEditExperiences = useCallback(() => {
-    router.push('/app/onboarding/review/experience/new')
-  }, [])
+    router.push('/app/onboarding/review/experience/new');
+  }, []);
 
   const handleEditTraining = useCallback(() => {
-    router.push('/app/onboarding/review/training/new')
-  }, [])
+    router.push('/app/onboarding/review/training/new');
+  }, []);
 
   const handleComplete = useCallback(() => {
-    router.push('/app/onboarding/complete')
-  }, [])
+    router.push('/app/onboarding/complete');
+  }, []);
 
   // Preload modal module
   useEffect(() => {
-    import('../../(modals)/onboarding/review/[step]').catch(() => {})
-  }, [])
+    import('../../(modals)/onboarding/review/[step]').catch(() => {});
+  }, []);
 
   return (
     <BaseOnboardingScreen
-      title="Review your experience"
+      title="Review your projects"
       description="Your performance history and training"
       canProgress={true}
       bottomActionSlot={
@@ -69,34 +69,34 @@ export default function ExperiencesReviewScreen() {
       <View className="flex-1">
         <Tabs
           tabs={[
-            { key: 'experience', label: 'Experience' },
+            { key: 'projects', label: 'Projects' },
             { key: 'training', label: 'Training' },
           ]}
           activeTab={activeTab}
-          onTabChange={(k) => setActiveTab(k as 'experience' | 'training')}
+          onTabChange={(k) => setActiveTab(k as 'projects' | 'training')}
           className="mb-4"
         />
 
         <ScrollView className="flex-1" showsVerticalScrollIndicator={false}>
-          {activeTab === 'experience' && (
+          {activeTab === 'projects' && (
             <View>
-              <View className="flex-row items-center justify-between mb-4">
-                <Text variant="title3">Experience</Text>
+              <View className="mb-4 flex-row items-center justify-between">
+                <Text variant="title3">Projects</Text>
                 <Button variant="plain" onPress={handleEditExperiences}>
                   <Text className="text-accent-primary">Edit</Text>
                 </Button>
               </View>
 
               {experiences.length === 0 ? (
-                <View className="p-4 bg-surface-secondary rounded-lg">
+                <View className="bg-surface-secondary rounded-lg p-4">
                   <Text variant="footnote" className="text-text-secondary text-center">
-                    No experiences added yet.
+                    No projects added yet.
                   </Text>
                 </View>
               ) : (
                 <View>
                   {experiences.slice(0, 5).map((exp: any) => (
-                    <ExperienceItem
+                    <ProjectItem
                       key={exp._id}
                       title={exp.title}
                       type={exp.type}
@@ -117,7 +117,7 @@ export default function ExperiencesReviewScreen() {
 
           {activeTab === 'training' && (
             <View>
-              <View className="flex-row items-center justify-between mb-4">
+              <View className="mb-4 flex-row items-center justify-between">
                 <Text variant="title3">Training</Text>
                 <Button variant="plain" onPress={handleEditTraining}>
                   <Text className="text-accent-primary">Edit</Text>
@@ -125,7 +125,7 @@ export default function ExperiencesReviewScreen() {
               </View>
 
               {training.length === 0 ? (
-                <View className="p-4 bg-surface-secondary rounded-lg">
+                <View className="bg-surface-secondary rounded-lg p-4">
                   <Text variant="footnote" className="text-text-secondary text-center">
                     No training added yet.
                   </Text>
@@ -133,7 +133,7 @@ export default function ExperiencesReviewScreen() {
               ) : (
                 <View>
                   {training.slice(0, 5).map((train: any) => (
-                    <ExperienceItem
+                    <ProjectItem
                       key={train._id}
                       title={train.institution}
                       type={train.type}
@@ -153,8 +153,8 @@ export default function ExperiencesReviewScreen() {
           )}
         </ScrollView>
       </View>
-      
+
       {/* Edits navigate to /app/onboarding/review/[step] */}
     </BaseOnboardingScreen>
-  )
+  );
 }

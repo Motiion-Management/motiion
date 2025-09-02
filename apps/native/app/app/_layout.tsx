@@ -13,8 +13,7 @@ export default function AppLayout() {
             headerShown: false,
             animation: 'fade',
             contentStyle: { backgroundColor: 'transparent' },
-          }}
-        >
+          }}>
           <Stack.Screen
             name="(modals)"
             options={{

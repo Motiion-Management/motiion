@@ -110,7 +110,7 @@ export const getExperienceDisplayTitle = (experience: any): string => {
     case 'commercial':
       return experience.title || 'Commercial';
     default:
-      return 'Experience';
+      return 'Project';
   }
 };
 

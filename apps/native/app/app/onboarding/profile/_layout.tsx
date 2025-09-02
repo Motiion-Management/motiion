@@ -1,5 +1,5 @@
-import { Stack } from 'expo-router'
-import React from 'react'
+import { Stack } from 'expo-router';
+import React from 'react';
 
 export default function ProfileGroupLayout() {
   return (
@@ -11,5 +11,5 @@ export default function ProfileGroupLayout() {
         gestureEnabled: true,
       }}
     />
-  )
+  );
 }

@@ -1,22 +1,22 @@
-import React, { useCallback, useMemo, useRef } from 'react'
-import { View } from 'react-native'
-import { SafeAreaView } from 'react-native-safe-area-context'
+import React, { useCallback, useMemo, useRef } from 'react';
+import { View } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
-import { Button } from '~/components/ui/button'
-import { Text } from '~/components/ui/text'
-import ChevronLeft from '~/lib/icons/ChevronLeft'
-import ChevronRight from '~/lib/icons/ChevronRight'
-import { GroupProgressBar } from './GroupProgressBar'
-import { useOnboardingGroupFlow } from '~/hooks/useOnboardingGroupFlow'
-import type { FormHandle } from '~/components/forms/onboarding/contracts'
+import { Button } from '~/components/ui/button';
+import { Text } from '~/components/ui/text';
+import ChevronLeft from '~/lib/icons/ChevronLeft';
+import ChevronRight from '~/lib/icons/ChevronRight';
+import { GroupProgressBar } from './GroupProgressBar';
+import { useOnboardingGroupFlow } from '~/hooks/useOnboardingGroupFlow';
+import type { FormHandle } from '~/components/forms/onboarding/contracts';
 
 interface OnboardingScreenWrapperProps {
-  children: React.ReactNode
-  formRef?: React.RefObject<FormHandle>
-  canSubmit?: boolean
-  onSubmitOverride?: () => void | Promise<void>
-  showProgress?: boolean
-  className?: string
+  children: React.ReactNode;
+  formRef?: React.RefObject<FormHandle>;
+  canSubmit?: boolean;
+  onSubmitOverride?: () => void | Promise<void>;
+  showProgress?: boolean;
+  className?: string;
 }
 
 // Fullscreen wrapper responsible for progress, breadcrumb and actions.
@@ -29,23 +29,23 @@ export function OnboardingScreenWrapper({
   showProgress = true,
   className,
 }: OnboardingScreenWrapperProps) {
-  const onboarding = useOnboardingGroupFlow()
-  const internalRef = useRef<FormHandle>(null)
-  const activeFormRef = formRef ?? internalRef
+  const onboarding = useOnboardingGroupFlow();
+  const internalRef = useRef<FormHandle>(null);
+  const activeFormRef = formRef ?? internalRef;
 
   const isValid = useMemo(() => {
-    if (typeof canSubmit === 'boolean') return canSubmit
-    return activeFormRef.current?.isValid?.() ?? false
-  }, [activeFormRef.current, canSubmit])
+    if (typeof canSubmit === 'boolean') return canSubmit;
+    return activeFormRef.current?.isValid?.() ?? false;
+  }, [activeFormRef.current, canSubmit]);
 
   const handleBack = useCallback(() => {
-    onboarding.navigateToPreviousStep()
-  }, [onboarding])
+    onboarding.navigateToPreviousStep();
+  }, [onboarding]);
 
   const handleContinue = useCallback(() => {
-    if (onSubmitOverride) return onSubmitOverride()
-    return activeFormRef.current?.submit?.()
-  }, [activeFormRef, onSubmitOverride])
+    if (onSubmitOverride) return onSubmitOverride();
+    return activeFormRef.current?.submit?.();
+  }, [activeFormRef, onSubmitOverride]);
 
   return (
     <View className={`flex-1 ${className ?? ''}`}>
@@ -60,7 +60,7 @@ export function OnboardingScreenWrapper({
       <View className="flex-1">{children}</View>
 
       <SafeAreaView edges={['bottom', 'left', 'right']}>
-        <View className="border-t border-border-default bg-surface-default px-4 py-3 flex-row items-center justify-between">
+        <View className="flex-row items-center justify-between border-t border-border-default bg-surface-default px-4 py-3">
           <Button variant="plain" onPress={handleBack}>
             <ChevronLeft size={20} className="color-icon-default" />
             <Text className="ml-1">Back</Text>
@@ -72,5 +72,5 @@ export function OnboardingScreenWrapper({
         </View>
       </SafeAreaView>
     </View>
-  )
+  );
 }

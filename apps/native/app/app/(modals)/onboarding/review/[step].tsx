@@ -10,9 +10,9 @@ import { Button } from '~/components/ui/button';
 import { Text } from '~/components/ui/text';
 import { BaseFormContainer } from '~/components/onboarding/BaseFormContainer';
 import X from '~/lib/icons/X';
-import { api } from '@packages/backend/convex/_generated/api'
-import { useMutation } from 'convex/react'
-import { BottomSheetModalProvider } from '@gorhom/bottom-sheet'
+import { api } from '@packages/backend/convex/_generated/api';
+import { useMutation } from 'convex/react';
+import { BottomSheetModalProvider } from '@gorhom/bottom-sheet';
 
 export default function ReviewEditModal() {
   const { step } = useLocalSearchParams<{ step: string }>();
@@ -21,10 +21,10 @@ export default function ReviewEditModal() {
   const formRef = useRef<FormHandle>(null);
   const { data, isLoading } = useOnboardingData();
   // Convex mutations for save context
-  const updateMyUser = useMutation(api.users.updateMyUser)
-  const patchUserAttributes = useMutation(api.users.patchUserAttributes)
-  const updateMyResume = useMutation(api.users.resume.updateMyResume)
-  const addMyRepresentation = useMutation(api.users.representation.addMyRepresentation)
+  const updateMyUser = useMutation(api.users.updateMyUser);
+  const patchUserAttributes = useMutation(api.users.patchUserAttributes);
+  const updateMyResume = useMutation(api.users.resume.updateMyResume);
+  const addMyRepresentation = useMutation(api.users.representation.addMyRepresentation);
 
   const [canSubmit, setCanSubmit] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -77,8 +77,7 @@ export default function ReviewEditModal() {
               title={def.title}
               description={def.description}
               gradientBackground={false}
-              padTop={false}
-            >
+              padTop={false}>
               <FormComponent
                 ref={formRef}
                 initialValues={initialValues}

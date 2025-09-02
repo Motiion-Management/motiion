@@ -8,7 +8,6 @@ import {
   useMutation
 } from 'convex/react'
 // Import runtime-only JS to avoid TS pulling full backend sources
-// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore
 import { api } from '@packages/backend/convex/_generated/api.js'
 
@@ -21,7 +20,7 @@ function ResumeParserTester() {
   const generateUploadUrl = useMutation(api.dev.resumeTest.generateUploadUrlDev)
   const parseResume = useAction(api.dev.resumeTest.parseResumeImageDev)
 
-  const onUpload = async (files: File[]) => {
+  const onUpload = async (files: globalThis.File[]) => {
     setError(null)
     setResult(null)
     setStorageId(null)

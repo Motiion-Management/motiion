@@ -3,15 +3,15 @@
 // be adopted incrementally by refactored forms.
 
 export interface FormHandle {
-  submit(): void | Promise<void>
-  isDirty(): boolean
-  isValid(): boolean
+  submit(): void | Promise<void>;
+  isDirty(): boolean;
+  isValid(): boolean;
 }
 
 export interface FormProps<T> {
-  initialValues: T
-  onSubmit(values: T): void | Promise<void>
-  onDirtyChange?(dirty: boolean): void
-  onValidChange?(valid: boolean): void
-  onCancel?(): void
+  initialValues: T;
+  onSubmit(values: T): void | Promise<void>;
+  onDirtyChange?(dirty: boolean): void;
+  onValidChange?(valid: boolean): void;
+  onCancel?(): void;
 }

@@ -3,7 +3,7 @@ import { useQuery } from 'convex/react';
 
 import { api } from '@packages/backend/convex/_generated/api';
 import { ResumeCard, type ResumeCardItem } from '~/components/ui/resume-card';
-import { getExperienceDisplayTitle, getExperienceDisplaySubtitle } from '~/config/experienceTypes';
+import { getProjectDisplayTitle, getProjectDisplaySubtitle } from '~/config/projectTypes';
 
 interface RecentlyAddedSectionProps {
   onAddPress?: () => void;
@@ -11,14 +11,14 @@ interface RecentlyAddedSectionProps {
 }
 
 export function RecentlyAddedSection({ onAddPress, onItemPress }: RecentlyAddedSectionProps) {
-  const recentExperiences = useQuery(api.users.experiences.getMyRecentExperiences);
+  const recentExperiences = useQuery(api.users.projects.getMyRecentProjects);
 
   const items: ResumeCardItem[] = React.useMemo(() => {
     if (!recentExperiences) return [];
 
     return recentExperiences.map((exp, index) => {
-      const title = getExperienceDisplayTitle(exp);
-      const subtitle = getExperienceDisplaySubtitle(exp);
+      const title = getProjectDisplayTitle(exp);
+      const subtitle = getProjectDisplaySubtitle(exp);
       const displayTitle = subtitle ? `${title} - ${subtitle}` : title;
 
       return {
