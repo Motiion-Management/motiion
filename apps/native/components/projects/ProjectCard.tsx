@@ -6,11 +6,11 @@ import { Text } from '~/components/ui/text';
 import { cn } from '~/lib/cn';
 import Check from '~/lib/icons/Check';
 import Plus from '~/lib/icons/Plus';
-import { getProjectDisplayTitle as getExperienceDisplayTitle, getProjectDisplaySubtitle as getExperienceDisplaySubtitle } from '~/config/projectTypes';
-import { ExperienceEditSheet } from './ExperienceEditSheet';
+import { getProjectDisplayTitle, getProjectDisplaySubtitle } from '~/config/projectTypes';
+import { ProjectEditSheet } from './ProjectEditSheet';
 import { type Doc, type Id } from '@packages/backend/convex/_generated/dataModel';
 
-const experienceCardVariants = cva(
+const projectCardVariants = cva(
   'w-full flex-row items-center justify-between rounded-full border px-5 py-4',
   {
     variants: {
@@ -26,33 +26,33 @@ const experienceCardVariants = cva(
   }
 );
 
-interface ExperienceCardProps extends VariantProps<typeof experienceCardVariants> {
-  experience?: Doc<'experiences'>;
-  experienceId?: Id<'experiences'>;
+interface ProjectCardProps extends VariantProps<typeof projectCardVariants> {
+  project?: Doc<'projects'>;
+  projectId?: Id<'projects'>;
   disabled?: boolean;
   placeholder?: string;
   className?: string;
 }
 
-export function ExperienceCard({
-  experience,
-  experienceId,
+export function ProjectCard({
+  project,
+  projectId,
   variant = 'default',
   disabled = false,
   placeholder,
   className,
-}: ExperienceCardProps) {
+}: ProjectCardProps) {
   const [isSheetOpen, setIsSheetOpen] = useState(false);
   const handlePress = useCallback(() => {
     if (disabled) return;
     setIsSheetOpen(true);
   }, [disabled]);
-  const hasExperience = !!experience;
-  const displayTitle = hasExperience
-    ? getExperienceDisplayTitle(experience)
+  const hasProject = !!project;
+  const displayTitle = hasProject
+    ? getProjectDisplayTitle(project)
     : placeholder || 'Project';
-  const displaySubtitle = hasExperience
-    ? getExperienceDisplaySubtitle(experience)
+  const displaySubtitle = hasProject
+    ? getProjectDisplaySubtitle(project)
     : disabled
       ? '-'
       : 'Add your experience here';
@@ -62,7 +62,7 @@ export function ExperienceCard({
       <TouchableOpacity
         onPress={handlePress}
         disabled={disabled}
-        className={cn(experienceCardVariants({ variant }), className)}>
+        className={cn(projectCardVariants({ variant }), className)}>
         <View className="flex-1 px-2">
           <Text
             variant="body"
@@ -88,12 +88,15 @@ export function ExperienceCard({
       </TouchableOpacity>
 
       {/* Local bottom sheet for this card */}
-      <ExperienceEditSheet
+      <ProjectEditSheet
         isOpen={isSheetOpen}
         onOpenChange={setIsSheetOpen}
-        experience={experience}
-        experienceId={experienceId}
+        project={project}
+        projectId={projectId}
       />
     </>
   );
 }
+
+// Backward compatibility export
+export { ProjectCard as ExperienceCard };

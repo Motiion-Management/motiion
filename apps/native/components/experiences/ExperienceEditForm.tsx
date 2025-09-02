@@ -30,8 +30,11 @@ import { useMutation } from 'convex/react';
 import { normalizeForConvex } from '~/utils/convexHelpers';
 import {
   zExperiencesDoc,
-  type ExperienceFormDoc,
-} from '@packages/backend/convex/validators/experiences';
+  type ProjectFormDoc,
+} from '@packages/backend/convex/validators/projects';
+
+// Type alias for backward compatibility
+type ExperienceFormDoc = ProjectFormDoc;
 import { useQuery } from 'convex/react';
 import { toast } from 'sonner-native';
 import { z } from 'zod';
@@ -73,7 +76,7 @@ export const ExperienceEditForm = forwardRef<ExperienceEditFormHandle, Experienc
     const insets = useSafeAreaInsets();
 
     // Allow fetching existing doc by id if not provided
-    const myExperiences = useQuery(api.users.experiences.getMyExperiences, {});
+    const myExperiences = useQuery(api.users.projects.getMyProjects, {});
     const experienceFromQuery = useMemo<ExperienceFormDoc | undefined>(() => {
       const id = experience?._id ?? experienceIdProp;
       if (!id || !Array.isArray(myExperiences)) return undefined;
@@ -112,9 +115,9 @@ export const ExperienceEditForm = forwardRef<ExperienceEditFormHandle, Experienc
       })
       .passthrough();
 
-    const addMyExperience = useMutation(api.users.experiences.addMyExperience);
-    const updateExperience = useMutation(api.experiences.update);
-    const destroyExperience = useMutation(api.experiences.destroy);
+    const addMyExperience = useMutation(api.users.projects.addMyProject);
+    const updateExperience = useMutation(api.projects.update);
+    const destroyExperience = useMutation(api.projects.destroy);
 
     const selectedExperience = experience ?? (experienceFromQuery as ExperienceFormDoc | undefined);
 

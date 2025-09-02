@@ -2,7 +2,10 @@ import React, { useCallback } from 'react';
 import { View } from 'react-native';
 import { Sheet } from '~/components/ui/sheet';
 import { type Id } from '@packages/backend/convex/_generated/dataModel';
-import { type ExperienceFormDoc } from '@packages/backend/convex/validators/experiences';
+import { type ProjectFormDoc } from '@packages/backend/convex/validators/projects';
+
+// Type alias for backward compatibility
+type ExperienceFormDoc = ProjectFormDoc;
 import { ExperienceEditForm } from './ExperienceEditForm';
 
 interface ExperienceEditSheetProps {

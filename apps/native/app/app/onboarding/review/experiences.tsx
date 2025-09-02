@@ -35,7 +35,7 @@ function ExperienceItem({ title, type, onEdit }: ExperienceItemProps) {
 }
 
 export default function ExperiencesReviewScreen() {
-  const experiences = useQuery(api.users.experiences.getMyExperiences) || []
+  const experiences = useQuery(api.users.projects.getMyProjects) || []
   const training = useQuery(api.training.getMyTraining) || []
   const [activeTab, setActiveTab] = useState<'experience' | 'training'>('experience')
 

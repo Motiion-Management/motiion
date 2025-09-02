@@ -8,7 +8,7 @@ import { Button } from '~/components/ui/button';
 import { Text } from '~/components/ui/text';
 import { ActivityIndicator } from '~/components/ui/activity-indicator';
 import { type ParsedResumeData } from '@packages/backend/convex/ai/schemas';
-import { EXPERIENCE_TITLE_MAP } from '@packages/backend/convex/validators/experiences';
+import { PROJECT_TITLE_MAP } from '@packages/backend/convex/validators/projects';
 
 interface ParsedResumeReviewProps {
   parsedData: ParsedResumeData;
@@ -50,7 +50,7 @@ export function ParsedResumeReview({
   }, [editedData, applyParsedData, onComplete]);
 
   const formatExperienceType = (type: string) => {
-    return EXPERIENCE_TITLE_MAP[type as keyof typeof EXPERIENCE_TITLE_MAP] || type;
+    return PROJECT_TITLE_MAP[type as keyof typeof PROJECT_TITLE_MAP] || type;
   };
 
   const formatTrainingType = (type: string) => {

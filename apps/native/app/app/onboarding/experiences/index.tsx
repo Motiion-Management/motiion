@@ -8,7 +8,7 @@ import { useQuery } from 'convex/react';
 import { api } from '@packages/backend/convex/_generated/api';
 
 export default function ExperiencesScreen() {
-  const experiences = useQuery(api.users.experiences.getMyExperiences, {});
+  const experiences = useQuery(api.users.projects.getMyProjects, {});
 
   const slots = useMemo(() => {
     const docs = experiences || [];

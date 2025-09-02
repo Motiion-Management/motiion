@@ -326,16 +326,26 @@ If issues occur, we have several rollback points:
 
 ### Migration Checklist
 
-- [ ] Install @convex-dev/migrations component
-- [ ] Create convex.config.ts
-- [ ] Deploy schema with both tables
-- [ ] Create migration functions
-- [ ] Test migration in dev with dry run
-- [ ] Run migration in dev
-- [ ] Verify data integrity in dev
+#### Backend Migration (COMPLETED ✅)
+- [x] Install @convex-dev/migrations component
+- [x] Create convex.config.ts
+- [x] Deploy schema with both tables
+- [x] Create migration functions (migrations.ts)
+- [x] Create projects validator (validators/projects.ts)
+- [x] Create projects API endpoints (projects.ts, users/projects.ts)
+- [x] Update user validator to accept both ID types during migration
+- [x] Test migration in dev (41/43 experiences migrated)
+- [x] Verify data integrity in dev
+
+#### Frontend Migration (IN PROGRESS 🚧)
+- [ ] Update frontend types and imports
+- [ ] Update frontend API calls
+- [ ] Update frontend components
+- [ ] Test frontend changes
+
+#### Production Deployment (PENDING ⏳)
 - [ ] Deploy to production with both tables
 - [ ] Run migration in production
-- [ ] Deploy code changes
 - [ ] Verify production functionality
 - [ ] Remove experiences table from schema
 - [ ] Final deployment to clean up
@@ -474,6 +484,82 @@ Each component requires:
 ### Form Field Labels
 - Type selector: "PROJECT TYPE" (already implemented in some places)
 - Placeholders: "Project title", but keep "Add your experience here" for user familiarity
+
+## Production Migration Instructions
+
+### After Merge (Automatic Deployment)
+Once this PR is merged, the production deployment will automatically include:
+- Both `experiences` and `projects` tables in the schema
+- Migration functions ready to run
+- New API endpoints for projects
+- Frontend code that uses the new projects APIs
+
+### Manual Migration Steps Required
+
+#### Step 1: Verify Deployment
+```bash
+# Check migration status in production
+npx convex run --prod migrations:verifyMigration
+```
+
+Expected output should show experiences ready to migrate:
+- `experiencesCount`: Number of experiences in production
+- `projectsCount`: Should be 0 initially
+- `isComplete`: Should be false
+
+#### Step 2: Run Data Migration
+```bash
+# Run the full migration in production
+npx convex run --prod migrations:runFullMigration
+
+# Or run in steps for more control:
+# 1. Copy experiences to projects
+npx convex run --prod migrations:copyExperiencesToProjects
+
+# 2. Update user references
+npx convex run --prod migrations:updateUserReferences
+```
+
+#### Step 3: Verify Migration Success
+```bash
+# Check final status
+npx convex run --prod migrations:verifyMigration
+```
+
+Success criteria:
+- `projectsCount` should equal `experiencesCount`
+- `usersWithProjects` should equal `usersWithExperiences`
+- `unmappedExperiences` should be empty array
+- `isComplete` should be true (or close if there are duplicates)
+
+#### Step 4: Monitor Application
+- Check that all features work correctly
+- Monitor for any errors in Convex dashboard
+- Test key user flows:
+  - Viewing projects/experiences
+  - Adding new projects
+  - Editing existing projects
+  - Resume import functionality
+
+#### Step 5: Cleanup (After Verification)
+Once everything is verified working:
+1. Remove `experiences` table from schema
+2. Update user validator to only accept project IDs
+3. Remove backward compatibility exports
+4. Deploy final cleanup
+
+### Rollback Plan
+If issues occur after migration:
+
+1. **Data still intact**: Both tables exist, so old code can still read from experiences
+2. **Reverse migration**: Copy data back from projects to experiences if needed
+3. **Code rollback**: Revert the PR to restore old code
+
+### Important Notes
+- The migration is idempotent - running it multiple times is safe
+- Duplicate titles in experiences may not migrate (by design to avoid duplicates)
+- User references are updated to point to new project IDs
+- Frontend uses backward-compatible APIs during transition
 
 ## Implementation Context for Future Work
 

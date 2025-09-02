@@ -72,8 +72,8 @@ export const updateUserReferences = internalMutation({
       
       // Map old IDs to new IDs
       const newProjectIds = user.resume.experiences
-        .map(expId => idMap.get(expId))
-        .filter(Boolean) // Remove any unmapped IDs
+        .map(expId => idMap.get(expId as any))
+        .filter(Boolean) as any[] // Remove any unmapped IDs
       
       // Update user's resume with new project IDs
       await ctx.db.patch(user._id, {
@@ -110,14 +110,14 @@ export const runFullMigration = internalMutation({
         // Run the user references update
         await ctx.runMutation(internal.migrations.updateUserReferences)
         const users = await ctx.db.query('users').collect()
-        usersUpdated = users.filter(u => u.resume?.experiences?.length > 0).length
+        usersUpdated = users.filter(u => u.resume?.experiences && u.resume.experiences.length > 0).length
       } else {
         // Dry run - just count
         const experiences = await ctx.db.query('experiences').collect()
         experiencesCopied = experiences.length
         
         const users = await ctx.db.query('users').collect()
-        usersUpdated = users.filter(u => u.resume?.experiences?.length > 0).length
+        usersUpdated = users.filter(u => u.resume?.experiences && u.resume.experiences.length > 0).length
       }
     } catch (error: any) {
       errors.push(error.message || 'Unknown error')
@@ -147,15 +147,15 @@ export const verifyMigration = internalQuery({
     
     // Check user references
     const users = await ctx.db.query('users').collect()
-    const usersWithExperiences = users.filter(u => u.resume?.experiences?.length > 0).length
+    const usersWithExperiences = users.filter(u => u.resume?.experiences && u.resume.experiences.length > 0).length
     
     // Count users that have been migrated (have project IDs)
     let usersWithProjects = 0
     for (const user of users) {
-      if (user.resume?.experiences?.length > 0) {
+      if (user.resume?.experiences && user.resume.experiences.length > 0) {
         // Check if all experience IDs are valid project IDs
         let allMigrated = true
-        for (const expId of user.resume.experiences) {
+        for (const expId of user.resume!.experiences!) {
           // Try to get as project - will fail if not migrated
           try {
             const project = await ctx.db.get(expId as any)
