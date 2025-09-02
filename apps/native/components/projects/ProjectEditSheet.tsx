@@ -6,15 +6,20 @@ import { type ProjectFormDoc } from '@packages/backend/convex/validators/project
 import { ProjectEditForm } from './ProjectEditForm';
 
 interface ProjectEditSheetProps {
-  isOpen: boolean
-  onOpenChange: (isOpen: boolean) => void
-  project?: ProjectFormDoc
-  projectId?: Id<'projects'>
+  isOpen: boolean;
+  onOpenChange: (isOpen: boolean) => void;
+  project?: ProjectFormDoc;
+  projectId?: Id<'projects'>;
 }
 
-export function ProjectEditSheet({ isOpen, onOpenChange, project, projectId }: ProjectEditSheetProps) {
-  const handleComplete = useCallback(() => onOpenChange(false), [onOpenChange])
-  const title = project?._id ? 'Edit Project' : 'Add Project'
+export function ProjectEditSheet({
+  isOpen,
+  onOpenChange,
+  project,
+  projectId,
+}: ProjectEditSheetProps) {
+  const handleComplete = useCallback(() => onOpenChange(false), [onOpenChange]);
+  const title = project?._id ? 'Edit Project' : 'Add Project';
 
   return (
     <Sheet
@@ -26,5 +31,5 @@ export function ProjectEditSheet({ isOpen, onOpenChange, project, projectId }: P
         <ProjectEditForm project={project} projectId={projectId} onComplete={handleComplete} />
       </View>
     </Sheet>
-  )
+  );
 }

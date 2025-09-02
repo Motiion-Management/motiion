@@ -13,7 +13,12 @@ interface TrainingEditSheetProps {
   trainingId?: Id<'training'>;
 }
 
-export function TrainingEditSheet({ isOpen, onOpenChange, training, trainingId: trainingIdProp }: TrainingEditSheetProps) {
+export function TrainingEditSheet({
+  isOpen,
+  onOpenChange,
+  training,
+  trainingId: trainingIdProp,
+}: TrainingEditSheetProps) {
   const trainingId = training?._id ?? trainingIdProp;
   const handleClose = useCallback(() => onOpenChange(false), [onOpenChange]);
   const title = trainingId ? 'Edit Training' : 'Add Training';

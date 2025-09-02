@@ -148,7 +148,7 @@ export const getMyRecentProjects = authQuery({
 
 // Backwards compatibility exports (redirect to new names)
 export const addMyExperience = addMyProject
-export const removeMyExperience = removeMyProject  
+export const removeMyExperience = removeMyProject
 export const getMyExperiences = getMyProjects
 export const getMyExperiencesByType = getMyProjectsByType
 export const getUserPublicExperiences = getUserPublicProjects

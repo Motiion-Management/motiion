@@ -2,7 +2,11 @@ import React, { useMemo, useState, useCallback } from 'react';
 import { View, ScrollView, Alert } from 'react-native';
 import { Text } from '~/components/ui/text';
 import { Button } from '~/components/ui/button';
-import { useOnboardingGroupFlow, ONBOARDING_GROUPS, ONBOARDING_GROUP_FLOWS } from '~/hooks/useOnboardingGroupFlow';
+import {
+  useOnboardingGroupFlow,
+  ONBOARDING_GROUPS,
+  ONBOARDING_GROUP_FLOWS,
+} from '~/hooks/useOnboardingGroupFlow';
 import { useMutation } from 'convex/react';
 import { api } from '@packages/backend/convex/_generated/api';
 import { useUser } from '~/hooks/useUser';
@@ -41,9 +45,12 @@ export function DevOnboardingTools() {
   const generateUploadUrlDev = useMutation(api.dev.resumeTest.generateUploadUrlDev);
   const parseResumeDocumentDev = useAction(api.dev.resumeTest.parseResumeDocumentDev);
   const activeProfileType: ProfileType = (user?.profileType as ProfileType) || 'dancer';
-  const activeGroups = useMemo(() => ONBOARDING_GROUP_FLOWS[activeProfileType], [activeProfileType]);
+  const activeGroups = useMemo(
+    () => ONBOARDING_GROUP_FLOWS[activeProfileType],
+    [activeProfileType]
+  );
   const allSteps = useMemo(() => {
-    return activeGroups.flatMap(groupKey => ONBOARDING_GROUPS[groupKey].steps);
+    return activeGroups.flatMap((groupKey) => ONBOARDING_GROUPS[groupKey].steps);
   }, [activeGroups]);
   const handleGoToRoute = useCallback(() => {
     if (!routeInput) return;
@@ -77,7 +84,8 @@ export function DevOnboardingTools() {
             <View className="mt-1">
               <View className="mb-2">
                 <Text variant="bodySm" className="text-text-secondary mb-1">
-                  Progress: {onboarding.overallProgress}% • Group: {onboarding.currentGroup || 'None'} • Step: {onboarding.currentStepId || 'None'}
+                  Progress: {onboarding.overallProgress}% • Group:{' '}
+                  {onboarding.currentGroup || 'None'} • Step: {onboarding.currentStepId || 'None'}
                 </Text>
               </View>
               <View className="mb-2 flex-row gap-2">
@@ -139,7 +147,7 @@ export function DevOnboardingTools() {
               <Text className="mb-1" variant="bodySm">
                 Groups ({activeProfileType})
               </Text>
-              <View className="mb-2 flex-row gap-2 flex-wrap">
+              <View className="mb-2 flex-row flex-wrap gap-2">
                 {activeGroups.map((groupKey) => (
                   <Button
                     key={groupKey}

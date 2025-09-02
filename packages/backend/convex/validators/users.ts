@@ -21,7 +21,9 @@ export const zRepresentation = z.object(representationObj)
 
 export const resume = {
   // Legacy field - kept for migration, accepts both experiences and projects IDs during migration
-  experiences: z.array(z.union([zid('experiences'), zid('projects')])).optional(),
+  experiences: z
+    .array(z.union([zid('experiences'), zid('projects')]))
+    .optional(),
   uploads: zFileUploadObjectArray.optional(),
   skills: z.array(z.string()).optional(),
   genres: z.array(z.string()).optional()

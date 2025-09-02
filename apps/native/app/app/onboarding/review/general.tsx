@@ -102,7 +102,7 @@ export default function GeneralReviewScreen() {
 
   // Preload modal module to reduce first-open latency
   useEffect(() => {
-    import('../../(modals)/onboarding/review/[step]').catch(() => { });
+    import('../../(modals)/onboarding/review/[step]').catch(() => {});
   }, []);
 
   return (

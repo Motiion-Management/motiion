@@ -12,15 +12,13 @@ export const PROJECT_TYPES = [
   'commercial'
 ] as const
 
-export const PROJECT_TITLE_MAP: Record<
-  (typeof PROJECT_TYPES)[number],
-  string
-> = {
-  'tv-film': 'Television & Film',
-  'music-video': 'Music Videos',
-  'live-performance': 'Live Performances',
-  commercial: 'Commercials'
-}
+export const PROJECT_TITLE_MAP: Record<(typeof PROJECT_TYPES)[number], string> =
+  {
+    'tv-film': 'Television & Film',
+    'music-video': 'Music Videos',
+    'live-performance': 'Live Performances',
+    commercial: 'Commercials'
+  }
 
 export const LIVE_EVENT_SUBTYPES = [
   'festival',

@@ -1,7 +1,7 @@
-import React, { forwardRef, useEffect, useImperativeHandle } from 'react'
+import React, { forwardRef, useEffect, useImperativeHandle } from 'react';
 
-import { SizingSection } from '~/components/sizing/SizingSection'
-import type { FormHandle, FormProps } from '~/components/forms/onboarding/contracts'
+import { SizingSection } from '~/components/sizing/SizingSection';
+import type { FormHandle, FormProps } from '~/components/forms/onboarding/contracts';
 
 export interface SizingValues {
   // Placeholder; sizing sections manage their own persistence
@@ -15,11 +15,11 @@ export const SizingForm = forwardRef<FormHandle, FormProps<SizingValues>>(functi
     submit: () => onSubmit({}),
     isDirty: () => false,
     isValid: () => true,
-  }))
+  }));
 
   useEffect(() => {
-    onValidChange?.(true)
-  }, [onValidChange])
+    onValidChange?.(true);
+  }, [onValidChange]);
 
   return (
     <>
@@ -43,6 +43,5 @@ export const SizingForm = forwardRef<FormHandle, FormProps<SizingValues>>(functi
         ]}
       />
     </>
-  )
-})
-
+  );
+});

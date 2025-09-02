@@ -8,20 +8,20 @@ export const copyExperiencesToProjects = internalMutation({
   returns: v.null(),
   handler: async (ctx) => {
     const experiences = await ctx.db.query('experiences').collect()
-    
+
     for (const experience of experiences) {
-    // Check if already migrated (idempotency)
-    const existing = await ctx.db
-      .query('projects')
-      .withIndex('userId', q => q.eq('userId', experience.userId))
-      .filter(q => q.eq(q.field('title'), experience.title))
-      .first()
-    
-    if (!existing) {
-      // Copy to projects table, preserving all fields except system fields
-      const { _id, _creationTime, ...data } = experience
-      await ctx.db.insert('projects', data)
-    }
+      // Check if already migrated (idempotency)
+      const existing = await ctx.db
+        .query('projects')
+        .withIndex('userId', (q) => q.eq('userId', experience.userId))
+        .filter((q) => q.eq(q.field('title'), experience.title))
+        .first()
+
+      if (!existing) {
+        // Copy to projects table, preserving all fields except system fields
+        const { _id, _creationTime, ...data } = experience
+        await ctx.db.insert('projects', data)
+      }
     }
     return null
   }
@@ -30,26 +30,28 @@ export const copyExperiencesToProjects = internalMutation({
 // Helper to create ID mapping for foreign key updates
 export const createIdMapping = internalQuery({
   args: {},
-  returns: v.array(v.object({
-    oldId: v.id('experiences'),
-    newId: v.id('projects')
-  })),
+  returns: v.array(
+    v.object({
+      oldId: v.id('experiences'),
+      newId: v.id('projects')
+    })
+  ),
   handler: async (ctx) => {
     const experiences = await ctx.db.query('experiences').collect()
     const mapping = []
-    
+
     for (const exp of experiences) {
       const project = await ctx.db
         .query('projects')
-        .withIndex('userId', q => q.eq('userId', exp.userId))
-        .filter(q => q.eq(q.field('title'), exp.title))
+        .withIndex('userId', (q) => q.eq('userId', exp.userId))
+        .filter((q) => q.eq(q.field('title'), exp.title))
         .first()
-      
+
       if (project) {
         mapping.push({ oldId: exp._id, newId: project._id })
       }
     }
-    
+
     return mapping
   }
 })
@@ -60,21 +62,21 @@ export const updateUserReferences = internalMutation({
   returns: v.null(),
   handler: async (ctx) => {
     const users = await ctx.db.query('users').collect()
-    
+
     for (const user of users) {
       if (!user.resume?.experiences || user.resume.experiences.length === 0) {
         continue // Skip users without experiences
       }
-      
+
       // Get the ID mapping
       const mapping = await ctx.runQuery(internal.migrations.createIdMapping)
-      const idMap = new Map(mapping.map(m => [m.oldId, m.newId]))
-      
+      const idMap = new Map(mapping.map((m) => [m.oldId, m.newId]))
+
       // Map old IDs to new IDs
       const newProjectIds = user.resume.experiences
-        .map(expId => idMap.get(expId as any))
+        .map((expId) => idMap.get(expId as any))
         .filter(Boolean) as any[] // Remove any unmapped IDs
-      
+
       // Update user's resume with new project IDs
       await ctx.db.patch(user._id, {
         resume: {
@@ -99,30 +101,34 @@ export const runFullMigration = internalMutation({
     const errors = []
     let experiencesCopied = 0
     let usersUpdated = 0
-    
+
     try {
       if (!dryRun) {
         // Run the copy migration
         await ctx.runMutation(internal.migrations.copyExperiencesToProjects)
         const projects = await ctx.db.query('projects').collect()
         experiencesCopied = projects.length
-        
+
         // Run the user references update
         await ctx.runMutation(internal.migrations.updateUserReferences)
         const users = await ctx.db.query('users').collect()
-        usersUpdated = users.filter(u => u.resume?.experiences && u.resume.experiences.length > 0).length
+        usersUpdated = users.filter(
+          (u) => u.resume?.experiences && u.resume.experiences.length > 0
+        ).length
       } else {
         // Dry run - just count
         const experiences = await ctx.db.query('experiences').collect()
         experiencesCopied = experiences.length
-        
+
         const users = await ctx.db.query('users').collect()
-        usersUpdated = users.filter(u => u.resume?.experiences && u.resume.experiences.length > 0).length
+        usersUpdated = users.filter(
+          (u) => u.resume?.experiences && u.resume.experiences.length > 0
+        ).length
       }
     } catch (error: any) {
       errors.push(error.message || 'Unknown error')
     }
-    
+
     return { experiencesCopied, usersUpdated, errors }
   }
 })
@@ -141,14 +147,16 @@ export const verifyMigration = internalQuery({
   handler: async (ctx) => {
     const experiences = await ctx.db.query('experiences').collect()
     const experiencesCount = experiences.length
-    
+
     const projects = await ctx.db.query('projects').collect()
     const projectsCount = projects.length
-    
+
     // Check user references
     const users = await ctx.db.query('users').collect()
-    const usersWithExperiences = users.filter(u => u.resume?.experiences && u.resume.experiences.length > 0).length
-    
+    const usersWithExperiences = users.filter(
+      (u) => u.resume?.experiences && u.resume.experiences.length > 0
+    ).length
+
     // Count users that have been migrated (have project IDs)
     let usersWithProjects = 0
     for (const user of users) {
@@ -173,20 +181,20 @@ export const verifyMigration = internalQuery({
         }
       }
     }
-    
+
     // Find unmapped experiences
     const unmapped = []
     for (const exp of experiences) {
       const project = await ctx.db
         .query('projects')
-        .withIndex('userId', q => q.eq('userId', exp.userId))
-        .filter(q => q.eq(q.field('title'), exp.title))
+        .withIndex('userId', (q) => q.eq('userId', exp.userId))
+        .filter((q) => q.eq(q.field('title'), exp.title))
         .first()
       if (!project) {
         unmapped.push(exp._id)
       }
     }
-    
+
     return {
       experiencesCount,
       projectsCount,
@@ -197,4 +205,3 @@ export const verifyMigration = internalQuery({
     }
   }
 })
-

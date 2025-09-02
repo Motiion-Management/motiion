@@ -5,6 +5,7 @@ A comprehensive onboarding system built with group-based navigation, gesture con
 ## Architecture Overview
 
 ### Components Structure
+
 ```
 components/
 ├── forms/onboarding/          # Reusable form components
@@ -24,23 +25,27 @@ components/
 ### Key Features
 
 #### 🎯 Group-Based Navigation
+
 - **5 logical groups**: Profile, Attributes, Work Details, Experiences, Review
 - **Progress visualization**: Digestible chunks instead of 20+ individual steps
 - **Smart routing**: Automatic flow management based on user profile type
 
 #### 🤏 Gesture Navigation
+
 - **Swipe controls**: Left/right navigation between forms
 - **Validation sync**: Can't advance on invalid forms
 - **Haptic feedback**: Success/warning vibrations
 - **Tutorial overlay**: Guides new users
 
 #### 📝 Reusable Forms
+
 - **Mode support**: Fullscreen and sheet presentations
 - **Validation hooks**: Real-time validation state
 - **Auto-focus**: Smart focus management
 - **Consistent UX**: Shared styling and behavior
 
 #### 🔄 Modal Editing
+
 - **Sheet presentation**: Edit forms from review screens
 - **Dynamic sizing**: Optimized heights per form
 - **Auto-save**: Changes persist automatically
@@ -48,6 +53,7 @@ components/
 ## Usage Examples
 
 ### Basic Pager Group
+
 ```tsx
 <OnboardingGroupPager
   forms={ATTRIBUTE_FORMS}
@@ -59,12 +65,14 @@ components/
 ```
 
 ### Edit Modal
+
 ```tsx
 // Navigate to a step-specific modal for editing
-router.push('/app/onboarding/review/display-name')
+router.push('/app/onboarding/review/display-name');
 ```
 
 ### Progress Tracking
+
 ```tsx
 <GroupProgressBar /> // Automatically syncs with flow state
 ```
@@ -87,9 +95,9 @@ export const MyForm = forwardRef<OnboardingFormRef, OnboardingFormProps<MyFormDa
         {...props}>
         {/* Form content */}
       </BaseOnboardingForm>
-    )
+    );
   }
-)
+);
 ```
 
 ## Flow Configuration
@@ -105,12 +113,13 @@ export const ONBOARDING_GROUPS = {
     basePath: '/app/onboarding/profile',
   },
   // ... other groups
-}
+};
 ```
 
 ## Testing
 
 Test the implementation through the main onboarding flow:
+
 - Access groups via `/app/onboarding/profile`, `/app/onboarding/attributes`, etc.
 - Preview progress visualization with GroupProgressBar
 - Test individual groups with OnboardingGroupPager

@@ -48,9 +48,7 @@ export function ProjectCard({
     setIsSheetOpen(true);
   }, [disabled]);
   const hasProject = !!project;
-  const displayTitle = hasProject
-    ? getProjectDisplayTitle(project)
-    : placeholder || 'Project';
+  const displayTitle = hasProject ? getProjectDisplayTitle(project) : placeholder || 'Project';
   const displaySubtitle = hasProject
     ? getProjectDisplaySubtitle(project)
     : disabled

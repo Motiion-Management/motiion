@@ -204,9 +204,7 @@ async function processWordDocument(fileUrl: string) {
         {
           type: 'message',
           role: 'system',
-          content: [
-            { type: 'input_text', text: createTextExtractionPrompt() }
-          ]
+          content: [{ type: 'input_text', text: createTextExtractionPrompt() }]
         },
         {
           type: 'message',
@@ -229,7 +227,9 @@ async function processWordDocument(fileUrl: string) {
     return processAIResponse(json)
   } catch (error: any) {
     console.error('Word document processing error:', error)
-    return await handleRetryableError(error, 0, 0, async () => createGracefulFallback())
+    return await handleRetryableError(error, 0, 0, async () =>
+      createGracefulFallback()
+    )
   }
 }
 

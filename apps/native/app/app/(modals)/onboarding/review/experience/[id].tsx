@@ -17,7 +17,10 @@ export default function ExperienceEditModalScreen() {
         </Button>
       </View>
 
-      <ProjectEditForm onComplete={() => router.back()} projectId={isNew ? undefined : (id as any)} />
+      <ProjectEditForm
+        onComplete={() => router.back()}
+        projectId={isNew ? undefined : (id as any)}
+      />
     </View>
   );
 }

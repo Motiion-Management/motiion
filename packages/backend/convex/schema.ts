@@ -28,7 +28,7 @@ const schema = defineSchema({
   }),
   // unified experiences table (kept during migration)
   experiences: Experiences.table.index('userId', ['userId']),
-  
+
   // NEW projects table (migration target)
   projects: Projects.table.index('userId', ['userId']),
 
