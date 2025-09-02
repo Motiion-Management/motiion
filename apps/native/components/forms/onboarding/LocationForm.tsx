@@ -3,16 +3,9 @@ import { View } from 'react-native'
 import { useMutation } from 'convex/react'
 import { api } from '@packages/backend/convex/_generated/api'
 
-import { LocationPicker } from '~/components/ui/location-picker-placekit'
+import { LocationPicker, type PlaceKitLocation } from '~/components/ui/location-picker-placekit'
 import { useLocationForm } from '~/hooks/useLocationForm'
 import type { FormHandle, FormProps } from '~/components/forms/onboarding/contracts'
-
-export interface PlaceKitLocation {
-  city: string
-  state: string
-  stateCode?: string
-  country: string
-}
 
 export interface LocationValues {
   primaryLocation: PlaceKitLocation | null
@@ -50,4 +43,3 @@ export const LocationForm = forwardRef<FormHandle, FormProps<LocationValues>>(fu
     </View>
   )
 })
-

@@ -23,21 +23,6 @@ export {
 
 // Types
 export type { OnboardingFormProps, OnboardingFormRef } from './types'
-export type { DisplayNameFormData } from './DisplayNameForm'
-export type { HeightFormData } from './HeightForm'
-export type { EthnicityFormData } from './EthnicityForm'
-export type { HairColorFormData } from './HairColorForm'
-export type { EyeColorFormData } from './EyeColorForm'
-export type { GenderFormData } from './GenderForm'
-export type { ProfileTypeFormData } from './ProfileTypeForm'
-export type { HeadshotsFormData } from './HeadshotsForm'
-export type { SizingFormData } from './SizingForm'
-export type { LocationFormData } from './LocationForm'
-export type { WorkLocationFormData } from './WorkLocationForm'
-export type { RepresentationFormData } from './RepresentationForm'
-export type { AgencyFormData } from './AgencyForm'
-export type { TrainingFormData } from './TrainingForm'
-export type { SkillsFormData } from './SkillsForm'
 
 // Base Components
 export { BaseOnboardingForm } from './BaseOnboardingForm'

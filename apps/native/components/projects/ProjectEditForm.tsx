@@ -108,7 +108,8 @@ export const ProjectEditForm = forwardRef<ProjectEditFormHandle, ProjectEditForm
       defaultValues: {
         ...selectedProject,
       },
-      validators: { onChange: validateSchema, onSubmit: validateSchema },
+      // Relax validator typing for Date unions; runtime safeParse handles details
+      validators: { onChange: validateSchema as any, onSubmit: validateSchema as any },
       onSubmit: async ({ value }) => {
         const payload = normalizeForConvex(value as Project)
         try {

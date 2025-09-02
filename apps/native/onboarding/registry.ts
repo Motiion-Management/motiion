@@ -222,6 +222,6 @@ export const STEP_REGISTRY = {
       await ctx.updateMyUser({ sagAftraId: values.sagAftraId || undefined })
     },
   },
-} as const
+} as const satisfies Record<string, StepDef<any>>
 
 export type StepKey = keyof typeof STEP_REGISTRY

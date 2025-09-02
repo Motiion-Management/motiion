@@ -100,7 +100,6 @@ export interface ProjectFieldConfig {
 
 // Backward compatibility exports
 export type ExperienceType = ProjectType;
-export type {LivePerformanceEventType as LivePerformanceEventType};
 export type BaseExperience = BaseProject;
 export type TvFilmExperience = TvFilmProject;
 export type MusicVideoExperience = MusicVideoProject;

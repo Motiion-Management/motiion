@@ -253,9 +253,9 @@ export function useOnboardingGroupFlow(): UseOnboardingGroupFlowReturn {
       let path = groupConfig.basePath
       
       // Handle routing for the first step of each group
-      if (groupKey === 'profile' && firstStep === 'profile-type') {
+      if (groupKey === 'profile' && (firstStep as any) === 'profile-type') {
         path += '/type'
-      } else if (groupKey === 'profile' && firstStep === 'resume') {
+      } else if (groupKey === 'profile' && (firstStep as any) === 'resume') {
         path += '/resume'
       } else if (groupKey === 'attributes') {
         // Attributes group uses individual routes for each step
@@ -263,9 +263,9 @@ export function useOnboardingGroupFlow(): UseOnboardingGroupFlowReturn {
       } else if (groupKey === 'work-details') {
         // Work-details group uses individual routes for each step
         path += `/${firstStep}`
-      } else if (groupKey === 'review' && firstStep === 'review') {
+      } else if (groupKey === 'review' && (firstStep as any) === 'review') {
         path += '/general'
-      } else if (groupKey === 'review' && firstStep === 'experiences-review') {
+      } else if (groupKey === 'review' && (firstStep as any) === 'experiences-review') {
         path += '/experiences'
       }
       
@@ -286,9 +286,9 @@ export function useOnboardingGroupFlow(): UseOnboardingGroupFlowReturn {
         let path = groupConfig.basePath
         
         // Handle special routing cases
-        if (groupKey === 'profile' && stepId === 'profile-type') {
+        if (groupKey === 'profile' && (stepId as any) === 'profile-type') {
           path += '/type'
-        } else if (groupKey === 'profile' && stepId === 'resume') {
+        } else if (groupKey === 'profile' && (stepId as any) === 'resume') {
           path += '/resume'
         } else if (groupKey === 'attributes') {
           // Attributes group uses individual routes for each step
@@ -296,9 +296,9 @@ export function useOnboardingGroupFlow(): UseOnboardingGroupFlowReturn {
         } else if (groupKey === 'work-details') {
           // Work-details group uses individual routes for each step
           path += `/${stepId}`
-        } else if (groupKey === 'review' && stepId === 'review') {
+        } else if (groupKey === 'review' && (stepId as any) === 'review') {
           path += '/general'
-        } else if (groupKey === 'review' && stepId === 'experiences-review') {
+        } else if (groupKey === 'review' && (stepId as any) === 'experiences-review') {
           path += '/experiences'
         }
         

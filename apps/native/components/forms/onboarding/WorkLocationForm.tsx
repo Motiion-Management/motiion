@@ -5,12 +5,7 @@ import { WorkLocationPicker } from '~/components/ui/work-location-picker'
 import { useWorkLocationForm } from '~/hooks/useWorkLocationForm'
 import type { FormHandle, FormProps } from '~/components/forms/onboarding/contracts'
 
-export interface PlaceKitLocation {
-  city: string
-  state: string
-  stateCode?: string
-  country: string
-}
+import type { PlaceKitLocation } from '~/components/ui/location-picker-placekit'
 
 export interface WorkLocationValues {
   locations: (PlaceKitLocation | null)[]
@@ -64,4 +59,3 @@ export const WorkLocationForm = forwardRef<FormHandle, FormProps<WorkLocationVal
     </Pressable>
   )
 })
-
