@@ -55,7 +55,7 @@ export function ProjectCard({
     ? getProjectDisplaySubtitle(project)
     : disabled
       ? '-'
-      : 'Add your experience here';
+      : 'Add your project here';
 
   return (
     <>

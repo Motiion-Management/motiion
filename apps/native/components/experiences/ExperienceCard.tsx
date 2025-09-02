@@ -55,7 +55,7 @@ export function ExperienceCard({
     ? getExperienceDisplaySubtitle(experience)
     : disabled
       ? '-'
-      : 'Add your experience here';
+      : 'Add your project here';
 
   return (
     <>

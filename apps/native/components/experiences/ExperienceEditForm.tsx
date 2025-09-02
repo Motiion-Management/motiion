@@ -103,7 +103,7 @@ export const ExperienceEditForm = forwardRef<ExperienceEditFormHandle, Experienc
       }
     }, [uiState.activeTab]);
 
-    const title = experienceId ? 'Edit Experience' : 'Add Experience';
+    const title = experienceId ? 'Edit Project' : 'Add Project';
 
     const uiSchema = zExperiencesDoc.passthrough();
     // Accept Date objects from the UI for start/end dates; backend normalization converts to ISO
@@ -137,7 +137,7 @@ export const ExperienceEditForm = forwardRef<ExperienceEditFormHandle, Experienc
           } else {
             await addMyExperience(payload);
           }
-          console.log('Experience saved successfully');
+          console.log('Project saved successfully');
           if (afterSubmit) afterSubmit();
           else onClose();
         } catch (error) {
@@ -341,7 +341,7 @@ export const ExperienceEditForm = forwardRef<ExperienceEditFormHandle, Experienc
                   className="w-full"
                   onPress={() => {
                     Alert.alert(
-                      'Delete Experience',
+                      'Delete Project',
                       'Are you sure you want to delete this experience? This action cannot be undone.',
                       [
                         { text: 'Cancel', style: 'cancel' },
@@ -367,7 +367,7 @@ export const ExperienceEditForm = forwardRef<ExperienceEditFormHandle, Experienc
                       ]
                     );
                   }}>
-                  <Text className="text-destructive">Delete Experience</Text>
+                  <Text className="text-destructive">Delete Project</Text>
                 </Button>
               )}
             </View>

@@ -10,13 +10,13 @@ import { Tabs } from '~/components/ui/tabs/tabs'
 import ChevronRight from '~/lib/icons/ChevronRight'
 import { BaseOnboardingScreen } from '~/components/layouts/BaseOnboardingScreen'
 
-interface ExperienceItemProps {
+interface ProjectItemProps {
   title: string
   type: string
   onEdit?: () => void
 }
 
-function ExperienceItem({ title, type, onEdit }: ExperienceItemProps) {
+function ProjectItem({ title, type, onEdit }: ProjectItemProps) {
   return (
     <Pressable
       onPress={onEdit}
@@ -37,7 +37,7 @@ function ExperienceItem({ title, type, onEdit }: ExperienceItemProps) {
 export default function ExperiencesReviewScreen() {
   const experiences = useQuery(api.users.projects.getMyProjects) || []
   const training = useQuery(api.training.getMyTraining) || []
-  const [activeTab, setActiveTab] = useState<'experience' | 'training'>('experience')
+  const [activeTab, setActiveTab] = useState<'projects' | 'training'>('projects')
 
   const handleEditExperiences = useCallback(() => {
     router.push('/app/onboarding/review/experience/new')
@@ -58,7 +58,7 @@ export default function ExperiencesReviewScreen() {
 
   return (
     <BaseOnboardingScreen
-      title="Review your experience"
+      title="Review your projects"
       description="Your performance history and training"
       canProgress={true}
       bottomActionSlot={
@@ -69,19 +69,19 @@ export default function ExperiencesReviewScreen() {
       <View className="flex-1">
         <Tabs
           tabs={[
-            { key: 'experience', label: 'Experience' },
+            { key: 'projects', label: 'Projects' },
             { key: 'training', label: 'Training' },
           ]}
           activeTab={activeTab}
-          onTabChange={(k) => setActiveTab(k as 'experience' | 'training')}
+          onTabChange={(k) => setActiveTab(k as 'projects' | 'training')}
           className="mb-4"
         />
 
         <ScrollView className="flex-1" showsVerticalScrollIndicator={false}>
-          {activeTab === 'experience' && (
+          {activeTab === 'projects' && (
             <View>
               <View className="flex-row items-center justify-between mb-4">
-                <Text variant="title3">Experience</Text>
+                <Text variant="title3">Projects</Text>
                 <Button variant="plain" onPress={handleEditExperiences}>
                   <Text className="text-accent-primary">Edit</Text>
                 </Button>
@@ -90,13 +90,13 @@ export default function ExperiencesReviewScreen() {
               {experiences.length === 0 ? (
                 <View className="p-4 bg-surface-secondary rounded-lg">
                   <Text variant="footnote" className="text-text-secondary text-center">
-                    No experiences added yet.
+                    No projects added yet.
                   </Text>
                 </View>
               ) : (
                 <View>
                   {experiences.slice(0, 5).map((exp: any) => (
-                    <ExperienceItem
+                    <ProjectItem
                       key={exp._id}
                       title={exp.title}
                       type={exp.type}
@@ -133,7 +133,7 @@ export default function ExperiencesReviewScreen() {
               ) : (
                 <View>
                   {training.slice(0, 5).map((train: any) => (
-                    <ExperienceItem
+                    <ProjectItem
                       key={train._id}
                       title={train.institution}
                       type={train.type}

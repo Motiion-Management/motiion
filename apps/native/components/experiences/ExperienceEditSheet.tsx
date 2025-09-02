@@ -18,7 +18,7 @@ interface ExperienceEditSheetProps {
 
 export function ExperienceEditSheet({ isOpen, onOpenChange, experience, experienceId: experienceIdProp }: ExperienceEditSheetProps) {
   const experienceId = experience?._id ?? experienceIdProp
-  const title = experienceId ? 'Edit Experience' : 'Add Experience'
+  const title = experienceId ? 'Edit Project' : 'Add Project'
   const handleClose = useCallback(() => onOpenChange(false), [onOpenChange])
 
   return (

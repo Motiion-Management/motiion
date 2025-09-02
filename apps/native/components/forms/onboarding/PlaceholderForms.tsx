@@ -222,8 +222,8 @@ export const SkillsForm = forwardRef<OnboardingFormRef, OnboardingFormProps<any>
   }
 )
 
-// Placeholder form for Experiences
-export const ExperiencesForm = forwardRef<OnboardingFormRef, OnboardingFormProps<any>>(
+// Placeholder form for Projects
+export const ProjectsForm = forwardRef<OnboardingFormRef, OnboardingFormProps<any>>(
   ({ initialData, onComplete, onCancel, mode = 'fullscreen' }, ref) => {
     const handleSubmit = async () => {
       await onComplete({})
@@ -232,14 +232,14 @@ export const ExperiencesForm = forwardRef<OnboardingFormRef, OnboardingFormProps
     return (
       <BaseOnboardingForm
         ref={ref}
-        title="Performance experience"
+        title="Performance projects"
         description="Add your performance history"
         canProgress={true}
         mode={mode}
         onCancel={onCancel}
         onSubmit={handleSubmit}>
         <View className="p-4 bg-gray-100 rounded-lg">
-          <Text>Experiences form placeholder - will be implemented later</Text>
+          <Text>Projects form placeholder - will be implemented later</Text>
         </View>
       </BaseOnboardingForm>
     )

@@ -147,11 +147,11 @@ export function ParsedResumeReview({
             </View>
           )}
 
-          {/* Experiences */}
+          {/* Projects */}
           {editedData.experiences.length > 0 && (
             <View className="gap-2">
               <Text variant="header3" className="font-semibold">
-                Experience({editedData.experiences.length})
+                Projects ({editedData.experiences.length})
               </Text>
               <View className="gap-3">
                 {editedData.experiences.map((exp, index) => (

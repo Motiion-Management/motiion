@@ -28,7 +28,7 @@ export default function ExperiencesScreen() {
 
   return (
     <BaseOnboardingScreen
-        title="Add your experience"
+        title="Add your projects"
         description="Add up to 3 projects you've worked on that you would like displayed on your profile."
         canProgress
         primaryAction={{
