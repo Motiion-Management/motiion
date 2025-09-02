@@ -14,7 +14,8 @@ import { HeadshotsForm } from '~/components/forms/onboarding/HeadshotsForm'
 import { SkillsForm, skillsSchema } from '~/components/forms/onboarding/SkillsForm'
 import { RepresentationForm, representationSchema } from '~/components/forms/onboarding/RepresentationForm'
 import { AgencyForm, agencySchema } from '~/components/forms/onboarding/AgencyForm'
-import { selectDisplayName, selectHeight, selectEthnicity, selectHairColor, selectEyeColor, selectGender, selectPrimaryPlaceKitLocation, selectWorkLocations, selectSkills, selectRepresentationStatus, selectAgencyId } from './selectors'
+import { UnionForm, unionSchema } from '~/components/forms/onboarding/UnionForm'
+import { selectDisplayName, selectHeight, selectEthnicity, selectHairColor, selectEyeColor, selectGender, selectPrimaryPlaceKitLocation, selectWorkLocations, selectSkills, selectRepresentationStatus, selectAgencyId, selectSagAftraId } from './selectors'
 
 // Step definition used by the dynamic review modal and wrappers.
 export interface StepDef<T = any> {
@@ -207,6 +208,18 @@ export const STEP_REGISTRY = {
       if (values.agencyId) {
         await ctx.addMyRepresentation({ agencyId: values.agencyId as any })
       }
+    },
+  },
+  'union': {
+    key: 'union',
+    title: 'Are you a member of SAG-AFTRA?',
+    description: 'Enter your member ID. Please skip if you are not a member.',
+    helpText: 'Your SAG-AFTRA member ID helps producers understand your union status.',
+    Component: UnionForm as unknown as ComponentType<FormProps<any>>,
+    schema: unionSchema,
+    getInitialValues: (data: OnboardingData) => selectSagAftraId(data),
+    save: async (values: any, ctx) => {
+      await ctx.updateMyUser({ sagAftraId: values.sagAftraId || undefined })
     },
   },
 } as const

@@ -58,3 +58,7 @@ export function selectRepresentationStatus(data: OnboardingData) {
 export function selectAgencyId(data: OnboardingData) {
   return { agencyId: data.user?.representation?.agencyId || '' }
 }
+
+export function selectSagAftraId(data: OnboardingData) {
+  return { sagAftraId: data.user?.sagAftraId || '' }
+}

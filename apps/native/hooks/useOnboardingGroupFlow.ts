@@ -21,7 +21,7 @@ export const ONBOARDING_GROUPS = {
   'work-details': {
     key: 'work-details',
     label: 'Work',
-    steps: ['headshots', 'sizing', 'location', 'work-location', 'representation', 'agency', 'training', 'skills'],
+    steps: ['headshots', 'sizing', 'location', 'work-location', 'representation', 'agency', 'training', 'skills', 'union'],
     basePath: '/app/onboarding/work-details',
   },
   experiences: {
