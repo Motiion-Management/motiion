@@ -97,6 +97,3 @@ export function ProjectCard({
     </>
   );
 }
-
-// Backward compatibility export
-export { ProjectCard as ExperienceCard };

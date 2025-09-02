@@ -3,7 +3,7 @@ import { View } from 'react-native';
 import { useLocalSearchParams, router } from 'expo-router';
 import { Button } from '~/components/ui/button';
 import X from '~/lib/icons/X';
-import { ExperienceEditForm } from '~/components/experiences/ExperienceEditForm';
+import { ProjectEditForm } from '~/components/projects/ProjectEditForm';
 
 export default function ExperienceEditModalScreen() {
   const { id } = useLocalSearchParams<{ id?: string }>();
@@ -17,11 +17,7 @@ export default function ExperienceEditModalScreen() {
         </Button>
       </View>
 
-      <ExperienceEditForm
-        onClose={() => router.back()}
-        afterSubmit={() => router.back()}
-        experienceId={isNew ? undefined : (id as any)}
-      />
+      <ProjectEditForm onComplete={() => router.back()} projectId={isNew ? undefined : (id as any)} />
     </View>
   );
 }

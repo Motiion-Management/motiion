@@ -6,31 +6,25 @@ import { type ProjectFormDoc } from '@packages/backend/convex/validators/project
 import { ProjectEditForm } from './ProjectEditForm';
 
 interface ProjectEditSheetProps {
-  isOpen: boolean;
-  onOpenChange: (open: boolean) => void;
-  project?: ProjectFormDoc;
-  projectId?: Id<'projects'>;
+  isOpen: boolean
+  onOpenChange: (isOpen: boolean) => void
+  project?: ProjectFormDoc
+  projectId?: Id<'projects'>
 }
 
 export function ProjectEditSheet({ isOpen, onOpenChange, project, projectId }: ProjectEditSheetProps) {
-  const handleComplete = useCallback(() => {
-    onOpenChange(false);
-  }, [onOpenChange]);
+  const handleComplete = useCallback(() => onOpenChange(false), [onOpenChange])
+  const title = project?._id ? 'Edit Project' : 'Add Project'
 
   return (
-    <Sheet open={isOpen} onOpenChange={onOpenChange} modal>
-      <Sheet.Content side="bottom" className="h-[90%]">
-        <View className="h-full">
-          <ProjectEditForm
-            project={project}
-            projectId={projectId}
-            onComplete={handleComplete}
-          />
-        </View>
-      </Sheet.Content>
+    <Sheet
+      enableContentPanningGesture={false}
+      isOpened={isOpen}
+      label={title}
+      onIsOpenedChange={(open) => onOpenChange(open)}>
+      <View className="h-[80vh]">
+        <ProjectEditForm project={project} projectId={projectId} onComplete={handleComplete} />
+      </View>
     </Sheet>
-  );
+  )
 }
-
-// Backward compatibility export
-export { ProjectEditSheet as ExperienceEditSheet };

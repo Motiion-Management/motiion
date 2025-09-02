@@ -3,7 +3,7 @@ import React, { useMemo } from 'react';
 import { View } from 'react-native';
 
 import { BaseOnboardingScreen } from '~/components/layouts/BaseOnboardingScreen';
-import { ExperienceCard } from '~/components/experiences/ExperienceCard';
+import { ProjectCard } from '~/components/projects/ProjectCard';
 import { useQuery } from 'convex/react';
 import { api } from '@packages/backend/convex/_generated/api';
 
@@ -43,19 +43,19 @@ export default function ExperiencesScreen() {
             : undefined
         }>
       <View className="flex-1 gap-4">
-        {slots.map((exp, index) => {
-          const isCompleted = !!exp;
-          const isDisabled = !exp && firstEmptyIndex !== -1 && index !== firstEmptyIndex;
+        {slots.map((proj, index) => {
+          const isCompleted = !!proj;
+          const isDisabled = !proj && firstEmptyIndex !== -1 && index !== firstEmptyIndex;
           const variant: 'completed' | 'default' | 'disabled' = isCompleted
             ? 'completed'
             : isDisabled
               ? 'disabled'
               : 'default';
           return (
-            <ExperienceCard
-              key={exp?._id ?? `slot-${index}`}
-              experience={exp || undefined}
-              experienceId={exp?._id}
+            <ProjectCard
+              key={proj?._id ?? `slot-${index}`}
+              project={proj || undefined}
+              projectId={proj?._id}
               placeholder={`Project ${index + 1}`}
               variant={variant}
               disabled={isDisabled}

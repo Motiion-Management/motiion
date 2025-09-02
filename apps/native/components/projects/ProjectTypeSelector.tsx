@@ -41,6 +41,3 @@ export function ProjectTypeSelector({ value, onChange, disabled }: ProjectTypeSe
     </View>
   );
 }
-
-// Backward compatibility export
-export { ProjectTypeSelector as ExperienceTypeSelector };

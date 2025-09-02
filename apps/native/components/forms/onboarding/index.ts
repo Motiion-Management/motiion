@@ -19,7 +19,6 @@ export { SkillsForm } from './SkillsForm'
 export {
   ResumeForm,
   ProjectsForm,
-  ProjectsForm as ExperiencesForm, // Backward compatibility
 } from './PlaceholderForms'
 
 // Types
