@@ -29,13 +29,10 @@ type ParsedResumeData = {
 type ProfileType = keyof typeof ONBOARDING_GROUP_FLOWS;
 
 export function DevOnboardingTools() {
-  if (!__DEV__) return null;
-
   const { user } = useUser();
   const onboarding = useOnboardingGroupFlow();
   const completeOnboarding = useMutation(api.onboarding.completeOnboarding);
   const resetOnboarding = useMutation(api.onboarding.resetOnboarding);
-  const updateMyUser = useMutation(api.users.updateMyUser);
   const sheetState = useSheetState();
   const router = useRouter();
   const [activeTab, setActiveTab] = useState<'onboarding' | 'home' | 'resume'>('onboarding');
@@ -83,9 +80,8 @@ export function DevOnboardingTools() {
           {activeTab === 'onboarding' && (
             <View className="mt-1">
               <View className="mb-2">
-                <Text variant="bodySm" className="text-text-secondary mb-1">
-                  Progress: {onboarding.overallProgress}% • Group:{' '}
-                  {onboarding.currentGroup || 'None'} • Step: {onboarding.currentStepId || 'None'}
+                <Text variant="bodySm" className="mb-1">
+                  Quick Actions
                 </Text>
               </View>
               <View className="mb-2 flex-row gap-2">
@@ -106,42 +102,6 @@ export function DevOnboardingTools() {
                   }}>
                   <Text variant="bodySm">Complete</Text>
                 </Button>
-              </View>
-
-              <Text className="mb-1" variant="bodySm">
-                Profile Type
-              </Text>
-              <View className="mb-2 flex-row gap-2">
-                {(['dancer', 'choreographer', 'guest'] as ProfileType[]).map((pt) => (
-                  <Button
-                    key={pt}
-                    size="sm"
-                    variant={activeProfileType === pt ? 'primary' : 'outline'}
-                    onPress={async () => {
-                      await updateMyUser({ profileType: pt });
-                      // Navigate to profile group which contains profile-type
-                      onboarding.navigateToGroup('profile');
-                    }}>
-                    <Text>{pt}</Text>
-                  </Button>
-                ))}
-              </View>
-
-              <Text className="mb-1" variant="bodySm">
-                Representation Status
-              </Text>
-              <View className="mb-2 flex-row gap-2">
-                {(['represented', 'seeking', 'independent'] as const).map((rs) => (
-                  <Button
-                    key={rs}
-                    size="sm"
-                    variant={user?.representationStatus === rs ? 'primary' : 'outline'}
-                    onPress={async () => {
-                      await updateMyUser({ representationStatus: rs });
-                    }}>
-                    <Text>{rs}</Text>
-                  </Button>
-                ))}
               </View>
 
               <Text className="mb-1" variant="bodySm">
@@ -183,17 +143,17 @@ export function DevOnboardingTools() {
 
           {activeTab === 'home' && (
             <View className="mt-1 gap-3">
-              <Button
-                onPress={() => router.push('/auth/(create-account)/enable-notifications' as Href)}>
-                <Text>Open Enable Notifications</Text>
-              </Button>
+              {/* <Button */}
+              {/*   onPress={() => router.push('/auth/(create-account)/enable-notifications' as Href)}> */}
+              {/*   <Text>Open Enable Notifications</Text> */}
+              {/* </Button> */}
               <Button onPress={() => router.push('/app/home' as Href)}>
                 <Text>Go to Home</Text>
               </Button>
 
-              <Button onPress={() => setActiveTab('resume')} variant="outline">
-                <Text>Open Resume Tester</Text>
-              </Button>
+              {/* <Button onPress={() => setActiveTab('resume')} variant="outline"> */}
+              {/*   <Text>Open Resume Tester</Text> */}
+              {/* </Button> */}
 
               <View className="gap-2">
                 <Input
@@ -218,9 +178,8 @@ export function DevOnboardingTools() {
                 parses via unified AI processor. No user data is modified.
               </Text>
 
-              <View className="flex-row gap-8">
+              <View className="flex gap-2">
                 <Button
-                  size="sm"
                   variant="outline"
                   disabled={isProcessing}
                   onPress={async () => {
@@ -262,7 +221,6 @@ export function DevOnboardingTools() {
                 </Button>
 
                 <Button
-                  size="sm"
                   variant="outline"
                   disabled={isProcessing}
                   onPress={async () => {
@@ -303,7 +261,6 @@ export function DevOnboardingTools() {
                 </Button>
 
                 <Button
-                  size="sm"
                   variant="outline"
                   disabled={isProcessing}
                   onPress={async () => {
