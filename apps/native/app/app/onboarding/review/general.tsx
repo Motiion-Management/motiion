@@ -89,10 +89,11 @@ export default function GeneralReviewScreen() {
       'work-location': 'work-location',
       representation: 'representation',
       agency: 'agency',
+      union: 'union',
     } as const;
 
     const formType = fieldToFormMap[fieldName as keyof typeof fieldToFormMap];
-    if (formType) router.push(`/app/onboarding/review/${formType}`);
+    if (formType) router.push(`/app/(modals)/onboarding/review/${formType}`);
   }, []);
 
   const handleContinue = useCallback(() => {
@@ -101,7 +102,7 @@ export default function GeneralReviewScreen() {
 
   // Preload modal module to reduce first-open latency
   useEffect(() => {
-    import('../../(modals)/onboarding/review/[step]').catch(() => {});
+    import('../../(modals)/onboarding/review/[step]').catch(() => { });
   }, []);
 
   return (
@@ -228,6 +229,11 @@ export default function GeneralReviewScreen() {
                 label="Agency"
                 value={agencyId ? agency?.name || 'Loading…' : 'Independent'}
                 onEdit={() => handleEditField('representation')}
+              />
+              <ProfileField
+                label="SAG-AFTRA"
+                value={user?.sagAftraId ? `Member ID: ${user.sagAftraId}` : 'Not a member'}
+                onEdit={() => handleEditField('union')}
               />
             </View>
           )}
