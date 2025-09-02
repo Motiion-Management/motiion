@@ -99,7 +99,10 @@ export const ExperienceEditForm = forwardRef<ExperienceEditFormHandle, Experienc
         pagerRef.current?.setPage?.(1);
         try {
           await Haptics.impactAsync(HAPTIC_MEDIUM);
-        } catch {}
+        } catch {
+          // ignore haptic errors on unsupported devices
+          void 0;
+        }
       }
     }, [uiState.activeTab]);
 
