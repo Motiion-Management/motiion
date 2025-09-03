@@ -132,12 +132,3 @@ export const getProjectDisplaySubtitle = (project: any): string => {
       return '';
   }
 };
-
-// Backward compatibility exports
-export const EXPERIENCE_TYPES = PROJECT_TYPE_OPTIONS;
-export const PROJECT_TYPES = [
-  { label: 'Television', value: 'television' },
-  { label: 'Film', value: 'film' },
-];
-export const getExperienceDisplayTitle = getProjectDisplayTitle;
-export const getExperienceDisplaySubtitle = getProjectDisplaySubtitle;

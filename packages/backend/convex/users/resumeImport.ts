@@ -258,9 +258,9 @@ export const applyParsedResumeData = authMutation({
 
     try {
       // Create experiences
-      const experienceIds: Id<'experiences'>[] = []
+      const experienceIds: Id<'projects'>[] = []
       for (const experience of args.experiences) {
-        const experienceId = await ctx.db.insert('experiences', {
+        const experienceId = await ctx.db.insert('projects', {
           userId: ctx.user._id,
           ...experience
         })

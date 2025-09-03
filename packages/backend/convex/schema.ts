@@ -7,7 +7,6 @@ import { FeaturedMembers } from './validators/featuredMembers'
 import { Rewards } from './validators/rewards'
 import { Agencies } from './validators/agencies'
 import { Agents } from './validators/agents'
-import { Experiences } from './validators/experiences'
 import { Projects } from './validators/projects'
 import { Training } from './validators/training'
 import { typedV } from 'convex-helpers/validators'
@@ -26,13 +25,11 @@ const schema = defineSchema({
   users: Users.table.index('tokenId', ['tokenId']).searchIndex('search_user', {
     searchField: 'searchPattern'
   }),
-  // unified experiences table (kept during migration)
-  experiences: Experiences.table.index('userId', ['userId']),
-
-  // NEW projects table (migration target)
+  
+  // projects table
   projects: Projects.table.index('userId', ['userId']),
 
-  // training (separate from experiences/projects)
+  // training
   training: Training.table.index('by_userId', ['userId']),
 
   // agency

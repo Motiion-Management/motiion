@@ -86,14 +86,3 @@ export type ProjectDoc = Doc<'projects'>
 
 // Frontend form-friendly type (optional system fields)
 export type ProjectFormDoc = z.infer<typeof zProjectsDoc>
-
-// Re-export with old names for backwards compatibility during migration
-export const EXPERIENCE_TYPES = PROJECT_TYPES
-export const EXPERIENCE_TITLE_MAP = PROJECT_TITLE_MAP
-export const experiences = projects
-export const zExperiences = zProjects
-export const zExperiencesDoc = zProjectsDoc
-export const zExperiencesBase = zProjectsBase
-export const Experiences = Projects
-export type ExperienceDoc = ProjectDoc
-export type ExperienceFormDoc = ProjectFormDoc

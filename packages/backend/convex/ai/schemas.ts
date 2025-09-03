@@ -1,9 +1,9 @@
 import { z } from 'zod'
-import { zExperiences } from '../validators/experiences'
+import { zProjects } from '../validators/projects'
 import { zTrainingInput } from '../validators/training'
 
 // Use centralized validators but omit fields that AI shouldn't handle
-export const experienceSchema = zExperiences.omit({
+export const experienceSchema = zProjects.omit({
   userId: true,
   private: true,
   duration: true,

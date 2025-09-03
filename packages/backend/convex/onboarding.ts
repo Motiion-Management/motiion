@@ -146,7 +146,7 @@ export const getOnboardingRedirect = query({
       return { shouldRedirect: false, redirectPath: '/app' }
     }
 
-    const step = (user.currentOnboardingStep as string) || 'profile-type'
+    const step = user.currentOnboardingStep || 'profile-type'
     const redirectPath = `/app/onboarding/${step}`
     return { shouldRedirect: true, redirectPath }
   }

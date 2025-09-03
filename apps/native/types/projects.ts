@@ -97,15 +97,3 @@ export interface ProjectFieldConfig {
   showForTypes?: ProjectType[];
   showForSubtypes?: LivePerformanceEventType[];
 }
-
-// Backward compatibility exports
-export type ExperienceType = ProjectType;
-export type BaseExperience = BaseProject;
-export type TvFilmExperience = TvFilmProject;
-export type MusicVideoExperience = MusicVideoProject;
-export type LivePerformanceExperience = LivePerformanceProject;
-export type CommercialExperience = CommercialProject;
-export type Experience = Project;
-export type ExperienceFormState = ProjectFormState;
-export type ExperienceTypeConfig = ProjectTypeConfig;
-export type ExperienceFieldConfig = ProjectFieldConfig;

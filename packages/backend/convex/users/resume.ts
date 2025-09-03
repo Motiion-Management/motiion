@@ -5,9 +5,9 @@ import { zodToConvex } from 'convex-helpers/server/zod'
 import { UserDoc, resume as resumeObj } from '../validators/users'
 import { zFileUploadObjectArray } from '../validators/base'
 import {
-  EXPERIENCE_TITLE_MAP,
-  EXPERIENCE_TYPES
-} from '../validators/experiences'
+  PROJECT_TITLE_MAP as EXPERIENCE_TITLE_MAP,
+  PROJECT_TYPES as EXPERIENCE_TYPES
+} from '../validators/projects'
 import { getAll } from 'convex-helpers/server/relationships'
 
 export async function augmentResume(
