@@ -263,3 +263,100 @@ export function getTotalSteps(
 ): number {
   return getOnboardingFlow(profileType, version).length
 }
+
+// Step validator type
+export type StepValidator = (user: any) => boolean
+
+// Validation matrix for each step
+export const STEP_VALIDATORS: Record<string, StepValidator> = {
+  'profile-type': (user) => !!user.profileType,
+  
+  'display-name': (user) => !!user.displayName,
+  
+  'height': (user) => !!(user.attributes?.height?.feet && user.attributes?.height?.inches),
+  
+  'ethnicity': (user) => !!(user.attributes?.ethnicity && user.attributes.ethnicity.length > 0),
+  
+  'hair-color': (user) => !!user.attributes?.hairColor,
+  
+  'eye-color': (user) => !!user.attributes?.eyeColor,
+  
+  'gender': (user) => !!user.attributes?.gender,
+  
+  'headshots': (user) => !!(user.headshots && user.headshots.length > 0),
+  
+  'sizing': (user) => {
+    const sizing = user.sizing
+    if (!sizing) return false
+    // Check if at least some sizing data exists
+    return !!(sizing.general || sizing.male || sizing.female)
+  },
+  
+  'location': (user) => !!user.location,
+  
+  'work-location': (user) => !!(user.workLocation && user.workLocation.length > 0),
+  
+  'representation': (user) => !!user.representationStatus,
+  
+  'agency': (user) => {
+    // Only required if representationStatus is 'represented'
+    if (user.representationStatus !== 'represented') return true
+    return !!user.representation?.agencyId
+  },
+  
+  'training': (user) => !!(user.training && user.training.length > 0),
+  
+  'experiences': (user) => !!(user.resume?.experiences && user.resume.experiences.length > 0),
+  
+  'skills': (user) => !!(user.resume?.skills && user.resume.skills.length > 0),
+  
+  'union': (user) => true, // Optional step, always considered complete
+  
+  'database-use': (user) => !!user.databaseUse,
+  
+  'company': (user) => !!user.companyName,
+  
+  'resume': (user) => true, // Optional step
+  
+  'review': (user) => true // Review step has no data requirements
+}
+
+// Helper to check if a step is complete
+export function isStepComplete(step: string, user: any): boolean {
+  const validator = STEP_VALIDATORS[step]
+  return validator ? validator(user) : false
+}
+
+// Helper to get completion status for entire flow
+export function getFlowCompletionStatus(
+  user: any, 
+  profileType: ProfileType,
+  version: string = CURRENT_ONBOARDING_VERSION
+): { 
+  completedSteps: string[], 
+  incompleteSteps: string[],
+  nextIncompleteStep: string | null,
+  completionPercentage: number
+} {
+  const flow = getOnboardingFlow(profileType, version)
+  const completedSteps: string[] = []
+  const incompleteSteps: string[] = []
+  
+  for (const step of flow) {
+    if (isStepComplete(step.step, user)) {
+      completedSteps.push(step.step)
+    } else {
+      incompleteSteps.push(step.step)
+    }
+  }
+  
+  const nextIncompleteStep = incompleteSteps[0] || null
+  const completionPercentage = Math.round((completedSteps.length / flow.length) * 100)
+  
+  return {
+    completedSteps,
+    incompleteSteps,
+    nextIncompleteStep,
+    completionPercentage
+  }
+}

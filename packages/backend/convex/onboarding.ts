@@ -6,7 +6,9 @@ import {
   getStepRoute,
   ProfileType,
   STEP,
-  STEP_ROUTES
+  STEP_ROUTES,
+  getFlowCompletionStatus,
+  isStepComplete
 } from './onboardingConfig'
 import type { RegisteredMutation, RegisteredQuery } from 'convex/server'
 
@@ -145,5 +147,115 @@ export const getOnboardingRedirect = query({
     const step = (user.currentOnboardingStep as STEP) || 'profile-type'
     const redirectPath = STEP_ROUTES[step]
     return { shouldRedirect: true, redirectPath }
+  }
+})
+
+// Determine and update onboarding status based on actual data
+export const updateOnboardingStatus = mutation({
+  args: {},
+  returns: v.object({
+    currentStep: v.string(),
+    completedSteps: v.array(v.string()),
+    incompleteSteps: v.array(v.string()),
+    completionPercentage: v.number(),
+    wasUpdated: v.boolean()
+  }),
+  handler: async (ctx) => {
+    const identity = await ctx.auth.getUserIdentity()
+    if (!identity) {
+      throw new ConvexError('Not authenticated')
+    }
+
+    const user = await ctx.db
+      .query('users')
+      .withIndex('tokenId', (q) => q.eq('tokenId', identity.subject))
+      .first()
+
+    if (!user) {
+      throw new ConvexError('User not found')
+    }
+
+    const profileType = (user.profileType || 'dancer') as ProfileType
+    const status = getFlowCompletionStatus(user, profileType)
+    
+    // Update user's current step if it's different
+    let wasUpdated = false
+    const newStep = status.nextIncompleteStep || 'review'
+    
+    if (user.currentOnboardingStep !== newStep) {
+      const flow = getOnboardingFlow(profileType)
+      const stepIndex = flow.findIndex(s => s.step === newStep)
+      
+      await ctx.db.patch(user._id, {
+        currentOnboardingStep: newStep,
+        currentOnboardingStepIndex: stepIndex
+      })
+      wasUpdated = true
+    }
+
+    return {
+      currentStep: newStep,
+      completedSteps: status.completedSteps,
+      incompleteSteps: status.incompleteSteps,
+      completionPercentage: status.completionPercentage,
+      wasUpdated
+    }
+  }
+})
+
+// Query to get onboarding status without updating
+export const getOnboardingStatus = query({
+  args: {},
+  returns: v.object({
+    currentStep: v.string(),
+    completedSteps: v.array(v.string()),
+    incompleteSteps: v.array(v.string()),
+    completionPercentage: v.number(),
+    isComplete: v.boolean()
+  }),
+  handler: async (ctx) => {
+    const identity = await ctx.auth.getUserIdentity()
+    if (!identity) {
+      throw new ConvexError('Not authenticated')
+    }
+
+    const user = await ctx.db
+      .query('users')
+      .withIndex('tokenId', (q) => q.eq('tokenId', identity.subject))
+      .first()
+
+    if (!user) {
+      throw new ConvexError('User not found')
+    }
+
+    const profileType = (user.profileType || 'dancer') as ProfileType
+    const status = getFlowCompletionStatus(user, profileType)
+    
+    return {
+      currentStep: status.nextIncompleteStep || 'review',
+      completedSteps: status.completedSteps,
+      incompleteSteps: status.incompleteSteps,
+      completionPercentage: status.completionPercentage,
+      isComplete: status.incompleteSteps.length === 0
+    }
+  }
+})
+
+// Check specific step completion
+export const checkStepCompletion = query({
+  args: { step: v.string() },
+  returns: v.boolean(),
+  handler: async (ctx, { step }) => {
+    const identity = await ctx.auth.getUserIdentity()
+    if (!identity) return false
+
+    const user = await ctx.db
+      .query('users')
+      .withIndex('tokenId', (q) => q.eq('tokenId', identity.subject))
+      .first()
+
+    if (!user) return false
+
+    return isStepComplete(step, user)
   }
 })
