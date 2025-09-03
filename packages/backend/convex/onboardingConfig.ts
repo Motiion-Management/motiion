@@ -225,6 +225,8 @@ export const STEP_ROUTES = {
   review: '/app/onboarding/review'
 } as const
 
+export type STEP = keyof typeof STEP_ROUTES
+
 export function getOnboardingFlow(
   profileType: ProfileType,
   version: string = CURRENT_ONBOARDING_VERSION

@@ -4,7 +4,9 @@ import {
   CURRENT_ONBOARDING_VERSION,
   getOnboardingFlow,
   getStepRoute,
-  ProfileType
+  ProfileType,
+  STEP,
+  STEP_ROUTES
 } from './onboardingConfig'
 import type { RegisteredMutation, RegisteredQuery } from 'convex/server'
 
@@ -113,12 +115,6 @@ export const setOnboardingStep = mutation({
   }
 })
 
-// Removed legacy validation — screen owns validation
-
-// Removed legacy getUserOnboardingFlow — client defines flow
-
-// Removed migration
-
 // Minimal redirect target for client guard: no heavy analysis, no flow logic
 export const getOnboardingRedirect = query({
   args: {},
@@ -146,8 +142,8 @@ export const getOnboardingRedirect = query({
       return { shouldRedirect: false, redirectPath: '/app' }
     }
 
-    const step = user.currentOnboardingStep || 'profile-type'
-    const redirectPath = `/app/onboarding/${step}`
+    const step = (user.currentOnboardingStep as STEP) || 'profile-type'
+    const redirectPath = STEP_ROUTES[step]
     return { shouldRedirect: true, redirectPath }
   }
 })
