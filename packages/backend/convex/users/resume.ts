@@ -26,10 +26,10 @@ export async function augmentResume(
   )
 
   const publicExperiences = await Promise.all(
-    (resume.experiences || []).map(async (experienceId) => {
-      const experience = await ctx.db.get(experienceId)
-      if (!experience || (filterPublic && experience.private)) return
-      return experience
+    (resume.projects || []).map(async (projectId) => {
+      const project = await ctx.db.get(projectId)
+      if (!project || (filterPublic && project.private)) return
+      return project
     })
   )
 
@@ -65,7 +65,7 @@ export const getMyResume = authQuery({
 export const getMyExperienceCounts = authQuery({
   args: {},
   handler: async (ctx) => {
-    const exp = ctx.user?.resume?.experiences
+    const exp = ctx.user?.resume?.projects
     const experiences = exp ? await getAll(ctx.db, exp) : []
 
     return EXPERIENCE_TYPES.map((type) => ({
@@ -81,7 +81,7 @@ export const getUserPublicExperienceCounts = query({
   handler: async (ctx, args) => {
     const user = await ctx.db.get(args.id)
 
-    const exp = user?.resume?.experiences
+    const exp = user?.resume?.projects
     const experiences = (exp ? await getAll(ctx.db, exp) : []).filter(
       (e) => !e?.private
     )
@@ -138,7 +138,7 @@ export const removeResumeUpload = authMutation({
 
 export const updateMyResume = authMutation({
   args: {
-    experiences: zodToConvex(resumeObj.experiences),
+    projects: zodToConvex(resumeObj.projects),
     skills: zodToConvex(resumeObj.skills),
     genres: zodToConvex(resumeObj.genres)
   },
@@ -148,7 +148,7 @@ export const updateMyResume = authMutation({
     ctx.db.patch(ctx.user._id, {
       resume: {
         ...ctx.user.resume,
-        experiences: args.experiences,
+        projects: args.projects,
         skills: args.skills,
         genres: args.genres
       }

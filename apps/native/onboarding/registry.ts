@@ -200,7 +200,7 @@ export const STEP_REGISTRY = {
     save: async (values: any, ctx) => {
       await ctx.updateMyResume({
         ...values,
-        experiences: ctx.data.user?.resume?.experiences,
+        projects: ctx.data.user?.resume?.projects,
       });
     },
   },

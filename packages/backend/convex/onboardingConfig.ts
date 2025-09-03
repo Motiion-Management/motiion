@@ -306,7 +306,7 @@ export const STEP_VALIDATORS: Record<string, StepValidator> = {
   
   'training': (user) => !!(user.training && user.training.length > 0),
   
-  'projects': (user) => !!(user.resume?.experiences && user.resume.experiences.length > 0),
+  'projects': (user) => !!(user.resume?.projects && user.resume.projects.length > 0),
   
   'skills': (user) => !!(user.resume?.skills && user.resume.skills.length > 0),
   
