@@ -7,7 +7,7 @@ import {
   ONBOARDING_GROUPS,
   ONBOARDING_GROUP_FLOWS,
 } from '~/hooks/useOnboardingGroupFlow';
-import { useMutation } from 'convex/react';
+import { useMutation, useQuery } from 'convex/react';
 import { api } from '@packages/backend/convex/_generated/api';
 import { useUser } from '~/hooks/useUser';
 import { Sheet, useSheetState } from '~/components/ui/sheet';
@@ -46,8 +46,20 @@ export function DevOnboardingTools() {
     () => ONBOARDING_GROUP_FLOWS[activeProfileType],
     [activeProfileType]
   );
+  
+  // Fetch step routes from backend config for data-driven UI
+  const stepRoutes = useQuery(api.onboarding.getStepRoutes);
+  
+  // Get onboarding flows from backend for current profile type
+  const onboardingFlows = useQuery(api.onboarding.getOnboardingFlow, 
+    user?.profileType ? { profileType: user.profileType as ProfileType } : 'skip'
+  );
+  
   const allSteps = useMemo(() => {
-    return activeGroups.flatMap((groupKey) => ONBOARDING_GROUPS[groupKey].steps);
+    // Get all unique steps from the groups, maintaining order
+    const steps = activeGroups.flatMap((groupKey) => ONBOARDING_GROUPS[groupKey].steps);
+    // Return unique steps while preserving order
+    return [...new Set(steps)];
   }, [activeGroups]);
   const handleGoToRoute = useCallback(() => {
     if (!routeInput) return;
@@ -105,7 +117,7 @@ export function DevOnboardingTools() {
               </View>
 
               <Text className="mb-1" variant="bodySm">
-                Groups ({activeProfileType})
+                Groups ({activeProfileType}) {onboardingFlows ? '(synced)' : '(local)'}
               </Text>
               <View className="mb-2 flex-row flex-wrap gap-2">
                 {activeGroups.map((groupKey) => (
@@ -120,22 +132,26 @@ export function DevOnboardingTools() {
               </View>
 
               <Text className="mb-1" variant="bodySm">
-                All Steps
+                All Steps {stepRoutes ? '(synced)' : '(loading)'}
               </Text>
               <View style={{ maxHeight: 180 }}>
                 <ScrollView
                   horizontal
                   showsHorizontalScrollIndicator={false}
                   contentContainerStyle={{ gap: 4, paddingVertical: 6 }}>
-                  {allSteps.map((step) => (
-                    <Button
-                      size="sm"
-                      variant={onboarding.currentStepId === step ? 'primary' : 'outline'}
-                      key={step}
-                      onPress={() => onboarding.navigateToStep(step)}>
-                      <Text variant="bodySm">{step}</Text>
-                    </Button>
-                  ))}
+                  {allSteps.map((step) => {
+                    // Show route from backend config if available for debugging
+                    const route = stepRoutes?.[step as keyof typeof stepRoutes];
+                    return (
+                      <Button
+                        size="sm"
+                        variant={onboarding.currentStepId === step ? 'primary' : 'outline'}
+                        key={step}
+                        onPress={() => onboarding.navigateToStep(step)}>
+                        <Text variant="bodySm">{step}</Text>
+                      </Button>
+                    );
+                  })}
                 </ScrollView>
               </View>
             </View>

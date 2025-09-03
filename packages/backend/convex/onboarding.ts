@@ -2,7 +2,7 @@ import { query, mutation } from './_generated/server'
 import { ConvexError, v } from 'convex/values'
 import {
   CURRENT_ONBOARDING_VERSION,
-  getOnboardingFlow,
+  getOnboardingFlow as getOnboardingFlowConfig,
   getStepRoute,
   ProfileType,
   STEP,
@@ -101,7 +101,7 @@ export const setOnboardingStep = mutation({
     }
 
     const profileType = (user.profileType || 'dancer') as ProfileType
-    const flow = getOnboardingFlow(profileType, CURRENT_ONBOARDING_VERSION)
+    const flow = getOnboardingFlowConfig(profileType, CURRENT_ONBOARDING_VERSION)
     const stepIndex = flow.findIndex((s) => s.step === step)
 
     if (stepIndex === -1) {
@@ -183,7 +183,7 @@ export const updateOnboardingStatus = mutation({
     const newStep = status.nextIncompleteStep || 'review'
     
     if (user.currentOnboardingStep !== newStep) {
-      const flow = getOnboardingFlow(profileType)
+      const flow = getOnboardingFlowConfig(profileType)
       const stepIndex = flow.findIndex(s => s.step === newStep)
       
       await ctx.db.patch(user._id, {
@@ -257,5 +257,23 @@ export const checkStepCompletion = query({
     if (!user) return false
 
     return isStepComplete(step, user)
+  }
+})
+
+// Expose step routes configuration to frontend for data-driven UI
+export const getStepRoutes = query({
+  args: {},
+  returns: v.any(),
+  handler: async () => {
+    return STEP_ROUTES
+  }
+})
+
+// Get onboarding flow for a specific profile type
+export const getOnboardingFlow = query({
+  args: { profileType: v.string() },
+  returns: v.any(),
+  handler: async (ctx, { profileType }) => {
+    return getOnboardingFlowConfig(profileType as ProfileType)
   }
 })

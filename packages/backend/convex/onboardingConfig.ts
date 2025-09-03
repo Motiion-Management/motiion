@@ -216,7 +216,7 @@ export const STEP_ROUTES = {
   representation: '/app/onboarding/work-details/representation',
   agency: '/app/onboarding/work-details/agency',
   resume: '/app/onboarding/work-details/resume',
-  projects: '/app/onboarding/projects',
+  projects: '/app/onboarding/experiences/projects',
   training: '/app/onboarding/work-details/training',
   skills: '/app/onboarding/work-details/skills',
   union: '/app/onboarding/work-details/union',

@@ -97,7 +97,7 @@ export default function GeneralReviewScreen() {
   }, []);
 
   const handleContinue = useCallback(() => {
-    router.push('/app/onboarding/review/projects');
+    router.push('/app/onboarding/review/experiences');
   }, []);
 
   // Preload modal module to reduce first-open latency

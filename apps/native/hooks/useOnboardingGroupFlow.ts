@@ -37,13 +37,13 @@ export const ONBOARDING_GROUPS = {
   experiences: {
     key: 'experiences',
     label: 'Experience',
-    steps: ['experiences'],
+    steps: ['projects'],
     basePath: '/app/onboarding/experiences',
   },
   review: {
     key: 'review',
     label: 'Review',
-    steps: ['review', 'experiences-review'],
+    steps: ['review', 'projects-review'],
     basePath: '/app/onboarding/review',
   },
 } as const;
@@ -122,12 +122,13 @@ export function useOnboardingGroupFlow(): UseOnboardingGroupFlowReturn {
               : groupSegment === 'work-details'
                 ? 'headshots'
                 : groupSegment === 'experiences'
-                  ? 'experiences'
+                  ? 'projects'
                   : 'review',
         type: 'profile-type',
         resume: 'resume',
         general: 'review',
-        experiences: 'experiences-review',
+        experiences: 'projects-review',
+        projects: 'projects',
       };
 
       return {
@@ -290,7 +291,9 @@ export function useOnboardingGroupFlow(): UseOnboardingGroupFlowReturn {
           path += `/${firstStep}`;
         } else if (groupKey === 'review' && (firstStep as any) === 'review') {
           path += '/general';
-        } else if (groupKey === 'review' && (firstStep as any) === 'experiences-review') {
+        } else if (groupKey === 'experiences' && (firstStep as any) === 'projects') {
+          path += '/projects';
+        } else if (groupKey === 'review' && (firstStep as any) === 'projects-review') {
           path += '/experiences';
         }
 
@@ -326,7 +329,9 @@ export function useOnboardingGroupFlow(): UseOnboardingGroupFlowReturn {
             path += `/${stepId}`;
           } else if (groupKey === 'review' && (stepId as any) === 'review') {
             path += '/general';
-          } else if (groupKey === 'review' && (stepId as any) === 'experiences-review') {
+          } else if (groupKey === 'experiences' && (stepId as any) === 'projects') {
+            path += '/projects';
+          } else if (groupKey === 'review' && (stepId as any) === 'projects-review') {
             path += '/experiences';
           }
 
