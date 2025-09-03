@@ -101,10 +101,10 @@ export const ONBOARDING_FLOWS: OnboardingFlows = {
         description: 'Training and education'
       },
       {
-        step: 'experiences',
-        required: ['experiences'],
+        step: 'projects',
+        required: ['projects'],
         minItems: 1,
-        description: 'Professional experience'
+        description: 'Professional projects'
       },
       {
         step: 'skills',
@@ -165,10 +165,10 @@ export const ONBOARDING_FLOWS: OnboardingFlows = {
         description: 'Training and education'
       },
       {
-        step: 'experiences',
-        required: ['experiences'],
+        step: 'projects',
+        required: ['projects'],
         minItems: 1,
-        description: 'Professional experience'
+        description: 'Professional projects'
       },
       {
         step: 'review',
@@ -216,7 +216,7 @@ export const STEP_ROUTES = {
   representation: '/app/onboarding/work-details/representation',
   agency: '/app/onboarding/work-details/agency',
   resume: '/app/onboarding/work-details/resume',
-  experiences: '/app/onboarding/experiences',
+  projects: '/app/onboarding/projects',
   training: '/app/onboarding/work-details/training',
   skills: '/app/onboarding/work-details/skills',
   union: '/app/onboarding/work-details/union',
@@ -306,7 +306,7 @@ export const STEP_VALIDATORS: Record<string, StepValidator> = {
   
   'training': (user) => !!(user.training && user.training.length > 0),
   
-  'experiences': (user) => !!(user.resume?.experiences && user.resume.experiences.length > 0),
+  'projects': (user) => !!(user.resume?.experiences && user.resume.experiences.length > 0),
   
   'skills': (user) => !!(user.resume?.skills && user.resume.skills.length > 0),
   
