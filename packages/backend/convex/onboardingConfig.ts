@@ -21,6 +21,51 @@ export interface OnboardingFlows {
 
 export const CURRENT_ONBOARDING_VERSION = 'v2'
 
+// Group definitions for organizing steps
+export const ONBOARDING_GROUPS = {
+  profile: {
+    key: 'profile' as const,
+    label: 'Profile',
+    steps: ['profile-type', 'resume'] as readonly string[],
+    basePath: '/app/onboarding/profile',
+  },
+  attributes: {
+    key: 'attributes' as const,
+    label: 'Attributes',
+    steps: ['display-name', 'height', 'ethnicity', 'hair-color', 'eye-color', 'gender'] as readonly string[],
+    basePath: '/app/onboarding/attributes',
+  },
+  'work-details': {
+    key: 'work-details' as const,
+    label: 'Work',
+    steps: ['headshots', 'sizing', 'location', 'work-location', 'representation', 'agency', 'training', 'skills', 'union'] as readonly string[],
+    basePath: '/app/onboarding/work-details',
+  },
+  experiences: {
+    key: 'experiences' as const,
+    label: 'Experience',
+    steps: ['projects'] as readonly string[],
+    basePath: '/app/onboarding/experiences',
+  },
+  review: {
+    key: 'review' as const,
+    label: 'Review',
+    steps: ['review', 'projects-review'] as readonly string[],
+    basePath: '/app/onboarding/review',
+  }
+} as const
+
+// Export types derived from the constants
+export type OnboardingGroupKey = keyof typeof ONBOARDING_GROUPS
+export type OnboardingGroupConfig = typeof ONBOARDING_GROUPS[OnboardingGroupKey]
+
+// Define which groups are shown for each profile type
+export const ONBOARDING_GROUP_FLOWS = {
+  dancer: ['profile', 'attributes', 'work-details', 'experiences', 'review'] as readonly OnboardingGroupKey[],
+  choreographer: ['profile', 'attributes', 'work-details', 'experiences', 'review'] as readonly OnboardingGroupKey[],
+  guest: ['profile', 'review'] as readonly OnboardingGroupKey[]
+} as const
+
 export const ONBOARDING_FLOWS: OnboardingFlows = {
   v2: {
     dancer: [
