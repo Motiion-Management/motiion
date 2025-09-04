@@ -1,5 +1,5 @@
-import { useRouter, useSegments, Href } from 'expo-router';
-import { useCallback, useMemo } from 'react';
+import { useRouter, useSegments, useGlobalSearchParams, Href } from 'expo-router';
+import { useCallback, useMemo, useState } from 'react';
 import { api } from '@packages/backend/convex/_generated/api';
 import { useMutation } from 'convex/react';
 import { useUser } from './useUser';
@@ -47,6 +47,10 @@ interface UseOnboardingGroupFlowReturn {
   navigateToGroup: (group: GroupKey) => void;
   navigateToStep: (stepId: string) => void;
 
+  // Conditional navigation state
+  representationStatus: string | undefined;
+  setRepresentationStatus: (status: string) => void;
+
   // Progress calculation
   getGroupProgress: (groupKey: GroupKey) => number;
   isGroupCompleted: (groupKey: GroupKey) => boolean;
@@ -58,16 +62,41 @@ interface UseOnboardingGroupFlowReturn {
 export function useOnboardingGroupFlow(): UseOnboardingGroupFlowReturn {
   const router = useRouter();
   const segments = useSegments();
+  const searchParams = useGlobalSearchParams<{ group?: string; step?: string }>();
   const { user } = useUser();
   const setStep = useMutation(api.onboarding.setOnboardingStep);
+  
+  // Simple React state for conditional navigation
+  const [representationStatus, setRepresentationStatus] = useState<string>();
+  
+  // Simple skip logic
+  const shouldSkipStep = useCallback((stepId: string): boolean => {
+    if (stepId === 'agency' && representationStatus !== 'represented') {
+      return true;
+    }
+    return false;
+  }, [representationStatus]);
 
   // Extract current path info
   const { currentGroup, currentStepId } = useMemo(() => {
     if (segments.length >= 3 && segments[1] === 'onboarding') {
-      const groupSegment = segments[2] as GroupKey;
-      const stepSegment = segments[3] || 'index';
+      // Handle dynamic routes - when segments contain brackets, use search params
+      const groupSegment = segments[2] === '[group]' 
+        ? (searchParams.group as GroupKey)
+        : (segments[2] as GroupKey);
+      const stepSegment = segments[3] === '[step]'
+        ? (searchParams.step || 'index')
+        : (segments[3] || 'index');
 
-      // Map URL segments to step IDs
+      // For attributes group using dynamic routes, the step segment IS the step ID
+      if (groupSegment === 'attributes' && stepSegment !== 'index') {
+        return {
+          currentGroup: groupSegment,
+          currentStepId: stepSegment, // This is already the step ID like 'display-name'
+        };
+      }
+
+      // Map URL segments to step IDs for explicit routes
       const stepMap: Record<string, string> = {
         index:
           groupSegment === 'profile'
@@ -92,7 +121,7 @@ export function useOnboardingGroupFlow(): UseOnboardingGroupFlowReturn {
       };
     }
     return { currentGroup: null, currentStepId: null };
-  }, [segments]);
+  }, [segments, searchParams.group, searchParams.step]);
 
   // Determine active flow based on profile type
   const activeFlow = useMemo(() => {
@@ -172,17 +201,22 @@ export function useOnboardingGroupFlow(): UseOnboardingGroupFlowReturn {
       console.warn(`Cannot navigate: invalid group ${currentGroup}`);
       return;
     }
-    const nextStepIndex = currentStepInGroup + 1;
-
-    if (nextStepIndex < groupConfig.steps.length) {
-      // Stay in current group
+    
+    // Find next non-skipped step
+    let nextStepIndex = currentStepInGroup + 1;
+    while (nextStepIndex < groupConfig.steps.length) {
       const nextStepId = groupConfig.steps[nextStepIndex];
-      navigateToStep(nextStepId);
-    } else {
-      // Move to next group
-      navigateToNextGroup();
+      if (!shouldSkipStep(nextStepId)) {
+        // Navigate immediately without waiting for DB
+        navigateToStep(nextStepId);
+        return;
+      }
+      nextStepIndex++;
     }
-  }, [currentGroup, currentStepInGroup]);
+    
+    // No more steps in this group, move to next group
+    navigateToNextGroup();
+  }, [currentGroup, currentStepInGroup, shouldSkipStep]);
 
   const navigateToPreviousStep = useCallback(() => {
     if (!currentGroup) return;
@@ -192,17 +226,21 @@ export function useOnboardingGroupFlow(): UseOnboardingGroupFlowReturn {
       console.warn(`Cannot navigate: invalid group ${currentGroup}`);
       return;
     }
-    const prevStepIndex = currentStepInGroup - 1;
-
-    if (prevStepIndex >= 0) {
-      // Stay in current group
+    
+    // Find previous non-skipped step
+    let prevStepIndex = currentStepInGroup - 1;
+    while (prevStepIndex >= 0) {
       const prevStepId = groupConfig.steps[prevStepIndex];
-      navigateToStep(prevStepId);
-    } else {
-      // Move to previous group
-      navigateToPreviousGroup();
+      if (!shouldSkipStep(prevStepId)) {
+        navigateToStep(prevStepId);
+        return;
+      }
+      prevStepIndex--;
     }
-  }, [currentGroup, currentStepInGroup]);
+    
+    // No more steps in this group, move to previous group
+    navigateToPreviousGroup();
+  }, [currentGroup, currentStepInGroup, shouldSkipStep]);
 
   const navigateToNextGroup = useCallback(() => {
     const nextGroupIndex = currentGroupIndex + 1;
@@ -234,15 +272,15 @@ export function useOnboardingGroupFlow(): UseOnboardingGroupFlowReturn {
         let path = groupConfig.basePath;
 
         // Handle routing for the first step of each group
-        if (groupKey === 'profile' && (firstStep as any) === 'profile-type') {
+        if (groupKey === 'attributes') {
+          // Use dynamic routing for attributes group
+          path = `/app/onboarding/attributes/${firstStep}` as any;
+        } else if (groupKey === 'profile' && (firstStep as any) === 'profile-type') {
           path += '/type';
         } else if (groupKey === 'profile' && (firstStep as any) === 'resume') {
           path += '/resume';
-        } else if (groupKey === 'attributes') {
-          // Attributes group uses individual routes for each step
-          path += `/${firstStep}`;
         } else if (groupKey === 'work-details') {
-          // Work-details group uses individual routes for each step
+          // Work-details still uses explicit routes for now
           path += `/${firstStep}`;
         } else if (groupKey === 'review' && (firstStep as any) === 'review') {
           path += '/general';
@@ -254,7 +292,7 @@ export function useOnboardingGroupFlow(): UseOnboardingGroupFlowReturn {
 
         router.push(path as Href);
 
-        // Persist step for server-side redirect support
+        // Persist step for server-side redirect support (fire-and-forget)
         setStep({ step: firstStep }).catch(() => {});
       } else {
         // Fallback to base path if no steps defined
@@ -272,15 +310,15 @@ export function useOnboardingGroupFlow(): UseOnboardingGroupFlowReturn {
           let path = groupConfig.basePath;
 
           // Handle special routing cases
-          if (groupKey === 'profile' && (stepId as any) === 'profile-type') {
+          if (groupKey === 'attributes') {
+            // Use dynamic routing for attributes group
+            path = `/app/onboarding/attributes/${stepId}` as any;
+          } else if (groupKey === 'profile' && (stepId as any) === 'profile-type') {
             path += '/type';
           } else if (groupKey === 'profile' && (stepId as any) === 'resume') {
             path += '/resume';
-          } else if (groupKey === 'attributes') {
-            // Attributes group uses individual routes for each step
-            path += `/${stepId}`;
           } else if (groupKey === 'work-details') {
-            // Work-details group uses individual routes for each step
+            // Work-details still uses explicit routes for now
             path += `/${stepId}`;
           } else if (groupKey === 'review' && (stepId as any) === 'review') {
             path += '/general';
@@ -333,6 +371,10 @@ export function useOnboardingGroupFlow(): UseOnboardingGroupFlowReturn {
     navigateToPreviousGroup,
     navigateToGroup,
     navigateToStep,
+
+    // Conditional navigation state
+    representationStatus,
+    setRepresentationStatus,
 
     // Progress calculation
     getGroupProgress,
