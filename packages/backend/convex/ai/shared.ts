@@ -1,6 +1,6 @@
 import { ConvexError } from 'convex/values'
 import { resumeSchema, resumeAISchema, type ParsedResumeData } from './schemas'
-import { EXPERIENCE_TYPES } from '../validators/experiences'
+import { PROJECT_TYPES as EXPERIENCE_TYPES } from '../validators/projects'
 import { TRAINING_TYPES } from '../validators/training'
 import { trySalvageFromAIText } from './utils'
 

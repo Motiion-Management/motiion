@@ -27,7 +27,7 @@ export default function SkillsScreen() {
   const handleSubmit = async (values: SkillsValues) => {
     await updateMyResume({
       ...values,
-      experiences: data.user?.resume?.experiences,
+      projects: data.user?.resume?.projects,
     });
     flow.navigateToNextStep();
   };

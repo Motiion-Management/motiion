@@ -106,7 +106,7 @@ export default function ExperiencesReviewScreen() {
                   {experiences.length > 5 && (
                     <Pressable onPress={handleEditExperiences} className="py-4">
                       <Text className="text-accent-primary text-center">
-                        +{experiences.length - 5} more experiences
+                        +{experiences.length - 5} more projects
                       </Text>
                     </Pressable>
                   )}

@@ -10,9 +10,9 @@ import {
   type ParsedResumeData
 } from './schemas'
 import {
-  EXPERIENCE_TYPES,
+  PROJECT_TYPES as EXPERIENCE_TYPES,
   LIVE_EVENT_SUBTYPES
-} from '../validators/experiences'
+} from '../validators/projects'
 import { TRAINING_TYPES } from '../validators/training'
 import {
   processAIResponse,

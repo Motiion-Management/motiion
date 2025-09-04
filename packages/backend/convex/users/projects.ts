@@ -9,11 +9,11 @@ export const addMyProject = authMutation({
   handler: async (ctx, project) => {
     const payload = { ...(project || {}), userId: ctx.user._id } as any
     const projId = await ctx.db.insert('projects', payload)
-    // Keep legacy resume.experiences list in sync (during migration)
+    // Keep resume.projects list in sync
     await ctx.db.patch(ctx.user._id, {
       resume: {
         ...ctx.user.resume,
-        experiences: [...(ctx.user?.resume?.experiences || []), projId]
+        projects: [...(ctx.user?.resume?.projects || []), projId]
       }
     })
     return projId
@@ -30,11 +30,11 @@ export const removeMyProject = authMutation({
       // Not found or not owned by user; do nothing
       return null
     }
-    // Detach from legacy resume list
+    // Detach from resume list
     await ctx.db.patch(ctx.user._id, {
       resume: {
         ...ctx.user.resume,
-        experiences: (ctx.user.resume?.experiences || []).filter(
+        projects: (ctx.user.resume?.projects || []).filter(
           (id) => id !== args.projectId
         )
       }

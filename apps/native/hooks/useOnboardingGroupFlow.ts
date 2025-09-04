@@ -3,62 +3,17 @@ import { useCallback, useMemo } from 'react';
 import { api } from '@packages/backend/convex/_generated/api';
 import { useMutation } from 'convex/react';
 import { useUser } from './useUser';
+import { 
+  ONBOARDING_GROUPS, 
+  ONBOARDING_GROUP_FLOWS,
+  type OnboardingGroupKey as GroupKey,
+  type OnboardingGroupConfig as GroupConfig,
+  type ProfileType
+} from '@packages/backend/convex/onboardingConfig';
 
-// Define the group-based flow structure
-export const ONBOARDING_GROUPS = {
-  profile: {
-    key: 'profile',
-    label: 'Profile',
-    steps: ['profile-type', 'resume'],
-    basePath: '/app/onboarding/profile',
-  },
-  attributes: {
-    key: 'attributes',
-    label: 'Attributes',
-    steps: ['display-name', 'height', 'ethnicity', 'hair-color', 'eye-color', 'gender'],
-    basePath: '/app/onboarding/attributes',
-  },
-  'work-details': {
-    key: 'work-details',
-    label: 'Work',
-    steps: [
-      'headshots',
-      'sizing',
-      'location',
-      'work-location',
-      'representation',
-      'agency',
-      'training',
-      'skills',
-      'union',
-    ],
-    basePath: '/app/onboarding/work-details',
-  },
-  experiences: {
-    key: 'experiences',
-    label: 'Experience',
-    steps: ['experiences'],
-    basePath: '/app/onboarding/experiences',
-  },
-  review: {
-    key: 'review',
-    label: 'Review',
-    steps: ['review', 'experiences-review'],
-    basePath: '/app/onboarding/review',
-  },
-} as const;
-
-export type GroupKey = keyof typeof ONBOARDING_GROUPS;
-export type GroupConfig = (typeof ONBOARDING_GROUPS)[GroupKey];
-
-// Define flows based on profile type
-export const ONBOARDING_GROUP_FLOWS = {
-  dancer: ['profile', 'attributes', 'work-details', 'experiences', 'review'] as GroupKey[],
-  choreographer: ['profile', 'attributes', 'work-details', 'experiences', 'review'] as GroupKey[], // Simplified for choreographers
-  guest: ['profile', 'review'] as GroupKey[], // Minimal flow for guests
-} as const;
-
-type ProfileType = keyof typeof ONBOARDING_GROUP_FLOWS;
+// Re-export for backwards compatibility
+export { ONBOARDING_GROUPS, ONBOARDING_GROUP_FLOWS };
+export type { GroupKey, GroupConfig };
 
 interface UseOnboardingGroupFlowReturn {
   // Current state
@@ -122,12 +77,13 @@ export function useOnboardingGroupFlow(): UseOnboardingGroupFlowReturn {
               : groupSegment === 'work-details'
                 ? 'headshots'
                 : groupSegment === 'experiences'
-                  ? 'experiences'
+                  ? 'projects'
                   : 'review',
         type: 'profile-type',
         resume: 'resume',
         general: 'review',
-        experiences: 'experiences-review',
+        experiences: 'projects-review',
+        projects: 'projects',
       };
 
       return {
@@ -290,7 +246,9 @@ export function useOnboardingGroupFlow(): UseOnboardingGroupFlowReturn {
           path += `/${firstStep}`;
         } else if (groupKey === 'review' && (firstStep as any) === 'review') {
           path += '/general';
-        } else if (groupKey === 'review' && (firstStep as any) === 'experiences-review') {
+        } else if (groupKey === 'experiences' && (firstStep as any) === 'projects') {
+          path += '/projects';
+        } else if (groupKey === 'review' && (firstStep as any) === 'projects-review') {
           path += '/experiences';
         }
 
@@ -326,7 +284,9 @@ export function useOnboardingGroupFlow(): UseOnboardingGroupFlowReturn {
             path += `/${stepId}`;
           } else if (groupKey === 'review' && (stepId as any) === 'review') {
             path += '/general';
-          } else if (groupKey === 'review' && (stepId as any) === 'experiences-review') {
+          } else if (groupKey === 'experiences' && (stepId as any) === 'projects') {
+            path += '/projects';
+          } else if (groupKey === 'review' && (stepId as any) === 'projects-review') {
             path += '/experiences';
           }
 

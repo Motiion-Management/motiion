@@ -258,9 +258,9 @@ export const applyParsedResumeData = authMutation({
 
     try {
       // Create experiences
-      const experienceIds: Id<'experiences'>[] = []
+      const experienceIds: Id<'projects'>[] = []
       for (const experience of args.experiences) {
-        const experienceId = await ctx.db.insert('experiences', {
+        const experienceId = await ctx.db.insert('projects', {
           userId: ctx.user._id,
           ...experience
         })
@@ -282,12 +282,12 @@ export const applyParsedResumeData = authMutation({
       // Update user profile
       const updates: any = {}
 
-      // Update resume with experience references
+      // Update resume with project references
       if (experienceIds.length > 0) {
         updates.resume = {
           ...ctx.user.resume,
-          experiences: [
-            ...(ctx.user.resume?.experiences || []),
+          projects: [
+            ...(ctx.user.resume?.projects || []),
             ...experienceIds
           ],
           skills:

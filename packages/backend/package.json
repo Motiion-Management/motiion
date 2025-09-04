@@ -13,7 +13,6 @@
   "dependencies": {
     "@ai-sdk/openai": "^1.0.10",
     "@clerk/backend": "^2.5.0",
-    "@convex-dev/migrations": "^0.2.9",
     "ai": "^4.0.37",
     "convex": "^1.25.4",
     "convex-helpers": "0.1.99",

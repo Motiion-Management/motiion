@@ -21,6 +21,51 @@ export interface OnboardingFlows {
 
 export const CURRENT_ONBOARDING_VERSION = 'v2'
 
+// Group definitions for organizing steps
+export const ONBOARDING_GROUPS = {
+  profile: {
+    key: 'profile' as const,
+    label: 'Profile',
+    steps: ['profile-type', 'resume'] as readonly string[],
+    basePath: '/app/onboarding/profile',
+  },
+  attributes: {
+    key: 'attributes' as const,
+    label: 'Attributes',
+    steps: ['display-name', 'height', 'ethnicity', 'hair-color', 'eye-color', 'gender'] as readonly string[],
+    basePath: '/app/onboarding/attributes',
+  },
+  'work-details': {
+    key: 'work-details' as const,
+    label: 'Work',
+    steps: ['headshots', 'sizing', 'location', 'work-location', 'representation', 'agency', 'training', 'skills', 'union'] as readonly string[],
+    basePath: '/app/onboarding/work-details',
+  },
+  experiences: {
+    key: 'experiences' as const,
+    label: 'Experience',
+    steps: ['projects'] as readonly string[],
+    basePath: '/app/onboarding/experiences',
+  },
+  review: {
+    key: 'review' as const,
+    label: 'Review',
+    steps: ['review', 'projects-review'] as readonly string[],
+    basePath: '/app/onboarding/review',
+  }
+} as const
+
+// Export types derived from the constants
+export type OnboardingGroupKey = keyof typeof ONBOARDING_GROUPS
+export type OnboardingGroupConfig = typeof ONBOARDING_GROUPS[OnboardingGroupKey]
+
+// Define which groups are shown for each profile type
+export const ONBOARDING_GROUP_FLOWS = {
+  dancer: ['profile', 'attributes', 'work-details', 'experiences', 'review'] as readonly OnboardingGroupKey[],
+  choreographer: ['profile', 'attributes', 'work-details', 'experiences', 'review'] as readonly OnboardingGroupKey[],
+  guest: ['profile', 'review'] as readonly OnboardingGroupKey[]
+} as const
+
 export const ONBOARDING_FLOWS: OnboardingFlows = {
   v2: {
     dancer: [
@@ -101,10 +146,10 @@ export const ONBOARDING_FLOWS: OnboardingFlows = {
         description: 'Training and education'
       },
       {
-        step: 'experiences',
-        required: ['experiences'],
+        step: 'projects',
+        required: ['projects'],
         minItems: 1,
-        description: 'Professional experience'
+        description: 'Professional projects'
       },
       {
         step: 'skills',
@@ -165,10 +210,10 @@ export const ONBOARDING_FLOWS: OnboardingFlows = {
         description: 'Training and education'
       },
       {
-        step: 'experiences',
-        required: ['experiences'],
+        step: 'projects',
+        required: ['projects'],
         minItems: 1,
-        description: 'Professional experience'
+        description: 'Professional projects'
       },
       {
         step: 'review',
@@ -216,7 +261,7 @@ export const STEP_ROUTES = {
   representation: '/app/onboarding/work-details/representation',
   agency: '/app/onboarding/work-details/agency',
   resume: '/app/onboarding/work-details/resume',
-  experiences: '/app/onboarding/experiences',
+  projects: '/app/onboarding/experiences/projects',
   training: '/app/onboarding/work-details/training',
   skills: '/app/onboarding/work-details/skills',
   union: '/app/onboarding/work-details/union',
@@ -224,6 +269,8 @@ export const STEP_ROUTES = {
   company: '/app/onboarding/guest/company',
   review: '/app/onboarding/review'
 } as const
+
+export type STEP = keyof typeof STEP_ROUTES
 
 export function getOnboardingFlow(
   profileType: ProfileType,
@@ -260,4 +307,101 @@ export function getTotalSteps(
   version: string = CURRENT_ONBOARDING_VERSION
 ): number {
   return getOnboardingFlow(profileType, version).length
+}
+
+// Step validator type
+export type StepValidator = (user: any) => boolean
+
+// Validation matrix for each step
+export const STEP_VALIDATORS: Record<string, StepValidator> = {
+  'profile-type': (user) => !!user.profileType,
+  
+  'display-name': (user) => !!user.displayName,
+  
+  'height': (user) => !!(user.attributes?.height?.feet && user.attributes?.height?.inches),
+  
+  'ethnicity': (user) => !!(user.attributes?.ethnicity && user.attributes.ethnicity.length > 0),
+  
+  'hair-color': (user) => !!user.attributes?.hairColor,
+  
+  'eye-color': (user) => !!user.attributes?.eyeColor,
+  
+  'gender': (user) => !!user.attributes?.gender,
+  
+  'headshots': (user) => !!(user.headshots && user.headshots.length > 0),
+  
+  'sizing': (user) => {
+    const sizing = user.sizing
+    if (!sizing) return false
+    // Check if at least some sizing data exists
+    return !!(sizing.general || sizing.male || sizing.female)
+  },
+  
+  'location': (user) => !!user.location,
+  
+  'work-location': (user) => !!(user.workLocation && user.workLocation.length > 0),
+  
+  'representation': (user) => !!user.representationStatus,
+  
+  'agency': (user) => {
+    // Only required if representationStatus is 'represented'
+    if (user.representationStatus !== 'represented') return true
+    return !!user.representation?.agencyId
+  },
+  
+  'training': (user) => !!(user.training && user.training.length > 0),
+  
+  'projects': (user) => !!(user.resume?.projects && user.resume.projects.length > 0),
+  
+  'skills': (user) => !!(user.resume?.skills && user.resume.skills.length > 0),
+  
+  'union': (user) => true, // Optional step, always considered complete
+  
+  'database-use': (user) => !!user.databaseUse,
+  
+  'company': (user) => !!user.companyName,
+  
+  'resume': (user) => true, // Optional step
+  
+  'review': (user) => true // Review step has no data requirements
+}
+
+// Helper to check if a step is complete
+export function isStepComplete(step: string, user: any): boolean {
+  const validator = STEP_VALIDATORS[step]
+  return validator ? validator(user) : false
+}
+
+// Helper to get completion status for entire flow
+export function getFlowCompletionStatus(
+  user: any, 
+  profileType: ProfileType,
+  version: string = CURRENT_ONBOARDING_VERSION
+): { 
+  completedSteps: string[], 
+  incompleteSteps: string[],
+  nextIncompleteStep: string | null,
+  completionPercentage: number
+} {
+  const flow = getOnboardingFlow(profileType, version)
+  const completedSteps: string[] = []
+  const incompleteSteps: string[] = []
+  
+  for (const step of flow) {
+    if (isStepComplete(step.step, user)) {
+      completedSteps.push(step.step)
+    } else {
+      incompleteSteps.push(step.step)
+    }
+  }
+  
+  const nextIncompleteStep = incompleteSteps[0] || null
+  const completionPercentage = Math.round((completedSteps.length / flow.length) * 100)
+  
+  return {
+    completedSteps,
+    incompleteSteps,
+    nextIncompleteStep,
+    completionPercentage
+  }
 }
