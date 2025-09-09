@@ -3,12 +3,12 @@ import { useCallback, useMemo, useState } from 'react';
 import { api } from '@packages/backend/convex/_generated/api';
 import { useMutation } from 'convex/react';
 import { useUser } from './useUser';
-import { 
-  ONBOARDING_GROUPS, 
+import {
+  ONBOARDING_GROUPS,
   ONBOARDING_GROUP_FLOWS,
   type OnboardingGroupKey as GroupKey,
   type OnboardingGroupConfig as GroupConfig,
-  type ProfileType
+  type ProfileType,
 } from '@packages/backend/convex/onboardingConfig';
 
 // Re-export for backwards compatibility
@@ -65,31 +65,55 @@ export function useOnboardingGroupFlow(): UseOnboardingGroupFlowReturn {
   const searchParams = useGlobalSearchParams<{ group?: string; step?: string }>();
   const { user } = useUser();
   const setStep = useMutation(api.onboarding.setOnboardingStep);
-  
+
   // Simple React state for conditional navigation
   const [representationStatus, setRepresentationStatus] = useState<string>();
-  
+
   // Simple skip logic
-  const shouldSkipStep = useCallback((stepId: string): boolean => {
-    if (stepId === 'agency' && representationStatus !== 'represented') {
-      return true;
-    }
-    return false;
-  }, [representationStatus]);
+  const shouldSkipStep = useCallback(
+    (stepId: string): boolean => {
+      const profileType = user?.profileType as ProfileType | undefined;
+
+      // Skip agency if not represented
+      if (stepId === 'agency' && representationStatus !== 'represented') {
+        return true;
+      }
+
+      // Skip guest-specific steps for non-guest users
+      if ((stepId === 'database-use' || stepId === 'company') && profileType !== 'guest') {
+        return true;
+      }
+
+      // Skip non-guest steps for guest users
+      if (profileType === 'guest') {
+        const guestSteps = ['profile-type', 'database-use', 'company', 'review'];
+        if (!guestSteps.includes(stepId)) {
+          return true;
+        }
+      }
+
+      return false;
+    },
+    [representationStatus, user?.profileType]
+  );
 
   // Extract current path info
   const { currentGroup, currentStepId } = useMemo(() => {
     if (segments.length >= 3 && segments[1] === 'onboarding') {
       // Handle dynamic routes - when segments contain brackets, use search params
-      const groupSegment = segments[2] === '[group]' 
-        ? (searchParams.group as GroupKey)
-        : (segments[2] as GroupKey);
-      const stepSegment = segments[3] === '[step]'
-        ? (searchParams.step || 'index')
-        : (segments[3] || 'index');
+      const groupSegment =
+        segments[2] === '[group]' ? (searchParams.group as GroupKey) : (segments[2] as GroupKey);
+      const stepSegment =
+        segments[3] === '[step]' ? searchParams.step || 'index' : segments[3] || 'index';
 
       // For groups using dynamic routes, the step segment IS the step ID
-      if ((groupSegment === 'attributes' || groupSegment === 'work-details' || groupSegment === 'profile') && stepSegment !== 'index' && segments[2] === '[group]') {
+      if (
+        (groupSegment === 'attributes' ||
+          groupSegment === 'work-details' ||
+          groupSegment === 'profile') &&
+        stepSegment !== 'index' &&
+        segments[2] === '[group]'
+      ) {
         return {
           currentGroup: groupSegment,
           currentStepId: stepSegment, // This is already the step ID like 'display-name'
@@ -201,7 +225,7 @@ export function useOnboardingGroupFlow(): UseOnboardingGroupFlowReturn {
       console.warn(`Cannot navigate: invalid group ${currentGroup}`);
       return;
     }
-    
+
     // Find next non-skipped step
     let nextStepIndex = currentStepInGroup + 1;
     while (nextStepIndex < groupConfig.steps.length) {
@@ -213,7 +237,7 @@ export function useOnboardingGroupFlow(): UseOnboardingGroupFlowReturn {
       }
       nextStepIndex++;
     }
-    
+
     // No more steps in this group, move to next group
     navigateToNextGroup();
   }, [currentGroup, currentStepInGroup, shouldSkipStep]);
@@ -226,7 +250,7 @@ export function useOnboardingGroupFlow(): UseOnboardingGroupFlowReturn {
       console.warn(`Cannot navigate: invalid group ${currentGroup}`);
       return;
     }
-    
+
     // Find previous non-skipped step
     let prevStepIndex = currentStepInGroup - 1;
     while (prevStepIndex >= 0) {
@@ -237,7 +261,7 @@ export function useOnboardingGroupFlow(): UseOnboardingGroupFlowReturn {
       }
       prevStepIndex--;
     }
-    
+
     // No more steps in this group, move to previous group
     navigateToPreviousGroup();
   }, [currentGroup, currentStepInGroup, shouldSkipStep]);
@@ -272,19 +296,16 @@ export function useOnboardingGroupFlow(): UseOnboardingGroupFlowReturn {
         let path = groupConfig.basePath;
 
         // Handle routing for the first step of each group
-        if (groupKey === 'profile' && (firstStep as any) === 'resume') {
-          path += '/resume';
-        } else if (
+        if (
           groupKey === 'attributes' ||
           groupKey === 'work-details' ||
-          (groupKey === 'profile' && (firstStep as any) === 'profile-type')
+          groupKey === 'experiences' ||
+          groupKey === 'profile'
         ) {
           // Use dynamic routing for these groups/steps
           path = `/app/onboarding/${groupKey}/${firstStep}` as any;
         } else if (groupKey === 'review' && (firstStep as any) === 'review') {
           path += '/general';
-        } else if (groupKey === 'experiences' && (firstStep as any) === 'projects') {
-          path += '/projects';
         } else if (groupKey === 'review' && (firstStep as any) === 'projects-review') {
           path += '/experiences';
         }
@@ -314,14 +335,13 @@ export function useOnboardingGroupFlow(): UseOnboardingGroupFlowReturn {
           } else if (
             groupKey === 'attributes' ||
             groupKey === 'work-details' ||
-            (groupKey === 'profile' && (stepId as any) === 'profile-type')
+            groupKey === 'experiences' ||
+            groupKey === 'profile'
           ) {
             // Use dynamic routing for these groups/steps
             path = `/app/onboarding/${groupKey}/${stepId}` as any;
           } else if (groupKey === 'review' && (stepId as any) === 'review') {
             path += '/general';
-          } else if (groupKey === 'experiences' && (stepId as any) === 'projects') {
-            path += '/projects';
           } else if (groupKey === 'review' && (stepId as any) === 'projects-review') {
             path += '/experiences';
           }

@@ -19,6 +19,10 @@ import {
 import { AgencyForm, agencySchema } from '~/components/forms/onboarding/AgencyForm';
 import { UnionForm, unionSchema } from '~/components/forms/onboarding/UnionForm';
 import { TrainingForm } from '~/components/forms/onboarding/TrainingForm';
+import { ProjectsForm } from '~/components/forms/onboarding/ProjectsForm';
+import { DatabaseUseForm, databaseUseSchema } from '~/components/forms/onboarding/DatabaseUseForm';
+import { CompanyForm, companySchema } from '~/components/forms/onboarding/CompanyForm';
+import { ResumeForm } from '~/components/forms/onboarding/ResumeForm';
 import {
   ProfileTypeContractForm,
   profileTypeSchema,
@@ -76,6 +80,17 @@ export const STEP_REGISTRY = {
     save: async (values: any, ctx) => {
       if (!values?.profileType) return;
       await ctx.updateMyUser({ profileType: values.profileType });
+    },
+  },
+  resume: {
+    key: 'resume',
+    title: 'Import your resume',
+    description: 'Optionally import or attach your resume',
+    helpText: 'This step is optional. You can import your resume to auto-fill profile information.',
+    Component: ResumeForm as unknown as ComponentType<FormProps<any>>,
+    getInitialValues: (_data: OnboardingData) => ({}),
+    save: async (_values: any) => {
+      // Resume import is handled separately
     },
   },
   'display-name': {
@@ -270,6 +285,42 @@ export const STEP_REGISTRY = {
     getInitialValues: (data: OnboardingData) => selectSagAftraId(data),
     save: async (values: any, ctx) => {
       await ctx.updateMyUser({ sagAftraId: values.sagAftraId || undefined });
+    },
+  },
+  projects: {
+    key: 'projects',
+    title: 'Add your projects',
+    description:
+      "Add up to 3 projects you've worked on that you would like displayed on your profile.",
+    helpText: undefined,
+    Component: ProjectsForm as unknown as ComponentType<FormProps<any>>,
+    getInitialValues: (_data: OnboardingData) => ({}),
+    save: async (_values: any) => {
+      // Projects are saved via ProjectCard component
+    },
+  },
+  'database-use': {
+    key: 'database-use',
+    title: 'How will you use the database?',
+    description: 'Select one',
+    helpText: undefined,
+    Component: DatabaseUseForm as unknown as ComponentType<FormProps<any>>,
+    schema: databaseUseSchema,
+    getInitialValues: (data: OnboardingData) => ({ databaseUse: data.user?.databaseUse }),
+    save: async (values: any, ctx) => {
+      await ctx.updateMyUser({ databaseUse: values.databaseUse });
+    },
+  },
+  company: {
+    key: 'company',
+    title: 'Company Information',
+    description: 'Enter your company or organization name',
+    helpText: undefined,
+    Component: CompanyForm as unknown as ComponentType<FormProps<any>>,
+    schema: companySchema,
+    getInitialValues: (data: OnboardingData) => ({ companyName: data.user?.companyName }),
+    save: async (values: any, ctx) => {
+      await ctx.updateMyUser({ companyName: values.companyName });
     },
   },
 } as const satisfies Record<string, StepDef<any>>;

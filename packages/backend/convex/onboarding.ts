@@ -1,7 +1,6 @@
 import { query, mutation } from './_generated/server'
 import { ConvexError, v } from 'convex/values'
 import {
-  CURRENT_ONBOARDING_VERSION,
   getOnboardingFlow as getOnboardingFlowConfig,
   getStepRoute,
   ProfileType,
@@ -36,8 +35,7 @@ export const completeOnboarding: RegisteredMutation<
     // Mark onboarding as completed (non-blocking; individual screens own validation)
     await ctx.db.patch(user._id, {
       onboardingCompleted: true,
-      onboardingCompletedAt: new Date().toISOString(),
-      onboardingVersion: CURRENT_ONBOARDING_VERSION
+      onboardingCompletedAt: new Date().toISOString()
     })
 
     return { success: true }
@@ -101,7 +99,7 @@ export const setOnboardingStep = mutation({
     }
 
     const profileType = (user.profileType || 'dancer') as ProfileType
-    const flow = getOnboardingFlowConfig(profileType, CURRENT_ONBOARDING_VERSION)
+    const flow = getOnboardingFlowConfig(profileType)
     const stepIndex = flow.findIndex((s) => s.step === step)
 
     if (stepIndex === -1) {
@@ -177,15 +175,15 @@ export const updateOnboardingStatus = mutation({
 
     const profileType = (user.profileType || 'dancer') as ProfileType
     const status = getFlowCompletionStatus(user, profileType)
-    
+
     // Update user's current step if it's different
     let wasUpdated = false
     const newStep = status.nextIncompleteStep || 'review'
-    
+
     if (user.currentOnboardingStep !== newStep) {
       const flow = getOnboardingFlowConfig(profileType)
-      const stepIndex = flow.findIndex(s => s.step === newStep)
-      
+      const stepIndex = flow.findIndex((s) => s.step === newStep)
+
       await ctx.db.patch(user._id, {
         currentOnboardingStep: newStep,
         currentOnboardingStepIndex: stepIndex
@@ -230,7 +228,7 @@ export const getOnboardingStatus = query({
 
     const profileType = (user.profileType || 'dancer') as ProfileType
     const status = getFlowCompletionStatus(user, profileType)
-    
+
     return {
       currentStep: status.nextIncompleteStep || 'review',
       completedSteps: status.completedSteps,

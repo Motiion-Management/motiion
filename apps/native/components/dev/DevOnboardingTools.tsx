@@ -3,11 +3,11 @@ import { View, ScrollView, Alert } from 'react-native';
 import { Text } from '~/components/ui/text';
 import { Button } from '~/components/ui/button';
 import { useOnboardingGroupFlow } from '~/hooks/useOnboardingGroupFlow';
-import { 
-  ONBOARDING_GROUPS, 
+import {
+  ONBOARDING_GROUPS,
   ONBOARDING_GROUP_FLOWS,
   STEP_ROUTES,
-  type ProfileType 
+  type ProfileType,
 } from '@packages/backend/convex/onboardingConfig';
 import { useMutation } from 'convex/react';
 import { api } from '@packages/backend/convex/_generated/api';
@@ -28,7 +28,6 @@ type ParsedResumeData = {
   sagAftraId?: string;
 } | null;
 
-
 export function DevOnboardingTools() {
   const { user } = useUser();
   const onboarding = useOnboardingGroupFlow();
@@ -47,7 +46,7 @@ export function DevOnboardingTools() {
     () => ONBOARDING_GROUP_FLOWS[activeProfileType],
     [activeProfileType]
   );
-  
+
   const allSteps = useMemo(() => {
     // Get all unique steps from the groups, maintaining order
     const steps = activeGroups.flatMap((groupKey) => ONBOARDING_GROUPS[groupKey].steps);
