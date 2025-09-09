@@ -2,7 +2,7 @@ import BaseWheelPicker from '@quidone/react-native-wheel-picker';
 import WheelPickerFeedback from '@quidone/react-native-wheel-picker-feedback';
 import { cssInterop } from 'nativewind';
 import React from 'react';
-import { View } from 'react-native';
+import { Platform, View } from 'react-native';
 
 import { Text } from '~/components/ui/text';
 import { cn } from '~/lib/cn';
@@ -59,14 +59,14 @@ export function WheelPicker<T = any>({
   };
 
   return (
-    <View className="relative items-center">
+    <View className="relative h-[240px] items-center">
       <InteropWheelPicker
         data={data}
         value={value}
         onValueChanged={handleValueChange}
         onValueChanging={handleValueChanging}
         className={cn('h-full', className)}
-        overlayItemClassName={cn('bg-transparent', overlayItemClassName)}
+        overlayItemClassName={cn('bg-transparent ', overlayItemClassName)}
         contentContainerClassName={cn('', contentContainerClassName)}
         renderItem={({ item }) => (
           <View className="flex-1 items-center justify-center">
