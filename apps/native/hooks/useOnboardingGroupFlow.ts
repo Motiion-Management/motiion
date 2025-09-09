@@ -110,7 +110,8 @@ export function useOnboardingGroupFlow(): UseOnboardingGroupFlowReturn {
       if (
         (groupSegment === 'attributes' ||
           groupSegment === 'work-details' ||
-          groupSegment === 'profile') &&
+          groupSegment === 'profile' ||
+          groupSegment === 'experiences') &&
         stepSegment !== 'index' &&
         segments[2] === '[group]'
       ) {
@@ -160,18 +161,20 @@ export function useOnboardingGroupFlow(): UseOnboardingGroupFlowReturn {
     return currentGroup ? activeFlow.indexOf(currentGroup) : 0;
   }, [activeFlow, currentGroup]);
 
+  // Get visible steps for current group (filtering out skipped ones)
+  const visibleStepsInGroup = useMemo(() => {
+    if (!currentGroup) return [];
+    const groupConfig = ONBOARDING_GROUPS[currentGroup];
+    if (!groupConfig) return [];
+
+    return (groupConfig.steps as unknown as string[]).filter((stepId) => !shouldSkipStep(stepId));
+  }, [currentGroup, shouldSkipStep]);
+
   const currentStepInGroup = useMemo(() => {
     if (!currentGroup || !currentStepId) return 0;
-    const groupConfig = ONBOARDING_GROUPS[currentGroup];
-    if (!groupConfig) {
-      console.warn(
-        `Invalid onboarding group: ${currentGroup}. Available groups:`,
-        Object.keys(ONBOARDING_GROUPS)
-      );
-      return 0;
-    }
-    return (groupConfig.steps as unknown as string[]).indexOf(currentStepId);
-  }, [currentGroup, currentStepId]);
+    // Find index within visible steps only
+    return visibleStepsInGroup.indexOf(currentStepId);
+  }, [currentGroup, currentStepId, visibleStepsInGroup]);
 
   // Progress calculations
   const getGroupProgress = useCallback(
@@ -296,13 +299,19 @@ export function useOnboardingGroupFlow(): UseOnboardingGroupFlowReturn {
         let path = groupConfig.basePath;
 
         // Handle routing for the first step of each group
-        if (
+        if (groupKey === 'profile' && firstStep === 'resume') {
+          // Special case: resume has its own screen
+          path += '/resume';
+        } else if (groupKey === 'experiences' && firstStep === 'projects') {
+          // Special case: projects has its own screen
+          path += '/projects';
+        } else if (
           groupKey === 'attributes' ||
           groupKey === 'work-details' ||
-          groupKey === 'experiences' ||
-          groupKey === 'profile'
+          (groupKey === 'experiences' && firstStep !== 'projects') ||
+          (groupKey === 'profile' && firstStep !== 'resume')
         ) {
-          // Use dynamic routing for these groups/steps
+          // Use dynamic routing for other steps
           path = `/app/onboarding/${groupKey}/${firstStep}` as any;
         } else if (groupKey === 'review' && (firstStep as any) === 'review') {
           path += '/general';
@@ -330,15 +339,19 @@ export function useOnboardingGroupFlow(): UseOnboardingGroupFlowReturn {
           let path = groupConfig.basePath;
 
           // Handle special routing cases
-          if (groupKey === 'profile' && (stepId as any) === 'resume') {
+          if (groupKey === 'profile' && stepId === 'resume') {
+            // Special case: resume has its own screen
             path += '/resume';
+          } else if (groupKey === 'experiences' && stepId === 'projects') {
+            // Special case: projects has its own screen
+            path += '/projects';
           } else if (
             groupKey === 'attributes' ||
             groupKey === 'work-details' ||
-            groupKey === 'experiences' ||
-            groupKey === 'profile'
+            (groupKey === 'experiences' && stepId !== 'projects') ||
+            (groupKey === 'profile' && stepId !== 'resume')
           ) {
-            // Use dynamic routing for these groups/steps
+            // Use dynamic routing for other steps
             path = `/app/onboarding/${groupKey}/${stepId}` as any;
           } else if (groupKey === 'review' && (stepId as any) === 'review') {
             path += '/general';
@@ -361,10 +374,7 @@ export function useOnboardingGroupFlow(): UseOnboardingGroupFlowReturn {
     // Current state
     currentGroup,
     currentStepInGroup,
-    totalStepsInGroup:
-      currentGroup && ONBOARDING_GROUPS[currentGroup]
-        ? ONBOARDING_GROUPS[currentGroup].steps.length
-        : 0,
+    totalStepsInGroup: visibleStepsInGroup.length,
     currentStepId,
 
     // Group-level state
