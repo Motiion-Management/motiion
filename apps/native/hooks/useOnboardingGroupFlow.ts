@@ -88,8 +88,8 @@ export function useOnboardingGroupFlow(): UseOnboardingGroupFlowReturn {
         ? (searchParams.step || 'index')
         : (segments[3] || 'index');
 
-      // For attributes group using dynamic routes, the step segment IS the step ID
-      if (groupSegment === 'attributes' && stepSegment !== 'index') {
+      // For groups using dynamic routes, the step segment IS the step ID
+      if ((groupSegment === 'attributes' || groupSegment === 'work-details' || groupSegment === 'profile') && stepSegment !== 'index' && segments[2] === '[group]') {
         return {
           currentGroup: groupSegment,
           currentStepId: stepSegment, // This is already the step ID like 'display-name'
@@ -272,16 +272,15 @@ export function useOnboardingGroupFlow(): UseOnboardingGroupFlowReturn {
         let path = groupConfig.basePath;
 
         // Handle routing for the first step of each group
-        if (groupKey === 'attributes') {
-          // Use dynamic routing for attributes group
-          path = `/app/onboarding/attributes/${firstStep}` as any;
-        } else if (groupKey === 'profile' && (firstStep as any) === 'profile-type') {
-          path += '/type';
-        } else if (groupKey === 'profile' && (firstStep as any) === 'resume') {
+        if (groupKey === 'profile' && (firstStep as any) === 'resume') {
           path += '/resume';
-        } else if (groupKey === 'work-details') {
-          // Work-details still uses explicit routes for now
-          path += `/${firstStep}`;
+        } else if (
+          groupKey === 'attributes' ||
+          groupKey === 'work-details' ||
+          (groupKey === 'profile' && (firstStep as any) === 'profile-type')
+        ) {
+          // Use dynamic routing for these groups/steps
+          path = `/app/onboarding/${groupKey}/${firstStep}` as any;
         } else if (groupKey === 'review' && (firstStep as any) === 'review') {
           path += '/general';
         } else if (groupKey === 'experiences' && (firstStep as any) === 'projects') {
@@ -310,16 +309,15 @@ export function useOnboardingGroupFlow(): UseOnboardingGroupFlowReturn {
           let path = groupConfig.basePath;
 
           // Handle special routing cases
-          if (groupKey === 'attributes') {
-            // Use dynamic routing for attributes group
-            path = `/app/onboarding/attributes/${stepId}` as any;
-          } else if (groupKey === 'profile' && (stepId as any) === 'profile-type') {
-            path += '/type';
-          } else if (groupKey === 'profile' && (stepId as any) === 'resume') {
+          if (groupKey === 'profile' && (stepId as any) === 'resume') {
             path += '/resume';
-          } else if (groupKey === 'work-details') {
-            // Work-details still uses explicit routes for now
-            path += `/${stepId}`;
+          } else if (
+            groupKey === 'attributes' ||
+            groupKey === 'work-details' ||
+            (groupKey === 'profile' && (stepId as any) === 'profile-type')
+          ) {
+            // Use dynamic routing for these groups/steps
+            path = `/app/onboarding/${groupKey}/${stepId}` as any;
           } else if (groupKey === 'review' && (stepId as any) === 'review') {
             path += '/general';
           } else if (groupKey === 'experiences' && (stepId as any) === 'projects') {

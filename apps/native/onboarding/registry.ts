@@ -18,6 +18,11 @@ import {
 } from '~/components/forms/onboarding/RepresentationForm';
 import { AgencyForm, agencySchema } from '~/components/forms/onboarding/AgencyForm';
 import { UnionForm, unionSchema } from '~/components/forms/onboarding/UnionForm';
+import { TrainingForm } from '~/components/forms/onboarding/TrainingForm';
+import {
+  ProfileTypeContractForm,
+  profileTypeSchema,
+} from '~/components/forms/onboarding/ProfileTypeContractForm';
 import {
   selectDisplayName,
   selectHeight,
@@ -31,6 +36,7 @@ import {
   selectRepresentationStatus,
   selectAgencyId,
   selectSagAftraId,
+  selectProfileType,
 } from './selectors';
 
 // Step definition used by the dynamic review modal and wrappers.
@@ -59,6 +65,19 @@ export interface SaveContext {
 }
 
 export const STEP_REGISTRY = {
+  'profile-type': {
+    key: 'profile-type',
+    title: 'Your journey is unique. Your profile should be too.',
+    description: 'Select your main account type.',
+    helpText: undefined,
+    Component: ProfileTypeContractForm as unknown as ComponentType<FormProps<any>>,
+    schema: profileTypeSchema,
+    getInitialValues: (data: OnboardingData) => selectProfileType(data),
+    save: async (values: any, ctx) => {
+      if (!values?.profileType) return;
+      await ctx.updateMyUser({ profileType: values.profileType });
+    },
+  },
   'display-name': {
     key: 'display-name',
     title: 'Display name',
@@ -202,6 +221,17 @@ export const STEP_REGISTRY = {
         ...values,
         projects: ctx.data.user?.resume?.projects,
       });
+    },
+  },
+  training: {
+    key: 'training',
+    title: 'Add your training',
+    description: 'Add up to 3 training items you would like displayed on your profile.',
+    helpText: undefined,
+    Component: TrainingForm as unknown as ComponentType<FormProps<any>>,
+    getInitialValues: (_data: OnboardingData) => ({}),
+    save: async (_values: any) => {
+      // No-op; managed by card interactions
     },
   },
   representation: {

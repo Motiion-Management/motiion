@@ -247,7 +247,7 @@ export const ONBOARDING_FLOWS: OnboardingFlows = {
 }
 
 export const STEP_ROUTES = {
-  'profile-type': '/app/onboarding/profile/type',
+  'profile-type': '/app/onboarding/profile/profile-type',
   'display-name': '/app/onboarding/attributes/display-name',
   headshots: '/app/onboarding/work-details/headshots',
   height: '/app/onboarding/attributes/height',
@@ -260,7 +260,7 @@ export const STEP_ROUTES = {
   'work-location': '/app/onboarding/work-details/work-location',
   representation: '/app/onboarding/work-details/representation',
   agency: '/app/onboarding/work-details/agency',
-  resume: '/app/onboarding/work-details/resume',
+  resume: '/app/onboarding/profile/resume',
   projects: '/app/onboarding/experiences/projects',
   training: '/app/onboarding/work-details/training',
   skills: '/app/onboarding/work-details/skills',
