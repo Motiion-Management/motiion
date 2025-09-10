@@ -221,7 +221,7 @@ export function useOnboardingGroupFlow(): UseOnboardingGroupFlowReturn {
 
   // Navigation methods
   const navigateToNextStep = useCallback(() => {
-    if (!currentGroup) return;
+    if (!currentGroup || !currentStepId) return;
 
     const groupConfig = ONBOARDING_GROUPS[currentGroup];
     if (!groupConfig) {
@@ -229,10 +229,19 @@ export function useOnboardingGroupFlow(): UseOnboardingGroupFlowReturn {
       return;
     }
 
-    // Find next non-skipped step
-    let nextStepIndex = currentStepInGroup + 1;
-    while (nextStepIndex < groupConfig.steps.length) {
-      const nextStepId = groupConfig.steps[nextStepIndex];
+    // Find current step's actual index in ALL steps (not filtered)
+    const allSteps = groupConfig.steps as unknown as string[];
+    const currentActualIndex = allSteps.indexOf(currentStepId);
+    
+    if (currentActualIndex === -1) {
+      console.warn(`Current step ${currentStepId} not found in group ${currentGroup}`);
+      return;
+    }
+
+    // Find next non-skipped step from the actual position
+    let nextStepIndex = currentActualIndex + 1;
+    while (nextStepIndex < allSteps.length) {
+      const nextStepId = allSteps[nextStepIndex];
       if (!shouldSkipStep(nextStepId)) {
         // Navigate immediately without waiting for DB
         navigateToStep(nextStepId);
@@ -243,10 +252,10 @@ export function useOnboardingGroupFlow(): UseOnboardingGroupFlowReturn {
 
     // No more steps in this group, move to next group
     navigateToNextGroup();
-  }, [currentGroup, currentStepInGroup, shouldSkipStep]);
+  }, [currentGroup, currentStepId, shouldSkipStep]);
 
   const navigateToPreviousStep = useCallback(() => {
-    if (!currentGroup) return;
+    if (!currentGroup || !currentStepId) return;
 
     const groupConfig = ONBOARDING_GROUPS[currentGroup];
     if (!groupConfig) {
@@ -254,10 +263,19 @@ export function useOnboardingGroupFlow(): UseOnboardingGroupFlowReturn {
       return;
     }
 
-    // Find previous non-skipped step
-    let prevStepIndex = currentStepInGroup - 1;
+    // Find current step's actual index in ALL steps (not filtered)
+    const allSteps = groupConfig.steps as unknown as string[];
+    const currentActualIndex = allSteps.indexOf(currentStepId);
+    
+    if (currentActualIndex === -1) {
+      console.warn(`Current step ${currentStepId} not found in group ${currentGroup}`);
+      return;
+    }
+
+    // Find previous non-skipped step from the actual position
+    let prevStepIndex = currentActualIndex - 1;
     while (prevStepIndex >= 0) {
-      const prevStepId = groupConfig.steps[prevStepIndex];
+      const prevStepId = allSteps[prevStepIndex];
       if (!shouldSkipStep(prevStepId)) {
         navigateToStep(prevStepId);
         return;
@@ -267,7 +285,7 @@ export function useOnboardingGroupFlow(): UseOnboardingGroupFlowReturn {
 
     // No more steps in this group, move to previous group
     navigateToPreviousGroup();
-  }, [currentGroup, currentStepInGroup, shouldSkipStep]);
+  }, [currentGroup, currentStepId, shouldSkipStep]);
 
   const navigateToNextGroup = useCallback(() => {
     const nextGroupIndex = currentGroupIndex + 1;
