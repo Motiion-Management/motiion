@@ -16,7 +16,8 @@
     "react-dom": "19.0.0",
     "@packages/backend": "workspace:*",
     "convex": "^1.25.4",
-    "@xixixao/uploadstuff": "0.0.5"
+    "@xixixao/uploadstuff": "0.0.5",
+    "@xyflow/react": "^12.3.1"
   },
   "devDependencies": {
     "@types/node": "^24.0.15",
