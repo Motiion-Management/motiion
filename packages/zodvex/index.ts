@@ -65,24 +65,8 @@ function analyzeZod(schema: z.ZodTypeAny): {
 }
 
 export function zodToConvex(schema: z.ZodTypeAny): Validator<any, any, any> {
-  // Use base conversion first (handles most Zod features)
-  const conv = baseZodToConvex(schema) as any
-
-  // Determine true optional/nullability from the original zod schema
-  const meta = analyzeZod(schema)
-
-  // Remove null from union when it's only representing optional
-  const { base } = stripNullFromUnion(conv)
-
-  // Rebuild per optional/nullable flags
-  let rebuilt: any = base
-  if (meta.nullable) {
-    rebuilt = makeUnion([base, v.null()])
-  }
-  if (meta.optional) {
-    rebuilt = v.optional(rebuilt)
-  }
-  return rebuilt
+  const base = baseZodToConvex(schema) as any
+  return convertWithMeta(schema, base)
 }
 
 export function zodToConvexFields(
@@ -107,20 +91,11 @@ export function zodToConvexFields(
   // Start with base conversion for the whole shape
   const base = baseZodToConvexFields(shape) as Record<string, any>
 
-  // Then correct optional/nullable semantics per field
+  // Then correct optional/nullable semantics per field (recursively)
   const out: Record<string, Validator<any, any, any>> = {}
   for (const [key, zodField] of Object.entries(shape)) {
-    const meta = analyzeZod(zodField)
     const original = base[key] as any
-    const { base: noNull } = stripNullFromUnion(original)
-    let rebuilt: any = noNull
-    if (meta.nullable) {
-      rebuilt = makeUnion([noNull, v.null()])
-    }
-    if (meta.optional) {
-      rebuilt = v.optional(rebuilt)
-    }
-    out[key] = rebuilt
+    out[key] = convertWithMeta(zodField, original)
   }
   return out
 }
@@ -128,4 +103,170 @@ export function zodToConvexFields(
 export default {
   zodToConvex,
   zodToConvexFields
+}
+
+// Recursively rebuild validators to enforce optional vs nullable semantics and fix nested objects
+function getObjectShape(obj: z.ZodObject<any>): Record<string, z.ZodTypeAny> {
+  const anyObj: any = obj as any
+  const def = anyObj._def
+  if (def && typeof def.shape === 'function') {
+    return def.shape()
+  }
+  if (typeof anyObj.shape === 'function') {
+    return anyObj.shape()
+  }
+  if (def && def.shape) {
+    return def.shape as Record<string, z.ZodTypeAny>
+  }
+  return (anyObj.shape || {}) as Record<string, z.ZodTypeAny>
+}
+
+function convertWithMeta(zodField: z.ZodTypeAny, baseValidator: any): any {
+  const meta = analyzeZod(zodField)
+  let core = stripNullFromUnion(baseValidator).base
+
+  const inner = meta.base
+  if (inner instanceof z.ZodObject) {
+    const childShape = getObjectShape(inner as any)
+    const baseChildren: Record<string, any> =
+      core && typeof core === 'object' && core.kind === 'object' && (core as any).fields
+        ? (core as any).fields
+        : (baseZodToConvexFields(childShape) as Record<string, any>)
+    const rebuiltChildren: Record<string, any> = {}
+    for (const [k, childZ] of Object.entries(childShape)) {
+      rebuiltChildren[k] = convertWithMeta(childZ, baseChildren[k])
+    }
+    core = v.object(rebuiltChildren)
+  } else if (inner instanceof z.ZodArray) {
+    const elZod = (inner._def as any).type as z.ZodTypeAny
+    const baseEl = core && typeof core === 'object' && core.kind === 'array' ? (core as any).element : baseZodToConvex(elZod)
+    const rebuiltEl = convertWithMeta(elZod, baseEl)
+    core = v.array(rebuiltEl)
+  }
+
+  if (meta.nullable) {
+    core = makeUnion([core, v.null()])
+  }
+  if (meta.optional) {
+    core = v.optional(core)
+  }
+  return core
+}
+
+// Codec API
+export type ConvexCodec<T = any> = {
+  schema: z.ZodTypeAny
+  toConvexSchema: () => any
+  encode: (data: T) => any
+  decode: (data: any) => T
+  pick: (keys: Record<string, true>) => ConvexCodec<any>
+}
+
+export function convexCodec<T = any>(schema: z.ZodTypeAny): ConvexCodec<T> {
+  const toConvexSchema = () => {
+    if (schema instanceof z.ZodObject) {
+      const shape = getObjectShape(schema)
+      return zodToConvexFields(shape)
+    }
+    return zodToConvex(schema)
+  }
+
+  const encode = (data: any) => {
+    const parsed = schema.parse(data)
+    return toConvexJS(schema, parsed)
+  }
+
+  const decode = (data: any) => {
+    return fromConvexJS(schema, data)
+  }
+
+  const pick = (keys: Record<string, true>): ConvexCodec<any> => {
+    if (!(schema instanceof z.ZodObject)) {
+      throw new Error('pick() is only supported on ZodObject schemas')
+    }
+    const picked = (schema as z.ZodObject<any>).pick(keys as any)
+    return convexCodec(picked)
+  }
+
+  return { schema, toConvexSchema, encode, decode, pick }
+}
+
+// Convert a JS value parsed by Zod to a Convex-friendly JSON value based on schema
+function toConvexJS(schema: z.ZodTypeAny, value: any): any {
+  if (value === undefined) return undefined
+
+  // unwrap default/optional/nullable
+  if (schema instanceof z.ZodDefault) {
+    return toConvexJS(schema._def.innerType as z.ZodTypeAny, value)
+  }
+  if (schema instanceof z.ZodOptional) {
+    if (value === undefined) return undefined
+    return toConvexJS(schema._def.innerType as z.ZodTypeAny, value)
+  }
+  if (schema instanceof z.ZodNullable) {
+    if (value === null) return null
+    return toConvexJS(schema._def.innerType as z.ZodTypeAny, value)
+  }
+
+  // objects
+  if (schema instanceof z.ZodObject && value && typeof value === 'object') {
+    const shape = getObjectShape(schema)
+    const out: any = {}
+    for (const [k, child] of Object.entries(shape)) {
+      const v = toConvexJS(child, value[k])
+      if (v !== undefined) out[k] = v // omit undefined
+    }
+    return out
+  }
+
+  // arrays
+  if (schema instanceof z.ZodArray && Array.isArray(value)) {
+    const el = (schema._def as any).type as z.ZodTypeAny
+    return value.map((item) => toConvexJS(el, item))
+  }
+
+  // date → timestamp
+  if (schema instanceof z.ZodDate && value instanceof Date) {
+    return value.getTime()
+  }
+
+  // pass-through
+  return value
+}
+
+// Convert a Convex JSON value to a shape consumable by the Zod schema
+function fromConvexJS(schema: z.ZodTypeAny, value: any): any {
+  if (value === undefined) return undefined
+
+  if (schema instanceof z.ZodDefault) {
+    return fromConvexJS(schema._def.innerType as z.ZodTypeAny, value)
+  }
+  if (schema instanceof z.ZodOptional) {
+    if (value === undefined) return undefined
+    return fromConvexJS(schema._def.innerType as z.ZodTypeAny, value)
+  }
+  if (schema instanceof z.ZodNullable) {
+    if (value === null) return null
+    return fromConvexJS(schema._def.innerType as z.ZodTypeAny, value)
+  }
+
+  if (schema instanceof z.ZodObject && value && typeof value === 'object') {
+    const shape = getObjectShape(schema)
+    const out: any = {}
+    for (const [k, child] of Object.entries(shape)) {
+      if (k in value) out[k] = fromConvexJS(child, (value as any)[k])
+    }
+    return out
+  }
+
+  if (schema instanceof z.ZodArray && Array.isArray(value)) {
+    const el = (schema._def as any).type as z.ZodTypeAny
+    return value.map((item) => fromConvexJS(el, item))
+  }
+
+  if (schema instanceof z.ZodDate && typeof value === 'number') {
+    return new Date(value)
+  }
+
+  return value
 }

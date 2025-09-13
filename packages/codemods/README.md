@@ -29,6 +29,8 @@ Transforms
 
 - `zod4-imports`: Rewrites string literals in import/require/dynamic import lines
   from `convex-helpers/server/zod` to `convex-helpers/server/zodV4`.
+- `use-zodvex`: Moves `zodToConvex*` imports from `convex-helpers/server/zodV4`
+  to `@packages/zodvex`, leaving other specifiers (e.g. `zid`) untouched.
 
 Adding More Transforms
 
@@ -42,4 +44,3 @@ Notes
 - The transform is conservative: it only rewrites lines containing `import`, `from`, or `require`.
 - It supports `.ts,.tsx,.js,.jsx` by default.
 - It skips common build directories like `node_modules`, `.next`, `dist`, `build`, `.turbo`, and `convex/_generated`.
-

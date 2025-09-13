@@ -4,7 +4,7 @@ import { Training, trainingInput } from './validators/training'
 import { getAll } from 'convex-helpers/server/relationships'
 import { query } from './_generated/server'
 import { crud } from 'convex-helpers/server'
-import { zodToConvexFields } from 'convex-helpers/server/zodV4'
+import { zodToConvexFields } from '@packages/zodvex'
 
 // Basic CRUD operations
 export const { read } = crud(Training, query, authMutation)

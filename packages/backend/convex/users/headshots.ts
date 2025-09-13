@@ -2,7 +2,7 @@ import { query, MutationCtx } from '../_generated/server'
 import { authMutation, authQuery } from '../util'
 import { ConvexError, v } from 'convex/values'
 import { Id } from '../_generated/dataModel'
-import { zodToConvex } from 'convex-helpers/server/zodV4'
+import { zodToConvex } from '@packages/zodvex'
 import { zFileUploadObjectArray } from '../validators/base'
 
 export const getMyHeadshots = authQuery({

@@ -406,6 +406,9 @@ importers:
       '@clerk/backend':
         specifier: ^2.5.0
         version: 2.9.4(react-dom@19.0.0(react@19.0.0))(react@19.0.0)
+      '@packages/zodvex':
+        specifier: workspace:*
+        version: link:../zodvex
       ai:
         specifier: ^4.0.37
         version: 4.3.19(react@19.0.0)(zod@4.1.8)

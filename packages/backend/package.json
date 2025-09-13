@@ -11,6 +11,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@packages/zodvex": "workspace:*",
     "@ai-sdk/openai": "^1.0.10",
     "@clerk/backend": "^2.5.0",
     "ai": "^4.0.37",

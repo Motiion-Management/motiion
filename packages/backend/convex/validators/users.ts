@@ -1,4 +1,5 @@
-import { zid, zodToConvex, zodToConvexFields } from 'convex-helpers/server/zodV4'
+import { zid } from 'convex-helpers/server/zodV4'
+import { zodToConvex, zodToConvexFields } from '@packages/zodvex'
 import { Table } from 'convex-helpers/server'
 import { z } from 'zod'
 import { zFileUploadObjectArray, zLocation } from './base'

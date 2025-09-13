@@ -1,7 +1,7 @@
 import { QueryCtx, query } from '../_generated/server'
 import { authMutation, authQuery } from '../util'
 import { v } from 'convex/values'
-import { zodToConvex } from 'convex-helpers/server/zodV4'
+import { zodToConvex } from '@packages/zodvex'
 import { UserDoc, resume as resumeObj } from '../validators/users'
 import { zFileUploadObjectArray } from '../validators/base'
 import {
