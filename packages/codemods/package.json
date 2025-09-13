@@ -1,0 +1,27 @@
+{
+  "name": "@packages/codemods",
+  "version": "0.1.0",
+  "description": "Codemods for repo migrations (convex-helpers zod4, etc.)",
+  "private": false,
+  "bin": {
+    "convex-helpers-codemods": "bin/cli.js"
+  },
+  "scripts": {
+    "start": "node bin/cli.js",
+    "codemod": "node bin/cli.js"
+  },
+  "keywords": [
+    "codemod",
+    "convex-helpers",
+    "zod",
+    "zod4",
+    "migration"
+  ],
+  "author": "",
+  "license": "UNLICENSED",
+  "type": "commonjs",
+  "engines": {
+    "node": ">=16"
+  }
+}
+
