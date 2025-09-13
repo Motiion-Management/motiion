@@ -413,8 +413,8 @@ importers:
         specifier: ^1.27.0
         version: 1.27.0(@clerk/clerk-react@5.43.1(react-dom@19.0.0(react@19.0.0))(react@19.0.0))(react@19.0.0)
       convex-helpers:
-        specifier: 0.1.104
-        version: 0.1.104(convex@1.27.0(@clerk/clerk-react@5.43.1(react-dom@19.0.0(react@19.0.0))(react@19.0.0))(react@19.0.0))(react@19.0.0)(typescript@5.8.3)(zod@4.1.8)
+        specifier: 0.1.101-alpha.1
+        version: 0.1.101-alpha.1(convex@1.27.0(@clerk/clerk-react@5.43.1(react-dom@19.0.0(react@19.0.0))(react@19.0.0))(react@19.0.0))(react@19.0.0)(typescript@5.8.3)(zod@4.1.8)
       date-fns:
         specifier: ^3.6.0
         version: 3.6.0
@@ -430,6 +430,8 @@ importers:
       zod:
         specifier: ^4.1.8
         version: 4.1.8
+
+  packages/codemods: {}
 
   packages/primatives:
     dependencies:
@@ -669,8 +671,8 @@ importers:
         specifier: ^1.27.0
         version: 1.27.0(@clerk/clerk-react@5.43.1(react-dom@19.0.0(react@19.0.0))(react@19.0.0))(react@19.0.0)
       convex-helpers:
-        specifier: ^0.1.104
-        version: 0.1.104(convex@1.27.0(@clerk/clerk-react@5.43.1(react-dom@19.0.0(react@19.0.0))(react@19.0.0))(react@19.0.0))(react@19.0.0)(typescript@5.8.3)(zod@4.1.8)
+        specifier: 0.1.101-alpha.1
+        version: 0.1.101-alpha.1(convex@1.27.0(@clerk/clerk-react@5.43.1(react-dom@19.0.0(react@19.0.0))(react@19.0.0))(react@19.0.0))(react@19.0.0)(typescript@5.8.3)(zod@4.1.8)
       date-fns:
         specifier: ^3.6.0
         version: 3.6.0
@@ -804,6 +806,18 @@ importers:
       typescript-eslint:
         specifier: ^8.37.0
         version: 8.40.0(eslint@9.33.0(jiti@1.21.7))(typescript@5.8.3)
+
+  packages/zodvex:
+    dependencies:
+      convex:
+        specifier: ^1.27.0
+        version: 1.27.0(@clerk/clerk-react@5.43.1(react-dom@19.0.0(react@19.0.0))(react@19.0.0))(react@19.0.0)
+      convex-helpers:
+        specifier: 0.1.101-alpha.1
+        version: 0.1.101-alpha.1(convex@1.27.0(@clerk/clerk-react@5.43.1(react-dom@19.0.0(react@19.0.0))(react@19.0.0))(react@19.0.0))(react@19.0.0)(typescript@5.8.3)(zod@4.1.8)
+      zod:
+        specifier: ^4.1.8
+        version: 4.1.8
 
 packages:
 
@@ -4281,8 +4295,8 @@ packages:
   convert-source-map@2.0.0:
     resolution: {integrity: sha512-Kvp459HrV2FEJ1CAsi1Ku+MY3kasH19TFykTz2xWmMeq6bk2NU3XXvfJ+Q61m0xktWwt+1HSYf3JZsTms3aRJg==}
 
-  convex-helpers@0.1.104:
-    resolution: {integrity: sha512-7CYvx7T3K6n+McDTK4ZQaQNNGBzq5aWezpjzsKbOxPXx7oNcTP9wrpef3JxeXWFzkByJv5hRCjseh9B7eNJ7Ig==}
+  convex-helpers@0.1.101-alpha.1:
+    resolution: {integrity: sha512-mC1omAngfYkzIxRnDQa1aSl5N+ZGR6Sg6vDz0p98FOqMxF8npw9u0yVePUQMpo5DJjCZyNK0nUt6Rh6W4WgTkA==}
     hasBin: true
     peerDependencies:
       '@standard-schema/spec': ^1.0.0
@@ -4290,7 +4304,7 @@ packages:
       hono: ^4.0.5
       react: ^17.0.2 || ^18.0.0 || ^19.0.0
       typescript: ^5.5
-      zod: ^3.22.4 || ^4.0.15
+      zod: ^3.22.4
     peerDependenciesMeta:
       '@standard-schema/spec':
         optional: true
@@ -12719,7 +12733,7 @@ snapshots:
 
   convert-source-map@2.0.0: {}
 
-  convex-helpers@0.1.104(convex@1.27.0(@clerk/clerk-react@5.43.1(react-dom@19.0.0(react@19.0.0))(react@19.0.0))(react@19.0.0))(react@19.0.0)(typescript@5.8.3)(zod@4.1.8):
+  convex-helpers@0.1.101-alpha.1(convex@1.27.0(@clerk/clerk-react@5.43.1(react-dom@19.0.0(react@19.0.0))(react@19.0.0))(react@19.0.0))(react@19.0.0)(typescript@5.8.3)(zod@4.1.8):
     dependencies:
       convex: 1.27.0(@clerk/clerk-react@5.43.1(react-dom@19.0.0(react@19.0.0))(react@19.0.0))(react@19.0.0)
     optionalDependencies:
