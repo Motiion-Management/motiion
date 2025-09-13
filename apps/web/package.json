@@ -11,13 +11,13 @@
     "lint": "eslint \"**/*.{js,jsx,ts,tsx}\" && prettier -c \"**/*.{js,jsx,ts,tsx,json}\""
   },
   "dependencies": {
+    "@packages/backend": "workspace:*",
+    "@xixixao/uploadstuff": "0.0.5",
+    "@xyflow/react": "^12.3.1",
+    "convex": "^1.27.0",
     "next": "14.2.31",
     "react": "19.0.0",
-    "react-dom": "19.0.0",
-    "@packages/backend": "workspace:*",
-    "convex": "^1.25.4",
-    "@xixixao/uploadstuff": "0.0.5",
-    "@xyflow/react": "^12.3.1"
+    "react-dom": "19.0.0"
   },
   "devDependencies": {
     "@types/node": "^24.0.15",
