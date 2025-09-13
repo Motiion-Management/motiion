@@ -1,4 +1,4 @@
-import { zodToConvex } from 'convex-helpers/server/zod'
+import { zodToConvex } from 'convex-helpers/server/zodV4'
 import { internalAction } from './_generated/server'
 import { authMutation } from './util'
 import { zFileUploadObjectArray } from './validators/base'
