@@ -35,7 +35,7 @@ export const removeMyProject = authMutation({
       resume: {
         ...ctx.user.resume,
         projects: (ctx.user.resume?.projects || []).filter(
-          (id) => id !== args.projectId
+          (id: import('../_generated/dataModel').Id<'projects'>) => id !== args.projectId
         )
       }
     })

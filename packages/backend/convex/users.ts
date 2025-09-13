@@ -31,6 +31,21 @@ export const {
 
 export const { update } = crud(Users, authQuery, authMutation)
 
+async function computeDerived(
+  ctx: { db: { get: (id: any) => Promise<any> } },
+  user: any
+) {
+  let agency: AgencyDoc | null = null
+  if (user.representation?.agencyId) {
+    agency = await ctx.db.get(user.representation.agencyId)
+  }
+  const fullName = formatFullName(user.firstName, user.lastName)
+  const searchPattern = `${fullName} ${user.displayName || ''} ${
+    user.location?.city || ''
+  } ${user.location?.state || ''} ${agency?.name || ''}`.trim()
+  return { fullName, searchPattern }
+}
+
 export const getMyUser = authQuery({
   args: {},
   async handler(ctx) {
@@ -44,18 +59,11 @@ export const getMyUser = authQuery({
 })
 
 export const updateMyUser = authMutation({
-  args: partial(Users.withoutSystemFields),
+  args: partial(Users.withoutSystemFields) as any,
   async handler(ctx, args): Promise<void> {
-    await ctx.db.patch(ctx.user._id, {
-      ...args
-    })
-
-    const user = {
-      ...ctx.user,
-      ...args
-    }
-
-    await ctx.scheduler.runAfter(0, internal.users.afterUpdate, user)
+    const nextUser = { ...ctx.user, ...args }
+    const derived = await computeDerived(ctx, nextUser)
+    await ctx.db.patch(ctx.user._id, { ...args, ...derived })
   }
 })
 
@@ -76,23 +84,19 @@ export const updateMySizingField = authMutation({
       [field]: value
     }
 
-    // Update the user with merged sizing data
-    await ctx.db.patch(ctx.user._id, {
-      sizing: {
-        ...currentSizing,
-        [section]: updatedSection
-      } as any
-    })
-
-    // Trigger afterUpdate for any derived calculations
-    const updatedUser = {
+    const nextUser = {
       ...ctx.user,
       sizing: {
         ...currentSizing,
         [section]: updatedSection
       } as any
     }
-    await ctx.scheduler.runAfter(0, internal.users.afterUpdate, updatedUser)
+    const derived = await computeDerived(ctx, nextUser)
+    // Update the user with merged sizing data and derived fields
+    await ctx.db.patch(ctx.user._id, {
+      sizing: nextUser.sizing,
+      ...derived
+    })
   }
 })
 
@@ -111,16 +115,9 @@ export const patchUserAttributes = authMutation({
       ...attributes
     } as any
 
-    await ctx.db.patch(ctx.user._id, {
-      attributes: mergedAttributes
-    })
-
-    const updatedUser = {
-      ...ctx.user,
-      attributes: mergedAttributes
-    }
-
-    await ctx.scheduler.runAfter(0, internal.users.afterUpdate, updatedUser)
+    const nextUser = { ...ctx.user, attributes: mergedAttributes }
+    const derived = await computeDerived(ctx, nextUser)
+    await ctx.db.patch(ctx.user._id, { attributes: mergedAttributes, ...derived })
   }
 })
 
@@ -134,32 +131,7 @@ export const getUserByTokenId = internalQuery({
   }
 })
 
-export const afterUpdate = internalAction({
-  args: Users.withSystemFields,
-  handler: async (ctx, user): Promise<void> => {
-    console.log('updating user', user._id, user.fullName, user.displayName)
-    let agency: AgencyDoc | null = null
-    if (user.representation?.agencyId) {
-      agency = await ctx.runQuery(internal.agencies.internalRead, {
-        id: user.representation?.agencyId
-      })
-    }
-
-    const fullName = formatFullName(user.firstName, user.lastName)
-    const searchPattern =
-      `${fullName} ${user.displayName || ''} ${user.location?.city || ''} ${user.location?.state || ''} ${agency?.name || ''}`.trim()
-
-    console.log({ fullName, searchPattern })
-
-    await ctx.runMutation(internal.users.internalUpdate, {
-      id: user._id,
-      patch: {
-        fullName,
-        searchPattern
-      }
-    })
-  }
-})
+// Deferred afterUpdate removed; derived fields computed inline above
 
 export const updateOrCreateUserByTokenId = internalAction({
   args: {
@@ -173,9 +145,17 @@ export const updateOrCreateUserByTokenId = internalAction({
       timestamp: new Date().toISOString()
     })
 
-    const user = await ctx.runQuery(internal.users.getUserByTokenId, {
-      tokenId: data.tokenId
-    })
+    const user = await ctx.runQuery(
+      internal.users.getUserByTokenId as unknown as import('convex/server').FunctionReference<
+        'query',
+        'internal',
+        { tokenId: string },
+        UserDoc | null
+      >,
+      {
+        tokenId: data.tokenId
+      }
+    )
 
     const userData = {
       ...data,
@@ -270,10 +250,10 @@ export const updateDerivedPatterns = internalMutation({
   args: {},
   handler: async (ctx) => {
     const users = await ctx.db.query('users').take(1000)
-
-    users.forEach(async (user) => {
-      ctx.scheduler.runAfter(0, internal.users.afterUpdate, user)
-    })
+    for (const user of users) {
+      const derived = await computeDerived(ctx as any, user)
+      await ctx.db.patch(user._id, derived)
+    }
   }
 })
 
@@ -296,7 +276,9 @@ export const removeFavoriteUser = authMutation({
   handler: async (ctx, { userId }) => {
     const existing = ctx.user.favoriteUsers || []
     await ctx.db.patch(ctx.user._id, {
-      favoriteUsers: existing.filter((id) => id !== userId)
+      favoriteUsers: existing.filter(
+        (id: import('./_generated/dataModel').Id<'users'>) => id !== userId
+      )
     })
   }
 })
@@ -367,9 +349,9 @@ export const saveMyPushToken = authMutation({
   async handler(ctx, { token, platform }) {
     const existing = ctx.user.pushTokens || []
     // Remove duplicates of the same token
-    const filtered = existing.filter((t) => t.token !== token)
+    const filtered = existing.filter((t: { token: string; platform: 'ios' | 'android'; updatedAt: number }) => t.token !== token)
     // Optionally keep only the latest per platform (dedupe by platform)
-    const withoutPlatform = filtered.filter((t) => t.platform !== platform)
+    const withoutPlatform = filtered.filter((t: { token: string; platform: 'ios' | 'android'; updatedAt: number }) => t.platform !== platform)
 
     const updated = [
       ...withoutPlatform,

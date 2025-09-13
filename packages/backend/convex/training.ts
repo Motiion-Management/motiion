@@ -49,7 +49,9 @@ export const removeMyTraining = authMutation({
   returns: v.null(),
   handler: async (ctx, args) => {
     await ctx.db.patch(ctx.user._id, {
-      training: (ctx.user.training || []).filter((id) => id !== args.trainingId)
+      training: (ctx.user.training || []).filter(
+        (id: import('./_generated/dataModel').Id<'training'>) => id !== args.trainingId
+      )
     })
     await ctx.db.delete(args.trainingId)
     return null

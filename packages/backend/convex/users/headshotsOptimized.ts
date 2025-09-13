@@ -1,4 +1,5 @@
 import { v } from 'convex/values'
+import type { Id } from '../_generated/dataModel'
 import { query } from '../_generated/server'
 
 /**
@@ -21,7 +22,8 @@ export const getMyHeadshotsMetadata = query({
     }
 
     // Return headshot metadata without URLs, including position (defaulting to index)
-    return user.headshots.map((headshot, index) => ({
+    type Headshot = { storageId: Id<'_storage'>; title?: string; uploadDate: string; position?: number }
+    return user.headshots.map((headshot: Headshot, index: number) => ({
       id: `headshot-${index}`,
       storageId: headshot.storageId,
       title: headshot.title,

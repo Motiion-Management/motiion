@@ -3,6 +3,7 @@ import { authMutation, authQuery } from '../util'
 import { v } from 'convex/values'
 import { zodToConvex } from '@packages/zodvex'
 import { UserDoc, resume as resumeObj } from '../validators/users'
+import type { Id } from '../_generated/dataModel'
 import { zFileUploadObjectArray } from '../validators/base'
 import {
   PROJECT_TITLE_MAP as EXPERIENCE_TITLE_MAP,
@@ -19,14 +20,14 @@ export async function augmentResume(
   const { resume } = user
 
   const uploads = await Promise.all(
-    (resume.uploads || []).map(async (resumeUpload) => ({
+    (resume.uploads || []).map(async (resumeUpload: { storageId: Id<'_storage'>; title?: string; uploadDate: string }) => ({
       url: await ctx.storage.getUrl(resumeUpload.storageId),
       ...resumeUpload
     }))
   )
 
   const publicExperiences = await Promise.all(
-    (resume.projects || []).map(async (projectId) => {
+    (resume.projects || []).map(async (projectId: Id<'projects'>) => {
       const project = await ctx.db.get(projectId)
       if (!project || (filterPublic && project.private)) return
       return project
@@ -127,7 +128,7 @@ export const removeResumeUpload = authMutation({
     await ctx.storage.delete(args.resumeUploadId)
 
     const uploads = (ctx.user.resume?.uploads || []).filter(
-      (h) => h.storageId !== args.resumeUploadId
+      (h: { storageId: Id<'_storage'> }) => h.storageId !== args.resumeUploadId
     )
 
     await ctx.db.patch(ctx.user._id, {

@@ -1,5 +1,5 @@
 import { zid } from 'convex-helpers/server/zodV4'
-import { zodToConvex, zodToConvexFields } from '@packages/zodvex'
+import { convexCodec, zodToConvex } from '@packages/zodvex'
 import { Table } from 'convex-helpers/server'
 import { z } from 'zod'
 import { zFileUploadObjectArray, zLocation } from './base'
@@ -115,7 +115,9 @@ export const users = {
 }
 export const zUsers = z.object(users)
 
-export const Users = Table('users', zodToConvexFields(users))
+// Codec-driven mapping for the users table
+export const UsersCodec = convexCodec(zUsers)
+export const Users = Table('users', UsersCodec.toConvexSchema())
 export type UserDoc = Doc<'users'>
 
 // Legacy compatibility export for web app (temporary)

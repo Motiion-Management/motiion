@@ -1,9 +1,6 @@
 import { z } from 'zod'
 import { v, type Validator } from 'convex/values'
-import {
-  zodToConvex as baseZodToConvex,
-  zodToConvexFields as baseZodToConvexFields
-} from 'convex-helpers/server/zodV4'
+import { registryHelpers } from 'convex-helpers/server/zodV4'
 
 // Helper type guard
 const isUnion = (val: any) => val && typeof val === 'object' && val.kind === 'union'
@@ -65,8 +62,7 @@ function analyzeZod(schema: z.ZodTypeAny): {
 }
 
 export function zodToConvex(schema: z.ZodTypeAny): Validator<any, any, any> {
-  const base = baseZodToConvex(schema) as any
-  return convertWithMeta(schema, base)
+  return convertWithMeta(schema, simpleToConvex(schema))
 }
 
 export function zodToConvexFields(
@@ -88,14 +84,10 @@ export function zodToConvexFields(
     shape = shapeOrObject as Record<string, z.ZodTypeAny>
   }
 
-  // Start with base conversion for the whole shape
-  const base = baseZodToConvexFields(shape) as Record<string, any>
-
-  // Then correct optional/nullable semantics per field (recursively)
+  // Build validators per field using our simple mapper and normalize recursively
   const out: Record<string, Validator<any, any, any>> = {}
   for (const [key, zodField] of Object.entries(shape)) {
-    const original = base[key] as any
-    out[key] = convertWithMeta(zodField, original)
+    out[key] = convertWithMeta(zodField, simpleToConvex(zodField))
   }
   return out
 }
@@ -128,10 +120,9 @@ function convertWithMeta(zodField: z.ZodTypeAny, baseValidator: any): any {
   const inner = meta.base
   if (inner instanceof z.ZodObject) {
     const childShape = getObjectShape(inner as any)
-    const baseChildren: Record<string, any> =
-      core && typeof core === 'object' && core.kind === 'object' && (core as any).fields
-        ? (core as any).fields
-        : (baseZodToConvexFields(childShape) as Record<string, any>)
+    const baseChildren: Record<string, any> = Object.fromEntries(
+      Object.entries(childShape).map(([k, v]) => [k, simpleToConvex(v as z.ZodTypeAny)])
+    )
     const rebuiltChildren: Record<string, any> = {}
     for (const [k, childZ] of Object.entries(childShape)) {
       rebuiltChildren[k] = convertWithMeta(childZ, baseChildren[k])
@@ -139,7 +130,7 @@ function convertWithMeta(zodField: z.ZodTypeAny, baseValidator: any): any {
     core = v.object(rebuiltChildren)
   } else if (inner instanceof z.ZodArray) {
     const elZod = (inner._def as any).type as z.ZodTypeAny
-    const baseEl = core && typeof core === 'object' && core.kind === 'array' ? (core as any).element : baseZodToConvex(elZod)
+    const baseEl = simpleToConvex(elZod)
     const rebuiltEl = convertWithMeta(elZod, baseEl)
     core = v.array(rebuiltEl)
   }
@@ -151,6 +142,71 @@ function convertWithMeta(zodField: z.ZodTypeAny, baseValidator: any): any {
     core = v.optional(core)
   }
   return core
+}
+
+// Minimal Zod v4 -> Convex mapping that avoids base converter to prevent runtime registry issues
+function simpleToConvex(schema: z.ZodTypeAny): any {
+  const meta = analyzeZod(schema)
+  const inner = meta.base
+
+  // Detect zid via registry metadata
+  try {
+    const m = registryHelpers.getMetadata(inner as any)
+    if (m?.isConvexId && m?.tableName && typeof m.tableName === 'string') {
+      return v.id(m.tableName)
+    }
+  } catch {}
+
+  // Handle primitives
+  if (inner instanceof z.ZodString) return v.string()
+  if (inner instanceof z.ZodNumber) return v.float64()
+  if (inner instanceof z.ZodBigInt) return v.int64()
+  if (inner instanceof z.ZodBoolean) return v.boolean()
+  if (inner instanceof z.ZodDate) return v.float64()
+  if (inner instanceof z.ZodNull) return v.null()
+
+  // Literal
+  if (inner instanceof z.ZodLiteral) {
+    return v.literal((inner as any).value)
+  }
+
+  // Enum
+  if (inner instanceof z.ZodEnum) {
+    const lits = (inner as any).options.map((opt: any) => v.literal(opt))
+    return makeUnion(lits)
+  }
+
+  // Union
+  if (inner instanceof z.ZodUnion) {
+    const opts: z.ZodTypeAny[] = (inner as any)._def.options
+    const members = opts.map((o) => simpleToConvex(o))
+    return makeUnion(members)
+  }
+
+  // Array
+  if (inner instanceof z.ZodArray) {
+    const el = (inner._def as any).type as z.ZodTypeAny
+    return v.array(simpleToConvex(el))
+  }
+
+  // Object
+  if (inner instanceof z.ZodObject) {
+    const shape = getObjectShape(inner)
+    const fields: Record<string, any> = {}
+    for (const [k, child] of Object.entries(shape)) {
+      fields[k] = convertWithMeta(child as z.ZodTypeAny, simpleToConvex(child as z.ZodTypeAny))
+    }
+    return v.object(fields)
+  }
+
+  // Record
+  if (inner instanceof z.ZodRecord) {
+    const valueType = (inner._def as any).valueType as z.ZodTypeAny
+    return v.record(v.string(), simpleToConvex(valueType))
+  }
+
+  // Fallback
+  return v.any()
 }
 
 // Codec API

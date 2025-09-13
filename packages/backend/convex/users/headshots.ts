@@ -12,8 +12,9 @@ export const getMyHeadshots = authQuery({
       return []
     }
 
+    type Headshot = { storageId: Id<'_storage'>; title?: string; uploadDate: string; position?: number }
     return Promise.all(
-      ctx.user.headshots.map(async (headshot) => ({
+      ctx.user.headshots.map(async (headshot: Headshot) => ({
         url: await ctx.storage.getUrl(headshot.storageId),
         ...headshot
       }))
@@ -31,8 +32,9 @@ export const getHeadshots = query({
       return []
     }
 
+    type Headshot = { storageId: Id<'_storage'>; title?: string; uploadDate: string; position?: number }
     return Promise.all(
-      user.headshots.map(async (headshot) => ({
+      user.headshots.map(async (headshot: Headshot) => ({
         url: await ctx.storage.getUrl(headshot.storageId),
         ...headshot
       }))
@@ -73,7 +75,8 @@ export const saveHeadshotIds = authMutation({
       ? [...args.headshots, ...ctx.user.headshots]
       : args.headshots
     const limited = await ensureOnlyFive(ctx, merged)
-    const normalized = limited.map((h, idx) => ({ ...h, position: idx }))
+    type Headshot = { storageId: Id<'_storage'>; title?: string; uploadDate: string; position?: number }
+    const normalized = (limited as Headshot[]).map((h: Headshot, idx: number) => ({ ...h, position: idx }))
     ctx.db.patch(ctx.user._id, {
       headshots: normalized
     })
@@ -91,10 +94,11 @@ export const removeHeadshot = authMutation({
 
     await ctx.storage.delete(args.headshotId)
 
+    type Headshot = { storageId: Id<'_storage'>; title?: string; uploadDate: string; position?: number }
     const filtered = (ctx.user.headshots || []).filter(
-      (h) => h.storageId !== args.headshotId
+      (h: Headshot) => h.storageId !== args.headshotId
     )
-    const normalized = filtered.map((h, idx) => ({ ...h, position: idx }))
+    const normalized = (filtered as Headshot[]).map((h: Headshot, idx: number) => ({ ...h, position: idx }))
     await ctx.db.patch(ctx.user._id, { headshots: normalized })
   }
 })
@@ -114,15 +118,16 @@ export const updateHeadshotPosition = authMutation({
     const current = ctx.user.headshots || []
 
     // Map payload positions by storageId
-    const posMap = new Map(headshots.map((h) => [h.storageId, h.position]))
+    const posMap = new Map(headshots.map((h: { storageId: Id<'_storage'>; position: number }) => [h.storageId, h.position]))
 
-    const inPayload = current
-      .filter((h) => posMap.has(h.storageId))
-      .sort((a, b) => posMap.get(a.storageId)! - posMap.get(b.storageId)!)
+    type Headshot = { storageId: Id<'_storage'>; title?: string; uploadDate: string; position?: number }
+    const inPayload = (current as Headshot[])
+      .filter((h: Headshot) => posMap.has(h.storageId))
+      .sort((a: Headshot, b: Headshot) => posMap.get(a.storageId)! - posMap.get(b.storageId)!)
 
-    const remaining = current.filter((h) => !posMap.has(h.storageId))
+    const remaining = (current as Headshot[]).filter((h: Headshot) => !posMap.has(h.storageId))
 
-    const next = [...inPayload, ...remaining].map((h, idx) => ({
+    const next = [...inPayload, ...remaining].map((h: Headshot, idx: number) => ({
       ...h,
       position: idx
     }))
