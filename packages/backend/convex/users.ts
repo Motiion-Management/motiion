@@ -136,11 +136,12 @@ export const getUserByTokenId = zInternalQuery(
 export const getByTokenId = zInternalQuery(
   internalQuery,
   { tokenId: z.string() },
-  async (ctx, { tokenId }) => {
-    return await ctx.db
+  async (ctx, { tokenId }): Promise<UserDoc | null> => {
+    const user = await ctx.db
       .query('users')
       .withIndex('tokenId', (q: any) => q.eq('tokenId', tokenId))
       .unique()
+    return user
   }
 )
 

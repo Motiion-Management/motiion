@@ -1,9 +1,5 @@
 import { httpRouter } from 'convex/server'
-import {
-  clerkFulfill,
-  updateOrCreateUserByTokenId,
-  deleteUserByTokenId
-} from './apiBridge'
+import { internal } from './_generated/api'
 import { httpAction } from './_generated/server'
 
 const http = httpRouter()
@@ -39,7 +35,7 @@ http.route({
     const headerPayload = request.headers
 
     try {
-      const event = await clerkFulfill(ctx, {
+      const event = await ctx.runAction(internal.clerk.fulfill, {
         payload: payloadString,
         headers: {
           'svix-id': headerPayload.get('svix-id')!,
@@ -53,7 +49,7 @@ http.route({
         // const customerId = await ctx.runAction(internal.stripe.createCustomer)
         // await ctx.runAction(internal.stripe.startTrial, { customerId })
         case 'user.updated':
-          await updateOrCreateUserByTokenId(ctx, {
+          await ctx.runMutation(internal.users.updateOrCreateUserByTokenId, {
             data: {
               tokenId: event.data.id,
               email: event.data.email_addresses[0]?.email_address,
@@ -67,7 +63,7 @@ http.route({
           break
 
         case 'user.deleted':
-          await deleteUserByTokenId(ctx, {
+          await ctx.runMutation(internal.users.deleteUserByTokenId, {
             tokenId: event.data.id!
           })
           break
