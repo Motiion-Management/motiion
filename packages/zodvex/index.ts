@@ -326,3 +326,85 @@ function fromConvexJS(schema: z.ZodTypeAny, value: any): any {
 
   return value
 }
+
+// Lightweight wrappers to define Convex functions with Zod args
+type QueryBuilder = (def: { args: any; returns?: any; handler: (ctx: any, args: any) => any }) => any
+type MutationBuilder = (def: { args: any; returns?: any; handler: (ctx: any, args: any) => any }) => any
+type ActionBuilder = (def: { args: any; returns?: any; handler: (ctx: any, args: any) => any }) => any
+
+function normalizeSchema(input: z.ZodTypeAny | Record<string, z.ZodTypeAny>): z.ZodTypeAny {
+  if (input instanceof z.ZodType) return input
+  return z.object(input as Record<string, z.ZodTypeAny>)
+}
+
+export function zQuery(
+  query: QueryBuilder,
+  input: z.ZodTypeAny | Record<string, z.ZodTypeAny>,
+  handler: (ctx: any, args: any) => any,
+  options?: { returns?: any }
+) {
+  const zod = normalizeSchema(input)
+  const args = zod instanceof z.ZodObject ? zodToConvexFields(getObjectShape(zod)) : zodToConvex(zod)
+  return query({
+    args,
+    returns: options?.returns,
+    handler: (ctx, args) => handler(ctx, zod.parse(args))
+  })
+}
+
+export function zInternalQuery(
+  internalQuery: QueryBuilder,
+  input: z.ZodTypeAny | Record<string, z.ZodTypeAny>,
+  handler: (ctx: any, args: any) => any,
+  options?: { returns?: any }
+) {
+  return zQuery(internalQuery, input, handler, options)
+}
+
+export function zMutation(
+  mutation: MutationBuilder,
+  input: z.ZodTypeAny | Record<string, z.ZodTypeAny>,
+  handler: (ctx: any, args: any) => any,
+  options?: { returns?: any }
+) {
+  const zod = normalizeSchema(input)
+  const args = zod instanceof z.ZodObject ? zodToConvexFields(getObjectShape(zod)) : zodToConvex(zod)
+  return mutation({
+    args,
+    returns: options?.returns,
+    handler: (ctx, args) => handler(ctx, zod.parse(args))
+  })
+}
+
+export function zInternalMutation(
+  internalMutation: MutationBuilder,
+  input: z.ZodTypeAny | Record<string, z.ZodTypeAny>,
+  handler: (ctx: any, args: any) => any,
+  options?: { returns?: any }
+) {
+  return zMutation(internalMutation, input, handler, options)
+}
+
+export function zAction(
+  action: ActionBuilder,
+  input: z.ZodTypeAny | Record<string, z.ZodTypeAny>,
+  handler: (ctx: any, args: any) => any,
+  options?: { returns?: any }
+) {
+  const zod = normalizeSchema(input)
+  const args = zod instanceof z.ZodObject ? zodToConvexFields(getObjectShape(zod)) : zodToConvex(zod)
+  return action({
+    args,
+    returns: options?.returns,
+    handler: (ctx, args) => handler(ctx, zod.parse(args))
+  })
+}
+
+export function zInternalAction(
+  internalAction: ActionBuilder,
+  input: z.ZodTypeAny | Record<string, z.ZodTypeAny>,
+  handler: (ctx: any, args: any) => any,
+  options?: { returns?: any }
+) {
+  return zAction(internalAction, input, handler, options)
+}
