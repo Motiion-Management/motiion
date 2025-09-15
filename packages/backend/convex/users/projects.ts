@@ -7,7 +7,7 @@ export const addMyProject = authMutation({
   args: v.any(),
   returns: v.id('projects'),
   handler: async (ctx, project) => {
-    const payload = { ...(project || {}), userId: ctx.user._id } as any
+    const payload = { ...(project || {}), userId: ctx.user._id }
     const projId = await ctx.db.insert('projects', payload)
     // Keep resume.projects list in sync
     await ctx.db.patch(ctx.user._id, {
