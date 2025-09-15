@@ -13,8 +13,9 @@ import {
 } from 'convex-helpers/server/customFunctions'
 import { query } from './_generated/server'
 import { ConvexError } from 'convex/values'
-import { internal } from './_generated/api'
+// Avoid depending on internal API function names here to reduce coupling
 import { Id } from './_generated/dataModel'
+import { getUserByTokenIdAction } from './apiBridge'
 
 export const authQuery = customQuery(
   query,
@@ -36,9 +37,7 @@ export const authAction = customAction(
       throw new ConvexError('must be logged in')
     }
 
-    const user: any = await ctx.runQuery(internal.users.getByTokenId, {
-      tokenId
-    })
+    const user: any = await getUserByTokenIdAction(ctx, tokenId)
 
     if (!user) {
       throw new ConvexError('user not found')
@@ -71,9 +70,7 @@ export const adminAuthAction = customAction(
       throw new ConvexError('must be logged in')
     }
 
-    const user: any = await ctx.runQuery(internal.users.getByTokenId, {
-      tokenId
-    })
+    const user: any = await getUserByTokenIdAction(ctx, tokenId)
 
     if (!user) {
       throw new ConvexError('user not found')

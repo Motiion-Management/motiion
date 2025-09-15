@@ -133,15 +133,16 @@ export const getUserByTokenId = zInternalQuery(
 )
 
 // Minimal-typing variant to use from actions without heavy generics
-export const getByTokenId = internalQuery({
-  args: { tokenId: v.string() },
-  handler: async (ctx, { tokenId }) => {
+export const getByTokenId = zInternalQuery(
+  internalQuery,
+  { tokenId: z.string() },
+  async (ctx, { tokenId }) => {
     return await ctx.db
       .query('users')
-      .withIndex('tokenId', (q) => q.eq('tokenId', tokenId))
+      .withIndex('tokenId', (q: any) => q.eq('tokenId', tokenId))
       .unique()
   }
-})
+)
 
 // Deferred afterUpdate removed; derived fields computed inline above
 
