@@ -36,7 +36,7 @@ export const authAction = customAction(
       throw new ConvexError('must be logged in')
     }
 
-    const user: any = await ctx.runQuery(internal.users.getUserByTokenId, {
+    const user: any = await ctx.runQuery(internal.users.getByTokenId, {
       tokenId
     })
 
@@ -71,7 +71,7 @@ export const adminAuthAction = customAction(
       throw new ConvexError('must be logged in')
     }
 
-    const user: any = await ctx.runQuery(internal.users.getUserByTokenId, {
+    const user: any = await ctx.runQuery(internal.users.getByTokenId, {
       tokenId
     })
 

@@ -21,6 +21,7 @@ import type * as ai_schemas from "../ai/schemas.js";
 import type * as ai_shared from "../ai/shared.js";
 import type * as ai_textParser from "../ai/textParser.js";
 import type * as ai_utils from "../ai/utils.js";
+import type * as apiBridge from "../apiBridge.js";
 import type * as clerk from "../clerk.js";
 import type * as dev_resumeTest from "../dev/resumeTest.js";
 import type * as eventTypes from "../eventTypes.js";
@@ -74,6 +75,7 @@ declare const fullApi: ApiFromModules<{
   "ai/shared": typeof ai_shared;
   "ai/textParser": typeof ai_textParser;
   "ai/utils": typeof ai_utils;
+  apiBridge: typeof apiBridge;
   clerk: typeof clerk;
   "dev/resumeTest": typeof dev_resumeTest;
   eventTypes: typeof eventTypes;
