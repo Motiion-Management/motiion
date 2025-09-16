@@ -79,10 +79,10 @@ export const parseResumeDocument: any = authAction({
   handler: async (ctx, args) => {
     // Call the new unified document processor
     return await ctx.runAction(
-      // @ts-expect-error - TypeScript limitation with deeply nested API types
       internal.ai.documentProcessor.parseResumeDocument,
       {
-        storageId: args.storageId
+        storageId: args.storageId,
+        retryCount: undefined
       }
     )
   }
@@ -97,7 +97,8 @@ export const parseResumeTextDirect: any = authAction({
   handler: async (ctx, args) => {
     // Call the text parser
     return await ctx.runAction(internal.ai.textParser.parseResumeText, {
-      text: args.text
+      text: args.text,
+      retryCount: undefined
     })
   }
 })
