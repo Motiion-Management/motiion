@@ -1,6 +1,6 @@
 import { query, mutation } from './_generated/server'
 import { authMutation, authQuery } from './util'
-import { zCrud } from '@packages/zodvex'
+import { zCrud } from 'zodvex'
 import { Events } from './schemas/events'
 
 export const { read } = zCrud(Events, query, mutation)

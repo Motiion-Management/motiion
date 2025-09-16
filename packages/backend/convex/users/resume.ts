@@ -1,6 +1,6 @@
 import { QueryCtx, query } from '../_generated/server'
 import { authMutation, authQuery } from '../util'
-import { zQuery, zMutation } from '@packages/zodvex'
+import { zQuery, zMutation } from 'zodvex'
 import { z } from 'zod'
 import { zid } from 'convex-helpers/server/zodV4'
 import { UserDoc, resume as resumeObj } from '../schemas/users'

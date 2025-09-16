@@ -5,7 +5,7 @@ import {
   internalMutation
 } from './_generated/server'
 import { authMutation, authQuery } from './util'
-import { zCrud, zQuery } from '@packages/zodvex'
+import { zCrud, zQuery } from 'zodvex'
 import { z } from 'zod'
 import { zid } from 'convex-helpers/server/zodV4'
 import { Agencies } from './schemas/agencies'

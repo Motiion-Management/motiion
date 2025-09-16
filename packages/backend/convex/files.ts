@@ -1,4 +1,4 @@
-import { zodToConvex } from '@packages/zodvex'
+import { zodToConvex } from 'zodvex'
 import { internalAction } from './_generated/server'
 import { authMutation } from './util'
 import { zFileUploadObjectArray } from './schemas/base'

@@ -1,6 +1,6 @@
 import { query, mutation } from './_generated/server'
 import { ConvexError, v } from 'convex/values'
-import { zMutation } from '@packages/zodvex'
+import { zMutation } from 'zodvex'
 import { z } from 'zod'
 import {
   getOnboardingFlow as getOnboardingFlowConfig,

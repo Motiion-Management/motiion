@@ -1,6 +1,6 @@
 import { query, mutation, internalMutation } from './_generated/server'
 import { ConvexError } from 'convex/values'
-import { zQuery, zMutation, zInternalMutation } from '@packages/zodvex'
+import { zQuery, zMutation, zInternalMutation } from 'zodvex'
 import { z } from 'zod'
 import { zid } from 'convex-helpers/server/zodV4'
 import { authQuery, authMutation } from './util'

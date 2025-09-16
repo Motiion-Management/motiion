@@ -1,6 +1,6 @@
 import { query, mutation } from './_generated/server'
 import { authMutation, authQuery, notEmpty } from './util'
-import { zCrud, zQuery } from '@packages/zodvex'
+import { zCrud, zQuery } from 'zodvex'
 import { FeaturedMembers } from './schemas/featuredMembers'
 import { getAll } from 'convex-helpers/server/relationships'
 

@@ -2,7 +2,7 @@ import { authMutation, authAction } from '../util'
 import { internal } from '../_generated/api'
 import { ConvexError, v } from 'convex/values'
 import { Id } from '../_generated/dataModel'
-import { zMutation } from '@packages/zodvex'
+import { zMutation } from 'zodvex'
 import { z } from 'zod'
 import { zid } from 'convex-helpers/server/zodV4'
 

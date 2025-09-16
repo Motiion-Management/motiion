@@ -1,5 +1,5 @@
 import { zid } from 'convex-helpers/server/zodV4'
-import { zodToConvex } from '@packages/zodvex'
+import { zodToConvex } from 'zodvex'
 import { z } from 'zod'
 
 export const VISIBILITY = ['Public', 'Private'] as const

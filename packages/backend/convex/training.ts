@@ -2,7 +2,7 @@ import { authMutation, authQuery, notEmpty } from './util'
 import { Training, trainingInput, zTrainingInput } from './schemas/training'
 import { getAll } from 'convex-helpers/server/relationships'
 import { query } from './_generated/server'
-import { zCrud, zMutation, zQuery } from '@packages/zodvex'
+import { zCrud, zMutation, zQuery } from 'zodvex'
 import { z } from 'zod'
 import { zid } from 'convex-helpers/server/zodV4'
 

@@ -1,5 +1,5 @@
 import { authMutation } from '../util'
-import { zMutation } from '@packages/zodvex'
+import { zMutation } from 'zodvex'
 import { z } from 'zod'
 import { zid } from 'convex-helpers/server/zodV4'
 import { getActiveProfileTarget } from './profileHelpers'

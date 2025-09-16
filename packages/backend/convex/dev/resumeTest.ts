@@ -1,6 +1,6 @@
 import { action, mutation } from '../_generated/server'
 import { internal } from '../_generated/api'
-import { zAction, zMutation } from '@packages/zodvex'
+import { zAction, zMutation } from 'zodvex'
 import { z } from 'zod'
 import { zid } from 'convex-helpers/server/zodV4'
 

@@ -1,6 +1,6 @@
 import type { Id } from '../_generated/dataModel'
 import { query } from '../_generated/server'
-import { zQuery } from '@packages/zodvex'
+import { zQuery } from 'zodvex'
 import { z } from 'zod'
 import { zid } from 'convex-helpers/server/zodV4'
 
