@@ -14,7 +14,7 @@ import {
   type RegisteredAction,
   type DefaultFunctionArgs
 } from 'convex/server'
-import { registryHelpers } from 'convex-helpers/server/zodV4'
+import { registryHelpers, zid } from 'convex-helpers/server/zodV4'
 import { Table } from 'convex-helpers/server'
 import {
   type CustomBuilder,
@@ -715,5 +715,71 @@ export function zodTable<T extends z.ZodObject<any>, TableName extends string>(
     ...tableDefinition,
     codec, // Expose codec for encode/decode operations
     schema, // Expose original Zod schema for reference
+  }
+}
+
+// CRUD operations with zodvex patterns
+export function zCrud<
+  TableDefinition extends ReturnType<typeof zodTable>,
+  QueryBuilder extends (fn: any) => any,
+  MutationBuilder extends (fn: any) => any
+>(
+  table: TableDefinition,
+  queryBuilder: QueryBuilder,
+  mutationBuilder: MutationBuilder
+) {
+  const tableName = table.name
+  const tableSchema = table.schema
+
+  // Extract the shape for partial updates
+  const shape = getObjectShape(tableSchema)
+
+  return {
+    create: zMutation(
+      mutationBuilder,
+      shape,
+      async (ctx: any, args) => {
+        return await ctx.db.insert(tableName, args)
+      }
+    ),
+
+    read: zQuery(
+      queryBuilder,
+      { id: zid(tableName) },
+      async (ctx: any, { id }) => {
+        return await ctx.db.get(id)
+      }
+    ),
+
+    paginate: zQuery(
+      queryBuilder,
+      { paginationOpts: z.any() }, // Using z.any() for paginationOpts to match Convex's type
+      async (ctx: any, { paginationOpts }) => {
+        return await ctx.db.query(tableName).paginate(paginationOpts)
+      }
+    ),
+
+    update: zMutation(
+      mutationBuilder,
+      {
+        id: zid(tableName),
+        patch: z.object(shape).partial()
+      },
+      async (ctx: any, { id, patch }) => {
+        await ctx.db.patch(id, patch)
+      }
+    ),
+
+    destroy: zMutation(
+      mutationBuilder,
+      { id: zid(tableName) },
+      async (ctx: any, { id }) => {
+        const doc = await ctx.db.get(id)
+        if (doc) {
+          await ctx.db.delete(id)
+        }
+        return doc
+      }
+    )
   }
 }
