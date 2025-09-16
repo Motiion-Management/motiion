@@ -65,7 +65,11 @@ export const getMyUser = zQuery(
     if (!ctx.user) return null
 
     // AUTO-MIGRATE: If user has profileType but no active profile, migrate them
-    if (ctx.user.profileType && !ctx.user.activeDancerId && !ctx.user.activeChoreographerId) {
+    if (
+      ctx.user.profileType &&
+      !ctx.user.activeDancerId &&
+      !ctx.user.activeChoreographerId
+    ) {
       console.log('🔄 AUTO-MIGRATION: User needs profile migration', {
         userId: ctx.user._id,
         profileType: ctx.user.profileType
@@ -77,12 +81,18 @@ export const getMyUser = zQuery(
     }
 
     // If user has an active profile, merge the profile data for backward compatibility
-    if (ctx.user.activeProfileType && (ctx.user.activeDancerId || ctx.user.activeChoreographerId)) {
+    if (
+      ctx.user.activeProfileType &&
+      (ctx.user.activeDancerId || ctx.user.activeChoreographerId)
+    ) {
       let profile = null
 
       if (ctx.user.activeProfileType === 'dancer' && ctx.user.activeDancerId) {
         profile = await ctx.db.get(ctx.user.activeDancerId)
-      } else if (ctx.user.activeProfileType === 'choreographer' && ctx.user.activeChoreographerId) {
+      } else if (
+        ctx.user.activeProfileType === 'choreographer' &&
+        ctx.user.activeChoreographerId
+      ) {
         profile = await ctx.db.get(ctx.user.activeChoreographerId)
       }
 
@@ -98,22 +108,28 @@ export const getMyUser = zQuery(
           resume: profile.resume || ctx.user.resume,
           links: profile.links || ctx.user.links,
           representation: profile.representation || ctx.user.representation,
-          representationStatus: profile.representationStatus || ctx.user.representationStatus,
-          profileTipDismissed: profile.profileTipDismissed || ctx.user.profileTipDismissed,
+          representationStatus:
+            profile.representationStatus || ctx.user.representationStatus,
+          profileTipDismissed:
+            profile.profileTipDismissed || ctx.user.profileTipDismissed,
           // Dancer-specific
-          ...(ctx.user.activeProfileType === 'dancer' ? {
-            sagAftraId: profile.sagAftraId || ctx.user.sagAftraId,
-            training: profile.training || ctx.user.training,
-            workLocation: profile.workLocation || ctx.user.workLocation,
-            location: profile.location || ctx.user.location,
-          } : {}),
+          ...(ctx.user.activeProfileType === 'dancer'
+            ? {
+              sagAftraId: profile.sagAftraId || ctx.user.sagAftraId,
+              training: profile.training || ctx.user.training,
+              workLocation: profile.workLocation || ctx.user.workLocation,
+              location: profile.location || ctx.user.location
+            }
+            : {}),
           // Choreographer-specific
-          ...(ctx.user.activeProfileType === 'choreographer' ? {
-            companyName: profile.companyName || ctx.user.companyName,
-            workLocation: profile.workLocation || ctx.user.workLocation,
-            location: profile.location || ctx.user.location,
-            databaseUse: profile.databaseUse || ctx.user.databaseUse,
-          } : {})
+          ...(ctx.user.activeProfileType === 'choreographer'
+            ? {
+              companyName: profile.companyName || ctx.user.companyName,
+              workLocation: profile.workLocation || ctx.user.workLocation,
+              location: profile.location || ctx.user.location,
+              databaseUse: profile.databaseUse || ctx.user.databaseUse
+            }
+            : {})
         }
 
         return mergedUser
@@ -145,11 +161,17 @@ export const updateMySizingField = zMutation(
   { section: z.string(), field: z.string(), value: z.string() },
   async (ctx, { section, field, value }) => {
     // Update profile if active, otherwise update user
-    if (ctx.user.activeProfileType && (ctx.user.activeDancerId || ctx.user.activeChoreographerId)) {
+    if (
+      ctx.user.activeProfileType &&
+      (ctx.user.activeDancerId || ctx.user.activeChoreographerId)
+    ) {
       let profileId = null
       if (ctx.user.activeProfileType === 'dancer' && ctx.user.activeDancerId) {
         profileId = ctx.user.activeDancerId
-      } else if (ctx.user.activeProfileType === 'choreographer' && ctx.user.activeChoreographerId) {
+      } else if (
+        ctx.user.activeProfileType === 'choreographer' &&
+        ctx.user.activeChoreographerId
+      ) {
         profileId = ctx.user.activeChoreographerId
       }
 
@@ -157,7 +179,8 @@ export const updateMySizingField = zMutation(
         const profile = await ctx.db.get(profileId)
         if (profile) {
           const currentSizing: Record<string, unknown> = profile.sizing || {}
-          const currentSection: Record<string, unknown> = (currentSizing as any)[section] || {}
+          const currentSection: Record<string, unknown> =
+            (currentSizing as any)[section] || {}
           const updatedSection = {
             ...currentSection,
             [field]: value
@@ -175,7 +198,8 @@ export const updateMySizingField = zMutation(
 
     // Fallback to user if no profile
     const currentSizing: Record<string, unknown> = ctx.user.sizing || {}
-    const currentSection: Record<string, unknown> = (currentSizing as any)[section] || {}
+    const currentSection: Record<string, unknown> =
+      (currentSizing as any)[section] || {}
     const updatedSection = {
       ...currentSection,
       [field]: value
@@ -201,18 +225,27 @@ export const patchUserAttributes = zMutation(
   { attributes: z.object(attributesPlainObject).partial() },
   async (ctx, { attributes }) => {
     // Update profile if active, otherwise update user
-    if (ctx.user.activeProfileType && (ctx.user.activeDancerId || ctx.user.activeChoreographerId)) {
+    if (
+      ctx.user.activeProfileType &&
+      (ctx.user.activeDancerId || ctx.user.activeChoreographerId)
+    ) {
       let profileId = null
       if (ctx.user.activeProfileType === 'dancer' && ctx.user.activeDancerId) {
         profileId = ctx.user.activeDancerId
-      } else if (ctx.user.activeProfileType === 'choreographer' && ctx.user.activeChoreographerId) {
+      } else if (
+        ctx.user.activeProfileType === 'choreographer' &&
+        ctx.user.activeChoreographerId
+      ) {
         profileId = ctx.user.activeChoreographerId
       }
 
       if (profileId) {
         const profile = await ctx.db.get(profileId)
         if (profile) {
-          const currentAttributes = (profile.attributes || {}) as Record<string, unknown>
+          const currentAttributes = (profile.attributes || {}) as Record<
+            string,
+            unknown
+          >
           const mergedAttributes = {
             ...currentAttributes,
             ...attributes
@@ -225,7 +258,10 @@ export const patchUserAttributes = zMutation(
     }
 
     // Fallback to user if no profile
-    const currentAttributes = (ctx.user.attributes || {}) as Record<string, unknown>
+    const currentAttributes = (ctx.user.attributes || {}) as Record<
+      string,
+      unknown
+    >
     const mergedAttributes = {
       ...currentAttributes,
       ...attributes
