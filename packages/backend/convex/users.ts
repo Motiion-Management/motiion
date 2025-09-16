@@ -10,29 +10,23 @@ import {
 import { authMutation, authQuery, notEmpty } from './util'
 
 import { getAll } from 'convex-helpers/server/relationships'
-import { crud } from 'convex-helpers/server'
 import { UserDoc, Users, zUsers } from './schemas/users'
 import { z } from 'zod'
-import {
-  zQuery,
-  zMutation,
-  zInternalQuery,
-  zInternalMutation
-} from '@packages/zodvex'
+import { zQuery, zMutation, zInternalQuery, zInternalMutation, zCrud } from '@packages/zodvex'
 import { zid } from 'convex-helpers/server/zodV4'
 import { attributesPlainObject } from './schemas/attributes'
 import { NEW_USER_DEFAULTS, formatFullName } from './users/helpers'
 import { AgencyDoc } from './agencies'
 
-export const { read } = crud(Users, query, mutation)
+export const { read } = zCrud(Users, query, mutation)
 
-export const {
-  create,
-  update: internalUpdate,
-  destroy
-} = crud(Users, internalQuery, internalMutation)
+export const { create, update: internalUpdate, destroy } = zCrud(
+  Users,
+  internalQuery,
+  internalMutation
+)
 
-export const { update } = crud(Users, authQuery, authMutation)
+export const { update } = zCrud(Users, authQuery, authMutation)
 
 async function computeDerived(
   ctx: { db: { get: (id: any) => Promise<any> } },
