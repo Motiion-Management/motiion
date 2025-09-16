@@ -18,13 +18,9 @@ import { registryHelpers, zid } from 'convex-helpers/server/zodV4'
 import { Table } from 'convex-helpers/server'
 import {
   type CustomBuilder,
-  type CustomCtx,
-  type Registration,
   type Customization,
   NoOp,
-  customQuery,
-  customMutation,
-  customAction
+  
 } from 'convex-helpers/server/customFunctions'
 
 // Helper type guard
@@ -185,6 +181,12 @@ function simpleToConvex(schema: z.ZodTypeAny): any {
   if (inner instanceof z.ZodUnion) {
     const opts: z.ZodTypeAny[] = (inner as z.ZodUnion<any>).options
     const members = opts.map((o) => simpleToConvex(o))
+    return makeUnion(members)
+  }
+
+  // Discriminated Union
+  if (inner instanceof z.ZodDiscriminatedUnion) {
+    const members = (inner as z.ZodDiscriminatedUnion<any, any>).options.map((o: z.ZodTypeAny) => simpleToConvex(o))
     return makeUnion(members)
   }
 
@@ -362,10 +364,7 @@ export type InferArgs<A> =
 // Type helper for return values
 export type InferReturns<R> = R extends z.ZodTypeAny ? z.output<R> : R extends undefined ? any : R
 
-function normalizeSchema(input: z.ZodTypeAny | Record<string, z.ZodTypeAny>): z.ZodTypeAny {
-  if (input instanceof z.ZodType) return input
-  return z.object(input as Record<string, z.ZodTypeAny>)
-}
+// (removed) normalizeSchema no longer needed; wrappers normalize explicitly
 
 // Convert Zod return validator to Convex validator
 function zodReturnsToConvex(returns?: z.ZodTypeAny): GenericValidator | undefined {
