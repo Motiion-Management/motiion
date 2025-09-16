@@ -1,27 +1,27 @@
 import { query, mutation } from './_generated/server'
 import { authMutation, authQuery } from './util'
-
-import { crud } from 'convex-helpers/server'
+import { zCrud, zQuery } from '@packages/zodvex'
+import { z } from 'zod'
 import { filter } from 'convex-helpers/server/filter'
 import { Events } from './validators/events'
-import { paginationOptsValidator } from 'convex/server'
 
-export const { read } = crud(Events, query, mutation)
+export const { read } = zCrud(Events, query, mutation)
 
-export const { create, update, destroy } = crud(Events, authQuery, authMutation)
+export const { create, update, destroy } = zCrud(Events, authQuery, authMutation)
 
-export const paginate = query({
-  args: { paginationOpts: paginationOptsValidator },
-  async handler(ctx, args) {
+export const paginate = zQuery(
+  query,
+  { paginationOpts: z.any() },
+  async (ctx, args) => {
     const events = await filter(
       ctx.db.query('events'),
-      async (event) => event.active
+      async (event: any) => event.active
     )
       .withIndex('startDate')
-      .filter((q) => q.eq(q.field('active'), true))
+      .filter((q: any) => q.eq(q.field('active'), true))
       .order('desc')
       .paginate(args.paginationOpts)
 
     return events
   }
-})
+)

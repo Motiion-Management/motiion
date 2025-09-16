@@ -1,20 +1,20 @@
 import { query, mutation } from './_generated/server'
 import { authMutation, authQuery } from './util'
-
-import { crud } from 'convex-helpers/server'
+import { zCrud, zQuery } from '@packages/zodvex'
 import { FeaturedContent } from './validators/featuredContent'
 
-export const { read } = crud(FeaturedContent, query, mutation)
+export const { read } = zCrud(FeaturedContent, query, mutation)
 
-export const { create, update, destroy } = crud(
+export const { create, update, destroy } = zCrud(
   FeaturedContent,
   authQuery,
   authMutation
 )
 
-export const getCurrent = query({
-  args: {},
-  async handler(ctx) {
+export const getCurrent = zQuery(
+  query,
+  {},
+  async (ctx) => {
     const featuredContent = await ctx.db.query('featuredContent').first()
 
     if (!featuredContent) return
@@ -24,4 +24,4 @@ export const getCurrent = query({
       image: await ctx.storage.getUrl(featuredContent.media)
     }
   }
-})
+)
