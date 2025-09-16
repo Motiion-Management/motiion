@@ -19,6 +19,26 @@ export const addMyTraining = zMutation(
   authMutation,
   trainingInput,
   async (ctx, training) => {
+    // Get profile if active
+    let profileInfo = {}
+    let profile = null
+
+    if (ctx.user.activeProfileType && (ctx.user.activeDancerId || ctx.user.activeChoreographerId)) {
+      if (ctx.user.activeProfileType === 'dancer' && ctx.user.activeDancerId) {
+        profile = await ctx.db.get(ctx.user.activeDancerId)
+        profileInfo = {
+          profileType: 'dancer' as const,
+          profileId: ctx.user.activeDancerId
+        }
+      } else if (ctx.user.activeProfileType === 'choreographer' && ctx.user.activeChoreographerId) {
+        profile = await ctx.db.get(ctx.user.activeChoreographerId)
+        profileInfo = {
+          profileType: 'choreographer' as const,
+          profileId: ctx.user.activeChoreographerId
+        }
+      }
+    }
+
     // Get current max order index
     const existingTraining = await ctx.db
       .query('training')
@@ -33,12 +53,24 @@ export const addMyTraining = zMutation(
     const trainingId = await ctx.db.insert('training', {
       ...training,
       userId: ctx.user._id,
+      ...profileInfo,
       orderIndex: maxOrderIndex + 1
     })
 
+    // DUAL-WRITE: Update training list in both user and profile
+    const currentTraining = profile?.training || ctx.user?.training || []
+    const updatedTraining = [...currentTraining, trainingId]
+
     await ctx.db.patch(ctx.user._id, {
-      training: [...(ctx.user?.training || []), trainingId]
+      training: updatedTraining
     })
+
+    if (profile) {
+      await ctx.db.patch(profile._id, {
+        training: updatedTraining
+      })
+    }
+
     return null
   }
 )
@@ -48,11 +80,32 @@ export const removeMyTraining = zMutation(
   authMutation,
   { trainingId: zid('training') },
   async (ctx, args) => {
+    // Get profile if active
+    let profile = null
+    if (ctx.user.activeProfileType && (ctx.user.activeDancerId || ctx.user.activeChoreographerId)) {
+      if (ctx.user.activeProfileType === 'dancer' && ctx.user.activeDancerId) {
+        profile = await ctx.db.get(ctx.user.activeDancerId)
+      } else if (ctx.user.activeProfileType === 'choreographer' && ctx.user.activeChoreographerId) {
+        profile = await ctx.db.get(ctx.user.activeChoreographerId)
+      }
+    }
+
+    // DUAL-WRITE: Remove from training list in both user and profile
+    const currentTraining = profile?.training || ctx.user.training || []
+    const updatedTraining = currentTraining.filter(
+      (id: import('./_generated/dataModel').Id<'training'>) => id !== args.trainingId
+    )
+
     await ctx.db.patch(ctx.user._id, {
-      training: (ctx.user.training || []).filter(
-        (id: import('./_generated/dataModel').Id<'training'>) => id !== args.trainingId
-      )
+      training: updatedTraining
     })
+
+    if (profile) {
+      await ctx.db.patch(profile._id, {
+        training: updatedTraining
+      })
+    }
+
     await ctx.db.delete(args.trainingId)
     return null
   }
@@ -63,14 +116,30 @@ export const getMyTraining = zQuery(
   authQuery,
   {},
   async (ctx) => {
-    if (!ctx.user?.training) return []
+    // PROFILE-FIRST: Get training from profile if active
+    let trainingIds = ctx.user?.training || []
 
-    const trainingIds = ctx.user.training
+    if (ctx.user?.activeProfileType && (ctx.user?.activeDancerId || ctx.user?.activeChoreographerId)) {
+      let profile = null
+
+      if (ctx.user.activeProfileType === 'dancer' && ctx.user.activeDancerId) {
+        profile = await ctx.db.get(ctx.user.activeDancerId)
+      } else if (ctx.user.activeProfileType === 'choreographer' && ctx.user.activeChoreographerId) {
+        profile = await ctx.db.get(ctx.user.activeChoreographerId)
+      }
+
+      if (profile?.training) {
+        trainingIds = profile.training
+      }
+    }
+
+    if (!trainingIds || trainingIds.length === 0) return []
+
     const training = await getAll(ctx.db, trainingIds)
     return training
       .filter(notEmpty)
       .sort((a, b) => (a.orderIndex || 0) - (b.orderIndex || 0))
-      .map(({ orderIndex, userId, ...rest }: any) => rest)
+      .map(({ orderIndex, userId, profileType, profileId, ...rest }: any) => rest)
   }
 )
 
@@ -79,15 +148,31 @@ export const getMyTrainingByType = zQuery(
   authQuery,
   { type: zTrainingInput.shape.type },
   async (ctx, args) => {
-    if (!ctx.user?.training) return []
+    // PROFILE-FIRST: Get training from profile if active
+    let trainingIds = ctx.user?.training || []
 
-    const trainingIds = ctx.user.training
+    if (ctx.user?.activeProfileType && (ctx.user?.activeDancerId || ctx.user?.activeChoreographerId)) {
+      let profile = null
+
+      if (ctx.user.activeProfileType === 'dancer' && ctx.user.activeDancerId) {
+        profile = await ctx.db.get(ctx.user.activeDancerId)
+      } else if (ctx.user.activeProfileType === 'choreographer' && ctx.user.activeChoreographerId) {
+        profile = await ctx.db.get(ctx.user.activeChoreographerId)
+      }
+
+      if (profile?.training) {
+        trainingIds = profile.training
+      }
+    }
+
+    if (!trainingIds || trainingIds.length === 0) return []
+
     const training = await getAll(ctx.db, trainingIds)
     return training
       .filter(notEmpty)
       .filter((t) => t.type === args.type)
       .sort((a, b) => (a.orderIndex || 0) - (b.orderIndex || 0))
-      .map(({ orderIndex, userId, ...rest }: any) => rest)
+      .map(({ orderIndex, userId, profileType, profileId, ...rest }: any) => rest)
   }
 )
 

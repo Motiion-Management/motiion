@@ -9,15 +9,50 @@ export const addMyProject = zMutation(
   authMutation,
   z.any(),
   async (ctx, project) => {
-    const payload = { ...(project || {}), userId: ctx.user._id }
-    const projId = await ctx.db.insert('projects', payload)
-    // Keep resume.projects list in sync
-    await ctx.db.patch(ctx.user._id, {
-      resume: {
-        ...ctx.user.resume,
-        projects: [...(ctx.user?.resume?.projects || []), projId]
+    // Add profile references if user has an active profile
+    let profileInfo = {}
+    let profile = null
+
+    if (ctx.user.activeProfileType && (ctx.user.activeDancerId || ctx.user.activeChoreographerId)) {
+      if (ctx.user.activeProfileType === 'dancer' && ctx.user.activeDancerId) {
+        profile = await ctx.db.get(ctx.user.activeDancerId)
+        profileInfo = {
+          profileType: 'dancer' as const,
+          profileId: ctx.user.activeDancerId
+        }
+      } else if (ctx.user.activeProfileType === 'choreographer' && ctx.user.activeChoreographerId) {
+        profile = await ctx.db.get(ctx.user.activeChoreographerId)
+        profileInfo = {
+          profileType: 'choreographer' as const,
+          profileId: ctx.user.activeChoreographerId
+        }
       }
+    }
+
+    const payload = {
+      ...(project || {}),
+      userId: ctx.user._id,
+      ...profileInfo
+    }
+    const projId = await ctx.db.insert('projects', payload)
+
+    // DUAL-WRITE: Keep resume.projects list in sync in both user and profile
+    const currentResume = profile?.resume || ctx.user.resume
+    const updatedResume = {
+      ...currentResume,
+      projects: [...(currentResume?.projects || []), projId]
+    }
+
+    await ctx.db.patch(ctx.user._id, {
+      resume: updatedResume
     })
+
+    if (profile) {
+      await ctx.db.patch(profile._id, {
+        resume: updatedResume
+      })
+    }
+
     return projId
   },
   { returns: zid('projects') }
@@ -33,15 +68,36 @@ export const removeMyProject = zMutation(
       // Not found or not owned by user; do nothing
       return null
     }
-    // Detach from resume list
-    await ctx.db.patch(ctx.user._id, {
-      resume: {
-        ...ctx.user.resume,
-        projects: (ctx.user.resume?.projects || []).filter(
-          (id: import('../_generated/dataModel').Id<'projects'>) => id !== args.projectId
-        )
+
+    // Get profile if active
+    let profile = null
+    if (ctx.user.activeProfileType && (ctx.user.activeDancerId || ctx.user.activeChoreographerId)) {
+      if (ctx.user.activeProfileType === 'dancer' && ctx.user.activeDancerId) {
+        profile = await ctx.db.get(ctx.user.activeDancerId)
+      } else if (ctx.user.activeProfileType === 'choreographer' && ctx.user.activeChoreographerId) {
+        profile = await ctx.db.get(ctx.user.activeChoreographerId)
       }
+    }
+
+    // DUAL-WRITE: Detach from resume list in both user and profile
+    const currentResume = profile?.resume || ctx.user.resume
+    const updatedResume = {
+      ...currentResume,
+      projects: (currentResume?.projects || []).filter(
+        (id: import('../_generated/dataModel').Id<'projects'>) => id !== args.projectId
+      )
+    }
+
+    await ctx.db.patch(ctx.user._id, {
+      resume: updatedResume
     })
+
+    if (profile) {
+      await ctx.db.patch(profile._id, {
+        resume: updatedResume
+      })
+    }
+
     await ctx.db.delete(args.projectId)
     return null
   },

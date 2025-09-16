@@ -62,7 +62,25 @@ export const getMyResume = zQuery(
   async (ctx) => {
     if (!ctx.user) return
 
-    return await augmentResume(ctx, ctx.user)
+    // PROFILE-FIRST: Get resume from active profile if it exists
+    let userWithResume = ctx.user
+
+    if (ctx.user.activeProfileType && (ctx.user.activeDancerId || ctx.user.activeChoreographerId)) {
+      let profile = null
+
+      if (ctx.user.activeProfileType === 'dancer' && ctx.user.activeDancerId) {
+        profile = await ctx.db.get(ctx.user.activeDancerId)
+      } else if (ctx.user.activeProfileType === 'choreographer' && ctx.user.activeChoreographerId) {
+        profile = await ctx.db.get(ctx.user.activeChoreographerId)
+      }
+
+      if (profile?.resume) {
+        // Create a user object with profile's resume for augmentResume
+        userWithResume = { ...ctx.user, resume: profile.resume }
+      }
+    }
+
+    return await augmentResume(ctx, userWithResume)
   }
 )
 
@@ -70,7 +88,24 @@ export const getMyExperienceCounts = zQuery(
   authQuery,
   {},
   async (ctx) => {
-    const exp = ctx.user?.resume?.projects
+    // PROFILE-FIRST: Get resume from active profile if it exists
+    let resume = ctx.user?.resume
+
+    if (ctx.user?.activeProfileType && (ctx.user?.activeDancerId || ctx.user?.activeChoreographerId)) {
+      let profile = null
+
+      if (ctx.user.activeProfileType === 'dancer' && ctx.user.activeDancerId) {
+        profile = await ctx.db.get(ctx.user.activeDancerId)
+      } else if (ctx.user.activeProfileType === 'choreographer' && ctx.user.activeChoreographerId) {
+        profile = await ctx.db.get(ctx.user.activeChoreographerId)
+      }
+
+      if (profile?.resume) {
+        resume = profile.resume
+      }
+    }
+
+    const exp = resume?.projects
     const experiences = exp ? await getAll(ctx.db, exp) : []
 
     return EXPERIENCE_TYPES.map((type) => ({
@@ -106,17 +141,42 @@ export const saveResumeUploadIds = zMutation(
   async (ctx, args) => {
     if (!ctx.user) return
 
+    // Get current resume from profile or user
+    let currentResume = ctx.user.resume
+    let profile = null
+
+    if (ctx.user.activeProfileType && (ctx.user.activeDancerId || ctx.user.activeChoreographerId)) {
+      if (ctx.user.activeProfileType === 'dancer' && ctx.user.activeDancerId) {
+        profile = await ctx.db.get(ctx.user.activeDancerId)
+      } else if (ctx.user.activeProfileType === 'choreographer' && ctx.user.activeChoreographerId) {
+        profile = await ctx.db.get(ctx.user.activeChoreographerId)
+      }
+
+      if (profile?.resume) {
+        currentResume = profile.resume
+      }
+    }
+
     const resumeUploads = [
       ...args.resumeUploads,
-      ...(ctx.user.resume?.uploads || [])
+      ...(currentResume?.uploads || [])
     ]
 
-    ctx.db.patch(ctx.user._id, {
-      resume: {
-        ...ctx.user.resume,
-        uploads: resumeUploads
-      }
+    const updatedResume = {
+      ...currentResume,
+      uploads: resumeUploads
+    }
+
+    // DUAL-WRITE: Update both user and profile
+    await ctx.db.patch(ctx.user._id, {
+      resume: updatedResume
     })
+
+    if (profile) {
+      await ctx.db.patch(profile._id, {
+        resume: updatedResume
+      })
+    }
   }
 )
 
@@ -130,13 +190,38 @@ export const removeResumeUpload = zMutation(
 
     await ctx.storage.delete(args.resumeUploadId)
 
-    const uploads = (ctx.user.resume?.uploads || []).filter(
+    // Get current resume from profile or user
+    let currentResume = ctx.user.resume
+    let profile = null
+
+    if (ctx.user.activeProfileType && (ctx.user.activeDancerId || ctx.user.activeChoreographerId)) {
+      if (ctx.user.activeProfileType === 'dancer' && ctx.user.activeDancerId) {
+        profile = await ctx.db.get(ctx.user.activeDancerId)
+      } else if (ctx.user.activeProfileType === 'choreographer' && ctx.user.activeChoreographerId) {
+        profile = await ctx.db.get(ctx.user.activeChoreographerId)
+      }
+
+      if (profile?.resume) {
+        currentResume = profile.resume
+      }
+    }
+
+    const uploads = (currentResume?.uploads || []).filter(
       (h: { storageId: Id<'_storage'> }) => h.storageId !== args.resumeUploadId
     )
 
+    const updatedResume = { ...currentResume, uploads }
+
+    // DUAL-WRITE: Update both user and profile
     await ctx.db.patch(ctx.user._id, {
-      resume: { ...ctx.user.resume, uploads }
+      resume: updatedResume
     })
+
+    if (profile) {
+      await ctx.db.patch(profile._id, {
+        resume: updatedResume
+      })
+    }
   }
 )
 
@@ -150,13 +235,38 @@ export const updateMyResume = zMutation(
   async (ctx, args) => {
     if (!ctx.user) return
 
-    ctx.db.patch(ctx.user._id, {
-      resume: {
-        ...ctx.user.resume,
-        projects: args.projects,
-        skills: args.skills,
-        genres: args.genres
+    // Get current resume from profile or user
+    let currentResume = ctx.user.resume
+    let profile = null
+
+    if (ctx.user.activeProfileType && (ctx.user.activeDancerId || ctx.user.activeChoreographerId)) {
+      if (ctx.user.activeProfileType === 'dancer' && ctx.user.activeDancerId) {
+        profile = await ctx.db.get(ctx.user.activeDancerId)
+      } else if (ctx.user.activeProfileType === 'choreographer' && ctx.user.activeChoreographerId) {
+        profile = await ctx.db.get(ctx.user.activeChoreographerId)
       }
+
+      if (profile?.resume) {
+        currentResume = profile.resume
+      }
+    }
+
+    const updatedResume = {
+      ...currentResume,
+      projects: args.projects,
+      skills: args.skills,
+      genres: args.genres
+    }
+
+    // DUAL-WRITE: Update both user and profile
+    await ctx.db.patch(ctx.user._id, {
+      resume: updatedResume
     })
+
+    if (profile) {
+      await ctx.db.patch(profile._id, {
+        resume: updatedResume
+      })
+    }
   }
 )

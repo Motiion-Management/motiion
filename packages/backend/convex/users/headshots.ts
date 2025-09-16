@@ -11,13 +11,30 @@ export const getMyHeadshots = zQuery(
   authQuery,
   {},
   async (ctx) => {
-    if (!ctx.user?.headshots) {
+    // PROFILE-FIRST: Check active profile first, then fall back to user
+    let headshots = ctx.user?.headshots || []
+
+    if (ctx.user?.activeProfileType && (ctx.user?.activeDancerId || ctx.user?.activeChoreographerId)) {
+      let profile = null
+
+      if (ctx.user.activeProfileType === 'dancer' && ctx.user.activeDancerId) {
+        profile = await ctx.db.get(ctx.user.activeDancerId)
+      } else if (ctx.user.activeProfileType === 'choreographer' && ctx.user.activeChoreographerId) {
+        profile = await ctx.db.get(ctx.user.activeChoreographerId)
+      }
+
+      if (profile?.headshots) {
+        headshots = profile.headshots
+      }
+    }
+
+    if (!headshots || headshots.length === 0) {
       return []
     }
 
     type Headshot = { storageId: Id<'_storage'>; title?: string; uploadDate: string; position?: number }
     return Promise.all(
-      ctx.user.headshots.map(async (headshot: Headshot) => ({
+      headshots.map(async (headshot: Headshot) => ({
         url: await ctx.storage.getUrl(headshot.storageId),
         ...headshot
       }))
@@ -63,24 +80,46 @@ export const saveHeadshotIds = zMutation(
   async (ctx, args) => {
     if (!ctx.user) return
 
-    const headshots = args.headshots
+    // Get current headshots from profile or user
+    let currentHeadshots = ctx.user.headshots || []
+    let profile = null
 
-    if (ctx.user.headshots?.length === 5) {
+    if (ctx.user.activeProfileType && (ctx.user.activeDancerId || ctx.user.activeChoreographerId)) {
+      if (ctx.user.activeProfileType === 'dancer' && ctx.user.activeDancerId) {
+        profile = await ctx.db.get(ctx.user.activeDancerId)
+      } else if (ctx.user.activeProfileType === 'choreographer' && ctx.user.activeChoreographerId) {
+        profile = await ctx.db.get(ctx.user.activeChoreographerId)
+      }
+
+      if (profile?.headshots) {
+        currentHeadshots = profile.headshots
+      }
+    }
+
+    if (currentHeadshots.length === 5) {
       throw new ConvexError(
         'You already have 5 headshots. Please remove one before adding another.'
       )
     }
 
     // Merge new headshots in front of existing, then cap at 5 and normalize positions
-    const merged = ctx.user.headshots
-      ? [...args.headshots, ...ctx.user.headshots]
+    const merged = currentHeadshots.length > 0
+      ? [...args.headshots, ...currentHeadshots]
       : args.headshots
     const limited = await ensureOnlyFive(ctx, merged)
     type Headshot = { storageId: Id<'_storage'>; title?: string; uploadDate: string; position?: number }
     const normalized = (limited as Headshot[]).map((h: Headshot, idx: number) => ({ ...h, position: idx }))
-    ctx.db.patch(ctx.user._id, {
+
+    // DUAL-WRITE: Update both user and profile
+    await ctx.db.patch(ctx.user._id, {
       headshots: normalized
     })
+
+    if (profile) {
+      await ctx.db.patch(profile._id, {
+        headshots: normalized
+      })
+    }
   }
 )
 
@@ -94,12 +133,34 @@ export const removeHeadshot = zMutation(
 
     await ctx.storage.delete(args.headshotId)
 
+    // Get current headshots from profile or user
+    let currentHeadshots = ctx.user.headshots || []
+    let profile = null
+
+    if (ctx.user.activeProfileType && (ctx.user.activeDancerId || ctx.user.activeChoreographerId)) {
+      if (ctx.user.activeProfileType === 'dancer' && ctx.user.activeDancerId) {
+        profile = await ctx.db.get(ctx.user.activeDancerId)
+      } else if (ctx.user.activeProfileType === 'choreographer' && ctx.user.activeChoreographerId) {
+        profile = await ctx.db.get(ctx.user.activeChoreographerId)
+      }
+
+      if (profile?.headshots) {
+        currentHeadshots = profile.headshots
+      }
+    }
+
     type Headshot = { storageId: Id<'_storage'>; title?: string; uploadDate: string; position?: number }
-    const filtered = (ctx.user.headshots || []).filter(
+    const filtered = currentHeadshots.filter(
       (h: Headshot) => h.storageId !== args.headshotId
     )
     const normalized = (filtered as Headshot[]).map((h: Headshot, idx: number) => ({ ...h, position: idx }))
+
+    // DUAL-WRITE: Update both user and profile
     await ctx.db.patch(ctx.user._id, { headshots: normalized })
+
+    if (profile) {
+      await ctx.db.patch(profile._id, { headshots: normalized })
+    }
   }
 )
 
@@ -116,7 +177,21 @@ export const updateHeadshotPosition = zMutation(
   async (ctx, { headshots }) => {
     if (!ctx.user) return
 
-    const current = ctx.user.headshots || []
+    // Get current headshots from profile or user
+    let current = ctx.user.headshots || []
+    let profile = null
+
+    if (ctx.user.activeProfileType && (ctx.user.activeDancerId || ctx.user.activeChoreographerId)) {
+      if (ctx.user.activeProfileType === 'dancer' && ctx.user.activeDancerId) {
+        profile = await ctx.db.get(ctx.user.activeDancerId)
+      } else if (ctx.user.activeProfileType === 'choreographer' && ctx.user.activeChoreographerId) {
+        profile = await ctx.db.get(ctx.user.activeChoreographerId)
+      }
+
+      if (profile?.headshots) {
+        current = profile.headshots
+      }
+    }
 
     // Map payload positions by storageId
     const posMap = new Map(headshots.map((h: { storageId: Id<'_storage'>; position: number }) => [h.storageId, h.position]))
@@ -133,6 +208,11 @@ export const updateHeadshotPosition = zMutation(
       position: idx
     }))
 
+    // DUAL-WRITE: Update both user and profile
     await ctx.db.patch(ctx.user._id, { headshots: next })
+
+    if (profile) {
+      await ctx.db.patch(profile._id, { headshots: next })
+    }
   }
 )

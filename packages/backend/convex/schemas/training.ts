@@ -25,6 +25,9 @@ export const trainingInput = {
 export const training = {
   ...trainingInput,
   userId: zid('users'),
+  // Profile references (Phase 3.3 - multi-profile support)
+  profileType: z.enum(['dancer', 'choreographer']).optional(),
+  profileId: z.union([zid('dancers'), zid('choreographers')]).optional(),
   orderIndex: z.number() // For maintaining order
 }
 
