@@ -15,6 +15,7 @@ import {
   type DefaultFunctionArgs
 } from 'convex/server'
 import { registryHelpers } from 'convex-helpers/server/zodV4'
+import { Table } from 'convex-helpers/server'
 import {
   type CustomBuilder,
   type CustomCtx,
@@ -700,4 +701,19 @@ export function zInternalAction<
   options?: { returns?: R }
 ): PreserveReturnType<Builder, ZodToConvexArgs<A>, InferReturns<R>> {
   return zAction(internalAction, input, handler, options)
+}
+
+// Table creation with integrated codec support
+export function zodTable<T extends z.ZodObject<any>, TableName extends string>(
+  name: TableName,
+  schema: T
+) {
+  const codec = convexCodec(schema)
+  const tableDefinition = Table(name, codec.toConvexSchema())
+
+  return {
+    ...tableDefinition,
+    codec, // Expose codec for encode/decode operations
+    schema, // Expose original Zod schema for reference
+  }
 }
