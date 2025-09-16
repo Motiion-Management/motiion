@@ -43,7 +43,7 @@ Define a table from Zod in one place
 
 ```ts
 import { z } from 'zod'
-import { zodTable } from '@packages/zodvex'
+import { zodTable } from 'zodvex'
 
 const zAgencies = z.object({
   name: z.string(),
@@ -59,7 +59,7 @@ Zod-validated Convex functions
 ```ts
 import { z } from 'zod'
 import { query, mutation } from './_generated/server'
-import { zQuery, zMutation } from '@packages/zodvex'
+import { zQuery, zMutation } from 'zodvex'
 
 export const getById = zQuery(
   query,
@@ -80,7 +80,7 @@ export const ping = zQuery(query, z.string(), async (ctx, { value }) => value)
 CRUD scaffold from a table
 
 ```ts
-import { zCrud } from '@packages/zodvex'
+import { zCrud } from 'zodvex'
 import { query, mutation } from './_generated/server'
 import { Agencies } from './schemas/agencies'
 
@@ -91,7 +91,7 @@ export const agenciesCrud = zCrud(Agencies, query, mutation)
 Codec usage
 
 ```ts
-import { convexCodec } from '@packages/zodvex'
+import { convexCodec } from 'zodvex'
 import { z } from 'zod'
 
 const zUser = z.object({
@@ -130,3 +130,34 @@ Notes
 
 - Defaults imply optional at the Convex schema level; apply runtime defaults in app code as needed.
 - This package builds on `convex-helpers/server/zodV4` and post-processes validators to preserve Convex’s optional/null semantics.
+
+Install
+
+- Peer dependencies (must be installed by the host app):
+  - `zod` (v4)
+  - `convex` (>= 1.27)
+  - `convex-helpers` (>= 0.1.101-alpha.1)
+
+Using pnpm:
+
+```bash
+# add peers (if not already present)
+pnpm add zod convex convex-helpers
+
+# add this package
+pnpm add zodvex
+```
+
+Using npm:
+
+```bash
+npm install zod convex convex-helpers
+npm install zodvex
+```
+
+Using yarn:
+
+```bash
+yarn add zod convex convex-helpers
+yarn add zodvex
+```

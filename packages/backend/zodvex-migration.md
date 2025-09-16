@@ -16,7 +16,7 @@ Per table (e.g., Agencies, Projects, Training):
 1. Define a Zod object for the table shape (e.g., `zAgencies = z.object(agencies)`).
 2. Create a codec from that Zod object:
    ```ts
-   import { convexCodec } from '@packages/zodvex'
+   import { convexCodec } from 'zodvex'
    export const AgenciesCodec = convexCodec(zAgencies)
    ```
 3. Replace `Table('agencies', zodToConvexFields(agencies))` with:
@@ -34,7 +34,7 @@ For every Convex function, use zodvex’s typed wrappers to define args with Zod
 
 - Queries:
   ```ts
-  import { zQuery } from '@packages/zodvex'
+  import { zQuery } from 'zodvex'
   export const myQuery = zQuery(query, { id: z.string() }, async (ctx, { id }) => {
     // ...
   })
@@ -42,7 +42,7 @@ For every Convex function, use zodvex’s typed wrappers to define args with Zod
 
 - Mutations:
   ```ts
-  import { zMutation } from '@packages/zodvex'
+  import { zMutation } from 'zodvex'
   export const myMutation = zMutation(mutation, z.object({ name: z.string() }), async (ctx, args) => {
     // ...
   })
@@ -50,7 +50,7 @@ For every Convex function, use zodvex’s typed wrappers to define args with Zod
 
 - Internal functions:
   ```ts
-  import { zInternalQuery, zInternalMutation } from '@packages/zodvex'
+  import { zInternalQuery, zInternalMutation } from 'zodvex'
   export const myInternalQuery = zInternalQuery(internalQuery, { key: z.string() }, async (ctx, { key }) => { /* ... */ })
   export const myInternalMutation = zInternalMutation(internalMutation, { key: z.string() }, async (ctx, { key }) => { /* ... */ })
   ```
@@ -154,4 +154,3 @@ const internal: any = require('./_generated/api').internal
 // import type { FunctionReference } from 'convex/server'
 // export const clerkFulfillRef = internal.clerk.fulfill as FunctionReference<...>
 ```
-
