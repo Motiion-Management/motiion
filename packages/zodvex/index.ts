@@ -58,26 +58,18 @@ function analyzeZod(schema: z.ZodTypeAny): {
   let nullable = false
   let hasDefault = false
 
-  // Handle default wrapping around optional
-  if (s instanceof z.ZodDefault) {
-    hasDefault = true
-    s = s._def.innerType as z.ZodTypeAny
+  // Unwrap layers using public API and track flags
+  while (s instanceof z.ZodDefault || s instanceof z.ZodOptional || s instanceof z.ZodNullable) {
+    if (s instanceof z.ZodDefault) hasDefault = true
+    if (s instanceof z.ZodOptional) optional = true
+    if (s instanceof z.ZodNullable) nullable = true
+    const next = (s as any).unwrap?.() ?? s
+    if (next === s) break
+    s = next as z.ZodTypeAny
   }
-  if (s instanceof z.ZodOptional) {
-    optional = true
-    s = s._def.innerType as z.ZodTypeAny
-    // .optional().default() compiles to ZodDefault(ZodOptional(inner)) in v4 commonly
-    if (s instanceof z.ZodDefault) {
-      hasDefault = true
-      s = s._def.innerType as z.ZodTypeAny
-    }
-  }
-  if (s instanceof z.ZodNullable) {
-    nullable = true
-    s = s._def.innerType as z.ZodTypeAny
-  } else if (s instanceof z.ZodUnion) {
+  if (s instanceof z.ZodUnion) {
     // Detect explicit union with null at the top level
-    const opts = (s as z.ZodUnion<any>)._def.options as z.ZodTypeAny[]
+    const opts = (s as z.ZodUnion<any>).options as z.ZodTypeAny[]
     if (opts && opts.some((o) => o instanceof z.ZodNull)) {
       nullable = true
       // Keep as union for base analysis
@@ -98,13 +90,8 @@ export function zodToConvexFields(
 ): Record<string, Validator<any, any, any>> {
   // Normalize input to a ZodRawShape-like object
   let shape: Record<string, z.ZodTypeAny>
-  if (shapeOrObject && typeof (shapeOrObject as any)._def === 'object') {
-    const asAny = shapeOrObject as any
-    if (asAny._def?.typeName === 'ZodObject') {
-      shape = (asAny._def.shape() ?? asAny.shape) as Record<string, z.ZodTypeAny>
-    } else {
-      throw new Error('Unsupported Zod type for zodToConvexFields; expected ZodObject or shape')
-    }
+  if (shapeOrObject instanceof z.ZodObject) {
+    shape = getObjectShape(shapeOrObject as z.ZodObject<any>)
   } else {
     shape = shapeOrObject as Record<string, z.ZodTypeAny>
   }
@@ -128,18 +115,7 @@ export { zid, type Zid } from 'convex-helpers/server/zodV4'
 
 // Recursively rebuild validators to enforce optional vs nullable semantics and fix nested objects
 function getObjectShape(obj: z.ZodObject<any>): Record<string, z.ZodTypeAny> {
-  const anyObj: any = obj as any
-  const def = anyObj._def
-  if (def && typeof def.shape === 'function') {
-    return def.shape()
-  }
-  if (typeof anyObj.shape === 'function') {
-    return anyObj.shape()
-  }
-  if (def && def.shape) {
-    return def.shape as Record<string, z.ZodTypeAny>
-  }
-  return (anyObj.shape || {}) as Record<string, z.ZodTypeAny>
+  return (obj.shape || {}) as Record<string, z.ZodTypeAny>
 }
 
 function convertWithMeta(zodField: z.ZodTypeAny, baseValidator: any): any {
@@ -158,7 +134,7 @@ function convertWithMeta(zodField: z.ZodTypeAny, baseValidator: any): any {
     }
     core = v.object(rebuiltChildren)
   } else if (inner instanceof z.ZodArray) {
-    const elZod = (inner._def as any).type as z.ZodTypeAny
+    const elZod = (inner as z.ZodArray<any>).element as z.ZodTypeAny
     const baseEl = simpleToConvex(elZod)
     const rebuiltEl = convertWithMeta(elZod, baseEl)
     core = v.array(rebuiltEl)
@@ -207,14 +183,14 @@ function simpleToConvex(schema: z.ZodTypeAny): any {
 
   // Union
   if (inner instanceof z.ZodUnion) {
-    const opts: z.ZodTypeAny[] = (inner as any)._def.options
+    const opts: z.ZodTypeAny[] = (inner as z.ZodUnion<any>).options
     const members = opts.map((o) => simpleToConvex(o))
     return makeUnion(members)
   }
 
   // Array
   if (inner instanceof z.ZodArray) {
-    const el = (inner._def as any).type as z.ZodTypeAny
+    const el = (inner as z.ZodArray<any>).element as z.ZodTypeAny
     return v.array(simpleToConvex(el))
   }
 
@@ -230,7 +206,7 @@ function simpleToConvex(schema: z.ZodTypeAny): any {
 
   // Record
   if (inner instanceof z.ZodRecord) {
-    const valueType = (inner._def as any).valueType as z.ZodTypeAny
+    const valueType = (inner as z.ZodRecord<any>).valueType as z.ZodTypeAny
     return v.record(v.string(), simpleToConvex(valueType))
   }
 
@@ -282,15 +258,15 @@ function toConvexJS(schema: z.ZodTypeAny, value: any): any {
 
   // unwrap default/optional/nullable
   if (schema instanceof z.ZodDefault) {
-    return toConvexJS(schema._def.innerType as z.ZodTypeAny, value)
+    return toConvexJS((schema as any).unwrap(), value)
   }
   if (schema instanceof z.ZodOptional) {
     if (value === undefined) return undefined
-    return toConvexJS(schema._def.innerType as z.ZodTypeAny, value)
+    return toConvexJS((schema as any).unwrap(), value)
   }
   if (schema instanceof z.ZodNullable) {
     if (value === null) return null
-    return toConvexJS(schema._def.innerType as z.ZodTypeAny, value)
+    return toConvexJS((schema as any).unwrap(), value)
   }
 
   // objects
@@ -306,7 +282,7 @@ function toConvexJS(schema: z.ZodTypeAny, value: any): any {
 
   // arrays
   if (schema instanceof z.ZodArray && Array.isArray(value)) {
-    const el = (schema._def as any).type as z.ZodTypeAny
+    const el = (schema as z.ZodArray<any>).element as z.ZodTypeAny
     return value.map((item) => toConvexJS(el, item))
   }
 
@@ -324,15 +300,15 @@ function fromConvexJS(schema: z.ZodTypeAny, value: any): any {
   if (value === undefined) return undefined
 
   if (schema instanceof z.ZodDefault) {
-    return fromConvexJS(schema._def.innerType as z.ZodTypeAny, value)
+    return fromConvexJS((schema as any).unwrap(), value)
   }
   if (schema instanceof z.ZodOptional) {
     if (value === undefined) return undefined
-    return fromConvexJS(schema._def.innerType as z.ZodTypeAny, value)
+    return fromConvexJS((schema as any).unwrap(), value)
   }
   if (schema instanceof z.ZodNullable) {
     if (value === null) return null
-    return fromConvexJS(schema._def.innerType as z.ZodTypeAny, value)
+    return fromConvexJS((schema as any).unwrap(), value)
   }
 
   if (schema instanceof z.ZodObject && value && typeof value === 'object') {
@@ -345,7 +321,7 @@ function fromConvexJS(schema: z.ZodTypeAny, value: any): any {
   }
 
   if (schema instanceof z.ZodArray && Array.isArray(value)) {
-    const el = (schema._def as any).type as z.ZodTypeAny
+    const el = (schema as z.ZodArray<any>).element as z.ZodTypeAny
     return value.map((item) => fromConvexJS(el, item))
   }
 
