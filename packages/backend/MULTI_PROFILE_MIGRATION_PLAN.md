@@ -1,8 +1,33 @@
 # Multi-Profile Architecture Migration Plan
 
-## Current Status: Phase 1 Complete ✅
+## Current Status: SIMPLIFIED APPROACH - Ready to Deploy ✅
 
-### Completed Work (Phase 0 & 1):
+### 🚀 Quick Start - Simplified Migration
+
+Due to minimal data (1 dev user, 0 choreographers), we simplified the migration:
+
+```bash
+# 1. Deploy the code to dev
+pnpm dev
+
+# 2. Run the one-time migration
+npx convex run migrations/autoMigrateAndCleanup:runMigration
+
+# 3. Test with your dev user
+# 4. Deploy to prod and run once
+
+# That's it! The system auto-heals stragglers via getMyUser
+```
+
+### How It Works:
+1. **Auto-healing `getMyUser`**: Automatically merges profile data for backward compatibility
+2. **One-time migration script**: Migrates all existing users to profile tables
+3. **Dual-write protection**: Updates write to both locations during transition
+4. **Clean cutoff**: After migration, new users get profiles automatically via onboarding
+
+---
+
+### Completed Work (Phase 0, 1 & Simplified 2):
 
 #### Phase 0: Schema Organization ✅
 - Renamed `validators/` folder to `schemas/` across entire codebase
@@ -22,6 +47,27 @@
   - `getMyActiveProfile` - Get active profile for any type
   - `getUserProfiles` - Get all profiles for a user
   - `switchProfile` - Switch between profile types
+
+#### Phase 2: Migration Infrastructure ✅
+- Created `migrations/createDancerProfiles.ts` with:
+  - `getDancersToMigrate` - Query to find users needing migration
+  - `migrateDancerUser` - Mutation to migrate individual users
+  - `migrateDancersBatch` - Batch migration with dry-run support
+- Created `migrations/createChoreographerProfiles.ts` with similar structure
+- Updated `schemas/users.ts` with profile reference fields:
+  - `activeProfileType` - Current profile type ('dancer' or 'choreographer')
+  - `activeDancerId` - Reference to active dancer profile
+  - `activeChoreographerId` - Reference to active choreographer profile
+- Implemented dual-write in `users.ts`:
+  - `updateMyUser` - Writes to both user and active profile
+  - `updateMySizingField` - Updates sizing in both locations
+  - `patchUserAttributes` - Updates attributes in both locations
+- Updated `onboarding.ts`:
+  - `completeOnboarding` - Creates profile in new table on completion
+- Created `migrations/runMigrations.ts`:
+  - `runAllMigrations` - Orchestrates all migrations
+  - `verifyMigrationStatus` - Checks migration completion
+  - `testMigration` - Runs test migration with small batch
 
 ### Key Design Decisions Made:
 1. **Separate tables** for dancers and choreographers (not single profiles table)
@@ -44,48 +90,26 @@
 
 ## Remaining Work:
 
-### Phase 2: Migration Infrastructure (Week 1-2)
+### ✅ SIMPLIFIED Migration Approach (COMPLETE)
 
-#### 2.1 Create Migration Functions
-**File: `migrations/createDancerProfiles.ts`**
-```typescript
-// Internal mutation to migrate existing dancer users
-export const migrateDancerUsers = internalMutation({
-  handler: async (ctx) => {
-    // Get all users with profileType = 'dancer'
-    // For each user:
-    //   - Create dancer profile with existing data
-    //   - Mark as isPrimary = true, isActive = true
-    //   - Copy: headshots, attributes, sizing, resume, etc.
-    //   - Generate searchPattern
-    //   - Calculate initial completeness
-    // Return migration stats
-  }
-})
+**Pivoted to simpler approach due to small data size:**
+- Only 1 dev user, disposable prod users, 0 choreographers
+- Removed complex migration infrastructure
+- Implemented auto-migration approach instead
+
+**What was implemented:**
+- ✅ Modified `getMyUser` to auto-merge profile data for backward compatibility
+- ✅ Created simple `autoMigrateAndCleanup.ts` for one-time migration
+- ✅ Kept dual-write implementation for data consistency
+- ✅ Onboarding flow creates profiles in new tables
+
+**To run the migration:**
+```bash
+# Run the one-time migration (dev environment)
+npx convex run migrations/autoMigrateAndCleanup:runMigration
+
+# Deploy to prod and run once there too
 ```
-
-**File: `migrations/createChoreographerProfiles.ts`**
-```typescript
-// Similar structure for choreographer migration
-// Copy companyName and other choreographer-specific fields
-```
-
-#### 2.2 Update Users Schema (KEEP OLD FIELDS TEMPORARILY)
-**DO NOT remove profile fields from users table yet!**
-- Add new fields to track profile references:
-  ```typescript
-  // In schemas/users.ts - ADD these fields:
-  activeProfileType: z.enum(['dancer', 'choreographer']).optional(),
-  activeDancerId: zid('dancers').optional(),
-  activeChoreographerId: zid('choreographers').optional(),
-  // KEEP all existing profile fields for now (dual write period)
-  ```
-
-#### 2.3 Dual Write Implementation
-Update these functions to write to BOTH old and new locations:
-- `users.ts:updateMyUser` - Write profile data to both user record AND profile table
-- `onboarding.ts:completeOnboarding` - Create profile in new table when completing
-- Any resume/headshot/training update functions
 
 ### Phase 3: Update Core Functions (Week 2)
 

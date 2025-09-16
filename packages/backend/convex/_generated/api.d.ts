@@ -28,6 +28,7 @@ import type * as events from "../events.js";
 import type * as featuredMembers from "../featuredMembers.js";
 import type * as files from "../files.js";
 import type * as http from "../http.js";
+import type * as migrations_autoMigrateAndCleanup from "../migrations/autoMigrateAndCleanup.js";
 import type * as onboarding from "../onboarding.js";
 import type * as onboardingConfig from "../onboardingConfig.js";
 import type * as profiles_common from "../profiles/common.js";
@@ -78,6 +79,7 @@ declare const fullApi: ApiFromModules<{
   featuredMembers: typeof featuredMembers;
   files: typeof files;
   http: typeof http;
+  "migrations/autoMigrateAndCleanup": typeof migrations_autoMigrateAndCleanup;
   onboarding: typeof onboarding;
   onboardingConfig: typeof onboardingConfig;
   "profiles/common": typeof profiles_common;

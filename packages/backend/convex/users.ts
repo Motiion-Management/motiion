@@ -61,6 +61,65 @@ export const getMyUser = zQuery(
       hasUser: !!ctx.user,
       timestamp: new Date().toISOString()
     })
+
+    if (!ctx.user) return null
+
+    // AUTO-MIGRATE: If user has profileType but no active profile, migrate them
+    if (ctx.user.profileType && !ctx.user.activeDancerId && !ctx.user.activeChoreographerId) {
+      console.log('🔄 AUTO-MIGRATION: User needs profile migration', {
+        userId: ctx.user._id,
+        profileType: ctx.user.profileType
+      })
+
+      // This is a query, so we can't mutate directly
+      // Return user as-is but log for monitoring
+      // The autoMigrateAndCleanup script will handle the actual migration
+    }
+
+    // If user has an active profile, merge the profile data for backward compatibility
+    if (ctx.user.activeProfileType && (ctx.user.activeDancerId || ctx.user.activeChoreographerId)) {
+      let profile = null
+
+      if (ctx.user.activeProfileType === 'dancer' && ctx.user.activeDancerId) {
+        profile = await ctx.db.get(ctx.user.activeDancerId)
+      } else if (ctx.user.activeProfileType === 'choreographer' && ctx.user.activeChoreographerId) {
+        profile = await ctx.db.get(ctx.user.activeChoreographerId)
+      }
+
+      if (profile) {
+        // Merge profile data back into user for backward compatibility
+        // Profile data takes precedence over user data
+        const mergedUser = {
+          ...ctx.user,
+          // Profile fields that might differ
+          headshots: profile.headshots || ctx.user.headshots,
+          attributes: profile.attributes || ctx.user.attributes,
+          sizing: profile.sizing || ctx.user.sizing,
+          resume: profile.resume || ctx.user.resume,
+          links: profile.links || ctx.user.links,
+          representation: profile.representation || ctx.user.representation,
+          representationStatus: profile.representationStatus || ctx.user.representationStatus,
+          profileTipDismissed: profile.profileTipDismissed || ctx.user.profileTipDismissed,
+          // Dancer-specific
+          ...(ctx.user.activeProfileType === 'dancer' ? {
+            sagAftraId: profile.sagAftraId || ctx.user.sagAftraId,
+            training: profile.training || ctx.user.training,
+            workLocation: profile.workLocation || ctx.user.workLocation,
+            location: profile.location || ctx.user.location,
+          } : {}),
+          // Choreographer-specific
+          ...(ctx.user.activeProfileType === 'choreographer' ? {
+            companyName: profile.companyName || ctx.user.companyName,
+            workLocation: profile.workLocation || ctx.user.workLocation,
+            location: profile.location || ctx.user.location,
+            databaseUse: profile.databaseUse || ctx.user.databaseUse,
+          } : {})
+        }
+
+        return mergedUser
+      }
+    }
+
     return ctx.user
   },
   { returns: zUserDocOrNull }
@@ -75,6 +134,37 @@ export const updateMyUser = zMutation(
     const nextUser = { ...ctx.user, ...args }
     const derived = await computeDerived(ctx, nextUser)
     await ctx.db.patch(ctx.user._id, { ...args, ...derived })
+
+    // DUAL-WRITE: Also update active profile if it exists
+    // This ensures data consistency during migration period
+    if (ctx.user.activeProfileType && (ctx.user.activeDancerId || ctx.user.activeChoreographerId)) {
+      const profileFields = [
+        'headshots', 'attributes', 'sizing', 'resume', 'links',
+        'sagAftraId', 'companyName', 'workLocation', 'location',
+        'training', 'representationStatus', 'representation',
+        'profileTipDismissed', 'resumeImportedFields',
+        'resumeImportVersion', 'resumeImportedAt'
+      ]
+
+      const profileUpdates: any = {}
+      for (const field of profileFields) {
+        if (field in args) {
+          profileUpdates[field] = (args as any)[field]
+        }
+      }
+
+      // Also update searchPattern if any profile-relevant field changed
+      if (Object.keys(profileUpdates).length > 0) {
+        profileUpdates.searchPattern = derived.searchPattern
+      }
+
+      // Update the active profile
+      if (ctx.user.activeProfileType === 'dancer' && ctx.user.activeDancerId) {
+        await ctx.db.patch(ctx.user.activeDancerId, profileUpdates)
+      } else if (ctx.user.activeProfileType === 'choreographer' && ctx.user.activeChoreographerId) {
+        await ctx.db.patch(ctx.user.activeChoreographerId, profileUpdates)
+      }
+    }
   }
 )
 
@@ -106,6 +196,20 @@ export const updateMySizingField = zMutation(
       sizing: nextUser.sizing,
       ...derived
     })
+
+    // DUAL-WRITE: Update active profile if it exists
+    if (ctx.user.activeProfileType && (ctx.user.activeDancerId || ctx.user.activeChoreographerId)) {
+      const profileUpdate = {
+        sizing: nextUser.sizing,
+        searchPattern: derived.searchPattern
+      }
+
+      if (ctx.user.activeProfileType === 'dancer' && ctx.user.activeDancerId) {
+        await ctx.db.patch(ctx.user.activeDancerId, profileUpdate)
+      } else if (ctx.user.activeProfileType === 'choreographer' && ctx.user.activeChoreographerId) {
+        await ctx.db.patch(ctx.user.activeChoreographerId, profileUpdate)
+      }
+    }
   }
 )
 
@@ -129,6 +233,20 @@ export const patchUserAttributes = zMutation(
       attributes: mergedAttributes,
       ...derived
     })
+
+    // DUAL-WRITE: Update active profile if it exists
+    if (ctx.user.activeProfileType && (ctx.user.activeDancerId || ctx.user.activeChoreographerId)) {
+      const profileUpdate = {
+        attributes: mergedAttributes,
+        searchPattern: derived.searchPattern
+      }
+
+      if (ctx.user.activeProfileType === 'dancer' && ctx.user.activeDancerId) {
+        await ctx.db.patch(ctx.user.activeDancerId, profileUpdate)
+      } else if (ctx.user.activeProfileType === 'choreographer' && ctx.user.activeChoreographerId) {
+        await ctx.db.patch(ctx.user.activeChoreographerId, profileUpdate)
+      }
+    }
   }
 )
 

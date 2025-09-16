@@ -32,6 +32,91 @@ export const completeOnboarding: RegisteredMutation<
       throw new ConvexError('User not found')
     }
 
+    // PHASE 2: Create profile in new table if it doesn't exist
+    if (user.profileType && !user.activeDancerId && !user.activeChoreographerId) {
+      if (user.profileType === 'dancer') {
+        // Check if profile already exists
+        const existingProfile = await ctx.db
+          .query('dancers')
+          .withIndex('by_userId', (q) => q.eq('userId', user._id))
+          .first()
+
+        if (!existingProfile) {
+          // Create dancer profile with user's data
+          const profileId = await ctx.db.insert('dancers', {
+            userId: user._id,
+            isActive: true,
+            isPrimary: true,
+            createdAt: new Date().toISOString(),
+            headshots: user.headshots,
+            representation: user.representation,
+            representationStatus: user.representationStatus,
+            attributes: user.attributes,
+            sizing: user.sizing,
+            resume: user.resume,
+            links: user.links,
+            sagAftraId: user.sagAftraId,
+            training: user.training,
+            workLocation: user.workLocation,
+            location: user.location,
+            profileCompleteness: 0,
+            profileTipDismissed: user.profileTipDismissed,
+            resumeImportedFields: user.resumeImportedFields,
+            resumeImportVersion: user.resumeImportVersion,
+            resumeImportedAt: user.resumeImportedAt,
+            searchPattern: user.searchPattern || ''
+          })
+
+          // Update user with profile references
+          await ctx.db.patch(user._id, {
+            activeProfileType: 'dancer',
+            activeDancerId: profileId
+          })
+        }
+      } else if (user.profileType === 'choreographer') {
+        // Check if profile already exists
+        const existingProfile = await ctx.db
+          .query('choreographers')
+          .withIndex('by_userId', (q) => q.eq('userId', user._id))
+          .first()
+
+        if (!existingProfile) {
+          // Create choreographer profile with user's data
+          const profileId = await ctx.db.insert('choreographers', {
+            userId: user._id,
+            isActive: true,
+            isPrimary: true,
+            createdAt: new Date().toISOString(),
+            headshots: user.headshots,
+            representation: user.representation,
+            representationStatus: user.representationStatus,
+            attributes: user.attributes,
+            sizing: user.sizing,
+            resume: user.resume,
+            links: user.links,
+            companyName: user.companyName,
+            workLocation: user.workLocation,
+            location: user.location,
+            databaseUse: user.databaseUse,
+            verified: false,
+            featured: false,
+            profileCompleteness: 0,
+            profileTipDismissed: user.profileTipDismissed,
+            resumeImportedFields: user.resumeImportedFields,
+            resumeImportVersion: user.resumeImportVersion,
+            resumeImportedAt: user.resumeImportedAt,
+            searchPattern: user.searchPattern || ''
+          })
+
+          // Update user with profile references
+          await ctx.db.patch(user._id, {
+            activeProfileType: 'choreographer',
+            activeChoreographerId: profileId
+          })
+        }
+      }
+    }
+
     // Mark onboarding as completed (non-blocking; individual screens own validation)
     await ctx.db.patch(user._id, {
       onboardingCompleted: true,

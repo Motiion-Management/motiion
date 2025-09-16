@@ -110,7 +110,12 @@ export const users = {
   // Resume import tracking
   resumeImportedFields: z.array(z.string()).optional(), // Fields that were populated from resume import
   resumeImportVersion: z.string().optional(), // Version of import logic used
-  resumeImportedAt: z.string().optional() // ISO date string when resume was imported
+  resumeImportedAt: z.string().optional(), // ISO date string when resume was imported
+
+  // Profile references (Phase 2 - multi-profile support)
+  activeProfileType: z.enum(['dancer', 'choreographer']).optional(),
+  activeDancerId: zid('dancers').optional(),
+  activeChoreographerId: zid('choreographers').optional()
 }
 export const zUsers = z.object(users)
 
