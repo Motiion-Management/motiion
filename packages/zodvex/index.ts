@@ -425,7 +425,7 @@ function customFnBuilder(
     const returnValidator =
       returns && !fn.skipConvexValidation
         ? { returns: zodToConvex(returns) }
-        : null
+        : undefined
 
     if (args && !fn.skipConvexValidation) {
       let argsValidator = args
@@ -573,8 +573,18 @@ export function zQuery<
   handler: (ctx: ExtractCtx<Builder>, args: InferArgs<A>) => Promise<InferReturns<R>> | InferReturns<R>,
   options?: { returns?: R }
 ): PreserveReturnType<Builder, ZodToConvexArgs<A>, InferReturns<R>> {
-  const zod = normalizeSchema(input)
-  const args = zod instanceof z.ZodObject ? zodToConvexFields(getObjectShape(zod)) : zodToConvex(zod)
+  let zod: z.ZodTypeAny
+  let args: Record<string, any>
+  if (input instanceof z.ZodObject) {
+    zod = input
+    args = zodToConvexFields(getObjectShape(input))
+  } else if (input instanceof z.ZodType) {
+    zod = z.object({ value: input as z.ZodTypeAny })
+    args = { value: zodToConvex(input as z.ZodTypeAny) }
+  } else {
+    zod = z.object(input as Record<string, z.ZodTypeAny>)
+    args = zodToConvexFields(input as Record<string, z.ZodTypeAny>)
+  }
   const returns = options?.returns ? zodReturnsToConvex(options.returns) : undefined
 
   return query({
@@ -612,8 +622,18 @@ export function zMutation<
   handler: (ctx: ExtractCtx<Builder>, args: InferArgs<A>) => Promise<InferReturns<R>> | InferReturns<R>,
   options?: { returns?: R }
 ): PreserveReturnType<Builder, ZodToConvexArgs<A>, InferReturns<R>> {
-  const zod = normalizeSchema(input)
-  const args = zod instanceof z.ZodObject ? zodToConvexFields(getObjectShape(zod)) : zodToConvex(zod)
+  let zod: z.ZodTypeAny
+  let args: Record<string, any>
+  if (input instanceof z.ZodObject) {
+    zod = input
+    args = zodToConvexFields(getObjectShape(input))
+  } else if (input instanceof z.ZodType) {
+    zod = z.object({ value: input as z.ZodTypeAny })
+    args = { value: zodToConvex(input as z.ZodTypeAny) }
+  } else {
+    zod = z.object(input as Record<string, z.ZodTypeAny>)
+    args = zodToConvexFields(input as Record<string, z.ZodTypeAny>)
+  }
   const returns = options?.returns ? zodReturnsToConvex(options.returns) : undefined
 
   return mutation({
@@ -651,8 +671,18 @@ export function zAction<
   handler: (ctx: ExtractCtx<Builder>, args: InferArgs<A>) => Promise<InferReturns<R>> | InferReturns<R>,
   options?: { returns?: R }
 ): PreserveReturnType<Builder, ZodToConvexArgs<A>, InferReturns<R>> {
-  const zod = normalizeSchema(input)
-  const args = zod instanceof z.ZodObject ? zodToConvexFields(getObjectShape(zod)) : zodToConvex(zod)
+  let zod: z.ZodTypeAny
+  let args: Record<string, any>
+  if (input instanceof z.ZodObject) {
+    zod = input
+    args = zodToConvexFields(getObjectShape(input))
+  } else if (input instanceof z.ZodType) {
+    zod = z.object({ value: input as z.ZodTypeAny })
+    args = { value: zodToConvex(input as z.ZodTypeAny) }
+  } else {
+    zod = z.object(input as Record<string, z.ZodTypeAny>)
+    args = zodToConvexFields(input as Record<string, z.ZodTypeAny>)
+  }
   const returns = options?.returns ? zodReturnsToConvex(options.returns) : undefined
 
   return action({
