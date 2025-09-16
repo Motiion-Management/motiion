@@ -13,10 +13,16 @@ import { getAll, getOneFrom } from 'convex-helpers/server/relationships'
 import { crud } from 'convex-helpers/server'
 import { UserDoc, Users, zUsers } from './validators/users'
 import { z } from 'zod'
-import { zodToConvex, zQuery, zMutation, zInternalQuery, zInternalMutation } from '@packages/zodvex'
+import {
+  zodToConvex,
+  zQuery,
+  zMutation,
+  zInternalQuery,
+  zInternalMutation
+} from '@packages/zodvex'
+import { zid } from 'convex-helpers/server/zodV4'
 import { attributesPlainObject } from './validators/attributes'
 import { literals } from 'convex-helpers/validators'
-import { zid } from 'convex-helpers/server/zodV4'
 import { NEW_USER_DEFAULTS, formatFullName } from './users/helpers'
 import { AgencyDoc } from './agencies'
 
@@ -33,7 +39,7 @@ export const { update } = crud(Users, authQuery, authMutation)
 async function computeDerived(
   ctx: { db: { get: (id: any) => Promise<any> } },
   user: any
-) {
+): Promise<{ fullName: string; searchPattern: string }> {
   let agency: AgencyDoc | null = null
   if (user.representation?.agencyId) {
     agency = await ctx.db.get(user.representation.agencyId)
@@ -45,13 +51,34 @@ async function computeDerived(
   return { fullName, searchPattern }
 }
 
-export const getMyUser = zQuery(authQuery, {}, async (ctx) => {
-  console.log('🔍 CONVEX_GET_USER: Query called', {
-    userId: ctx.user?._id,
-    hasUser: !!ctx.user,
-    timestamp: new Date().toISOString()
-  })
-  return ctx.user
+// Return value schemas
+const zUserDoc = z.custom<UserDoc>()
+const zUserDocOrNull = z.union([zUserDoc, z.null()])
+
+export const getMyUser = zQuery(
+  authQuery,
+  {},
+  async (ctx) => {
+    console.log('🔍 CONVEX_GET_USER: Query called', {
+      userId: ctx.user?._id,
+      hasUser: !!ctx.user,
+      timestamp: new Date().toISOString()
+    })
+    return ctx.user
+  },
+  { returns: zUserDocOrNull }
+)
+
+export const getMyUser2 = authQuery({
+  args: {},
+  async handler(ctx) {
+    console.log('🔍 CONVEX_GET_USER: Query called', {
+      userId: ctx.user?._id,
+      hasUser: !!ctx.user,
+      timestamp: new Date().toISOString()
+    })
+    return ctx.user
+  }
 })
 
 // Zod-validated mutation using convex-helpers + codecs
@@ -69,7 +96,7 @@ export const updateMyUser = zMutation(
 export const updateMySizingField = zMutation(
   authMutation,
   { section: z.string(), field: z.string(), value: z.string() },
-  async (ctx, { section, field, value }): Promise<void> => {
+  async (ctx, { section, field, value }) => {
     // Get current sizing data
     const currentSizing: Record<string, unknown> = ctx.user.sizing || {}
     const currentSection: Record<string, unknown> =
@@ -101,7 +128,7 @@ export const updateMySizingField = zMutation(
 export const patchUserAttributes = zMutation(
   authMutation,
   { attributes: z.object(attributesPlainObject).partial() },
-  async (ctx, { attributes }): Promise<void> => {
+  async (ctx, { attributes }) => {
     const currentAttributes = (ctx.user.attributes || {}) as Record<
       string,
       unknown
@@ -124,25 +151,27 @@ export const patchUserAttributes = zMutation(
 export const getUserByTokenId = zInternalQuery(
   internalQuery,
   { tokenId: z.string() },
-  async (ctx, { tokenId }): Promise<UserDoc | null> => {
+  async (ctx, { tokenId }) => {
     return await ctx.db
       .query('users')
       .withIndex('tokenId', (q: any) => q.eq('tokenId', tokenId))
       .first()
-  }
+  },
+  { returns: zUserDocOrNull }
 )
 
 // Minimal-typing variant to use from actions without heavy generics
 export const getByTokenId = zInternalQuery(
   internalQuery,
   { tokenId: z.string() },
-  async (ctx, { tokenId }): Promise<UserDoc | null> => {
+  async (ctx, { tokenId }) => {
     const user = await ctx.db
       .query('users')
       .withIndex('tokenId', (q: any) => q.eq('tokenId', tokenId))
       .unique()
     return user
-  }
+  },
+  { returns: zUserDocOrNull }
 )
 
 // Deferred afterUpdate removed; derived fields computed inline above
@@ -223,7 +252,9 @@ export const search = zQuery(
   async (ctx, { query }) => {
     const results = await ctx.db
       .query('users')
-      .withSearchIndex('search_user', (q: any) => q.search('searchPattern', query))
+      .withSearchIndex('search_user', (q: any) =>
+        q.search('searchPattern', query)
+      )
       .take(10)
 
     const fullResults = await Promise.all(
@@ -348,7 +379,8 @@ export const isFavoriteUser = zQuery(
   { userId: zid('users') },
   async (ctx, { userId }) => {
     return ctx.user && (ctx.user.favoriteUsers || []).includes(userId)
-  }
+  },
+  { returns: z.boolean() }
 )
 
 export const saveMyPushToken = zMutation(

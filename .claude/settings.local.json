@@ -49,7 +49,8 @@
       "WebFetch(domain:react-native-sortables-docs.vercel.app)",
       "WebFetch(domain:platform.openai.com)",
       "Bash(npx convex dev:*)",
-      "Bash(npx convex run:*)"
+      "Bash(npx convex run:*)",
+      "Bash(pnpm typecheck:*)"
     ]
   },
   "enableAllProjectMcpServers": true

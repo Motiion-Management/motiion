@@ -1,6 +1,30 @@
 import { z } from 'zod'
-import { v, type Validator } from 'convex/values'
+import { v, type Validator, type GenericValidator, type PropertyValidators, ConvexError } from 'convex/values'
+import {
+  type GenericDataModel,
+  type QueryBuilder,
+  type MutationBuilder,
+  type ActionBuilder,
+  type GenericQueryCtx,
+  type GenericMutationCtx,
+  type GenericActionCtx,
+  type FunctionVisibility,
+  type RegisteredQuery,
+  type RegisteredMutation,
+  type RegisteredAction,
+  type DefaultFunctionArgs
+} from 'convex/server'
 import { registryHelpers } from 'convex-helpers/server/zodV4'
+import {
+  type CustomBuilder,
+  type CustomCtx,
+  type Registration,
+  type Customization,
+  NoOp,
+  customQuery,
+  customMutation,
+  customAction
+} from 'convex-helpers/server/customFunctions'
 
 // Helper type guard
 const isUnion = (val: any) => val && typeof val === 'object' && val.kind === 'union'
@@ -92,10 +116,14 @@ export function zodToConvexFields(
   return out
 }
 
+// Export all utilities and types
 export default {
   zodToConvex,
   zodToConvexFields
 }
+
+// Re-export commonly used validators from convex-helpers
+export { zid, type Zid } from 'convex-helpers/server/zodV4'
 
 // Recursively rebuild validators to enforce optional vs nullable semantics and fix nested objects
 function getObjectShape(obj: z.ZodObject<any>): Record<string, z.ZodTypeAny> {
@@ -327,84 +355,349 @@ function fromConvexJS(schema: z.ZodTypeAny, value: any): any {
   return value
 }
 
-// Lightweight wrappers to define Convex functions with Zod args
-type QueryBuilder = (def: { args: any; returns?: any; handler: (ctx: any, args: any) => any }) => any
-type MutationBuilder = (def: { args: any; returns?: any; handler: (ctx: any, args: any) => any }) => any
-type ActionBuilder = (def: { args: any; returns?: any; handler: (ctx: any, args: any) => any }) => any
+// Utility type to merge contexts (from convex-helpers)
+type Overwrite<T, U> = Omit<T, keyof U> & U
+
+// Helper to pick specific keys from an object
+function pick<T extends Record<string, any>, K extends keyof T>(
+  obj: T,
+  keys: K[]
+): Pick<T, K> {
+  const result = {} as Pick<T, K>
+  for (const key of keys) {
+    if (key in obj) {
+      result[key] = obj[key]
+    }
+  }
+  return result
+}
+
+// Improved type inference for Zod arguments
+export type InferArgs<A> =
+  A extends z.ZodObject<infer S>
+    ? z.infer<z.ZodObject<S>>
+    : A extends Record<string, z.ZodTypeAny>
+      ? { [K in keyof A]: z.infer<A[K]> }
+      : A extends z.ZodTypeAny
+        ? z.infer<A>
+        : Record<string, never>
+
+// Type helper for return values
+export type InferReturns<R> = R extends z.ZodTypeAny ? z.output<R> : R extends undefined ? any : R
 
 function normalizeSchema(input: z.ZodTypeAny | Record<string, z.ZodTypeAny>): z.ZodTypeAny {
   if (input instanceof z.ZodType) return input
   return z.object(input as Record<string, z.ZodTypeAny>)
 }
 
-export function zQuery(
-  query: QueryBuilder,
-  input: z.ZodTypeAny | Record<string, z.ZodTypeAny>,
-  handler: (ctx: any, args: any) => any,
-  options?: { returns?: any }
-) {
-  const zod = normalizeSchema(input)
-  const args = zod instanceof z.ZodObject ? zodToConvexFields(getObjectShape(zod)) : zodToConvex(zod)
-  return query({
-    args,
-    returns: options?.returns,
-    handler: (ctx, args) => handler(ctx, zod.parse(args))
-  })
+// Convert Zod return validator to Convex validator
+function zodReturnsToConvex(returns?: z.ZodTypeAny): GenericValidator | undefined {
+  if (!returns) return undefined
+  return zodToConvex(returns)
 }
 
-export function zInternalQuery(
-  internalQuery: QueryBuilder,
-  input: z.ZodTypeAny | Record<string, z.ZodTypeAny>,
-  handler: (ctx: any, args: any) => any,
-  options?: { returns?: any }
+// Extract context type from any builder
+type ExtractCtx<Builder> = Builder extends {
+  (fn: { handler: (ctx: infer Ctx, ...args: any[]) => any }): any
+} ? Ctx : never
+
+// Type helper for extracting the output type of a builder function while preserving return type
+type PreserveReturnType<Builder, ArgsType, ReturnsType> =
+  Builder extends QueryBuilder<infer DataModel, infer Visibility>
+    ? RegisteredQuery<Visibility, ArgsType extends DefaultFunctionArgs ? ArgsType : DefaultFunctionArgs, ReturnsType>
+    : Builder extends MutationBuilder<infer DataModel, infer Visibility>
+      ? RegisteredMutation<Visibility, ArgsType extends DefaultFunctionArgs ? ArgsType : DefaultFunctionArgs, ReturnsType>
+      : Builder extends ActionBuilder<infer DataModel, infer Visibility>
+        ? RegisteredAction<Visibility, ArgsType extends DefaultFunctionArgs ? ArgsType : DefaultFunctionArgs, ReturnsType>
+      : Builder extends CustomBuilder<"query", infer CustomArgs, infer CustomCtx, infer MadeArgs, infer InputCtx, infer Visibility, infer ExtraArgs>
+        ? RegisteredQuery<Visibility, ArgsType extends DefaultFunctionArgs ? ArgsType : DefaultFunctionArgs, ReturnsType>
+      : Builder extends CustomBuilder<"mutation", infer CustomArgs, infer CustomCtx, infer MadeArgs, infer InputCtx, infer Visibility, infer ExtraArgs>
+        ? RegisteredMutation<Visibility, ArgsType extends DefaultFunctionArgs ? ArgsType : DefaultFunctionArgs, ReturnsType>
+      : Builder extends CustomBuilder<"action", infer CustomArgs, infer CustomCtx, infer MadeArgs, infer InputCtx, infer Visibility, infer ExtraArgs>
+        ? RegisteredAction<Visibility, ArgsType extends DefaultFunctionArgs ? ArgsType : DefaultFunctionArgs, ReturnsType>
+      : Builder extends (...args: any[]) => any
+        ? ReturnType<Builder>
+        : never
+
+// Helper to convert Zod args to Convex args format
+type ZodToConvexArgs<A> =
+  A extends z.ZodObject<infer Shape>
+    ? { [K in keyof Shape]: any }
+    : A extends Record<string, z.ZodTypeAny>
+      ? { [K in keyof A]: any }
+      : A extends z.ZodTypeAny
+        ? { value: any }
+        : Record<string, never>
+
+// Internal function builder that handles both standard and custom builders
+function customFnBuilder(
+  builder: (args: any) => any,
+  customization: Customization<any, any, any, any>
 ) {
+  const customInput = customization.input ?? NoOp.input
+  const inputArgs = customization.args ?? NoOp.args
+
+  return function customBuilder(fn: any): any {
+    const { args, handler = fn, returns: maybeObject, ...extra } = fn
+
+    const returns =
+      maybeObject && !(maybeObject instanceof z.ZodType)
+        ? z.object(maybeObject)
+        : maybeObject
+
+    const returnValidator =
+      returns && !fn.skipConvexValidation
+        ? { returns: zodToConvex(returns) }
+        : null
+
+    if (args && !fn.skipConvexValidation) {
+      let argsValidator = args
+      if (argsValidator instanceof z.ZodType) {
+        if (argsValidator instanceof z.ZodObject) {
+          argsValidator = getObjectShape(argsValidator)
+        } else {
+          throw new Error(
+            "Unsupported zod type as args validator: " +
+              argsValidator.constructor.name
+          )
+        }
+      }
+      const convexValidator = zodToConvexFields(argsValidator)
+      return builder({
+        args: {
+          ...convexValidator,
+          ...inputArgs
+        },
+        ...returnValidator,
+        handler: async (ctx: any, allArgs: any) => {
+          const added = await customInput(
+            ctx,
+            pick(allArgs, Object.keys(inputArgs)) as any,
+            extra
+          )
+          const rawArgs = pick(allArgs, Object.keys(argsValidator))
+          const parsed = z.object(argsValidator).safeParse(rawArgs)
+          if (!parsed.success) {
+            throw new ConvexError({
+              ZodError: JSON.parse(
+                JSON.stringify(parsed.error.flatten(), null, 2)
+              )
+            })
+          }
+          return await handler({ ...ctx, ...added }, parsed.data)
+        }
+      })
+    }
+    // No args provided
+    return builder({
+      args: inputArgs,
+      ...returnValidator,
+      handler: async (ctx: any, allArgs: any) => {
+        const added = await customInput(
+          ctx,
+          pick(allArgs, Object.keys(inputArgs)) as any,
+          extra
+        )
+        return await handler({ ...ctx, ...added }, allArgs)
+      }
+    })
+  }
+}
+
+// Custom Query builder for custom contexts
+export function zCustomQuery<
+  CustomArgsValidator extends PropertyValidators,
+  CustomCtx extends Record<string, any>,
+  CustomMadeArgs extends Record<string, any>,
+  Visibility extends FunctionVisibility,
+  DataModel extends GenericDataModel
+>(
+  query: QueryBuilder<DataModel, Visibility>,
+  customization: Customization<
+    GenericQueryCtx<DataModel>,
+    CustomArgsValidator,
+    CustomCtx,
+    CustomMadeArgs
+  >
+) {
+  return customFnBuilder(query, customization) as CustomBuilder<
+    "query",
+    CustomArgsValidator,
+    CustomCtx,
+    CustomMadeArgs,
+    GenericQueryCtx<DataModel>,
+    Visibility,
+    Record<string, any>
+  >
+}
+
+// Custom Mutation builder for custom contexts
+export function zCustomMutation<
+  CustomArgsValidator extends PropertyValidators,
+  CustomCtx extends Record<string, any>,
+  CustomMadeArgs extends Record<string, any>,
+  Visibility extends FunctionVisibility,
+  DataModel extends GenericDataModel
+>(
+  mutation: MutationBuilder<DataModel, Visibility>,
+  customization: Customization<
+    GenericMutationCtx<DataModel>,
+    CustomArgsValidator,
+    CustomCtx,
+    CustomMadeArgs
+  >
+) {
+  return customFnBuilder(mutation, customization) as CustomBuilder<
+    "mutation",
+    CustomArgsValidator,
+    CustomCtx,
+    CustomMadeArgs,
+    GenericMutationCtx<DataModel>,
+    Visibility,
+    Record<string, any>
+  >
+}
+
+// Custom Action builder for custom contexts
+export function zCustomAction<
+  CustomArgsValidator extends PropertyValidators,
+  CustomCtx extends Record<string, any>,
+  CustomMadeArgs extends Record<string, any>,
+  Visibility extends FunctionVisibility,
+  DataModel extends GenericDataModel
+>(
+  action: ActionBuilder<DataModel, Visibility>,
+  customization: Customization<
+    GenericActionCtx<DataModel>,
+    CustomArgsValidator,
+    CustomCtx,
+    CustomMadeArgs
+  >
+) {
+  return customFnBuilder(action, customization) as CustomBuilder<
+    "action",
+    CustomArgsValidator,
+    CustomCtx,
+    CustomMadeArgs,
+    GenericActionCtx<DataModel>,
+    Visibility,
+    Record<string, any>
+  >
+}
+
+// Query function for any builder type
+export function zQuery<
+  Builder extends (fn: any) => any,
+  A extends z.ZodTypeAny | Record<string, z.ZodTypeAny>,
+  R extends z.ZodTypeAny | undefined = undefined
+>(
+  query: Builder,
+  input: A,
+  handler: (ctx: ExtractCtx<Builder>, args: InferArgs<A>) => Promise<InferReturns<R>> | InferReturns<R>,
+  options?: { returns?: R }
+): PreserveReturnType<Builder, ZodToConvexArgs<A>, InferReturns<R>> {
+  const zod = normalizeSchema(input)
+  const args = zod instanceof z.ZodObject ? zodToConvexFields(getObjectShape(zod)) : zodToConvex(zod)
+  const returns = options?.returns ? zodReturnsToConvex(options.returns) : undefined
+
+  return query({
+    args,
+    returns,
+    handler: (ctx: ExtractCtx<Builder>, argsObject: unknown) => {
+      const parsed = zod.parse(argsObject) as InferArgs<A>
+      return handler(ctx, parsed)
+    }
+  }) as PreserveReturnType<Builder, ZodToConvexArgs<A>, InferReturns<R>>
+}
+
+// Internal query
+export function zInternalQuery<
+  Builder extends (fn: any) => any,
+  A extends z.ZodTypeAny | Record<string, z.ZodTypeAny>,
+  R extends z.ZodTypeAny | undefined = undefined
+>(
+  internalQuery: Builder,
+  input: A,
+  handler: (ctx: ExtractCtx<Builder>, args: InferArgs<A>) => Promise<InferReturns<R>> | InferReturns<R>,
+  options?: { returns?: R }
+): PreserveReturnType<Builder, ZodToConvexArgs<A>, InferReturns<R>> {
   return zQuery(internalQuery, input, handler, options)
 }
 
-export function zMutation(
-  mutation: MutationBuilder,
-  input: z.ZodTypeAny | Record<string, z.ZodTypeAny>,
-  handler: (ctx: any, args: any) => any,
-  options?: { returns?: any }
-) {
+// Mutation function for any builder type
+export function zMutation<
+  Builder extends (fn: any) => any,
+  A extends z.ZodTypeAny | Record<string, z.ZodTypeAny>,
+  R extends z.ZodTypeAny | undefined = undefined
+>(
+  mutation: Builder,
+  input: A,
+  handler: (ctx: ExtractCtx<Builder>, args: InferArgs<A>) => Promise<InferReturns<R>> | InferReturns<R>,
+  options?: { returns?: R }
+): PreserveReturnType<Builder, ZodToConvexArgs<A>, InferReturns<R>> {
   const zod = normalizeSchema(input)
   const args = zod instanceof z.ZodObject ? zodToConvexFields(getObjectShape(zod)) : zodToConvex(zod)
+  const returns = options?.returns ? zodReturnsToConvex(options.returns) : undefined
+
   return mutation({
     args,
-    returns: options?.returns,
-    handler: (ctx, args) => handler(ctx, zod.parse(args))
-  })
+    returns,
+    handler: (ctx: ExtractCtx<Builder>, argsObject: unknown) => {
+      const parsed = zod.parse(argsObject) as InferArgs<A>
+      return handler(ctx, parsed)
+    }
+  }) as PreserveReturnType<Builder, ZodToConvexArgs<A>, InferReturns<R>>
 }
 
-export function zInternalMutation(
-  internalMutation: MutationBuilder,
-  input: z.ZodTypeAny | Record<string, z.ZodTypeAny>,
-  handler: (ctx: any, args: any) => any,
-  options?: { returns?: any }
-) {
+// Internal mutation
+export function zInternalMutation<
+  Builder extends (fn: any) => any,
+  A extends z.ZodTypeAny | Record<string, z.ZodTypeAny>,
+  R extends z.ZodTypeAny | undefined = undefined
+>(
+  internalMutation: Builder,
+  input: A,
+  handler: (ctx: ExtractCtx<Builder>, args: InferArgs<A>) => Promise<InferReturns<R>> | InferReturns<R>,
+  options?: { returns?: R }
+): PreserveReturnType<Builder, ZodToConvexArgs<A>, InferReturns<R>> {
   return zMutation(internalMutation, input, handler, options)
 }
 
-export function zAction(
-  action: ActionBuilder,
-  input: z.ZodTypeAny | Record<string, z.ZodTypeAny>,
-  handler: (ctx: any, args: any) => any,
-  options?: { returns?: any }
-) {
+// Action function for any builder type
+export function zAction<
+  Builder extends (fn: any) => any,
+  A extends z.ZodTypeAny | Record<string, z.ZodTypeAny>,
+  R extends z.ZodTypeAny | undefined = undefined
+>(
+  action: Builder,
+  input: A,
+  handler: (ctx: ExtractCtx<Builder>, args: InferArgs<A>) => Promise<InferReturns<R>> | InferReturns<R>,
+  options?: { returns?: R }
+): PreserveReturnType<Builder, ZodToConvexArgs<A>, InferReturns<R>> {
   const zod = normalizeSchema(input)
   const args = zod instanceof z.ZodObject ? zodToConvexFields(getObjectShape(zod)) : zodToConvex(zod)
+  const returns = options?.returns ? zodReturnsToConvex(options.returns) : undefined
+
   return action({
     args,
-    returns: options?.returns,
-    handler: (ctx, args) => handler(ctx, zod.parse(args))
-  })
+    returns,
+    handler: (ctx: ExtractCtx<Builder>, argsObject: unknown) => {
+      const parsed = zod.parse(argsObject) as InferArgs<A>
+      return handler(ctx, parsed)
+    }
+  }) as PreserveReturnType<Builder, ZodToConvexArgs<A>, InferReturns<R>>
 }
 
-export function zInternalAction(
-  internalAction: ActionBuilder,
-  input: z.ZodTypeAny | Record<string, z.ZodTypeAny>,
-  handler: (ctx: any, args: any) => any,
-  options?: { returns?: any }
-) {
+// Internal action
+export function zInternalAction<
+  Builder extends (fn: any) => any,
+  A extends z.ZodTypeAny | Record<string, z.ZodTypeAny>,
+  R extends z.ZodTypeAny | undefined = undefined
+>(
+  internalAction: Builder,
+  input: A,
+  handler: (ctx: ExtractCtx<Builder>, args: InferArgs<A>) => Promise<InferReturns<R>> | InferReturns<R>,
+  options?: { returns?: R }
+): PreserveReturnType<Builder, ZodToConvexArgs<A>, InferReturns<R>> {
   return zAction(internalAction, input, handler, options)
 }
