@@ -50,7 +50,8 @@
       "WebFetch(domain:platform.openai.com)",
       "Bash(npx convex dev:*)",
       "Bash(npx convex run:*)",
-      "Bash(pnpm typecheck:*)"
+      "Bash(pnpm typecheck:*)",
+      "Bash(./scripts/extract-to-repo.sh:*)"
     ]
   },
   "enableAllProjectMcpServers": true
