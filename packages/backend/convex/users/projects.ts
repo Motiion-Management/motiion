@@ -36,19 +36,21 @@ export const addMyProject = zMutation(
     }
     const projId = await ctx.db.insert('projects', payload)
 
-    // DUAL-WRITE: Keep resume.projects list in sync in both user and profile
-    const currentResume = profile?.resume || ctx.user.resume
-    const updatedResume = {
-      ...currentResume,
-      projects: [...(currentResume?.projects || []), projId]
-    }
-
-    await ctx.db.patch(ctx.user._id, {
-      resume: updatedResume
-    })
-
+    // Update resume.projects list in profile or user
     if (profile) {
+      const updatedResume = {
+        ...profile.resume,
+        projects: [...(profile.resume?.projects || []), projId]
+      }
       await ctx.db.patch(profile._id, {
+        resume: updatedResume
+      })
+    } else {
+      const updatedResume = {
+        ...ctx.user.resume,
+        projects: [...(ctx.user.resume?.projects || []), projId]
+      }
+      await ctx.db.patch(ctx.user._id, {
         resume: updatedResume
       })
     }
@@ -79,21 +81,25 @@ export const removeMyProject = zMutation(
       }
     }
 
-    // DUAL-WRITE: Detach from resume list in both user and profile
-    const currentResume = profile?.resume || ctx.user.resume
-    const updatedResume = {
-      ...currentResume,
-      projects: (currentResume?.projects || []).filter(
-        (id: import('../_generated/dataModel').Id<'projects'>) => id !== args.projectId
-      )
-    }
-
-    await ctx.db.patch(ctx.user._id, {
-      resume: updatedResume
-    })
-
+    // Detach from resume list in profile or user
     if (profile) {
+      const updatedResume = {
+        ...profile.resume,
+        projects: (profile.resume?.projects || []).filter(
+          (id: import('../_generated/dataModel').Id<'projects'>) => id !== args.projectId
+        )
+      }
       await ctx.db.patch(profile._id, {
+        resume: updatedResume
+      })
+    } else {
+      const updatedResume = {
+        ...ctx.user.resume,
+        projects: (ctx.user.resume?.projects || []).filter(
+          (id: import('../_generated/dataModel').Id<'projects'>) => id !== args.projectId
+        )
+      }
+      await ctx.db.patch(ctx.user._id, {
         resume: updatedResume
       })
     }

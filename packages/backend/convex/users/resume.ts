@@ -11,6 +11,7 @@ import {
   PROJECT_TYPES as EXPERIENCE_TYPES
 } from '../schemas/projects'
 import { getAll } from 'convex-helpers/server/relationships'
+import { getActiveProfileTarget } from './profileHelpers'
 
 export async function augmentResume(
   ctx: QueryCtx,
@@ -141,21 +142,8 @@ export const saveResumeUploadIds = zMutation(
   async (ctx, args) => {
     if (!ctx.user) return
 
-    // Get current resume from profile or user
-    let currentResume = ctx.user.resume
-    let profile = null
-
-    if (ctx.user.activeProfileType && (ctx.user.activeDancerId || ctx.user.activeChoreographerId)) {
-      if (ctx.user.activeProfileType === 'dancer' && ctx.user.activeDancerId) {
-        profile = await ctx.db.get(ctx.user.activeDancerId)
-      } else if (ctx.user.activeProfileType === 'choreographer' && ctx.user.activeChoreographerId) {
-        profile = await ctx.db.get(ctx.user.activeChoreographerId)
-      }
-
-      if (profile?.resume) {
-        currentResume = profile.resume
-      }
-    }
+    const { targetId, profile } = await getActiveProfileTarget(ctx.db, ctx.user)
+    const currentResume = profile?.resume || ctx.user.resume
 
     const resumeUploads = [
       ...args.resumeUploads,
@@ -167,16 +155,9 @@ export const saveResumeUploadIds = zMutation(
       uploads: resumeUploads
     }
 
-    // DUAL-WRITE: Update both user and profile
-    await ctx.db.patch(ctx.user._id, {
+    await ctx.db.patch(targetId, {
       resume: updatedResume
     })
-
-    if (profile) {
-      await ctx.db.patch(profile._id, {
-        resume: updatedResume
-      })
-    }
   }
 )
 
@@ -190,21 +171,8 @@ export const removeResumeUpload = zMutation(
 
     await ctx.storage.delete(args.resumeUploadId)
 
-    // Get current resume from profile or user
-    let currentResume = ctx.user.resume
-    let profile = null
-
-    if (ctx.user.activeProfileType && (ctx.user.activeDancerId || ctx.user.activeChoreographerId)) {
-      if (ctx.user.activeProfileType === 'dancer' && ctx.user.activeDancerId) {
-        profile = await ctx.db.get(ctx.user.activeDancerId)
-      } else if (ctx.user.activeProfileType === 'choreographer' && ctx.user.activeChoreographerId) {
-        profile = await ctx.db.get(ctx.user.activeChoreographerId)
-      }
-
-      if (profile?.resume) {
-        currentResume = profile.resume
-      }
-    }
+    const { targetId, profile } = await getActiveProfileTarget(ctx.db, ctx.user)
+    const currentResume = profile?.resume || ctx.user.resume
 
     const uploads = (currentResume?.uploads || []).filter(
       (h: { storageId: Id<'_storage'> }) => h.storageId !== args.resumeUploadId
@@ -212,16 +180,9 @@ export const removeResumeUpload = zMutation(
 
     const updatedResume = { ...currentResume, uploads }
 
-    // DUAL-WRITE: Update both user and profile
-    await ctx.db.patch(ctx.user._id, {
+    await ctx.db.patch(targetId, {
       resume: updatedResume
     })
-
-    if (profile) {
-      await ctx.db.patch(profile._id, {
-        resume: updatedResume
-      })
-    }
   }
 )
 
@@ -235,21 +196,8 @@ export const updateMyResume = zMutation(
   async (ctx, args) => {
     if (!ctx.user) return
 
-    // Get current resume from profile or user
-    let currentResume = ctx.user.resume
-    let profile = null
-
-    if (ctx.user.activeProfileType && (ctx.user.activeDancerId || ctx.user.activeChoreographerId)) {
-      if (ctx.user.activeProfileType === 'dancer' && ctx.user.activeDancerId) {
-        profile = await ctx.db.get(ctx.user.activeDancerId)
-      } else if (ctx.user.activeProfileType === 'choreographer' && ctx.user.activeChoreographerId) {
-        profile = await ctx.db.get(ctx.user.activeChoreographerId)
-      }
-
-      if (profile?.resume) {
-        currentResume = profile.resume
-      }
-    }
+    const { targetId, profile } = await getActiveProfileTarget(ctx.db, ctx.user)
+    const currentResume = profile?.resume || ctx.user.resume
 
     const updatedResume = {
       ...currentResume,
@@ -258,15 +206,8 @@ export const updateMyResume = zMutation(
       genres: args.genres
     }
 
-    // DUAL-WRITE: Update both user and profile
-    await ctx.db.patch(ctx.user._id, {
+    await ctx.db.patch(targetId, {
       resume: updatedResume
     })
-
-    if (profile) {
-      await ctx.db.patch(profile._id, {
-        resume: updatedResume
-      })
-    }
   }
 )

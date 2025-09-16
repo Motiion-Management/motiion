@@ -57,17 +57,14 @@ export const addMyTraining = zMutation(
       orderIndex: maxOrderIndex + 1
     })
 
-    // DUAL-WRITE: Update training list in both user and profile
-    const currentTraining = profile?.training || ctx.user?.training || []
-    const updatedTraining = [...currentTraining, trainingId]
-
-    await ctx.db.patch(ctx.user._id, {
-      training: updatedTraining
-    })
-
+    // Update training list in profile or user
     if (profile) {
       await ctx.db.patch(profile._id, {
-        training: updatedTraining
+        training: [...(profile.training || []), trainingId]
+      })
+    } else {
+      await ctx.db.patch(ctx.user._id, {
+        training: [...(ctx.user?.training || []), trainingId]
       })
     }
 
@@ -90,19 +87,18 @@ export const removeMyTraining = zMutation(
       }
     }
 
-    // DUAL-WRITE: Remove from training list in both user and profile
-    const currentTraining = profile?.training || ctx.user.training || []
-    const updatedTraining = currentTraining.filter(
-      (id: import('./_generated/dataModel').Id<'training'>) => id !== args.trainingId
-    )
-
-    await ctx.db.patch(ctx.user._id, {
-      training: updatedTraining
-    })
-
+    // Remove from training list in profile or user
     if (profile) {
       await ctx.db.patch(profile._id, {
-        training: updatedTraining
+        training: (profile.training || []).filter(
+          (id: import('./_generated/dataModel').Id<'training'>) => id !== args.trainingId
+        )
+      })
+    } else {
+      await ctx.db.patch(ctx.user._id, {
+        training: (ctx.user.training || []).filter(
+          (id: import('./_generated/dataModel').Id<'training'>) => id !== args.trainingId
+        )
       })
     }
 

@@ -133,38 +133,10 @@ export const updateMyUser = zMutation(
   async (ctx, args) => {
     const nextUser = { ...ctx.user, ...args }
     const derived = await computeDerived(ctx, nextUser)
+
+    // Only update user's account-level fields
+    // Profile-specific fields should be updated through profile-specific functions
     await ctx.db.patch(ctx.user._id, { ...args, ...derived })
-
-    // DUAL-WRITE: Also update active profile if it exists
-    // This ensures data consistency during migration period
-    if (ctx.user.activeProfileType && (ctx.user.activeDancerId || ctx.user.activeChoreographerId)) {
-      const profileFields = [
-        'headshots', 'attributes', 'sizing', 'resume', 'links',
-        'sagAftraId', 'companyName', 'workLocation', 'location',
-        'training', 'representationStatus', 'representation',
-        'profileTipDismissed', 'resumeImportedFields',
-        'resumeImportVersion', 'resumeImportedAt'
-      ]
-
-      const profileUpdates: any = {}
-      for (const field of profileFields) {
-        if (field in args) {
-          profileUpdates[field] = (args as any)[field]
-        }
-      }
-
-      // Also update searchPattern if any profile-relevant field changed
-      if (Object.keys(profileUpdates).length > 0) {
-        profileUpdates.searchPattern = derived.searchPattern
-      }
-
-      // Update the active profile
-      if (ctx.user.activeProfileType === 'dancer' && ctx.user.activeDancerId) {
-        await ctx.db.patch(ctx.user.activeDancerId, profileUpdates)
-      } else if (ctx.user.activeProfileType === 'choreographer' && ctx.user.activeChoreographerId) {
-        await ctx.db.patch(ctx.user.activeChoreographerId, profileUpdates)
-      }
-    }
   }
 )
 
@@ -172,17 +144,42 @@ export const updateMySizingField = zMutation(
   authMutation,
   { section: z.string(), field: z.string(), value: z.string() },
   async (ctx, { section, field, value }) => {
-    // Get current sizing data
-    const currentSizing: Record<string, unknown> = ctx.user.sizing || {}
-    const currentSection: Record<string, unknown> =
-      (currentSizing as any)[section] || {}
+    // Update profile if active, otherwise update user
+    if (ctx.user.activeProfileType && (ctx.user.activeDancerId || ctx.user.activeChoreographerId)) {
+      let profileId = null
+      if (ctx.user.activeProfileType === 'dancer' && ctx.user.activeDancerId) {
+        profileId = ctx.user.activeDancerId
+      } else if (ctx.user.activeProfileType === 'choreographer' && ctx.user.activeChoreographerId) {
+        profileId = ctx.user.activeChoreographerId
+      }
 
-    // Merge the new field value with existing section data
+      if (profileId) {
+        const profile = await ctx.db.get(profileId)
+        if (profile) {
+          const currentSizing: Record<string, unknown> = profile.sizing || {}
+          const currentSection: Record<string, unknown> = (currentSizing as any)[section] || {}
+          const updatedSection = {
+            ...currentSection,
+            [field]: value
+          }
+          const newSizing = {
+            ...currentSizing,
+            [section]: updatedSection
+          }
+
+          await ctx.db.patch(profileId, { sizing: newSizing })
+          return
+        }
+      }
+    }
+
+    // Fallback to user if no profile
+    const currentSizing: Record<string, unknown> = ctx.user.sizing || {}
+    const currentSection: Record<string, unknown> = (currentSizing as any)[section] || {}
     const updatedSection = {
       ...currentSection,
       [field]: value
     }
-
     const nextUser = {
       ...ctx.user,
       sizing: {
@@ -191,25 +188,10 @@ export const updateMySizingField = zMutation(
       }
     }
     const derived = await computeDerived(ctx, nextUser)
-    // Update the user with merged sizing data and derived fields
     await ctx.db.patch(ctx.user._id, {
       sizing: nextUser.sizing,
       ...derived
     })
-
-    // DUAL-WRITE: Update active profile if it exists
-    if (ctx.user.activeProfileType && (ctx.user.activeDancerId || ctx.user.activeChoreographerId)) {
-      const profileUpdate = {
-        sizing: nextUser.sizing,
-        searchPattern: derived.searchPattern
-      }
-
-      if (ctx.user.activeProfileType === 'dancer' && ctx.user.activeDancerId) {
-        await ctx.db.patch(ctx.user.activeDancerId, profileUpdate)
-      } else if (ctx.user.activeProfileType === 'choreographer' && ctx.user.activeChoreographerId) {
-        await ctx.db.patch(ctx.user.activeChoreographerId, profileUpdate)
-      }
-    }
   }
 )
 
@@ -218,10 +200,32 @@ export const patchUserAttributes = zMutation(
   authMutation,
   { attributes: z.object(attributesPlainObject).partial() },
   async (ctx, { attributes }) => {
-    const currentAttributes = (ctx.user.attributes || {}) as Record<
-      string,
-      unknown
-    >
+    // Update profile if active, otherwise update user
+    if (ctx.user.activeProfileType && (ctx.user.activeDancerId || ctx.user.activeChoreographerId)) {
+      let profileId = null
+      if (ctx.user.activeProfileType === 'dancer' && ctx.user.activeDancerId) {
+        profileId = ctx.user.activeDancerId
+      } else if (ctx.user.activeProfileType === 'choreographer' && ctx.user.activeChoreographerId) {
+        profileId = ctx.user.activeChoreographerId
+      }
+
+      if (profileId) {
+        const profile = await ctx.db.get(profileId)
+        if (profile) {
+          const currentAttributes = (profile.attributes || {}) as Record<string, unknown>
+          const mergedAttributes = {
+            ...currentAttributes,
+            ...attributes
+          } as any
+
+          await ctx.db.patch(profileId, { attributes: mergedAttributes })
+          return
+        }
+      }
+    }
+
+    // Fallback to user if no profile
+    const currentAttributes = (ctx.user.attributes || {}) as Record<string, unknown>
     const mergedAttributes = {
       ...currentAttributes,
       ...attributes
@@ -233,20 +237,6 @@ export const patchUserAttributes = zMutation(
       attributes: mergedAttributes,
       ...derived
     })
-
-    // DUAL-WRITE: Update active profile if it exists
-    if (ctx.user.activeProfileType && (ctx.user.activeDancerId || ctx.user.activeChoreographerId)) {
-      const profileUpdate = {
-        attributes: mergedAttributes,
-        searchPattern: derived.searchPattern
-      }
-
-      if (ctx.user.activeProfileType === 'dancer' && ctx.user.activeDancerId) {
-        await ctx.db.patch(ctx.user.activeDancerId, profileUpdate)
-      } else if (ctx.user.activeProfileType === 'choreographer' && ctx.user.activeChoreographerId) {
-        await ctx.db.patch(ctx.user.activeChoreographerId, profileUpdate)
-      }
-    }
   }
 )
 

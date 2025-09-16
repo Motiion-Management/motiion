@@ -48,6 +48,7 @@ import type * as training from "../training.js";
 import type * as users_headshots from "../users/headshots.js";
 import type * as users_headshotsOptimized from "../users/headshotsOptimized.js";
 import type * as users_helpers from "../users/helpers.js";
+import type * as users_profileHelpers from "../users/profileHelpers.js";
 import type * as users_projects from "../users/projects.js";
 import type * as users_representation from "../users/representation.js";
 import type * as users_resume from "../users/resume.js";
@@ -99,6 +100,7 @@ declare const fullApi: ApiFromModules<{
   "users/headshots": typeof users_headshots;
   "users/headshotsOptimized": typeof users_headshotsOptimized;
   "users/helpers": typeof users_helpers;
+  "users/profileHelpers": typeof users_profileHelpers;
   "users/projects": typeof users_projects;
   "users/representation": typeof users_representation;
   "users/resume": typeof users_resume;

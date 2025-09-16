@@ -32,7 +32,7 @@ export const completeOnboarding: RegisteredMutation<
       throw new ConvexError('User not found')
     }
 
-    // PHASE 2: Create profile in new table if it doesn't exist
+    // Create profile in new table if it doesn't exist
     if (user.profileType && !user.activeDancerId && !user.activeChoreographerId) {
       if (user.profileType === 'dancer') {
         // Check if profile already exists

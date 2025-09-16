@@ -80,19 +80,23 @@ export const saveHeadshotIds = zMutation(
   async (ctx, args) => {
     if (!ctx.user) return
 
-    // Get current headshots from profile or user
+    // Determine where to save headshots
+    let targetId = ctx.user._id
     let currentHeadshots = ctx.user.headshots || []
-    let profile = null
 
     if (ctx.user.activeProfileType && (ctx.user.activeDancerId || ctx.user.activeChoreographerId)) {
       if (ctx.user.activeProfileType === 'dancer' && ctx.user.activeDancerId) {
-        profile = await ctx.db.get(ctx.user.activeDancerId)
+        const profile = await ctx.db.get(ctx.user.activeDancerId)
+        if (profile) {
+          targetId = ctx.user.activeDancerId
+          currentHeadshots = profile.headshots || []
+        }
       } else if (ctx.user.activeProfileType === 'choreographer' && ctx.user.activeChoreographerId) {
-        profile = await ctx.db.get(ctx.user.activeChoreographerId)
-      }
-
-      if (profile?.headshots) {
-        currentHeadshots = profile.headshots
+        const profile = await ctx.db.get(ctx.user.activeChoreographerId)
+        if (profile) {
+          targetId = ctx.user.activeChoreographerId
+          currentHeadshots = profile.headshots || []
+        }
       }
     }
 
@@ -110,16 +114,10 @@ export const saveHeadshotIds = zMutation(
     type Headshot = { storageId: Id<'_storage'>; title?: string; uploadDate: string; position?: number }
     const normalized = (limited as Headshot[]).map((h: Headshot, idx: number) => ({ ...h, position: idx }))
 
-    // DUAL-WRITE: Update both user and profile
-    await ctx.db.patch(ctx.user._id, {
+    // Update only the target (profile or user)
+    await ctx.db.patch(targetId, {
       headshots: normalized
     })
-
-    if (profile) {
-      await ctx.db.patch(profile._id, {
-        headshots: normalized
-      })
-    }
   }
 )
 
@@ -133,19 +131,23 @@ export const removeHeadshot = zMutation(
 
     await ctx.storage.delete(args.headshotId)
 
-    // Get current headshots from profile or user
+    // Determine where to remove from
+    let targetId = ctx.user._id
     let currentHeadshots = ctx.user.headshots || []
-    let profile = null
 
     if (ctx.user.activeProfileType && (ctx.user.activeDancerId || ctx.user.activeChoreographerId)) {
       if (ctx.user.activeProfileType === 'dancer' && ctx.user.activeDancerId) {
-        profile = await ctx.db.get(ctx.user.activeDancerId)
+        const profile = await ctx.db.get(ctx.user.activeDancerId)
+        if (profile) {
+          targetId = ctx.user.activeDancerId
+          currentHeadshots = profile.headshots || []
+        }
       } else if (ctx.user.activeProfileType === 'choreographer' && ctx.user.activeChoreographerId) {
-        profile = await ctx.db.get(ctx.user.activeChoreographerId)
-      }
-
-      if (profile?.headshots) {
-        currentHeadshots = profile.headshots
+        const profile = await ctx.db.get(ctx.user.activeChoreographerId)
+        if (profile) {
+          targetId = ctx.user.activeChoreographerId
+          currentHeadshots = profile.headshots || []
+        }
       }
     }
 
@@ -155,12 +157,8 @@ export const removeHeadshot = zMutation(
     )
     const normalized = (filtered as Headshot[]).map((h: Headshot, idx: number) => ({ ...h, position: idx }))
 
-    // DUAL-WRITE: Update both user and profile
-    await ctx.db.patch(ctx.user._id, { headshots: normalized })
-
-    if (profile) {
-      await ctx.db.patch(profile._id, { headshots: normalized })
-    }
+    // Update only the target (profile or user)
+    await ctx.db.patch(targetId, { headshots: normalized })
   }
 )
 
@@ -177,19 +175,23 @@ export const updateHeadshotPosition = zMutation(
   async (ctx, { headshots }) => {
     if (!ctx.user) return
 
-    // Get current headshots from profile or user
+    // Determine where to update
+    let targetId = ctx.user._id
     let current = ctx.user.headshots || []
-    let profile = null
 
     if (ctx.user.activeProfileType && (ctx.user.activeDancerId || ctx.user.activeChoreographerId)) {
       if (ctx.user.activeProfileType === 'dancer' && ctx.user.activeDancerId) {
-        profile = await ctx.db.get(ctx.user.activeDancerId)
+        const profile = await ctx.db.get(ctx.user.activeDancerId)
+        if (profile) {
+          targetId = ctx.user.activeDancerId
+          current = profile.headshots || []
+        }
       } else if (ctx.user.activeProfileType === 'choreographer' && ctx.user.activeChoreographerId) {
-        profile = await ctx.db.get(ctx.user.activeChoreographerId)
-      }
-
-      if (profile?.headshots) {
-        current = profile.headshots
+        const profile = await ctx.db.get(ctx.user.activeChoreographerId)
+        if (profile) {
+          targetId = ctx.user.activeChoreographerId
+          current = profile.headshots || []
+        }
       }
     }
 
@@ -208,11 +210,7 @@ export const updateHeadshotPosition = zMutation(
       position: idx
     }))
 
-    // DUAL-WRITE: Update both user and profile
-    await ctx.db.patch(ctx.user._id, { headshots: next })
-
-    if (profile) {
-      await ctx.db.patch(profile._id, { headshots: next })
-    }
+    // Update only the target (profile or user)
+    await ctx.db.patch(targetId, { headshots: next })
   }
 )
