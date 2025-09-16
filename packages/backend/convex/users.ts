@@ -1,5 +1,5 @@
 import { ConvexError } from 'convex/values'
-// import { paginationOptsValidator } from 'convex/server'
+import { paginationOptsValidator } from 'convex/server'
 import { filter } from 'convex-helpers/server/filter'
 import {
   internalQuery,
@@ -476,10 +476,9 @@ export const getFavoriteUsersForCarousel = zQuery(
   }
 )
 
-export const paginateProfiles = zQuery(
-  query,
-  { paginationOpts: z.any() },
-  async (ctx, args) => {
+export const paginateProfiles = query({
+  args: { paginationOpts: paginationOptsValidator },
+  handler: async (ctx, args) => {
     const results = await filter(
       ctx.db.query('users'),
       async (user) => user.onboardingCompleted === true
@@ -501,7 +500,7 @@ export const paginateProfiles = zQuery(
       )
     }
   }
-)
+})
 
 export const isFavoriteUser = zQuery(
   authQuery,

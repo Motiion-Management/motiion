@@ -18,7 +18,8 @@ import {
   type RegisteredQuery,
   type RegisteredMutation,
   type RegisteredAction,
-  type DefaultFunctionArgs
+  type DefaultFunctionArgs,
+  paginationOptsValidator
 } from 'convex/server'
 import { registryHelpers, zid } from 'convex-helpers/server/zodV4'
 import { Table } from 'convex-helpers/server'
@@ -162,6 +163,10 @@ function simpleToConvex(schema: z.ZodTypeAny): any {
   if (inner instanceof z.ZodBoolean) return v.boolean()
   if (inner instanceof z.ZodDate) return v.float64()
   if (inner instanceof z.ZodNull) return v.null()
+  if (inner instanceof z.ZodAny) return v.any()
+  if (inner instanceof z.ZodUnknown) return v.any()
+  if ((z as any).ZodNever && inner instanceof (z as any).ZodNever) return v.any()
+  if ((z as any).ZodUndefined && inner instanceof (z as any).ZodUndefined) return v.any()
 
   // Literal
   if (inner instanceof z.ZodLiteral) {
@@ -213,6 +218,37 @@ function simpleToConvex(schema: z.ZodTypeAny): any {
   if (inner instanceof z.ZodRecord) {
     const valueType = (inner as z.ZodRecord<any>).valueType as z.ZodTypeAny
     return v.record(v.string(), simpleToConvex(valueType))
+  }
+
+  // Tuple → approximate as an array of the union of item validators (length not enforced)
+  if ((z as any).ZodTuple && inner instanceof (z as any).ZodTuple) {
+    const items = ((inner as any)._def?.items ?? []) as z.ZodTypeAny[]
+    const member = items.length ? makeUnion(items.map((i) => simpleToConvex(i))) : v.any()
+    return v.array(member)
+  }
+
+  // Intersection of objects → merge fields (fallback to any otherwise)
+  if ((z as any).ZodIntersection && inner instanceof (z as any).ZodIntersection) {
+    const left = (inner as any)._def?.left as z.ZodTypeAny
+    const right = (inner as any)._def?.right as z.ZodTypeAny
+    if (left instanceof z.ZodObject && right instanceof z.ZodObject) {
+      const l = getObjectShape(left)
+      const r = getObjectShape(right)
+      const keys = new Set([...Object.keys(l), ...Object.keys(r)])
+      const fields: Record<string, any> = {}
+      for (const k of keys) {
+        const lz = l[k]
+        const rz = r[k]
+        if (lz && rz) {
+          // union of validators for conflicting fields
+          fields[k] = makeUnion([simpleToConvex(lz), simpleToConvex(rz)])
+        } else {
+          const zf = (lz || rz) as z.ZodTypeAny
+          fields[k] = simpleToConvex(zf)
+        }
+      }
+      return v.object(fields)
+    }
   }
 
   // Fallback
@@ -350,8 +386,7 @@ function fromConvexJS(schema: z.ZodTypeAny, value: any): any {
   return value
 }
 
-// Utility type to merge contexts (from convex-helpers)
-type Overwrite<T, U> = Omit<T, keyof U> & U
+// (removed) Overwrite helper was unused
 
 // Helper to pick specific keys from an object
 function pick<T extends Record<string, any>, K extends keyof T>(
@@ -881,13 +916,12 @@ export function zCrud<
       }
     ),
 
-    paginate: zQuery(
-      queryBuilder,
-      { paginationOpts: z.any() }, // Using z.any() for paginationOpts to match Convex's type
-      async (ctx: any, { paginationOpts }) => {
+    paginate: queryBuilder({
+      args: { paginationOpts: paginationOptsValidator },
+      handler: async (ctx: any, { paginationOpts }: any) => {
         return await ctx.db.query(tableName).paginate(paginationOpts)
       }
-    ),
+    }),
 
     update: zMutation(
       mutationBuilder,
