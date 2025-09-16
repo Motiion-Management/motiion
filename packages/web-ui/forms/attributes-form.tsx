@@ -9,13 +9,13 @@ import {
   ETHNICITY,
   EYECOLOR,
   HAIRCOLOR
-} from '@packages/backend/convex/validators/attributes'
+} from '@packages/backend/convex/schemas/attributes'
 import { MultiCheckboxField } from '../components/ui/form-fields/multi-checkbox'
 import { EditDrawer } from '../components/features/edit-drawer'
 import { HeightPickerField } from '../components/ui/form-fields/height-picker'
 import { RadioGroupField } from '../components/ui/form-fields/radio-group'
 import { formatHeight } from '../lib/utils'
-import { UserDoc, users } from '@packages/backend/convex/validators/users'
+import { UserDoc, users } from '@packages/backend/convex/schemas/users'
 
 const formSchema = users.attributes.unwrap()
 

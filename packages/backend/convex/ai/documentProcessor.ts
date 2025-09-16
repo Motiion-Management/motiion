@@ -16,8 +16,8 @@ import {
 import {
   PROJECT_TYPES as EXPERIENCE_TYPES,
   LIVE_EVENT_SUBTYPES
-} from '../validators/projects'
-import { TRAINING_TYPES } from '../validators/training'
+} from '../schemas/projects'
+import { TRAINING_TYPES } from '../schemas/training'
 import mammoth from 'mammoth'
 import {
   processAIResponse,

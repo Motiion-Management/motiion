@@ -3,13 +3,13 @@ import { authMutation, authQuery } from '../util'
 import { zQuery, zMutation } from '@packages/zodvex'
 import { z } from 'zod'
 import { zid } from 'convex-helpers/server/zodV4'
-import { UserDoc, resume as resumeObj } from '../validators/users'
+import { UserDoc, resume as resumeObj } from '../schemas/users'
 import type { Id } from '../_generated/dataModel'
-import { zFileUploadObjectArray } from '../validators/base'
+import { zFileUploadObjectArray } from '../schemas/base'
 import {
   PROJECT_TITLE_MAP as EXPERIENCE_TITLE_MAP,
   PROJECT_TYPES as EXPERIENCE_TYPES
-} from '../validators/projects'
+} from '../schemas/projects'
 import { getAll } from 'convex-helpers/server/relationships'
 
 export async function augmentResume(

@@ -1,7 +1,7 @@
 import { formatHeight } from '@/lib/utils'
 import { differenceInYears, toDate, endOfToday } from 'date-fns'
 import { RepLogo } from './quick-card/representation'
-import { UserDoc } from '@packages/backend/convex/validators/users'
+import { UserDoc } from '@packages/backend/convex/schemas/users'
 const calculateAge = (dateOfBirth?: string | null) => {
   if (!dateOfBirth) {
     return

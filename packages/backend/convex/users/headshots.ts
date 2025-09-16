@@ -5,7 +5,7 @@ import { Id } from '../_generated/dataModel'
 import { zQuery, zMutation } from '@packages/zodvex'
 import { z } from 'zod'
 import { zid } from 'convex-helpers/server/zodV4'
-import { zFileUploadObjectArray } from '../validators/base'
+import { zFileUploadObjectArray } from '../schemas/base'
 
 export const getMyHeadshots = zQuery(
   authQuery,

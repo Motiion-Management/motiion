@@ -29,6 +29,15 @@ import type * as http from "../http.js";
 import type * as onboarding from "../onboarding.js";
 import type * as onboardingConfig from "../onboardingConfig.js";
 import type * as projects from "../projects.js";
+import type * as schemas_agencies from "../schemas/agencies.js";
+import type * as schemas_attributes from "../schemas/attributes.js";
+import type * as schemas_base from "../schemas/base.js";
+import type * as schemas_events from "../schemas/events.js";
+import type * as schemas_featuredMembers from "../schemas/featuredMembers.js";
+import type * as schemas_projects from "../schemas/projects.js";
+import type * as schemas_sizing from "../schemas/sizing.js";
+import type * as schemas_training from "../schemas/training.js";
+import type * as schemas_users from "../schemas/users.js";
 import type * as training from "../training.js";
 import type * as users_headshots from "../users/headshots.js";
 import type * as users_headshotsOptimized from "../users/headshotsOptimized.js";
@@ -39,15 +48,6 @@ import type * as users_resume from "../users/resume.js";
 import type * as users_resumeImport from "../users/resumeImport.js";
 import type * as users from "../users.js";
 import type * as util from "../util.js";
-import type * as validators_agencies from "../validators/agencies.js";
-import type * as validators_attributes from "../validators/attributes.js";
-import type * as validators_base from "../validators/base.js";
-import type * as validators_events from "../validators/events.js";
-import type * as validators_featuredMembers from "../validators/featuredMembers.js";
-import type * as validators_projects from "../validators/projects.js";
-import type * as validators_sizing from "../validators/sizing.js";
-import type * as validators_training from "../validators/training.js";
-import type * as validators_users from "../validators/users.js";
 
 /**
  * A utility for referencing Convex functions in your app's API.
@@ -74,6 +74,15 @@ declare const fullApi: ApiFromModules<{
   onboarding: typeof onboarding;
   onboardingConfig: typeof onboardingConfig;
   projects: typeof projects;
+  "schemas/agencies": typeof schemas_agencies;
+  "schemas/attributes": typeof schemas_attributes;
+  "schemas/base": typeof schemas_base;
+  "schemas/events": typeof schemas_events;
+  "schemas/featuredMembers": typeof schemas_featuredMembers;
+  "schemas/projects": typeof schemas_projects;
+  "schemas/sizing": typeof schemas_sizing;
+  "schemas/training": typeof schemas_training;
+  "schemas/users": typeof schemas_users;
   training: typeof training;
   "users/headshots": typeof users_headshots;
   "users/headshotsOptimized": typeof users_headshotsOptimized;
@@ -84,15 +93,6 @@ declare const fullApi: ApiFromModules<{
   "users/resumeImport": typeof users_resumeImport;
   users: typeof users;
   util: typeof util;
-  "validators/agencies": typeof validators_agencies;
-  "validators/attributes": typeof validators_attributes;
-  "validators/base": typeof validators_base;
-  "validators/events": typeof validators_events;
-  "validators/featuredMembers": typeof validators_featuredMembers;
-  "validators/projects": typeof validators_projects;
-  "validators/sizing": typeof validators_sizing;
-  "validators/training": typeof validators_training;
-  "validators/users": typeof validators_users;
 }>;
 export declare const api: FilterApi<
   typeof fullApi,

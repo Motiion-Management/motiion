@@ -1,5 +1,5 @@
-import { TRAINING_TYPES } from '@packages/backend/convex/validators/training';
-import type { TrainingFormDoc } from '@packages/backend/convex/validators/training';
+import { TRAINING_TYPES } from '@packages/backend/convex/schemas/training';
+import type { TrainingFormDoc } from '@packages/backend/convex/schemas/training';
 
 /**
  * Get the display title for a training item

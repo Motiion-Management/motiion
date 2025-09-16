@@ -1,10 +1,10 @@
 import { defineSchema } from 'convex/server'
-import { Users } from './validators/users'
-import { Events } from './validators/events'
-import { FeaturedMembers } from './validators/featuredMembers'
-import { Agencies } from './validators/agencies'
-import { Projects } from './validators/projects'
-import { Training } from './validators/training'
+import { Users } from './schemas/users'
+import { Events } from './schemas/events'
+import { FeaturedMembers } from './schemas/featuredMembers'
+import { Agencies } from './schemas/agencies'
+import { Projects } from './schemas/projects'
+import { Training } from './schemas/training'
 import { typedV } from 'convex-helpers/validators'
 
 const schema = defineSchema(

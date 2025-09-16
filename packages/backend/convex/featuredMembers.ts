@@ -1,7 +1,7 @@
 import { query, mutation } from './_generated/server'
 import { authMutation, authQuery, notEmpty } from './util'
 import { zCrud, zQuery } from '@packages/zodvex'
-import { FeaturedMembers } from './validators/featuredMembers'
+import { FeaturedMembers } from './schemas/featuredMembers'
 import { getAll } from 'convex-helpers/server/relationships'
 
 export const { read } = zCrud(FeaturedMembers, query, mutation)

@@ -8,8 +8,8 @@ import { api } from '@packages/backend/convex/_generated/api'
 import { EditDrawer } from '../components/features/edit-drawer'
 import { FC } from 'react'
 import { FABAddDrawer } from '../components/features/fab-add-drawer'
-import { zProficiency } from '@packages/backend/convex/validators/base'
-import { zSkillsPlainObject } from '@packages/backend/convex/validators/users'
+import { zProficiency } from '@packages/backend/convex/schemas/base'
+import { zSkillsPlainObject } from '@packages/backend/convex/schemas/users'
 
 const formSchema = z
   .object({

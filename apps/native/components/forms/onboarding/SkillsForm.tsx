@@ -1,7 +1,7 @@
 import React, { forwardRef, useEffect, useImperativeHandle } from 'react';
 import * as z from 'zod';
 import { useStore } from '@tanstack/react-form';
-import { zResume } from '@packages/backend/convex/validators/users';
+import { zResume } from '@packages/backend/convex/schemas/users';
 
 import { ValidationModeForm } from '~/components/form/ValidationModeForm';
 import { useAppForm } from '~/components/form/appForm';

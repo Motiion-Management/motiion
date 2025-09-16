@@ -11,7 +11,7 @@ import { authMutation, authQuery, notEmpty } from './util'
 
 import { getAll } from 'convex-helpers/server/relationships'
 import { crud } from 'convex-helpers/server'
-import { UserDoc, Users, zUsers } from './validators/users'
+import { UserDoc, Users, zUsers } from './schemas/users'
 import { z } from 'zod'
 import {
   zQuery,
@@ -20,7 +20,7 @@ import {
   zInternalMutation
 } from '@packages/zodvex'
 import { zid } from 'convex-helpers/server/zodV4'
-import { attributesPlainObject } from './validators/attributes'
+import { attributesPlainObject } from './schemas/attributes'
 import { NEW_USER_DEFAULTS, formatFullName } from './users/helpers'
 import { AgencyDoc } from './agencies'
 
