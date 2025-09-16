@@ -1,6 +1,5 @@
 import { zid } from 'convex-helpers/server/zodV4'
-import { zodToConvexFields } from '@packages/zodvex'
-import { Table } from 'convex-helpers/server'
+import { zodTable } from '@packages/zodvex'
 import { z } from 'zod'
 import { Doc } from '../_generated/dataModel'
 
@@ -81,7 +80,7 @@ export const zProjectsDoc = zProjects.extend({
 // Aliases for clarity in imports
 export const zProjectsBase = zProjects
 
-export const Projects = Table('projects', zodToConvexFields(projects))
+export const Projects = zodTable('projects', zProjects)
 
 export type ProjectDoc = Doc<'projects'>
 
