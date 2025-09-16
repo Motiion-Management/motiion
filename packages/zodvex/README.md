@@ -1,51 +1,132 @@
 zodvex
 
-Zod v4 → Convex validator mapping with correct optional vs nullable semantics. Designed as a thin compatibility layer around convex-helpers v4 while preserving Convex's notion of optional fields.
+Zod v4 → Convex validator mapping with correct optional vs nullable semantics. Thin, practical glue around `convex-helpers` that preserves Convex’s notion of optional fields and offers ergonomic wrappers/codecs.
 
 Why
 
-- Convex treats optional object fields only when wrapped via `v.optional(...)`.
-- Some mappers represent Zod `.optional()` as `v.union(T, v.null())`, which allows null but still requires the key.
-- zodvex fixes this by post-processing validators per field to apply:
+- Convex treats optional object fields only when wrapped with `v.optional(...)`.
+- Some mappers represent `.optional()` as `v.union(T, v.null())`, which still requires the key and changes semantics.
+- zodvex normalizes per-field validators so that:
   - optional only → `v.optional(T)`
   - nullable only → `v.union(T, v.null())`
   - optional + nullable → `v.optional(v.union(T, v.null()))`
 
-API
+What’s Included
 
-- Low-level mappers
+- Low-level mapping helpers
   - `zodToConvex(z: ZodTypeAny): Validator`
   - `zodToConvexFields(shapeOrObject: ZodRawShape | Record<string, ZodTypeAny> | ZodObject<any>): Record<string, Validator>`
-
-- Codec API
-  - `convexCodec(schema)` → returns a codec with:
+- Function wrappers (typed, Zod-validated)
+  - `zQuery(query, input, handler, { returns? })`
+  - `zMutation(mutation, input, handler, { returns? })`
+  - `zAction(action, input, handler, { returns? })`
+  - `zInternalQuery(...)`, `zInternalMutation(...)`, `zInternalAction(...)`
+  - Input can be a Zod object, a raw shape object, or a single Zod type. If a single Zod type is provided, args normalize to `{ value: ... }`.
+  - Optional `returns` lets you specify a Zod schema for return validation (see notes below for Dates/encoding).
+- Codecs
+  - `convexCodec(schema)` with:
     - `toConvexSchema()` → Convex validators (object fields or a single validator)
-    - `encode(data)` → zod-shaped data → Convex-friendly JSON (removes undefineds, dates→timestamps)
-    - `decode(data)` → Convex record → zod-shaped data (timestamps→Date)
-    - `pick({ key: true, ... })` → derive a sub-codec for a subset of fields (ZodObject only)
+    - `encode(data)` → zod-shaped data → Convex-safe JSON (omits `undefined`, converts `Date` → timestamp)
+    - `decode(data)` → Convex JSON → zod-shaped data (timestamps → `Date`)
+    - `pick({ key: true })` → derive a sub-codec (ZodObject only)
+- Table helper
+  - `zodTable(name, zodObject)` → returns a helper with:
+    - `.table` → feed into `defineSchema`
+    - `.schema` → original Zod schema
+    - `.codec` → codec built from the schema (`toConvexSchema/encode/decode`)
+- CRUD helper
+  - `zCrud(table, queryBuilder, mutationBuilder)` → returns `{ create, read, paginate, update, destroy }` using Zod-validated args and `zid(tableName)`
 
 Usage
 
+Define a table from Zod in one place
+
 ```ts
 import { z } from 'zod'
-import { Table } from 'convex-helpers/server'
-import { zodToConvexFields } from '@packages/zodvex'
+import { zodTable } from '@packages/zodvex'
 
-const agencies = {
+const zAgencies = z.object({
   name: z.string(),
-  managerList: z.array(z.string()).optional(), // becomes v.optional(v.array(v.string()))
-}
+  managerList: z.array(z.string()).optional() // → v.optional(v.array(v.string()))
+})
 
-export const Agencies = Table('agencies', zodToConvexFields(agencies))
+export const Agencies = zodTable('agencies', zAgencies)
+// In schema.ts → Agencies.table.index(...)
 ```
+
+Zod-validated Convex functions
+
+```ts
+import { z } from 'zod'
+import { query, mutation } from './_generated/server'
+import { zQuery, zMutation } from '@packages/zodvex'
+
+export const getById = zQuery(
+  query,
+  { id: z.string() },
+  async (ctx, { id }) => ctx.db.get(id)
+)
+
+export const setName = zMutation(
+  mutation,
+  z.object({ id: z.string(), name: z.string() }),
+  async (ctx, { id, name }) => ctx.db.patch(id, { name })
+)
+
+// Single-value args normalize to { value }
+export const ping = zQuery(query, z.string(), async (ctx, { value }) => value)
+```
+
+CRUD scaffold from a table
+
+```ts
+import { zCrud } from '@packages/zodvex'
+import { query, mutation } from './_generated/server'
+import { Agencies } from './schemas/agencies'
+
+export const agenciesCrud = zCrud(Agencies, query, mutation)
+// agenciesCrud.create/read/paginate/update/destroy
+```
+
+Codec usage
+
+```ts
+import { convexCodec } from '@packages/zodvex'
+import { z } from 'zod'
+
+const zUser = z.object({
+  name: z.string(),
+  birthday: z.date().optional()
+})
+
+const UserCodec = convexCodec(zUser)
+const validators = UserCodec.toConvexSchema() // for Table(...)
+const toWrite = UserCodec.encode({ name: 'A', birthday: new Date() }) // Date → timestamp
+const toRead = UserCodec.decode({ name: 'A', birthday: Date.now() }) // timestamp → Date
+```
+
+Behavior & Semantics
+
+- Optional vs nullable
+  - `.optional()` becomes `v.optional(T)`
+  - `.nullable()` becomes `v.union(T, v.null())`
+  - Both → `v.optional(v.union(T, v.null()))`
+- Arrays/objects/records
+  - Mapping uses Zod v4 public APIs (`shape`, `element`, `options`, `valueType`).
+- Returns validation
+  - If you supply `returns: z.date()`, Convex expects a number (timestamp) at the boundary. Either return a timestamp or implement custom encoding before returning. The wrappers do not auto-encode return values.
+- Numbers
+  - `z.number()` maps to `v.float64()` to match Convex JSON. If you need integers, prefer `z.bigint()` (→ `v.int64()`) or handle integer checks at runtime.
+- IDs
+  - Use `zid('table')` from `convex-helpers/server/zodV4` inside Zod schemas for Convex Ids.
+- Fallbacks
+  - Unsupported Zod types (e.g., `ZodEffects` transforms, `ZodTuple`, `ZodIntersection`, maps/sets) fall back to `v.any()`.
+
+Compatibility
+
+- Zod v4 only. This library uses only Zod’s public v4 APIs and does not attempt v3 compatibility.
 
 Notes
 
-- This package uses `convex-helpers/server/zodV4` for base conversions and adjusts optionals afterward.
-- Transforms/brands fallback to the helper's behavior. If an output cannot be inferred, it remains `v.any()`.
-- Defaults imply optional at the Convex schema level; apply runtime defaults in app code.
-
-Codec notes
-- `encode()` calls `schema.parse()` first, then converts to Convex-safe JSON (e.g., omits undefined, converts Date to timestamp). It’s safe to use before writes.
-- `decode()` converts Convex JSON back to the Zod shape (e.g., timestamps to Date) for client usage.
-- `toConvexSchema()` always derives validators from the codec’s input schema with correct optional/nullable semantics.
+- Defaults imply optional at the Convex schema level; apply runtime defaults in app code as needed.
+- This package builds on `convex-helpers/server/zodV4` and post-processes validators to preserve Convex’s optional/null semantics.
