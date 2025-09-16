@@ -13,7 +13,6 @@ export const dancers = {
   userId: zid('users'),
 
   // Profile management
-  isActive: z.boolean().default(true),
   isPrimary: z.boolean().default(true), // First profile created during onboarding
   createdAt: z.string(), // ISO date string
 
@@ -62,7 +61,6 @@ export type DancerDoc = Doc<'dancers'>
 // Helper type for creating a new dancer profile
 export const zCreateDancerInput = zDancers.omit({
   userId: true,
-  isActive: true,
   isPrimary: true,
   createdAt: true,
   profileCompleteness: true,

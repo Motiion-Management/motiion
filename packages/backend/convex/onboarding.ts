@@ -45,7 +45,6 @@ export const completeOnboarding: RegisteredMutation<
           // Create dancer profile with user's data
           const profileId = await ctx.db.insert('dancers', {
             userId: user._id,
-            isActive: true,
             isPrimary: true,
             createdAt: new Date().toISOString(),
             headshots: user.headshots,
@@ -84,7 +83,6 @@ export const completeOnboarding: RegisteredMutation<
           // Create choreographer profile with user's data
           const profileId = await ctx.db.insert('choreographers', {
             userId: user._id,
-            isActive: true,
             isPrimary: true,
             createdAt: new Date().toISOString(),
             headshots: user.headshots,

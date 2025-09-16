@@ -24,35 +24,26 @@ export const getMyActiveProfile = zQuery(
   async (ctx): Promise<ActiveProfile | null> => {
     if (!ctx.user) return null
 
-    // Check for active dancer profile
-    const dancerProfile = await ctx.db
-      .query('dancers')
-      .withIndex('by_userId_and_active', (q) =>
-        q.eq('userId', ctx.user._id).eq('isActive', true)
-      )
-      .first()
-
-    if (dancerProfile) {
-      return {
-        type: 'dancer',
-        profileId: dancerProfile._id,
-        profile: dancerProfile
+    // Use discriminate values from users table for efficient lookup
+    if (ctx.user.activeProfileType === 'dancer' && ctx.user.activeDancerId) {
+      const dancerProfile = await ctx.db.get(ctx.user.activeDancerId)
+      if (dancerProfile) {
+        return {
+          type: 'dancer',
+          profileId: dancerProfile._id as Id<'dancers'>,
+          profile: dancerProfile
+        }
       }
     }
 
-    // Check for active choreographer profile
-    const choreoProfile = await ctx.db
-      .query('choreographers')
-      .withIndex('by_userId_and_active', (q) =>
-        q.eq('userId', ctx.user._id).eq('isActive', true)
-      )
-      .first()
-
-    if (choreoProfile) {
-      return {
-        type: 'choreographer',
-        profileId: choreoProfile._id,
-        profile: choreoProfile
+    if (ctx.user.activeProfileType === 'choreographer' && ctx.user.activeChoreographerId) {
+      const choreoProfile = await ctx.db.get(ctx.user.activeChoreographerId)
+      if (choreoProfile) {
+        return {
+          type: 'choreographer',
+          profileId: choreoProfile._id as Id<'choreographers'>,
+          profile: choreoProfile
+        }
       }
     }
 
@@ -86,7 +77,7 @@ export const getUserProfiles = zQuery(
   { returns: z.any() }
 )
 
-// Switch between profiles (deactivates current, activates selected)
+// Switch between profiles (updates discriminate values on users table)
 export const switchProfile = zMutation(
   authMutation,
   {
@@ -94,37 +85,18 @@ export const switchProfile = zMutation(
     profileId: z.string() // We'll validate the ID type based on profileType
   },
   async (ctx, { profileType, profileId }) => {
-    // First, deactivate all profiles for this user
-    const [dancerProfiles, choreoProfiles] = await Promise.all([
-      ctx.db
-        .query('dancers')
-        .withIndex('by_userId', (q) => q.eq('userId', ctx.user._id))
-        .collect(),
-      ctx.db
-        .query('choreographers')
-        .withIndex('by_userId', (q) => q.eq('userId', ctx.user._id))
-        .collect()
-    ])
-
-    // Deactivate all profiles
-    for (const profile of dancerProfiles) {
-      if (profile.isActive) {
-        await ctx.db.patch(profile._id, { isActive: false })
-      }
-    }
-    for (const profile of choreoProfiles) {
-      if (profile.isActive) {
-        await ctx.db.patch(profile._id, { isActive: false })
-      }
-    }
-
-    // Activate the selected profile
+    // Validate the selected profile belongs to this user
     if (profileType === 'dancer') {
       const profile = await ctx.db.get(profileId as Id<'dancers'>)
       if (!profile || profile.userId !== ctx.user._id) {
         throw new ConvexError('Dancer profile not found or access denied')
       }
-      await ctx.db.patch(profileId as Id<'dancers'>, { isActive: true })
+      // Update discriminate values on users table
+      await ctx.db.patch(ctx.user._id, {
+        activeProfileType: 'dancer',
+        activeDancerId: profileId as Id<'dancers'>,
+        activeChoreographerId: undefined
+      })
     } else if (profileType === 'choreographer') {
       const profile = await ctx.db.get(profileId as Id<'choreographers'>)
       if (!profile || profile.userId !== ctx.user._id) {
@@ -132,7 +104,12 @@ export const switchProfile = zMutation(
           'Choreographer profile not found or access denied'
         )
       }
-      await ctx.db.patch(profileId as Id<'choreographers'>, { isActive: true })
+      // Update discriminate values on users table
+      await ctx.db.patch(ctx.user._id, {
+        activeProfileType: 'choreographer',
+        activeChoreographerId: profileId as Id<'choreographers'>,
+        activeDancerId: undefined
+      })
     }
 
     return { success: true }

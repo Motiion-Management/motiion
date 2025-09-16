@@ -44,7 +44,6 @@ export const migrateAllUsers = zInternalMutation(
           // Create dancer profile
           const profileId = await ctx.db.insert('dancers', {
             userId: user._id,
-            isActive: true,
             isPrimary: true,
             createdAt: new Date().toISOString(),
 
@@ -81,7 +80,6 @@ export const migrateAllUsers = zInternalMutation(
           // Create choreographer profile
           const profileId = await ctx.db.insert('choreographers', {
             userId: user._id,
-            isActive: true,
             isPrimary: true,
             createdAt: new Date().toISOString(),
 

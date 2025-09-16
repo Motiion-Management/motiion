@@ -27,24 +27,26 @@ const schema = defineSchema(
     // profile tables
     dancers: Dancers.table
       .index('by_userId', ['userId'])
-      .index('by_userId_and_active', ['userId', 'isActive'])
       .searchIndex('search_dancer', {
         searchField: 'searchPattern'
       }),
 
     choreographers: Choreographers.table
       .index('by_userId', ['userId'])
-      .index('by_userId_and_active', ['userId', 'isActive'])
       .index('by_verified', ['verified'])
       .searchIndex('search_choreographer', {
         searchField: 'searchPattern'
       }),
 
-    // projects table (will need profileId later)
-    projects: Projects.table.index('userId', ['userId']),
+    // projects table with profile-aware indexes
+    projects: Projects.table
+      .index('userId', ['userId'])
+      .index('by_profileId', ['profileId']),
 
-    // training (primarily for dancers)
-    training: Training.table.index('by_userId', ['userId']),
+    // training (for both dancers and choreographers)
+    training: Training.table
+      .index('by_userId', ['userId'])
+      .index('by_profileId', ['profileId']),
 
     // agency
     agencies: Agencies.table.searchIndex('search_name', { searchField: 'name' })

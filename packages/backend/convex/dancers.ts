@@ -13,12 +13,12 @@ export const getMyDancerProfile = zQuery(
   async (ctx) => {
     if (!ctx.user) return null
 
-    return await ctx.db
-      .query('dancers')
-      .withIndex('by_userId_and_active', (q) =>
-        q.eq('userId', ctx.user._id).eq('isActive', true)
-      )
-      .first()
+    // Use discriminate value from users table for efficient lookup
+    if (ctx.user.activeProfileType === 'dancer' && ctx.user.activeDancerId) {
+      return await ctx.db.get(ctx.user.activeDancerId)
+    }
+
+    return null
   },
   { returns: z.any().nullable() }
 )
@@ -47,10 +47,6 @@ export const createDancerProfile = zMutation(
       .withIndex('by_userId', (q) => q.eq('userId', ctx.user._id))
       .first()
 
-    if (existing && existing.isActive) {
-      throw new ConvexError('User already has an active dancer profile')
-    }
-
     // If this is their first profile, mark as primary
     const isPrimary = !existing
 
@@ -58,12 +54,19 @@ export const createDancerProfile = zMutation(
     const profileId = await ctx.db.insert('dancers', {
       ...input,
       userId: ctx.user._id,
-      isActive: true,
       isPrimary,
       createdAt: new Date().toISOString(),
       profileCompleteness: 0,
       searchPattern: generateSearchPattern(input)
     })
+
+    // If this is the first dancer profile, set it as active
+    if (isPrimary) {
+      await ctx.db.patch(ctx.user._id, {
+        activeProfileType: 'dancer',
+        activeDancerId: profileId
+      })
+    }
 
     return profileId
   },
@@ -106,20 +109,12 @@ export const setActiveDancerProfile = zMutation(
       throw new ConvexError('Profile not found or access denied')
     }
 
-    // Deactivate all other dancer profiles for this user
-    const allProfiles = await ctx.db
-      .query('dancers')
-      .withIndex('by_userId', (q) => q.eq('userId', ctx.user._id))
-      .collect()
-
-    for (const p of allProfiles) {
-      if (p._id !== profileId && p.isActive) {
-        await ctx.db.patch(p._id, { isActive: false })
-      }
-    }
-
-    // Activate the selected profile
-    await ctx.db.patch(profileId, { isActive: true })
+    // Update discriminate values on users table
+    await ctx.db.patch(ctx.user._id, {
+      activeProfileType: 'dancer',
+      activeDancerId: profileId,
+      activeChoreographerId: undefined
+    })
 
     return { success: true }
   },

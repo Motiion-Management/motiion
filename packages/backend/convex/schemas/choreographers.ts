@@ -11,7 +11,6 @@ export const choreographers = {
   userId: zid('users'),
 
   // Profile management
-  isActive: z.boolean().default(true),
   isPrimary: z.boolean().default(true), // First profile created during onboarding
   createdAt: z.string(), // ISO date string
 
@@ -73,7 +72,6 @@ export type ChoreographerDoc = Doc<'choreographers'>
 // Helper type for creating a new choreographer profile
 export const zCreateChoreographerInput = zChoreographers.omit({
   userId: true,
-  isActive: true,
   isPrimary: true,
   createdAt: true,
   profileCompleteness: true,
