@@ -132,10 +132,10 @@ export const migrateAllUsers = zInternalMutation(
 export const runMigration = zInternalAction(
   internalAction,
   {},
-  async (ctx) => {
+  async (ctx): Promise<any> => {
     console.log('🚀 Starting auto-migration...')
 
-    const results = await ctx.runMutation(
+    const results: any = await ctx.runMutation(
       internal.migrations.autoMigrateAndCleanup.migrateAllUsers,
       {}
     )
@@ -154,3 +154,4 @@ export const runMigration = zInternalAction(
   },
   { returns: z.any() }
 )
+
