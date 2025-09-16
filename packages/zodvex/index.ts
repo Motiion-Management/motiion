@@ -23,24 +23,11 @@ import {
   
 } from 'convex-helpers/server/customFunctions'
 
-// Helper type guard
-const isUnion = (val: any) => val && typeof val === 'object' && val.kind === 'union'
-const isNullValidator = (val: any) => val && typeof val === 'object' && val.kind === 'null'
-
 function makeUnion(members: any[]): any {
   const nonNull = members.filter(Boolean)
   if (nonNull.length === 0) return v.any()
   if (nonNull.length === 1) return nonNull[0]
   return v.union(nonNull[0], nonNull[1], ...nonNull.slice(2))
-}
-
-function stripNullFromUnion(validator: any): { base: any; hadNull: boolean } {
-  if (!isUnion(validator)) return { base: validator, hadNull: false }
-  const keep = (validator.members || []).filter((m: any) => !isNullValidator(m))
-  if (keep.length === (validator.members || []).length) {
-    return { base: validator, hadNull: false }
-  }
-  return { base: makeUnion(keep), hadNull: true }
 }
 
 function analyzeZod(schema: z.ZodTypeAny): {
@@ -116,7 +103,7 @@ function getObjectShape(obj: z.ZodObject<any>): Record<string, z.ZodTypeAny> {
 
 function convertWithMeta(zodField: z.ZodTypeAny, baseValidator: any): any {
   const meta = analyzeZod(zodField)
-  let core = stripNullFromUnion(baseValidator).base
+  let core = baseValidator
 
   const inner = meta.base
   if (inner instanceof z.ZodObject) {
@@ -180,7 +167,8 @@ function simpleToConvex(schema: z.ZodTypeAny): any {
   // Union
   if (inner instanceof z.ZodUnion) {
     const opts: z.ZodTypeAny[] = (inner as z.ZodUnion<any>).options
-    const members = opts.map((o) => simpleToConvex(o))
+    const nonNull = opts.filter((o) => !(o instanceof z.ZodNull))
+    const members = nonNull.map((o) => simpleToConvex(o))
     return makeUnion(members)
   }
 
