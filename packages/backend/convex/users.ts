@@ -9,12 +9,11 @@ import {
 } from './_generated/server'
 import { authMutation, authQuery, notEmpty } from './util'
 
-import { getAll, getOneFrom } from 'convex-helpers/server/relationships'
+import { getAll } from 'convex-helpers/server/relationships'
 import { crud } from 'convex-helpers/server'
 import { UserDoc, Users, zUsers } from './validators/users'
 import { z } from 'zod'
 import {
-  zodToConvex,
   zQuery,
   zMutation,
   zInternalQuery,
@@ -45,9 +44,8 @@ async function computeDerived(
     agency = await ctx.db.get(user.representation.agencyId)
   }
   const fullName = formatFullName(user.firstName, user.lastName)
-  const searchPattern = `${fullName} ${user.displayName || ''} ${
-    user.location?.city || ''
-  } ${user.location?.state || ''} ${agency?.name || ''}`.trim()
+  const searchPattern = `${fullName} ${user.displayName || ''} ${user.location?.city || ''
+    } ${user.location?.state || ''} ${agency?.name || ''}`.trim()
   return { fullName, searchPattern }
 }
 
@@ -68,18 +66,6 @@ export const getMyUser = zQuery(
   },
   { returns: zUserDocOrNull }
 )
-
-export const getMyUser2 = authQuery({
-  args: {},
-  async handler(ctx) {
-    console.log('🔍 CONVEX_GET_USER: Query called', {
-      userId: ctx.user?._id,
-      hasUser: !!ctx.user,
-      timestamp: new Date().toISOString()
-    })
-    return ctx.user
-  }
-})
 
 // Zod-validated mutation using convex-helpers + codecs
 // Use existing authMutation (from util.ts) to supply ctx.user, and zMutation for Zod args parsing

@@ -404,17 +404,17 @@ type ExtractCtx<Builder> = Builder extends {
 // Type helper for extracting the output type of a builder function while preserving return type
 type PreserveReturnType<Builder, ArgsType, ReturnsType> =
   Builder extends QueryBuilder<infer DataModel, infer Visibility>
-    ? RegisteredQuery<Visibility, ArgsType extends DefaultFunctionArgs ? ArgsType : DefaultFunctionArgs, ReturnsType>
+    ? RegisteredQuery<Visibility, ArgsType extends DefaultFunctionArgs ? ArgsType : DefaultFunctionArgs, Promise<ReturnsType>>
     : Builder extends MutationBuilder<infer DataModel, infer Visibility>
-      ? RegisteredMutation<Visibility, ArgsType extends DefaultFunctionArgs ? ArgsType : DefaultFunctionArgs, ReturnsType>
+      ? RegisteredMutation<Visibility, ArgsType extends DefaultFunctionArgs ? ArgsType : DefaultFunctionArgs, Promise<ReturnsType>>
       : Builder extends ActionBuilder<infer DataModel, infer Visibility>
-        ? RegisteredAction<Visibility, ArgsType extends DefaultFunctionArgs ? ArgsType : DefaultFunctionArgs, ReturnsType>
+        ? RegisteredAction<Visibility, ArgsType extends DefaultFunctionArgs ? ArgsType : DefaultFunctionArgs, Promise<ReturnsType>>
       : Builder extends CustomBuilder<"query", infer CustomArgs, infer CustomCtx, infer MadeArgs, infer InputCtx, infer Visibility, infer ExtraArgs>
-        ? RegisteredQuery<Visibility, ArgsType extends DefaultFunctionArgs ? ArgsType : DefaultFunctionArgs, ReturnsType>
+        ? RegisteredQuery<Visibility, ArgsType extends DefaultFunctionArgs ? ArgsType : DefaultFunctionArgs, Promise<ReturnsType>>
       : Builder extends CustomBuilder<"mutation", infer CustomArgs, infer CustomCtx, infer MadeArgs, infer InputCtx, infer Visibility, infer ExtraArgs>
-        ? RegisteredMutation<Visibility, ArgsType extends DefaultFunctionArgs ? ArgsType : DefaultFunctionArgs, ReturnsType>
+        ? RegisteredMutation<Visibility, ArgsType extends DefaultFunctionArgs ? ArgsType : DefaultFunctionArgs, Promise<ReturnsType>>
       : Builder extends CustomBuilder<"action", infer CustomArgs, infer CustomCtx, infer MadeArgs, infer InputCtx, infer Visibility, infer ExtraArgs>
-        ? RegisteredAction<Visibility, ArgsType extends DefaultFunctionArgs ? ArgsType : DefaultFunctionArgs, ReturnsType>
+        ? RegisteredAction<Visibility, ArgsType extends DefaultFunctionArgs ? ArgsType : DefaultFunctionArgs, Promise<ReturnsType>>
       : Builder extends (...args: any[]) => any
         ? ReturnType<Builder>
         : never
