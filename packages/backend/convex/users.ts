@@ -1,4 +1,4 @@
-import { v, ConvexError } from 'convex/values'
+import { ConvexError } from 'convex/values'
 // import { paginationOptsValidator } from 'convex/server'
 import { filter } from 'convex-helpers/server/filter'
 import {
@@ -21,7 +21,6 @@ import {
 } from '@packages/zodvex'
 import { zid } from 'convex-helpers/server/zodV4'
 import { attributesPlainObject } from './validators/attributes'
-import { literals } from 'convex-helpers/validators'
 import { NEW_USER_DEFAULTS, formatFullName } from './users/helpers'
 import { AgencyDoc } from './agencies'
 
