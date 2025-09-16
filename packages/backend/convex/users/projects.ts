@@ -155,11 +155,3 @@ export const getMyRecentProjects = zQuery(
   { returns: z.array(z.any()) }
 )
 
-// Backwards compatibility exports (redirect to new names)
-export const addMyExperience = addMyProject
-export const removeMyExperience = removeMyProject
-export const getMyExperiences = getMyProjects
-export const getMyExperiencesByType = getMyProjectsByType
-export const getUserPublicExperiences = getUserPublicProjects
-export const getUserPublicExperiencesByType = getUserPublicProjectsByType
-export const getMyRecentExperiences = getMyRecentProjects
