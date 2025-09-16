@@ -196,6 +196,45 @@ export const verifyChoreographer = zInternalMutation(
   { returns: z.object({ success: z.boolean() }) }
 )
 
+// Calculate choreographer profile completeness percentage
+export const calculateChoreographerCompleteness = zMutation(
+  authMutation,
+  { profileId: zid('choreographers') },
+  async (ctx, { profileId }) => {
+    const profile = await ctx.db.get(profileId)
+    if (!profile || profile.userId !== ctx.user._id) {
+      throw new ConvexError('Profile not found or access denied')
+    }
+
+    const weights = {
+      headshots: 20,
+      companyName: 15,
+      resume: 20,
+      specialties: 15,
+      location: 10,
+      links: 10,
+      notableWorks: 10
+    }
+
+    let score = 0
+    if (profile.headshots && profile.headshots.length > 0) score += weights.headshots
+    if (profile.companyName) score += weights.companyName
+    if (profile.resume) score += weights.resume
+    if (profile.specialties && profile.specialties.length > 0) score += weights.specialties
+    if (profile.location) score += weights.location
+    if (profile.links) score += weights.links
+    if (profile.notableWorks && profile.notableWorks.length > 0) score += weights.notableWorks
+
+    const completeness = Math.min(100, Math.round(score))
+
+    // Update the profile with the new completeness
+    await ctx.db.patch(profileId, { profileCompleteness: completeness })
+
+    return { completeness }
+  },
+  { returns: z.object({ completeness: z.number() }) }
+)
+
 // Helper function to generate search pattern
 function generateSearchPattern(data: any): string {
   const parts = []

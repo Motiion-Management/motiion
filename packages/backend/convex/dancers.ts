@@ -157,6 +157,49 @@ export const searchDancers = zQuery(
   { returns: z.array(z.any()) }
 )
 
+// Calculate dancer profile completeness percentage
+export const calculateDancerCompleteness = zMutation(
+  authMutation,
+  { profileId: zid('dancers') },
+  async (ctx, { profileId }) => {
+    const profile = await ctx.db.get(profileId)
+    if (!profile || profile.userId !== ctx.user._id) {
+      throw new ConvexError('Profile not found or access denied')
+    }
+
+    const weights = {
+      headshots: 20,
+      attributes: 15,
+      sizing: 10,
+      resume: 15,
+      skills: 10,
+      training: 10,
+      location: 10,
+      links: 5,
+      representation: 5
+    }
+
+    let score = 0
+    if (profile.headshots && profile.headshots.length > 0) score += weights.headshots
+    if (profile.attributes) score += weights.attributes
+    if (profile.sizing) score += weights.sizing
+    if (profile.resume?.projects && profile.resume.projects.length > 0) score += weights.resume
+    if (profile.resume?.skills && profile.resume.skills.length > 0) score += weights.skills
+    if (profile.training && profile.training.length > 0) score += weights.training
+    if (profile.location) score += weights.location
+    if (profile.links) score += weights.links
+    if (profile.representation) score += weights.representation
+
+    const completeness = Math.min(100, Math.round(score))
+
+    // Update the profile with the new completeness
+    await ctx.db.patch(profileId, { profileCompleteness: completeness })
+
+    return { completeness }
+  },
+  { returns: z.object({ completeness: z.number() }) }
+)
+
 // Helper function to generate search pattern
 function generateSearchPattern(data: any): string {
   const parts = []
