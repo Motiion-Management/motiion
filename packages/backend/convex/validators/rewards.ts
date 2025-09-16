@@ -1,5 +1,4 @@
-import { zodToConvexFields } from '@packages/zodvex'
-import { Table } from 'convex-helpers/server'
+import { zodTable } from '@packages/zodvex'
 import { z } from 'zod'
 
 export const rewards = {
@@ -9,4 +8,4 @@ export const rewards = {
 
 export const zRewards = z.object(rewards)
 
-export const Rewards = Table('rewards', zodToConvexFields(rewards))
+export const Rewards = zodTable('rewards', zRewards)

@@ -1,6 +1,5 @@
 import { zid } from 'convex-helpers/server/zodV4'
-import { zodToConvexFields } from '@packages/zodvex'
-import { Table } from 'convex-helpers/server'
+import { zodTable } from '@packages/zodvex'
 import { z } from 'zod'
 
 export const featuredContent = {
@@ -13,7 +12,4 @@ export const featuredContent = {
 
 export const zFeaturedContent = z.object(featuredContent)
 
-export const FeaturedContent = Table(
-  'featuredContent',
-  zodToConvexFields(featuredContent)
-)
+export const FeaturedContent = zodTable('featuredContent', zFeaturedContent)

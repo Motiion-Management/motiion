@@ -1,7 +1,6 @@
 import { zLocation, zVisibility } from './base'
 import { zid } from 'convex-helpers/server/zodV4'
-import { convexCodec } from '@packages/zodvex'
-import { Table } from 'convex-helpers/server'
+import { zodTable } from '@packages/zodvex'
 import { z } from 'zod'
 import { Doc } from '../_generated/dataModel'
 
@@ -34,8 +33,7 @@ export const events = {
 }
 
 export const zEvents = z.object(events)
-export const EventsCodec = convexCodec(zEvents)
-export const Events = Table('events', EventsCodec.toConvexSchema())
+export const Events = zodTable('events', zEvents)
 
 export const generateAttendanceCode = () =>
   ((1 + Math.random() * 9) | 0) +
