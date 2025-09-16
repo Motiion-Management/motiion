@@ -1,13 +1,16 @@
 import { query, MutationCtx } from '../_generated/server'
 import { authMutation, authQuery } from '../util'
-import { ConvexError, v } from 'convex/values'
+import { ConvexError } from 'convex/values'
 import { Id } from '../_generated/dataModel'
-import { zodToConvex } from '@packages/zodvex'
+import { zQuery, zMutation } from '@packages/zodvex'
+import { z } from 'zod'
+import { zid } from 'convex-helpers/server/zodV4'
 import { zFileUploadObjectArray } from '../validators/base'
 
-export const getMyHeadshots = authQuery({
-  args: {},
-  handler: async (ctx) => {
+export const getMyHeadshots = zQuery(
+  authQuery,
+  {},
+  async (ctx) => {
     if (!ctx.user?.headshots) {
       return []
     }
@@ -20,13 +23,12 @@ export const getMyHeadshots = authQuery({
       }))
     )
   }
-})
+)
 
-export const getHeadshots = query({
-  args: {
-    userId: v.id('users')
-  },
-  handler: async (ctx, args) => {
+export const getHeadshots = zQuery(
+  query,
+  { userId: zid('users') },
+  async (ctx, args) => {
     const user = await ctx.db.get(args.userId)
     if (!user?.headshots) {
       return []
@@ -40,7 +42,7 @@ export const getHeadshots = query({
       }))
     )
   }
-})
+)
 
 async function ensureOnlyFive(
   ctx: MutationCtx,
@@ -55,11 +57,10 @@ async function ensureOnlyFive(
   return files
 }
 
-export const saveHeadshotIds = authMutation({
-  args: {
-    headshots: zodToConvex(zFileUploadObjectArray) // other args...
-  },
-  handler: async (ctx, args) => {
+export const saveHeadshotIds = zMutation(
+  authMutation,
+  { headshots: zFileUploadObjectArray },
+  async (ctx, args) => {
     if (!ctx.user) return
 
     const headshots = args.headshots
@@ -81,13 +82,12 @@ export const saveHeadshotIds = authMutation({
       headshots: normalized
     })
   }
-})
+)
 
-export const removeHeadshot = authMutation({
-  args: {
-    headshotId: v.id('_storage')
-  },
-  handler: async (ctx, args) => {
+export const removeHeadshot = zMutation(
+  authMutation,
+  { headshotId: zid('_storage') },
+  async (ctx, args) => {
     if (!ctx.user) {
       return
     }
@@ -101,18 +101,19 @@ export const removeHeadshot = authMutation({
     const normalized = (filtered as Headshot[]).map((h: Headshot, idx: number) => ({ ...h, position: idx }))
     await ctx.db.patch(ctx.user._id, { headshots: normalized })
   }
-})
+)
 
-export const updateHeadshotPosition = authMutation({
-  args: {
-    headshots: v.array(
-      v.object({
-        storageId: v.id('_storage'),
-        position: v.number()
+export const updateHeadshotPosition = zMutation(
+  authMutation,
+  {
+    headshots: z.array(
+      z.object({
+        storageId: zid('_storage'),
+        position: z.number()
       })
     )
   },
-  handler: async (ctx, { headshots }) => {
+  async (ctx, { headshots }) => {
     if (!ctx.user) return
 
     const current = ctx.user.headshots || []
@@ -134,4 +135,4 @@ export const updateHeadshotPosition = authMutation({
 
     await ctx.db.patch(ctx.user._id, { headshots: next })
   }
-})
+)

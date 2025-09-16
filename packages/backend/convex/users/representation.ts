@@ -1,11 +1,12 @@
 import { authMutation } from '../util'
-import { v } from 'convex/values'
+import { zMutation } from '@packages/zodvex'
+import { z } from 'zod'
+import { zid } from 'convex-helpers/server/zodV4'
 
-export const addMyRepresentation = authMutation({
-  args: {
-    agencyId: v.id('agencies')
-  },
-  handler: async (ctx, { agencyId }) => {
+export const addMyRepresentation = zMutation(
+  authMutation,
+  { agencyId: zid('agencies') },
+  async (ctx, { agencyId }) => {
     await ctx.db.patch(ctx.user._id, {
       representation: {
         ...ctx.user.representation,
@@ -13,11 +14,12 @@ export const addMyRepresentation = authMutation({
       }
     })
   }
-})
+)
 
-export const removeMyRepresentation = authMutation({
-  args: {},
-  handler: async (ctx) => {
+export const removeMyRepresentation = zMutation(
+  authMutation,
+  {},
+  async (ctx) => {
     await ctx.db.patch(ctx.user._id, {
       representation: {
         ...ctx.user.representation,
@@ -25,13 +27,12 @@ export const removeMyRepresentation = authMutation({
       }
     })
   }
-})
+)
 
-export const setDisplayRep = authMutation({
-  args: {
-    displayRep: v.boolean()
-  },
-  handler: async (ctx, { displayRep }) => {
+export const setDisplayRep = zMutation(
+  authMutation,
+  { displayRep: z.boolean() },
+  async (ctx, { displayRep }) => {
     await ctx.db.patch(ctx.user._id, {
       representation: {
         ...ctx.user.representation,
@@ -39,11 +40,12 @@ export const setDisplayRep = authMutation({
       }
     })
   }
-})
+)
 
-export const dismissRepresentationTip = authMutation({
-  args: {},
-  handler: async (ctx) => {
+export const dismissRepresentationTip = zMutation(
+  authMutation,
+  {},
+  async (ctx) => {
     await ctx.db.patch(ctx.user._id, {
       representation: {
         ...ctx.user.representation,
@@ -51,4 +53,4 @@ export const dismissRepresentationTip = authMutation({
       }
     })
   }
-})
+)

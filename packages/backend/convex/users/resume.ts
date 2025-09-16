@@ -1,7 +1,8 @@
 import { QueryCtx, query } from '../_generated/server'
 import { authMutation, authQuery } from '../util'
-import { v } from 'convex/values'
-import { zodToConvex } from '@packages/zodvex'
+import { zQuery, zMutation } from '@packages/zodvex'
+import { z } from 'zod'
+import { zid } from 'convex-helpers/server/zodV4'
 import { UserDoc, resume as resumeObj } from '../validators/users'
 import type { Id } from '../_generated/dataModel'
 import { zFileUploadObjectArray } from '../validators/base'
@@ -44,28 +45,31 @@ export async function augmentResume(
     uploads
   }
 }
-export const getResume = query({
-  args: { userId: v.id('users') },
-  handler: async (ctx, args) => {
+export const getResume = zQuery(
+  query,
+  { userId: zid('users') },
+  async (ctx, args) => {
     const user = await ctx.db.get(args.userId)
     if (!user) return
 
     return await augmentResume(ctx, user, true)
   }
-})
+)
 
-export const getMyResume = authQuery({
-  args: {},
-  handler: async (ctx) => {
+export const getMyResume = zQuery(
+  authQuery,
+  {},
+  async (ctx) => {
     if (!ctx.user) return
 
     return await augmentResume(ctx, ctx.user)
   }
-})
+)
 
-export const getMyExperienceCounts = authQuery({
-  args: {},
-  handler: async (ctx) => {
+export const getMyExperienceCounts = zQuery(
+  authQuery,
+  {},
+  async (ctx) => {
     const exp = ctx.user?.resume?.projects
     const experiences = exp ? await getAll(ctx.db, exp) : []
 
@@ -75,11 +79,12 @@ export const getMyExperienceCounts = authQuery({
       slug: type
     }))
   }
-})
+)
 
-export const getUserPublicExperienceCounts = query({
-  args: { id: v.id('users') },
-  handler: async (ctx, args) => {
+export const getUserPublicExperienceCounts = zQuery(
+  query,
+  { id: zid('users') },
+  async (ctx, args) => {
     const user = await ctx.db.get(args.id)
 
     const exp = user?.resume?.projects
@@ -93,13 +98,12 @@ export const getUserPublicExperienceCounts = query({
       slug: type
     }))
   }
-})
+)
 
-export const saveResumeUploadIds = authMutation({
-  args: {
-    resumeUploads: zodToConvex(zFileUploadObjectArray)
-  },
-  handler: async (ctx, args) => {
+export const saveResumeUploadIds = zMutation(
+  authMutation,
+  { resumeUploads: zFileUploadObjectArray },
+  async (ctx, args) => {
     if (!ctx.user) return
 
     const resumeUploads = [
@@ -114,13 +118,12 @@ export const saveResumeUploadIds = authMutation({
       }
     })
   }
-})
+)
 
-export const removeResumeUpload = authMutation({
-  args: {
-    resumeUploadId: v.id('_storage')
-  },
-  handler: async (ctx, args) => {
+export const removeResumeUpload = zMutation(
+  authMutation,
+  { resumeUploadId: zid('_storage') },
+  async (ctx, args) => {
     if (!ctx.user) {
       return
     }
@@ -135,15 +138,16 @@ export const removeResumeUpload = authMutation({
       resume: { ...ctx.user.resume, uploads }
     })
   }
-})
+)
 
-export const updateMyResume = authMutation({
-  args: {
-    projects: zodToConvex(resumeObj.projects),
-    skills: zodToConvex(resumeObj.skills),
-    genres: zodToConvex(resumeObj.genres)
+export const updateMyResume = zMutation(
+  authMutation,
+  {
+    projects: resumeObj.projects,
+    skills: resumeObj.skills,
+    genres: resumeObj.genres
   },
-  handler: async (ctx, args) => {
+  async (ctx, args) => {
     if (!ctx.user) return
 
     ctx.db.patch(ctx.user._id, {
@@ -155,4 +159,4 @@ export const updateMyResume = authMutation({
       }
     })
   }
-})
+)

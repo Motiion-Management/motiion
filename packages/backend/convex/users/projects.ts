@@ -1,12 +1,14 @@
 import { authMutation, authQuery, notEmpty } from '../util'
-import { v } from 'convex/values'
 import { query } from '../_generated/server'
+import { zQuery, zMutation } from '@packages/zodvex'
+import { z } from 'zod'
+import { zid } from 'convex-helpers/server/zodV4'
 
 // Create a new project for the authenticated user
-export const addMyProject = authMutation({
-  args: v.any(),
-  returns: v.id('projects'),
-  handler: async (ctx, project) => {
+export const addMyProject = zMutation(
+  authMutation,
+  z.any(),
+  async (ctx, project) => {
     const payload = { ...(project || {}), userId: ctx.user._id }
     const projId = await ctx.db.insert('projects', payload)
     // Keep resume.projects list in sync
@@ -17,14 +19,15 @@ export const addMyProject = authMutation({
       }
     })
     return projId
-  }
-})
+  },
+  { returns: zid('projects') }
+)
 
 // Remove a project that belongs to the authenticated user
-export const removeMyProject = authMutation({
-  args: { projectId: v.id('projects') },
-  returns: v.null(),
-  handler: async (ctx, args) => {
+export const removeMyProject = zMutation(
+  authMutation,
+  { projectId: zid('projects') },
+  async (ctx, args) => {
     const doc = await ctx.db.get(args.projectId)
     if (!doc || doc.userId !== ctx.user._id) {
       // Not found or not owned by user; do nothing
@@ -41,14 +44,15 @@ export const removeMyProject = authMutation({
     })
     await ctx.db.delete(args.projectId)
     return null
-  }
-})
+  },
+  { returns: z.null() }
+)
 
 // List my projects from the unified table via index
-export const getMyProjects = authQuery({
-  args: {},
-  returns: v.array(v.any()),
-  handler: async (ctx) => {
+export const getMyProjects = zQuery(
+  authQuery,
+  {},
+  async (ctx) => {
     if (!ctx.user) return []
     const projs = await ctx.db
       .query('projects')
@@ -58,20 +62,21 @@ export const getMyProjects = authQuery({
       if (!a.startDate || !b.startDate) return 0
       return new Date(b.startDate).getTime() - new Date(a.startDate).getTime()
     })
-  }
-})
-
-export const getMyProjectsByType = authQuery({
-  args: {
-    type: v.union(
-      v.literal('tv-film'),
-      v.literal('music-video'),
-      v.literal('live-performance'),
-      v.literal('commercial')
-    )
   },
-  returns: v.array(v.any()),
-  handler: async (ctx, args) => {
+  { returns: z.array(z.any()) }
+)
+
+export const getMyProjectsByType = zQuery(
+  authQuery,
+  {
+    type: z.enum([
+      'tv-film',
+      'music-video',
+      'live-performance',
+      'commercial'
+    ])
+  },
+  async (ctx, args) => {
     if (!ctx.user) return []
     const projs = await ctx.db
       .query('projects')
@@ -84,14 +89,15 @@ export const getMyProjectsByType = authQuery({
         if (!a.startDate || !b.startDate) return 0
         return new Date(b.startDate).getTime() - new Date(a.startDate).getTime()
       })
-  }
-})
+  },
+  { returns: z.array(z.any()) }
+)
 
 // Public projects for a given user from unified table
-export const getUserPublicProjects = query({
-  args: { userId: v.id('users') },
-  returns: v.array(v.any()),
-  handler: async (ctx, args) => {
+export const getUserPublicProjects = zQuery(
+  query,
+  { userId: zid('users') },
+  async (ctx, args) => {
     const projs = await ctx.db
       .query('projects')
       .withIndex('userId', (q) => q.eq('userId', args.userId))
@@ -102,21 +108,22 @@ export const getUserPublicProjects = query({
         if (!a.startDate || !b.startDate) return 0
         return new Date(b.startDate).getTime() - new Date(a.startDate).getTime()
       })
-  }
-})
-
-export const getUserPublicProjectsByType = query({
-  args: {
-    userId: v.id('users'),
-    type: v.union(
-      v.literal('tv-film'),
-      v.literal('music-video'),
-      v.literal('live-performance'),
-      v.literal('commercial')
-    )
   },
-  returns: v.array(v.any()),
-  handler: async (ctx, args) => {
+  { returns: z.array(z.any()) }
+)
+
+export const getUserPublicProjectsByType = zQuery(
+  query,
+  {
+    userId: zid('users'),
+    type: z.enum([
+      'tv-film',
+      'music-video',
+      'live-performance',
+      'commercial'
+    ])
+  },
+  async (ctx, args) => {
     const projs = await ctx.db
       .query('projects')
       .withIndex('userId', (q) => q.eq('userId', args.userId))
@@ -128,14 +135,15 @@ export const getUserPublicProjectsByType = query({
         if (!a.startDate || !b.startDate) return 0
         return new Date(b.startDate).getTime() - new Date(a.startDate).getTime()
       })
-  }
-})
+  },
+  { returns: z.array(z.any()) }
+)
 
 // Get the 3 most recently added projects for the authenticated user
-export const getMyRecentProjects = authQuery({
-  args: {},
-  returns: v.array(v.any()),
-  handler: async (ctx) => {
+export const getMyRecentProjects = zQuery(
+  authQuery,
+  {},
+  async (ctx) => {
     if (!ctx.user) return []
     const projs = await ctx.db
       .query('projects')
@@ -143,8 +151,9 @@ export const getMyRecentProjects = authQuery({
       .order('desc')
       .take(3)
     return projs.filter(notEmpty)
-  }
-})
+  },
+  { returns: z.array(z.any()) }
+)
 
 // Backwards compatibility exports (redirect to new names)
 export const addMyExperience = addMyProject
