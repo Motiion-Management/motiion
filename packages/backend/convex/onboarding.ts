@@ -4,14 +4,12 @@ import { zMutation } from '@packages/zodvex'
 import { z } from 'zod'
 import {
   getOnboardingFlow as getOnboardingFlowConfig,
-  getStepRoute,
   ProfileType,
   STEP,
   STEP_ROUTES,
-  getFlowCompletionStatus,
-  isStepComplete
+  getFlowCompletionStatus
 } from './onboardingConfig'
-import type { RegisteredMutation, RegisteredQuery } from 'convex/server'
+import type { RegisteredMutation } from 'convex/server'
 
 export const completeOnboarding: RegisteredMutation<
   'public',
@@ -205,77 +203,3 @@ export const updateOnboardingStatus = mutation({
   }
 })
 
-// Query to get onboarding status without updating
-export const getOnboardingStatus = query({
-  args: {},
-  returns: v.object({
-    currentStep: v.string(),
-    completedSteps: v.array(v.string()),
-    incompleteSteps: v.array(v.string()),
-    completionPercentage: v.number(),
-    isComplete: v.boolean()
-  }),
-  handler: async (ctx) => {
-    const identity = await ctx.auth.getUserIdentity()
-    if (!identity) {
-      throw new ConvexError('Not authenticated')
-    }
-
-    const user = await ctx.db
-      .query('users')
-      .withIndex('tokenId', (q) => q.eq('tokenId', identity.subject))
-      .first()
-
-    if (!user) {
-      throw new ConvexError('User not found')
-    }
-
-    const profileType = (user.profileType || 'dancer') as ProfileType
-    const status = getFlowCompletionStatus(user, profileType)
-
-    return {
-      currentStep: status.nextIncompleteStep || 'review',
-      completedSteps: status.completedSteps,
-      incompleteSteps: status.incompleteSteps,
-      completionPercentage: status.completionPercentage,
-      isComplete: status.incompleteSteps.length === 0
-    }
-  }
-})
-
-// Check specific step completion
-export const checkStepCompletion = query({
-  args: { step: v.string() },
-  returns: v.boolean(),
-  handler: async (ctx, { step }) => {
-    const identity = await ctx.auth.getUserIdentity()
-    if (!identity) return false
-
-    const user = await ctx.db
-      .query('users')
-      .withIndex('tokenId', (q) => q.eq('tokenId', identity.subject))
-      .first()
-
-    if (!user) return false
-
-    return isStepComplete(step, user)
-  }
-})
-
-// Expose step routes configuration to frontend for data-driven UI
-export const getStepRoutes = query({
-  args: {},
-  returns: v.any(),
-  handler: async () => {
-    return STEP_ROUTES
-  }
-})
-
-// Get onboarding flow for a specific profile type
-export const getOnboardingFlow = query({
-  args: { profileType: v.string() },
-  returns: v.any(),
-  handler: async (ctx, { profileType }) => {
-    return getOnboardingFlowConfig(profileType as ProfileType)
-  }
-})
