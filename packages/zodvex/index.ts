@@ -460,7 +460,12 @@ function customFnBuilder(
               )
             })
           }
-          return await handler({ ...ctx, ...added }, parsed.data)
+          const result = await handler({ ...ctx, ...added }, parsed.data)
+          if (returns && !fn.skipConvexValidation) {
+            const validated = (returns as z.ZodTypeAny).parse(result)
+            return toConvexJS(returns as z.ZodTypeAny, validated)
+          }
+          return result
         }
       })
     }
@@ -474,7 +479,12 @@ function customFnBuilder(
           pick(allArgs, Object.keys(inputArgs)) as any,
           extra
         )
-        return await handler({ ...ctx, ...added }, allArgs)
+        const result = await handler({ ...ctx, ...added }, allArgs)
+        if (returns && !fn.skipConvexValidation) {
+          const validated = (returns as z.ZodTypeAny).parse(result)
+          return toConvexJS(returns as z.ZodTypeAny, validated)
+        }
+        return result
       }
     })
   }
@@ -589,9 +599,14 @@ export function zQuery<
   return query({
     args,
     returns,
-    handler: (ctx: ExtractCtx<Builder>, argsObject: unknown) => {
+    handler: async (ctx: ExtractCtx<Builder>, argsObject: unknown) => {
       const parsed = zod.parse(argsObject) as InferArgs<A>
-      return handler(ctx, parsed)
+      const raw = await handler(ctx, parsed)
+      if (options?.returns) {
+        const validated = (options.returns as z.ZodTypeAny).parse(raw)
+        return toConvexJS(options.returns as z.ZodTypeAny, validated)
+      }
+      return raw as any
     }
   }) as PreserveReturnType<Builder, ZodToConvexArgs<A>, InferReturns<R>>
 }
@@ -638,9 +653,14 @@ export function zMutation<
   return mutation({
     args,
     returns,
-    handler: (ctx: ExtractCtx<Builder>, argsObject: unknown) => {
+    handler: async (ctx: ExtractCtx<Builder>, argsObject: unknown) => {
       const parsed = zod.parse(argsObject) as InferArgs<A>
-      return handler(ctx, parsed)
+      const raw = await handler(ctx, parsed)
+      if (options?.returns) {
+        const validated = (options.returns as z.ZodTypeAny).parse(raw)
+        return toConvexJS(options.returns as z.ZodTypeAny, validated)
+      }
+      return raw as any
     }
   }) as PreserveReturnType<Builder, ZodToConvexArgs<A>, InferReturns<R>>
 }
@@ -687,9 +707,14 @@ export function zAction<
   return action({
     args,
     returns,
-    handler: (ctx: ExtractCtx<Builder>, argsObject: unknown) => {
+    handler: async (ctx: ExtractCtx<Builder>, argsObject: unknown) => {
       const parsed = zod.parse(argsObject) as InferArgs<A>
-      return handler(ctx, parsed)
+      const raw = await handler(ctx, parsed)
+      if (options?.returns) {
+        const validated = (options.returns as z.ZodTypeAny).parse(raw)
+        return toConvexJS(options.returns as z.ZodTypeAny, validated)
+      }
+      return raw as any
     }
   }) as PreserveReturnType<Builder, ZodToConvexArgs<A>, InferReturns<R>>
 }

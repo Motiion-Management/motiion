@@ -114,7 +114,7 @@ Behavior & Semantics
 - Arrays/objects/records
   - Mapping uses Zod v4 public APIs (`shape`, `element`, `options`, `valueType`).
 - Returns validation
-  - If you supply `returns: z.date()`, Convex expects a number (timestamp) at the boundary. Either return a timestamp or implement custom encoding before returning. The wrappers do not auto-encode return values.
+  - If you supply `returns`, wrappers validate the handler’s return value with the Zod schema and encode it to Convex-safe JSON (e.g., `z.date()` → timestamp) before returning.
 - Numbers
   - `z.number()` maps to `v.float64()` to match Convex JSON. If you need integers, prefer `z.bigint()` (→ `v.int64()`) or handle integer checks at runtime.
 - IDs
