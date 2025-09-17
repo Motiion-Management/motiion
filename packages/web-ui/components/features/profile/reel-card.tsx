@@ -4,7 +4,7 @@ import { AccordionCard } from '@/components/ui/accordion-card'
 import Image from 'next/image'
 import FilmIcon from '@/public/Film_Reel.svg'
 import { AccordionContent } from '@/components/ui/accordion'
-import { UserDoc } from '@packages/backend/convex/validators/users'
+import { UserDoc } from '@packages/backend/convex/schemas/users'
 import { Video } from '@/components/ui/video'
 
 export const ReelCard: React.FC<{ user: UserDoc }> = ({ user }) => {

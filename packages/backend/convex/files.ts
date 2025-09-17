@@ -1,7 +1,7 @@
-import { zodToConvex } from '@packages/zodvex'
+import { zodToConvex } from 'zodvex'
 import { internalAction } from './_generated/server'
 import { authMutation } from './util'
-import { zFileUploadObjectArray } from './validators/base'
+import { zFileUploadObjectArray } from './schemas/base'
 import type { RegisteredMutation } from 'convex/server'
 import type { DataModel } from './_generated/dataModel'
 

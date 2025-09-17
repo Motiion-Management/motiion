@@ -1,257 +1,112 @@
-import { authMutation, authQuery, authAction } from '../util'
-import { v } from 'convex/values'
+import { authMutation, authAction } from '../util'
 import { internal } from '../_generated/api'
-import { ConvexError } from 'convex/values'
+import { ConvexError, v } from 'convex/values'
 import { Id } from '../_generated/dataModel'
+import { zMutation } from 'zodvex'
+import { z } from 'zod'
+import { zid } from 'zodvex'
 
-type Experience = {
-  type: 'tv-film' | 'music-video' | 'live-performance' | 'commercial'
-  title?: string
-  startDate?: string
-  endDate?: string
-  roles?: string[]
-  studio?: string
-  artists?: string[]
-  companyName?: string
-  productionCompany?: string
-  tourArtist?: string
-  venue?: string
-  subtype?:
-    | 'festival'
-    | 'tour'
-    | 'concert'
-    | 'corporate'
-    | 'award-show'
-    | 'theater'
-    | 'other'
-  mainTalent?: string[]
-  choreographers?: string[]
-  associateChoreographers?: string[]
-  directors?: string[]
-}
+// Schema definitions must come first for type inference
 
-type TrainingEntry = {
-  type:
-    | 'education'
-    | 'dance-school'
-    | 'programs-intensives'
-    | 'scholarships'
-    | 'other'
-  institution: string
-  instructors?: string[]
-  startYear?: number
-  endYear?: number
-  degree?: string
-}
+// Define the complex schema for parsed resume
+const experienceSchema = z.object({
+  type: z.enum([
+    'tv-film',
+    'music-video',
+    'live-performance',
+    'commercial'
+  ]),
+  title: z.string().optional(),
+  startDate: z.string().optional(),
+  endDate: z.string().optional(),
+  roles: z.array(z.string()).optional(),
+  studio: z.string().optional(),
+  artists: z.array(z.string()).optional(),
+  companyName: z.string().optional(),
+  productionCompany: z.string().optional(),
+  tourArtist: z.string().optional(),
+  venue: z.string().optional(),
+  subtype: z.enum([
+    'festival',
+    'tour',
+    'concert',
+    'corporate',
+    'award-show',
+    'theater',
+    'other'
+  ]).optional(),
+  mainTalent: z.array(z.string()).optional(),
+  choreographers: z.array(z.string()).optional(),
+  associateChoreographers: z.array(z.string()).optional(),
+  directors: z.array(z.string()).optional()
+})
 
-type ParsedResume = {
-  experiences: Experience[]
-  training: TrainingEntry[]
-  skills: string[]
-  genres: string[]
-  sagAftraId?: string
-}
+const trainingSchema = z.object({
+  type: z.enum([
+    'education',
+    'dance-school',
+    'programs-intensives',
+    'scholarships',
+    'other'
+  ]),
+  institution: z.string(),
+  instructors: z.array(z.string()).optional(),
+  startYear: z.number().optional(),
+  endYear: z.number().optional(),
+  degree: z.string().optional()
+})
+
+const parsedResumeSchema = z.object({
+  experiences: z.array(experienceSchema),
+  training: z.array(trainingSchema),
+  skills: z.array(z.string()),
+  genres: z.array(z.string()),
+  sagAftraId: z.string().optional()
+})
+
+type ParsedResume = z.infer<typeof parsedResumeSchema>
+
+// Types derived from schemas
+type Experience = z.infer<typeof experienceSchema>
+type TrainingEntry = z.infer<typeof trainingSchema>
 
 // New unified document parsing action
-export const parseResumeDocument = authAction({
+// Note: keeping original authAction to avoid TypeScript circularity issues
+export const parseResumeDocument: any = authAction({
   args: {
     storageId: v.id('_storage')
   },
-  returns: v.object({
-    experiences: v.array(
-      v.object({
-        type: v.union(
-          v.literal('tv-film'),
-          v.literal('music-video'),
-          v.literal('live-performance'),
-          v.literal('commercial')
-        ),
-        title: v.optional(v.string()),
-        startDate: v.optional(v.string()),
-        endDate: v.optional(v.string()),
-        roles: v.optional(v.array(v.string())),
-        studio: v.optional(v.string()),
-        artists: v.optional(v.array(v.string())),
-        companyName: v.optional(v.string()),
-        productionCompany: v.optional(v.string()),
-        tourArtist: v.optional(v.string()),
-        venue: v.optional(v.string()),
-        subtype: v.optional(
-          v.union(
-            v.literal('festival'),
-            v.literal('tour'),
-            v.literal('concert'),
-            v.literal('corporate'),
-            v.literal('award-show'),
-            v.literal('theater'),
-            v.literal('other')
-          )
-        ),
-        mainTalent: v.optional(v.array(v.string())),
-        choreographers: v.optional(v.array(v.string())),
-        associateChoreographers: v.optional(v.array(v.string())),
-        directors: v.optional(v.array(v.string()))
-      })
-    ),
-    training: v.array(
-      v.object({
-        type: v.union(
-          v.literal('education'),
-          v.literal('dance-school'),
-          v.literal('programs-intensives'),
-          v.literal('scholarships'),
-          v.literal('other')
-        ),
-        institution: v.string(),
-        instructors: v.optional(v.array(v.string())),
-        startYear: v.optional(v.number()),
-        endYear: v.optional(v.number()),
-        degree: v.optional(v.string())
-      })
-    ),
-    skills: v.array(v.string()),
-    genres: v.array(v.string()),
-    sagAftraId: v.optional(v.string())
-  }),
-  handler: async (ctx, args): Promise<ParsedResume> => {
+  handler: async (ctx, args) => {
     // Call the new unified document processor
     return await ctx.runAction(
       internal.ai.documentProcessor.parseResumeDocument,
       {
-        storageId: args.storageId
+        storageId: args.storageId,
+        retryCount: undefined
       }
     )
   }
 })
 
 // Text-only parsing action for direct text input
-export const parseResumeTextDirect = authAction({
+// Note: keeping original authAction to avoid TypeScript circularity issues
+export const parseResumeTextDirect: any = authAction({
   args: {
     text: v.string()
   },
-  returns: v.object({
-    experiences: v.array(
-      v.object({
-        type: v.union(
-          v.literal('tv-film'),
-          v.literal('music-video'),
-          v.literal('live-performance'),
-          v.literal('commercial')
-        ),
-        title: v.optional(v.string()),
-        startDate: v.optional(v.string()),
-        endDate: v.optional(v.string()),
-        roles: v.optional(v.array(v.string())),
-        studio: v.optional(v.string()),
-        artists: v.optional(v.array(v.string())),
-        companyName: v.optional(v.string()),
-        productionCompany: v.optional(v.string()),
-        tourArtist: v.optional(v.string()),
-        venue: v.optional(v.string()),
-        subtype: v.optional(
-          v.union(
-            v.literal('festival'),
-            v.literal('tour'),
-            v.literal('concert'),
-            v.literal('corporate'),
-            v.literal('award-show'),
-            v.literal('theater'),
-            v.literal('other')
-          )
-        ),
-        mainTalent: v.optional(v.array(v.string())),
-        choreographers: v.optional(v.array(v.string())),
-        associateChoreographers: v.optional(v.array(v.string())),
-        directors: v.optional(v.array(v.string()))
-      })
-    ),
-    training: v.array(
-      v.object({
-        type: v.union(
-          v.literal('education'),
-          v.literal('dance-school'),
-          v.literal('programs-intensives'),
-          v.literal('scholarships'),
-          v.literal('other')
-        ),
-        institution: v.string(),
-        instructors: v.optional(v.array(v.string())),
-        startYear: v.optional(v.number()),
-        endYear: v.optional(v.number()),
-        degree: v.optional(v.string())
-      })
-    ),
-    skills: v.array(v.string()),
-    genres: v.array(v.string()),
-    sagAftraId: v.optional(v.string())
-  }),
-  handler: async (ctx, args): Promise<ParsedResume> => {
+  handler: async (ctx, args) => {
     // Call the text parser
     return await ctx.runAction(internal.ai.textParser.parseResumeText, {
-      text: args.text
+      text: args.text,
+      retryCount: undefined
     })
   }
 })
 
-export const applyParsedResumeData = authMutation({
-  args: {
-    experiences: v.array(
-      v.object({
-        type: v.union(
-          v.literal('tv-film'),
-          v.literal('music-video'),
-          v.literal('live-performance'),
-          v.literal('commercial')
-        ),
-        title: v.optional(v.string()),
-        startDate: v.optional(v.string()),
-        endDate: v.optional(v.string()),
-        roles: v.optional(v.array(v.string())),
-        studio: v.optional(v.string()),
-        artists: v.optional(v.array(v.string())),
-        companyName: v.optional(v.string()),
-        productionCompany: v.optional(v.string()),
-        tourArtist: v.optional(v.string()),
-        venue: v.optional(v.string()),
-        subtype: v.optional(
-          v.union(
-            v.literal('festival'),
-            v.literal('tour'),
-            v.literal('concert'),
-            v.literal('corporate'),
-            v.literal('award-show'),
-            v.literal('theater'),
-            v.literal('other')
-          )
-        ),
-        mainTalent: v.optional(v.array(v.string())),
-        choreographers: v.optional(v.array(v.string())),
-        associateChoreographers: v.optional(v.array(v.string())),
-        directors: v.optional(v.array(v.string()))
-      })
-    ),
-    training: v.array(
-      v.object({
-        type: v.union(
-          v.literal('education'),
-          v.literal('dance-school'),
-          v.literal('programs-intensives'),
-          v.literal('scholarships'),
-          v.literal('other')
-        ),
-        institution: v.string(),
-        instructors: v.optional(v.array(v.string())),
-        startYear: v.optional(v.number()),
-        endYear: v.optional(v.number()),
-        degree: v.optional(v.string())
-      })
-    ),
-    skills: v.array(v.string()),
-    genres: v.array(v.string()),
-    sagAftraId: v.optional(v.string())
-  },
-  returns: v.null(),
-  handler: async (ctx, args) => {
+export const applyParsedResumeData = zMutation(
+  authMutation,
+  parsedResumeSchema,
+  async (ctx, args) => {
     if (!ctx.user) {
       throw new ConvexError('User not authenticated')
     }
@@ -322,5 +177,6 @@ export const applyParsedResumeData = authMutation({
         `Failed to save resume data: ${error instanceof Error ? error.message : 'Unknown error'}`
       )
     }
-  }
-})
+  },
+  { returns: z.null() }
+)

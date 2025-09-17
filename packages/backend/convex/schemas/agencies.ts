@@ -1,6 +1,5 @@
-import { zid } from 'convex-helpers/server/zodV4'
-import { zodToConvexFields } from '@packages/zodvex'
-import { Table } from 'convex-helpers/server'
+import { zid } from 'zodvex'
+import { zodTable } from 'zodvex'
 import { z } from 'zod'
 import { zLocation } from './base'
 
@@ -19,4 +18,4 @@ export const agencies = {
 
 export const zAgencies = z.object(agencies)
 
-export const Agencies = Table('agencies', zodToConvexFields(agencies))
+export const Agencies = zodTable('agencies', zAgencies)

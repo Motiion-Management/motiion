@@ -9,7 +9,7 @@ import Plus from '~/lib/icons/Plus';
 import { getTrainingDisplayTitle, getTrainingDisplaySubtitle } from '~/config/trainingTypes';
 import { TrainingEditSheet } from './TrainingEditSheet';
 import { type Id } from '@packages/backend/convex/_generated/dataModel';
-import { type TrainingFormDoc } from '@packages/backend/convex/validators/training';
+import { type TrainingFormDoc } from '@packages/backend/convex/schemas/training';
 
 const trainingCardVariants = cva(
   'w-full flex-row items-center justify-between rounded-full border px-5 py-4',

@@ -30,7 +30,7 @@ Transforms
 - `zod4-imports`: Rewrites string literals in import/require/dynamic import lines
   from `convex-helpers/server/zod` to `convex-helpers/server/zodV4`.
 - `use-zodvex`: Moves `zodToConvex*` imports from `convex-helpers/server/zodV4`
-  to `@packages/zodvex`, leaving other specifiers (e.g. `zid`) untouched.
+  to `zodvex`, leaving other specifiers (e.g. `zid`) untouched.
 
 Adding More Transforms
 

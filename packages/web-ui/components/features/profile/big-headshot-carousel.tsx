@@ -9,7 +9,7 @@ import {
   CarouselItem,
   CarouselContent
 } from '@/components/ui/carousel'
-import { UserDoc } from '@packages/backend/convex/validators/users'
+import { UserDoc } from '@packages/backend/convex/schemas/users'
 import { AspectRatio } from '@/components/ui/aspect-ratio'
 import './profile-card.css'
 import FlipArrowWhite from '@/public/profile-flip-arrow-white.svg'

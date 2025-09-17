@@ -1,12 +1,11 @@
 import { query, mutation } from './_generated/server'
 import { authMutation, authQuery } from './util'
+import { zCrud } from 'zodvex'
+import { Projects } from './schemas/projects'
 
-import { crud } from 'convex-helpers/server'
-import { Projects } from './validators/projects'
+export const { read } = zCrud(Projects, query, mutation)
 
-export const { read } = crud(Projects, query, mutation)
-
-export const { create, update, destroy } = crud(
+export const { create, update, destroy } = zCrud(
   Projects,
   authQuery,
   authMutation
