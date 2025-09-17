@@ -26,7 +26,7 @@ Per table (e.g., Agencies, Projects, Training):
 
 Notes:
 - The codec applies deep normalization so optionals become `v.optional(...)` and nullables become `v.union(T, v.null())` recursively.
-- Keep using `zid('table')` from `convex-helpers/server/zodV4` for ID fields inside Zod schemas.
+- Prefer `zid('table')` from `zodvex` for ID fields inside Zod schemas.
 
 ## 2) Functions → zodvex wrappers
 

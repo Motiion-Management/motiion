@@ -7,7 +7,7 @@ import {
 import { authMutation, authQuery } from './util'
 import { zCrud, zQuery } from 'zodvex'
 import { z } from 'zod'
-import { zid } from 'convex-helpers/server/zodV4'
+import { zid } from 'zodvex'
 import { Agencies } from './schemas/agencies'
 import { Doc } from './_generated/dataModel'
 

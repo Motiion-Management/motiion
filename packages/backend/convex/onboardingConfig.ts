@@ -29,7 +29,7 @@ export const ONBOARDING_GROUPS = {
       'display-name',
       'database-use',
       'company'
-    ] as readonly string[],
+    ] as const,
     basePath: '/app/onboarding/profile'
   },
   attributes: {
@@ -41,7 +41,7 @@ export const ONBOARDING_GROUPS = {
       'hair-color',
       'eye-color',
       'gender'
-    ] as readonly string[],
+    ] as const,
     basePath: '/app/onboarding/attributes'
   },
   'work-details': {
@@ -54,19 +54,19 @@ export const ONBOARDING_GROUPS = {
       'representation',
       'agency',
       'union'
-    ] as readonly string[],
+    ] as const,
     basePath: '/app/onboarding/work-details'
   },
   experiences: {
     key: 'experiences' as const,
     label: 'Experience',
-    steps: ['projects', 'training', 'skills'] as readonly string[],
+    steps: ['projects', 'training', 'skills'] as const,
     basePath: '/app/onboarding/experiences'
   },
   review: {
     key: 'review' as const,
     label: 'Review',
-    steps: ['review', 'projects-review'] as readonly string[],
+    steps: ['review', 'projects-review'] as const,
     basePath: '/app/onboarding/review'
   }
 } as const

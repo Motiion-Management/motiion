@@ -163,12 +163,12 @@ export function useOnboardingGroupFlow(): UseOnboardingGroupFlowReturn {
   }, [activeFlow, currentGroup]);
 
   // Get visible steps for current group (filtering out skipped ones)
-  const visibleStepsInGroup = useMemo(() => {
-    if (!currentGroup) return [];
+  const visibleStepsInGroup = useMemo((): readonly string[] => {
+    if (!currentGroup) return [] as const;
     const groupConfig = ONBOARDING_GROUPS[currentGroup];
-    if (!groupConfig) return [];
+    if (!groupConfig) return [] as const;
 
-    return (groupConfig.steps as unknown as string[]).filter((stepId) => !shouldSkipStep(stepId));
+    return groupConfig.steps.filter((stepId) => !shouldSkipStep(stepId));
   }, [currentGroup, shouldSkipStep]);
 
   const currentStepInGroup = useMemo(() => {
@@ -231,7 +231,7 @@ export function useOnboardingGroupFlow(): UseOnboardingGroupFlowReturn {
     }
 
     // Find current step's actual index in ALL steps (not filtered)
-    const allSteps = groupConfig.steps as unknown as string[];
+    const allSteps = groupConfig.steps;
     const currentActualIndex = allSteps.indexOf(currentStepId);
 
     if (currentActualIndex === -1) {
@@ -265,7 +265,7 @@ export function useOnboardingGroupFlow(): UseOnboardingGroupFlowReturn {
     }
 
     // Find current step's actual index in ALL steps (not filtered)
-    const allSteps = groupConfig.steps as unknown as string[];
+    const allSteps = groupConfig.steps;
     const currentActualIndex = allSteps.indexOf(currentStepId);
 
     if (currentActualIndex === -1) {
@@ -331,10 +331,10 @@ export function useOnboardingGroupFlow(): UseOnboardingGroupFlowReturn {
           (groupKey === 'profile' && firstStep !== 'resume')
         ) {
           // Use dynamic routing for other steps
-          path = `/app/onboarding/${groupKey}/${firstStep}` as any;
-        } else if (groupKey === 'review' && (firstStep as any) === 'review') {
+          path = `/app/onboarding/${groupKey}/${firstStep}` as Href;
+        } else if (groupKey === 'review' && firstStep === 'review') {
           path += '/general';
-        } else if (groupKey === 'review' && (firstStep as any) === 'projects-review') {
+        } else if (groupKey === 'review' && firstStep === 'projects-review') {
           path += '/experiences';
         }
 
@@ -354,7 +354,7 @@ export function useOnboardingGroupFlow(): UseOnboardingGroupFlowReturn {
     (stepId: string) => {
       // Find which group contains this step
       for (const [groupKey, groupConfig] of Object.entries(ONBOARDING_GROUPS)) {
-        if ((groupConfig.steps as unknown as string[]).includes(stepId)) {
+        if (groupConfig.steps.includes(stepId)) {
           let path = groupConfig.basePath;
 
           // Handle special routing cases
@@ -371,10 +371,10 @@ export function useOnboardingGroupFlow(): UseOnboardingGroupFlowReturn {
             (groupKey === 'profile' && stepId !== 'resume')
           ) {
             // Use dynamic routing for other steps
-            path = `/app/onboarding/${groupKey}/${stepId}` as any;
-          } else if (groupKey === 'review' && (stepId as any) === 'review') {
+            path = `/app/onboarding/${groupKey}/${stepId}` as Href;
+          } else if (groupKey === 'review' && stepId === 'review') {
             path += '/general';
-          } else if (groupKey === 'review' && (stepId as any) === 'projects-review') {
+          } else if (groupKey === 'review' && stepId === 'projects-review') {
             path += '/experiences';
           }
 
