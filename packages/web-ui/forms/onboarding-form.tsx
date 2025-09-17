@@ -16,7 +16,7 @@ import { SelectField } from '../components/ui/form-fields/select'
 import { LocationField } from '../components/ui/form-fields/location'
 import { AccordionPlus } from '../components/ui/accordion-plus'
 import { Id } from '@packages/backend/convex/_generated/dataModel'
-import { ONBOARDING_STEPS } from '@packages/backend/convex/validators/users'
+import { ONBOARDING_STEPS } from '@packages/backend/convex/schemas/users'
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 

@@ -9,7 +9,7 @@ import LiveIcon from '@/public/Theatre_Mask.svg'
 import TrainingIcon from '@/public/Classroom.svg'
 import SkillsIcon from '@/public/Layers.svg'
 import { fetchUserPublicExperienceCounts } from '@/lib/server/resumes'
-import { UserDoc } from '@packages/backend/convex/validators/users'
+import { UserDoc } from '@packages/backend/convex/schemas/users'
 
 export const ResumeLinksTab: React.FC<{
   user: UserDoc

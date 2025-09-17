@@ -9,8 +9,8 @@ import { type Id } from '@packages/backend/convex/_generated/dataModel';
 import {
   type TrainingFormDoc,
   zTrainingFormDoc,
-} from '@packages/backend/convex/validators/training';
-import { TRAINING_TYPES } from '@packages/backend/convex/validators/training';
+} from '@packages/backend/convex/schemas/training';
+import { TRAINING_TYPES } from '@packages/backend/convex/schemas/training';
 import {
   trainingMetadata,
   baseTrainingMetadata,

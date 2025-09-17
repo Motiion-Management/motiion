@@ -4,7 +4,7 @@ import { fetchQuery, preloadQuery, preloadedQueryResult } from 'convex/nextjs'
 import { getAuthToken } from '@/lib/server/utils'
 import { api } from '@packages/backend/convex/_generated/api'
 import { Id } from '@packages/backend/convex/_generated/dataModel'
-import { EXPERIENCE_TYPES } from '@packages/backend/convex/validators/experiences'
+import { EXPERIENCE_TYPES } from '@packages/backend/convex/schemas/experiences'
 
 export async function fetchMyExperiences() {
   const token = await getAuthToken()

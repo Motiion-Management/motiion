@@ -59,14 +59,14 @@ export function WheelPicker<T = any>({
   };
 
   return (
-    <View className="relative items-center">
+    <View className="relative h-[240px] items-center">
       <InteropWheelPicker
         data={data}
         value={value}
         onValueChanged={handleValueChange}
         onValueChanging={handleValueChanging}
         className={cn('h-full', className)}
-        overlayItemClassName={cn('bg-transparent', overlayItemClassName)}
+        overlayItemClassName={cn('bg-transparent ', overlayItemClassName)}
         contentContainerClassName={cn('', contentContainerClassName)}
         renderItem={({ item }) => (
           <View className="flex-1 items-center justify-center">

@@ -15,7 +15,7 @@ import {
   BUST,
   UNDERBUST,
   HIPS,
-} from '@packages/backend/convex/validators/sizing';
+} from '@packages/backend/convex/schemas/sizing';
 
 export type GeneralSizing = {
   waist?: (typeof WAIST)[number];

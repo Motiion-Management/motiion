@@ -23,6 +23,12 @@
 
 - **Formatting**: Prettier (2 spaces, single quotes, no semicolons, no trailing commas; Tailwind plugin enabled).
 - **Linting**: ESLint with TypeScript; `@typescript-eslint/no-unused-vars` warns; `any` allowed where pragmatic.
+  - Type safety preferences for this repo:
+    - Avoid `as any` and `as unknown` entirely. Do not use them to “fix” typing.
+    - Avoid TypeScript directive hacks like `@ts-expect-error`/`@ts-ignore` to silence errors.
+    - Prefer proper type inference via helpers, narrow interfaces, and generics.
+    - Type casts (`as X`) are acceptable only with clear justification and as short-lived stop-gaps; favor refactoring APIs or adding helpers to eliminate them.
+    - When Convex generics cause deep instantiation, prefer small, well-typed wrappers (helpers/codecs) over broad casts.
 - **Components**: PascalCase files (`MyComponent.tsx`); hooks `useX.ts`; utility modules kebab-case.
 - **Packages**: Scoped as `@packages/*`; prefer explicit exports and typed interfaces.
 

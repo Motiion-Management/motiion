@@ -30,7 +30,7 @@ import { useMutation, useQuery } from 'convex/react';
 import { normalizeForConvex } from '~/utils/convexHelpers';
 import { z } from 'zod';
 import { toast } from 'sonner-native';
-import { zProjectsDoc, type ProjectFormDoc } from '@packages/backend/convex/validators/projects';
+import { zProjectsDoc, type ProjectFormDoc } from '@packages/backend/convex/schemas/projects';
 
 const BOTTOM_OFFSET_CUSHION = 8;
 const HAPTIC_MEDIUM = Haptics.ImpactFeedbackStyle.Medium;

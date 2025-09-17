@@ -24,6 +24,10 @@ export function selectGender(data: OnboardingData) {
   return data.user?.attributes?.gender || undefined;
 }
 
+export function selectProfileType(data: OnboardingData) {
+  return { profileType: (data.user?.profileType as any) || undefined } as any;
+}
+
 export function selectPrimaryPlaceKitLocation(data: OnboardingData) {
   return data.user?.location
     ? {

@@ -23,8 +23,8 @@ import {
   INSEAM,
   WAIST,
   sizingPlainObject
-} from '@packages/backend/convex/validators/sizing'
-import { GENDER } from '@packages/backend/convex/validators/base'
+} from '@packages/backend/convex/schemas/sizing'
+import { GENDER } from '@packages/backend/convex/schemas/base'
 import { FieldValues, useFormContext } from 'react-hook-form'
 import { EditDrawer, EditDrawerProps } from '../components/features/edit-drawer'
 import {

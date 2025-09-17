@@ -8,7 +8,7 @@ import { Button } from '~/components/ui/button';
 import { Text } from '~/components/ui/text';
 import { ActivityIndicator } from '~/components/ui/activity-indicator';
 import { type ParsedResumeData } from '@packages/backend/convex/ai/schemas';
-import { PROJECT_TITLE_MAP } from '@packages/backend/convex/validators/projects';
+import { PROJECT_TITLE_MAP } from '@packages/backend/convex/schemas/projects';
 
 interface ParsedResumeReviewProps {
   parsedData: ParsedResumeData;
