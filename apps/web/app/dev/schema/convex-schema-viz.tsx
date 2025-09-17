@@ -34,6 +34,24 @@ const getTablesFromConvexSchema = (): Table[] => {
     return { base: v, optional: v?.isOptional !== 'required' }
   }
 
+  // First pass: collect which tables are referenced by any field
+  for (const [, definition] of Object.entries(schema.tables)) {
+    const objectFields: Record<string, any> = (definition as any).validator
+      .fields
+    for (const [, field] of Object.entries(objectFields)) {
+      const { base } = unwrapOptional(field)
+      if (base?.kind === 'id') {
+        isTableReferenced[base.tableName] = true
+      } else if (base?.kind === 'array') {
+        const { base: elemBase } = unwrapOptional((base as any).element)
+        if (elemBase?.kind === 'id') {
+          isTableReferenced[elemBase.tableName] = true
+        }
+      }
+    }
+  }
+
+  // Second pass: build tables and fields with correct isReferenced
   for (const [table, definition] of Object.entries(schema.tables)) {
     const fields: TableField[] = []
     const objectFields: Record<string, any> = (definition as any).validator
@@ -41,7 +59,6 @@ const getTablesFromConvexSchema = (): Table[] => {
     for (const [fieldName, field] of Object.entries(objectFields)) {
       const { base, optional } = unwrapOptional(field)
 
-      // Detect references
       let hasReference = false
       let referenceTable: string | undefined
       if (base?.kind === 'id') {
@@ -64,15 +81,12 @@ const getTablesFromConvexSchema = (): Table[] => {
       }
 
       fields.push(tableField)
-
-      if (referenceTable) {
-        isTableReferenced[referenceTable] = true
-      }
     }
+
     tables.push({
       name: table,
       fields,
-      isReferenced: isTableReferenced[table]
+      isReferenced: !!isTableReferenced[table]
     })
   }
 
