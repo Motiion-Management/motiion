@@ -3,7 +3,7 @@ import Image from 'next/image'
 import { AccordionContent } from '@/components/ui/accordion'
 import { ExternalLink } from '@/components/ui/external-link'
 import VideoIcon from '@/public/Video.svg'
-import { UserDoc } from '@packages/backend/convex/validators/users'
+import { UserDoc } from '@packages/backend/convex/schemas/users'
 
 export const OtherLinksCard: React.FC<{ user: UserDoc }> = ({ user }) => {
   return (

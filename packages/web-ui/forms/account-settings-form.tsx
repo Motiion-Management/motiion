@@ -17,7 +17,7 @@ import { LocationField } from '../components/ui/form-fields/location'
 import {
   ONBOARDING_STEPS,
   UserDoc
-} from '@packages/backend/convex/validators/users'
+} from '@packages/backend/convex/schemas/users'
 import { AccordionPlus } from '../components/ui/accordion-plus'
 
 const formSchema = z.object({

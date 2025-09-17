@@ -1,6 +1,5 @@
 import { zid } from 'convex-helpers/server/zodV4'
-import { zodToConvexFields } from '@packages/zodvex'
-import { Table } from 'convex-helpers/server'
+import { zodTable } from '@packages/zodvex'
 import { z } from 'zod'
 import { Doc } from '../_generated/dataModel'
 
@@ -34,6 +33,9 @@ export const LIVE_EVENT_SUBTYPES = [
 export const projects = {
   // Core
   userId: zid('users'),
+  // Profile references (Phase 3.3 - multi-profile support)
+  profileType: z.enum(['dancer', 'choreographer']).optional(),
+  profileId: z.union([zid('dancers'), zid('choreographers')]).optional(),
   private: z.boolean().optional(),
   type: z.enum(PROJECT_TYPES),
   // Generic subtype (used for live-performance; optional otherwise)
@@ -81,7 +83,7 @@ export const zProjectsDoc = zProjects.extend({
 // Aliases for clarity in imports
 export const zProjectsBase = zProjects
 
-export const Projects = Table('projects', zodToConvexFields(projects))
+export const Projects = zodTable('projects', zProjects)
 
 export type ProjectDoc = Doc<'projects'>
 

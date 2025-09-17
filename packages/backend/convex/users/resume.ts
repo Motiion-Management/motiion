@@ -1,15 +1,17 @@
 import { QueryCtx, query } from '../_generated/server'
 import { authMutation, authQuery } from '../util'
-import { v } from 'convex/values'
-import { zodToConvex } from '@packages/zodvex'
-import { UserDoc, resume as resumeObj } from '../validators/users'
+import { zQuery, zMutation } from '@packages/zodvex'
+import { z } from 'zod'
+import { zid } from 'convex-helpers/server/zodV4'
+import { UserDoc, resume as resumeObj } from '../schemas/users'
 import type { Id } from '../_generated/dataModel'
-import { zFileUploadObjectArray } from '../validators/base'
+import { zFileUploadObjectArray } from '../schemas/base'
 import {
   PROJECT_TITLE_MAP as EXPERIENCE_TITLE_MAP,
   PROJECT_TYPES as EXPERIENCE_TYPES
-} from '../validators/projects'
+} from '../schemas/projects'
 import { getAll } from 'convex-helpers/server/relationships'
+import { getActiveProfileTarget } from './profileHelpers'
 
 export async function augmentResume(
   ctx: QueryCtx,
@@ -44,29 +46,67 @@ export async function augmentResume(
     uploads
   }
 }
-export const getResume = query({
-  args: { userId: v.id('users') },
-  handler: async (ctx, args) => {
+export const getResume = zQuery(
+  query,
+  { userId: zid('users') },
+  async (ctx, args) => {
     const user = await ctx.db.get(args.userId)
     if (!user) return
 
     return await augmentResume(ctx, user, true)
   }
-})
+)
 
-export const getMyResume = authQuery({
-  args: {},
-  handler: async (ctx) => {
+export const getMyResume = zQuery(
+  authQuery,
+  {},
+  async (ctx) => {
     if (!ctx.user) return
 
-    return await augmentResume(ctx, ctx.user)
-  }
-})
+    // PROFILE-FIRST: Get resume from active profile if it exists
+    let userWithResume = ctx.user
 
-export const getMyExperienceCounts = authQuery({
-  args: {},
-  handler: async (ctx) => {
-    const exp = ctx.user?.resume?.projects
+    if (ctx.user.activeProfileType && (ctx.user.activeDancerId || ctx.user.activeChoreographerId)) {
+      let profile = null
+
+      if (ctx.user.activeProfileType === 'dancer' && ctx.user.activeDancerId) {
+        profile = await ctx.db.get(ctx.user.activeDancerId)
+      } else if (ctx.user.activeProfileType === 'choreographer' && ctx.user.activeChoreographerId) {
+        profile = await ctx.db.get(ctx.user.activeChoreographerId)
+      }
+
+      if (profile?.resume) {
+        // Create a user object with profile's resume for augmentResume
+        userWithResume = { ...ctx.user, resume: profile.resume }
+      }
+    }
+
+    return await augmentResume(ctx, userWithResume)
+  }
+)
+
+export const getMyExperienceCounts = zQuery(
+  authQuery,
+  {},
+  async (ctx) => {
+    // PROFILE-FIRST: Get resume from active profile if it exists
+    let resume = ctx.user?.resume
+
+    if (ctx.user?.activeProfileType && (ctx.user?.activeDancerId || ctx.user?.activeChoreographerId)) {
+      let profile = null
+
+      if (ctx.user.activeProfileType === 'dancer' && ctx.user.activeDancerId) {
+        profile = await ctx.db.get(ctx.user.activeDancerId)
+      } else if (ctx.user.activeProfileType === 'choreographer' && ctx.user.activeChoreographerId) {
+        profile = await ctx.db.get(ctx.user.activeChoreographerId)
+      }
+
+      if (profile?.resume) {
+        resume = profile.resume
+      }
+    }
+
+    const exp = resume?.projects
     const experiences = exp ? await getAll(ctx.db, exp) : []
 
     return EXPERIENCE_TYPES.map((type) => ({
@@ -75,11 +115,12 @@ export const getMyExperienceCounts = authQuery({
       slug: type
     }))
   }
-})
+)
 
-export const getUserPublicExperienceCounts = query({
-  args: { id: v.id('users') },
-  handler: async (ctx, args) => {
+export const getUserPublicExperienceCounts = zQuery(
+  query,
+  { id: zid('users') },
+  async (ctx, args) => {
     const user = await ctx.db.get(args.id)
 
     const exp = user?.resume?.projects
@@ -93,66 +134,80 @@ export const getUserPublicExperienceCounts = query({
       slug: type
     }))
   }
-})
+)
 
-export const saveResumeUploadIds = authMutation({
-  args: {
-    resumeUploads: zodToConvex(zFileUploadObjectArray)
-  },
-  handler: async (ctx, args) => {
+export const saveResumeUploadIds = zMutation(
+  authMutation,
+  { resumeUploads: zFileUploadObjectArray },
+  async (ctx, args) => {
     if (!ctx.user) return
+
+    const { targetId, profile } = await getActiveProfileTarget(ctx.db, ctx.user)
+    const currentResume = profile?.resume || ctx.user.resume
 
     const resumeUploads = [
       ...args.resumeUploads,
-      ...(ctx.user.resume?.uploads || [])
+      ...(currentResume?.uploads || [])
     ]
 
-    ctx.db.patch(ctx.user._id, {
-      resume: {
-        ...ctx.user.resume,
-        uploads: resumeUploads
-      }
+    const updatedResume = {
+      ...currentResume,
+      uploads: resumeUploads
+    }
+
+    await ctx.db.patch(targetId, {
+      resume: updatedResume
     })
   }
-})
+)
 
-export const removeResumeUpload = authMutation({
-  args: {
-    resumeUploadId: v.id('_storage')
-  },
-  handler: async (ctx, args) => {
+export const removeResumeUpload = zMutation(
+  authMutation,
+  { resumeUploadId: zid('_storage') },
+  async (ctx, args) => {
     if (!ctx.user) {
       return
     }
 
     await ctx.storage.delete(args.resumeUploadId)
 
-    const uploads = (ctx.user.resume?.uploads || []).filter(
+    const { targetId, profile } = await getActiveProfileTarget(ctx.db, ctx.user)
+    const currentResume = profile?.resume || ctx.user.resume
+
+    const uploads = (currentResume?.uploads || []).filter(
       (h: { storageId: Id<'_storage'> }) => h.storageId !== args.resumeUploadId
     )
 
-    await ctx.db.patch(ctx.user._id, {
-      resume: { ...ctx.user.resume, uploads }
+    const updatedResume = { ...currentResume, uploads }
+
+    await ctx.db.patch(targetId, {
+      resume: updatedResume
     })
   }
-})
+)
 
-export const updateMyResume = authMutation({
-  args: {
-    projects: zodToConvex(resumeObj.projects),
-    skills: zodToConvex(resumeObj.skills),
-    genres: zodToConvex(resumeObj.genres)
+export const updateMyResume = zMutation(
+  authMutation,
+  {
+    projects: resumeObj.projects,
+    skills: resumeObj.skills,
+    genres: resumeObj.genres
   },
-  handler: async (ctx, args) => {
+  async (ctx, args) => {
     if (!ctx.user) return
 
-    ctx.db.patch(ctx.user._id, {
-      resume: {
-        ...ctx.user.resume,
-        projects: args.projects,
-        skills: args.skills,
-        genres: args.genres
-      }
+    const { targetId, profile } = await getActiveProfileTarget(ctx.db, ctx.user)
+    const currentResume = profile?.resume || ctx.user.resume
+
+    const updatedResume = {
+      ...currentResume,
+      projects: args.projects,
+      skills: args.skills,
+      genres: args.genres
+    }
+
+    await ctx.db.patch(targetId, {
+      resume: updatedResume
     })
   }
-})
+)

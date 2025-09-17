@@ -5,48 +5,51 @@ import {
   internalMutation
 } from './_generated/server'
 import { authMutation, authQuery } from './util'
-
-import { crud } from 'convex-helpers/server'
-import { Agencies } from './validators/agencies'
+import { zCrud, zQuery } from '@packages/zodvex'
+import { z } from 'zod'
+import { zid } from 'convex-helpers/server/zodV4'
+import { Agencies } from './schemas/agencies'
 import { Doc } from './_generated/dataModel'
-import { v } from 'convex/values'
 
 export type AgencyDoc = Doc<'agencies'>
 
-export const { read } = crud(Agencies, query, mutation)
+// Public CRUD operations
+export const { read } = zCrud(Agencies, query, mutation)
 
-export const { create, update, destroy } = crud(
+// Authenticated CRUD operations
+export const { create, update, destroy } = zCrud(
   Agencies,
   authQuery,
   authMutation
 )
 
-export const { read: internalRead } = crud(
+// Internal CRUD operations
+export const { read: internalRead } = zCrud(
   Agencies,
   internalQuery,
   internalMutation
 )
 
-export const search = query({
-  args: { query: v.string() },
-  handler: async (ctx, { query }) => {
+export const search = zQuery(
+  query,
+  { query: z.string() },
+  async (ctx, { query }) => {
     const results = await ctx.db
       .query('agencies')
-      .withSearchIndex('search_name', (q) => q.search('name', query))
-      .filter((q) => q.eq(q.field('listed'), true))
+      .withSearchIndex('search_name', (q: any) => q.search('name', query))
+      .filter((q: any) => q.eq(q.field('listed'), true))
       .take(10)
 
     return results
   }
-})
+)
 
 type AgencyDocWithLogo = AgencyDoc & { logoUrl: string | null }
 
-export const getAgency = query({
-  args: {
-    id: v.optional(v.id('agencies'))
-  },
-  handler: async (ctx, args): Promise<AgencyDocWithLogo | null> => {
+export const getAgency = zQuery(
+  query,
+  { id: zid('agencies').optional() },
+  async (ctx, args): Promise<AgencyDocWithLogo | null> => {
     if (!args.id) {
       return null
     }
@@ -64,4 +67,4 @@ export const getAgency = query({
       logoUrl
     }
   }
-})
+)

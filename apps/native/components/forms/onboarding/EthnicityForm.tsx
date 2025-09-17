@@ -2,7 +2,7 @@ import React, { forwardRef, useEffect, useImperativeHandle } from 'react';
 import * as z from 'zod';
 import { useStore } from '@tanstack/react-form';
 
-import { ETHNICITY } from '@packages/backend/convex/validators/attributes';
+import { ETHNICITY } from '@packages/backend/convex/schemas/attributes';
 import { ValidationModeForm } from '~/components/form/ValidationModeForm';
 import { useAppForm } from '~/components/form/appForm';
 import type { FormHandle, FormProps } from '~/components/forms/onboarding/contracts';
