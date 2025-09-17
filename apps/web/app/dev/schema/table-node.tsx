@@ -51,7 +51,7 @@ export const TableNode = ({ id, data: table }: NodeProps<TableNodeType>) => {
               id={`${table.name}.${field.name}`}
               type="source"
               style={{ top: 32 + 16 + 32 * index }}
-            // header size 32, field height 32/2 = center point,
+              // header size 32, field height 32/2 = center point,
             />
           )}
         </div>

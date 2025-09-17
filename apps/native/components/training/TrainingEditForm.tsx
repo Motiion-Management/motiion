@@ -6,10 +6,7 @@ import { ConvexDynamicForm } from '~/components/form/ConvexDynamicForm';
 import { Button } from '~/components/ui/button';
 import { Text } from '~/components/ui/text';
 import { type Id } from '@packages/backend/convex/_generated/dataModel';
-import {
-  type TrainingFormDoc,
-  zTrainingFormDoc,
-} from '@packages/backend/convex/schemas/training';
+import { type TrainingFormDoc, zTrainingFormDoc } from '@packages/backend/convex/schemas/training';
 import { TRAINING_TYPES } from '@packages/backend/convex/schemas/training';
 import {
   trainingMetadata,
@@ -64,6 +61,7 @@ export const TrainingEditForm = forwardRef<TrainingEditFormHandle, TrainingEditF
     }, [training?._id, trainingIdProp, myTraining]);
 
     const schema = zTrainingFormDoc;
+
     const addMyTraining = useMutation(api.training.addMyTraining);
     const updateTraining = useMutation(api.training.update);
 
@@ -73,14 +71,14 @@ export const TrainingEditForm = forwardRef<TrainingEditFormHandle, TrainingEditF
       defaultValues: selectedTraining,
       validators: { onChange: schema },
       onSubmit: async ({ value }) => {
-        const { _id, _creationTime, ...payload } = value;
+        const { ...payload } = value;
         try {
           setUiState((prev) => ({ ...prev, isSaving: true }));
           const idToUpdate = selectedTraining?._id ?? trainingIdProp;
           if (idToUpdate) {
             await updateTraining({ id: idToUpdate, patch: payload });
           } else {
-            await addMyTraining(payload);
+            await addMyTraining(payload as any);
           }
           sharedForm.reset();
           if (afterSubmit) afterSubmit();

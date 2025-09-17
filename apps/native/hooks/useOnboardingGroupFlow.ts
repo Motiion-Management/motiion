@@ -1,4 +1,5 @@
 import { useRouter, useSegments, useGlobalSearchParams, Href } from 'expo-router';
+
 import { useCallback, useMemo, useState } from 'react';
 import { api } from '@packages/backend/convex/_generated/api';
 import { useMutation } from 'convex/react';
@@ -232,7 +233,7 @@ export function useOnboardingGroupFlow(): UseOnboardingGroupFlowReturn {
     // Find current step's actual index in ALL steps (not filtered)
     const allSteps = groupConfig.steps as unknown as string[];
     const currentActualIndex = allSteps.indexOf(currentStepId);
-    
+
     if (currentActualIndex === -1) {
       console.warn(`Current step ${currentStepId} not found in group ${currentGroup}`);
       return;
@@ -266,7 +267,7 @@ export function useOnboardingGroupFlow(): UseOnboardingGroupFlowReturn {
     // Find current step's actual index in ALL steps (not filtered)
     const allSteps = groupConfig.steps as unknown as string[];
     const currentActualIndex = allSteps.indexOf(currentStepId);
-    
+
     if (currentActualIndex === -1) {
       console.warn(`Current step ${currentStepId} not found in group ${currentGroup}`);
       return;
