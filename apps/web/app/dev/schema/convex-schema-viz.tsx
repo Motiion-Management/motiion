@@ -106,21 +106,14 @@ const calculateRequiredNumberOfGridRowsForNodes = (): number => {
 }
 
 const generateNodes = (tables: Table[]): Node[] => {
-  // This is for create the X by X grid we will use to place the nodes in the viewport
-  let row = 0
-  let column = 0
-  const numberOfGridRows = calculateRequiredNumberOfGridRowsForNodes()
+  // Place nodes in a near-square grid using deterministic row/column math
+  const gridSize = calculateRequiredNumberOfGridRowsForNodes()
 
   return tables.map((table, index) => {
-    const x = row * 300
-    const y = column * 300
-
-    if (numberOfGridRows % index === 0) {
-      column = 0
-      row++
-    } else {
-      column++
-    }
+    const row = Math.floor(index / gridSize)
+    const col = index % gridSize
+    const x = col * 300
+    const y = row * 300
 
     return {
       id: table.name,
@@ -136,13 +129,14 @@ const generateEdges = (tables: Table[]): Edge[] => {
   for (const table of tables) {
     for (const field of table.fields) {
       if (field.hasReference) {
+        const target = field.referenceTable as string
         edges.push({
-          id: `${table.name}-${field.referenceTable}`,
+          id: `${table.name}.${field.name}->${target}`,
           source: table.name,
-          target: field.referenceTable as string,
+          target,
           animated: true,
-          sourceHandle: `${table.name}-${field.referenceTable}`,
-          targetHandle: field.referenceTable,
+          sourceHandle: `${table.name}.${field.name}`,
+          targetHandle: target,
           style: {
             strokeWidth: 2,
             stroke: '#e1ad01'
