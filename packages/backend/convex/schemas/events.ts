@@ -1,5 +1,5 @@
 import { zLocation, zVisibility } from './base'
-import { zid } from 'convex-helpers/server/zodV4'
+import { zid } from 'zodvex'
 import { zodTable } from 'zodvex'
 import { z } from 'zod'
 import { Doc } from '../_generated/dataModel'

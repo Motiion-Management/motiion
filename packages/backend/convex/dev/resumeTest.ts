@@ -2,7 +2,7 @@ import { action, mutation } from '../_generated/server'
 import { internal } from '../_generated/api'
 import { zAction, zMutation } from 'zodvex'
 import { z } from 'zod'
-import { zid } from 'convex-helpers/server/zodV4'
+import { zid } from 'zodvex'
 
 // Define schemas for resume parsing
 const experienceSchema = z.object({

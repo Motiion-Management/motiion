@@ -1,4 +1,4 @@
-import { zid } from 'convex-helpers/server/zodV4'
+import { zid } from 'zodvex'
 import { zodTable, zodToConvex } from 'zodvex'
 import { z } from 'zod'
 import { zFileUploadObjectArray, zLocation } from './base'

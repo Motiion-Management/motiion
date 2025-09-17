@@ -1,8 +1,7 @@
 import { query } from '../_generated/server'
 import { ConvexError } from 'convex/values'
-import { zQuery, zMutation } from 'zodvex'
+import { zQuery, zMutation, zid } from 'zodvex'
 import { z } from 'zod'
-import { zid } from 'convex-helpers/server/zodV4'
 import { authQuery, authMutation } from '../util'
 import { Id } from '../_generated/dataModel'
 
@@ -36,7 +35,10 @@ export const getMyActiveProfile = zQuery(
       }
     }
 
-    if (ctx.user.activeProfileType === 'choreographer' && ctx.user.activeChoreographerId) {
+    if (
+      ctx.user.activeProfileType === 'choreographer' &&
+      ctx.user.activeChoreographerId
+    ) {
       const choreoProfile = await ctx.db.get(ctx.user.activeChoreographerId)
       if (choreoProfile) {
         return {

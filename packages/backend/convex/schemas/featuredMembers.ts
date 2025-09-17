@@ -1,4 +1,4 @@
-import { zid } from 'convex-helpers/server/zodV4'
+import { zid } from 'zodvex'
 import { zodTable } from 'zodvex'
 import { z } from 'zod'
 

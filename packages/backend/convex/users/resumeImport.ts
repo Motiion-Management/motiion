@@ -4,7 +4,7 @@ import { ConvexError, v } from 'convex/values'
 import { Id } from '../_generated/dataModel'
 import { zMutation } from 'zodvex'
 import { z } from 'zod'
-import { zid } from 'convex-helpers/server/zodV4'
+import { zid } from 'zodvex'
 
 // Schema definitions must come first for type inference
 
