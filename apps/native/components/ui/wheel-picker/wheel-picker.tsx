@@ -2,7 +2,7 @@ import BaseWheelPicker from '@quidone/react-native-wheel-picker';
 import WheelPickerFeedback from '@quidone/react-native-wheel-picker-feedback';
 import { cssInterop } from 'nativewind';
 import React from 'react';
-import { Platform, View } from 'react-native';
+import { View } from 'react-native';
 
 import { Text } from '~/components/ui/text';
 import { cn } from '~/lib/cn';

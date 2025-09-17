@@ -14,7 +14,6 @@ export default function DynamicOnboardingStep() {
   const { data, isLoading } = useOnboardingData();
 
   console.log({ group, step, data, isLoading });
-  console.log(JSON.stringify(flow, null, 2));
   // Get step definition from registry
   const stepDef = step ? STEP_REGISTRY[step as keyof typeof STEP_REGISTRY] : undefined;
 
