@@ -28,9 +28,17 @@ export const authQuery = customQuery(
   })
 )
 
+type AuthCtxExtra = {
+  user: {
+    _id: Id<'users'>
+    userId: string
+    isPremium: boolean
+  } | null
+}
+
 export const authAction = customAction(
   action,
-  customCtx(async (ctx) => {
+  customCtx(async (ctx): Promise<AuthCtxExtra> => {
     const tokenId = (await ctx.auth.getUserIdentity())?.subject
 
     if (!tokenId) {
@@ -63,9 +71,16 @@ export const authMutation = customMutation(
   customCtx(async (ctx) => ({ user: await getUserOrThrow(ctx) }))
 )
 
+type AdminAuthCtxExtra = {
+  user: {
+    _id: Id<'users'>
+    tokenId: string
+  }
+}
+
 export const adminAuthAction = customAction(
   action,
-  customCtx(async (ctx) => {
+  customCtx(async (ctx): Promise<AdminAuthCtxExtra> => {
     const tokenId = (await ctx.auth.getUserIdentity())?.subject
 
     if (!tokenId) {

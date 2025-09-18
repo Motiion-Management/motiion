@@ -1,10 +1,10 @@
 'use node'
 
 import { internalAction } from '../_generated/server'
-import { internal } from '../_generated/api'
 import OpenAI from 'openai'
 import { ConvexError } from 'convex/values'
 import { zInternalAction } from 'zodvex'
+import type { Id } from '../_generated/dataModel'
 import { z } from 'zod'
 import { zid } from 'zodvex'
 import {
@@ -34,6 +34,10 @@ export const parseResumeDocument = zInternalAction(
     retryCount: z.number().optional()
   },
   async (ctx, args): Promise<ParsedResumeData> => {
+    // Load the internal API at runtime to avoid TypeScript's deep type
+    // instantiation on the giant ApiFromModules type during compilation.
+    // Use require cast to any to avoid importing heavy types at compile time
+    const internalApi: any = (require as any)('../_generated/api').internal
     const retryCount = args.retryCount || 0
     const maxRetries = 2
 
@@ -49,13 +53,17 @@ export const parseResumeDocument = zInternalAction(
       }
 
       // Get file metadata using system query
-      const metadata: { contentType?: string } | null = await ctx.runQuery(
-        // @ts-expect-error - Type instantiation is excessively deep
-        internal.ai.fileMetadata.getFileMetadata,
-        {
-          storageId: args.storageId
-        }
-      )
+      // Break circular/deep type inference on the internal API reference by
+      // narrowing to the minimal argument/return types used here.
+      const getFileMetadata = internalApi.ai.fileMetadata
+        .getFileMetadata as (
+          ctx: unknown,
+          args: { storageId: string }
+        ) => Promise<{ contentType?: string } | null>
+
+      const metadata: { contentType?: string } | null = await ctx.runQuery(getFileMetadata, {
+        storageId: args.storageId
+      })
 
       if (!metadata) {
         throw new ConvexError('File metadata not found')
@@ -86,8 +94,15 @@ export const parseResumeDocument = zInternalAction(
         throw error
       }
 
+      // Narrow internal action reference to avoid deep type instantiation
+      const parseResumeDocumentAction = internalApi.ai.documentProcessor
+        .parseResumeDocument as (
+          ctx: unknown,
+          args: { storageId: string; retryCount?: number }
+        ) => Promise<ParsedResumeData>
+
       return await handleRetryableError(error, retryCount, maxRetries, () =>
-        ctx.runAction(internal.ai.documentProcessor.parseResumeDocument, {
+        ctx.runAction(parseResumeDocumentAction, {
           storageId: args.storageId,
           retryCount: retryCount + 1
         })

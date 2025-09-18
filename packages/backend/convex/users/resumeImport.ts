@@ -2,9 +2,10 @@ import { authMutation, authAction } from '../util'
 import { internal } from '../_generated/api'
 import { ConvexError, v } from 'convex/values'
 import { Id } from '../_generated/dataModel'
-import { zMutation } from 'zodvex'
+import { zMutation, zLoose } from 'zodvex'
 import { z } from 'zod'
 import { zid } from 'zodvex'
+import type { ParsedResumeData } from '../ai/schemas'
 
 // Schema definitions must come first for type inference
 
@@ -64,57 +65,56 @@ const parsedResumeSchema = z.object({
   sagAftraId: z.string().optional()
 })
 
-type ParsedResume = z.infer<typeof parsedResumeSchema>
-
-// Types derived from schemas
-type Experience = z.infer<typeof experienceSchema>
-type TrainingEntry = z.infer<typeof trainingSchema>
+// Note: avoid global z.infer on large schemas to reduce TS instantiation depth
 
 // New unified document parsing action
 // Note: keeping original authAction to avoid TypeScript circularity issues
-export const parseResumeDocument: any = authAction({
+export const parseResumeDocument = authAction({
   args: {
     storageId: v.id('_storage')
   },
-  handler: async (ctx, args) => {
+  handler: async (ctx, args): Promise<ParsedResumeData> => {
     // Call the new unified document processor
-    return await ctx.runAction(
+    const result: ParsedResumeData = await ctx.runAction(
       internal.ai.documentProcessor.parseResumeDocument,
       {
         storageId: args.storageId,
         retryCount: undefined
       }
     )
+    return result
   }
 })
 
 // Text-only parsing action for direct text input
 // Note: keeping original authAction to avoid TypeScript circularity issues
-export const parseResumeTextDirect: any = authAction({
+export const parseResumeTextDirect = authAction({
   args: {
     text: v.string()
   },
-  handler: async (ctx, args) => {
+  handler: async (ctx, args): Promise<ParsedResumeData> => {
     // Call the text parser
-    return await ctx.runAction(internal.ai.textParser.parseResumeText, {
+    const result: ParsedResumeData = await ctx.runAction(internal.ai.textParser.parseResumeText, {
       text: args.text,
       retryCount: undefined
     })
+    return result
   }
 })
 
 export const applyParsedResumeData = zMutation(
   authMutation,
-  parsedResumeSchema,
+  zLoose(parsedResumeSchema),
   async (ctx, args) => {
     if (!ctx.user) {
       throw new ConvexError('User not authenticated')
     }
 
     try {
+      const data = parsedResumeSchema.parse(args)
       // Create experiences
       const experienceIds: Id<'projects'>[] = []
-      for (const experience of args.experiences) {
+      for (const experience of data.experiences) {
         const experienceId = await ctx.db.insert('projects', {
           userId: ctx.user._id,
           ...experience
@@ -124,8 +124,8 @@ export const applyParsedResumeData = zMutation(
 
       // Create training entries
       const trainingIds: Id<'training'>[] = []
-      for (let i = 0; i < args.training.length; i++) {
-        const training = args.training[i]
+      for (let i = 0; i < data.training.length; i++) {
+        const training = data.training[i]
         const trainingId = await ctx.db.insert('training', {
           userId: ctx.user._id,
           orderIndex: i,
@@ -142,16 +142,14 @@ export const applyParsedResumeData = zMutation(
         updates.resume = {
           ...ctx.user.resume,
           projects: [...(ctx.user.resume?.projects || []), ...experienceIds],
-          skills:
-            args.skills.length > 0 ? args.skills : ctx.user.resume?.skills,
-          genres: args.genres.length > 0 ? args.genres : ctx.user.resume?.genres
+          skills: data.skills.length > 0 ? data.skills : ctx.user.resume?.skills,
+          genres: data.genres.length > 0 ? data.genres : ctx.user.resume?.genres
         }
-      } else if (args.skills.length > 0 || args.genres.length > 0) {
+      } else if (data.skills.length > 0 || data.genres.length > 0) {
         updates.resume = {
           ...ctx.user.resume,
-          skills:
-            args.skills.length > 0 ? args.skills : ctx.user.resume?.skills,
-          genres: args.genres.length > 0 ? args.genres : ctx.user.resume?.genres
+          skills: data.skills.length > 0 ? data.skills : ctx.user.resume?.skills,
+          genres: data.genres.length > 0 ? data.genres : ctx.user.resume?.genres
         }
       }
 
@@ -161,8 +159,8 @@ export const applyParsedResumeData = zMutation(
       }
 
       // Update SAG ID if provided
-      if (args.sagAftraId) {
-        updates.sagAftraId = args.sagAftraId
+      if (data.sagAftraId) {
+        updates.sagAftraId = data.sagAftraId
       }
 
       // Apply all updates
