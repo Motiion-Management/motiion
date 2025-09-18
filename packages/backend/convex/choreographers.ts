@@ -3,9 +3,12 @@ import { ConvexError } from 'convex/values'
 import { zid, zQuery, zMutation, zInternalMutation, zCrud } from 'zodvex'
 import { z } from 'zod'
 import { authQuery, authMutation } from './util'
-import { Choreographers, zCreateChoreographerInput } from './schemas/choreographers'
+import { Choreographers, zCreateChoreographerInput, zChoreographers } from './schemas/choreographers'
+import { zid as zidHelper } from 'zodvex'
 
 // Get the active choreographer profile for the authenticated user
+const zChoreoDoc = zChoreographers.extend({ _id: zidHelper('choreographers'), _creationTime: z.number() })
+
 export const getMyChoreographerProfile = zQuery(
   authQuery,
   {},
@@ -14,12 +17,13 @@ export const getMyChoreographerProfile = zQuery(
 
     // Use discriminate value from users table for efficient lookup
     if (ctx.user.activeProfileType === 'choreographer' && ctx.user.activeChoreographerId) {
-      return await ctx.db.get(ctx.user.activeChoreographerId)
+      const doc = await ctx.db.get(ctx.user.activeChoreographerId)
+      return doc ? zChoreoDoc.parse(doc) : null
     }
 
     return null
   },
-  { returns: z.any().nullable() }
+  { returns: z.union([zChoreoDoc, z.null()]) }
 )
 
 // Get all choreographer profiles for a user
@@ -27,12 +31,13 @@ export const getUserChoreographerProfiles = zQuery(
   query,
   { userId: zid('users') },
   async (ctx, { userId }) => {
-    return await ctx.db
+    const results = await ctx.db
       .query('choreographers')
       .withIndex('by_userId', (q) => q.eq('userId', userId))
       .collect()
+    return z.array(zChoreoDoc).parse(results)
   },
-  { returns: z.array(z.any()) }
+  { returns: z.array(zChoreoDoc) }
 )
 
 // Create a new choreographer profile
@@ -79,7 +84,7 @@ export const updateChoreographerProfile = zMutation(
   authMutation,
   {
     profileId: zid('choreographers'),
-    updates: z.any()
+    updates: zChoreographers.partial()
   },
   async (ctx, { profileId, updates }) => {
     // Verify ownership
@@ -131,12 +136,13 @@ export const getVerifiedChoreographers = zQuery(
   query,
   { limit: z.number().optional().default(10) },
   async (ctx, { limit }) => {
-    return await ctx.db
+    const results = await ctx.db
       .query('choreographers')
       .withIndex('by_verified', (q) => q.eq('verified', true))
       .take(limit)
+    return z.array(zChoreoDoc).parse(results)
   },
-  { returns: z.array(z.any()) }
+  { returns: z.array(zChoreoDoc) }
 )
 
 // Delete choreographer profile (internal only, for cleanup)
@@ -171,9 +177,10 @@ export const searchChoreographers = zQuery(
       results = results.filter(r => r.verified === true)
     }
 
-    return results.slice(0, limit)
+    const sliced = results.slice(0, limit)
+    return z.array(zChoreoDoc).parse(sliced)
   },
-  { returns: z.array(z.any()) }
+  { returns: z.array(zChoreoDoc) }
 )
 
 // Admin function to verify a choreographer

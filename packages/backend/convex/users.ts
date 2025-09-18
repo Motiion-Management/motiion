@@ -43,7 +43,7 @@ async function computeDerived(
 }
 
 // Return value schemas
-const zUserDoc = z.custom<UserDoc>()
+const zUserDoc = zUsers.extend({ _id: zid('users'), _creationTime: z.number() })
 const zUserDocOrNull = z.union([zUserDoc, z.null()])
 
 export const getMyUser = zQuery(
@@ -126,11 +126,11 @@ export const getMyUser = zQuery(
             : {})
         }
 
-        return mergedUser
+        return zUserDoc.parse(mergedUser)
       }
     }
 
-    return ctx.user
+    return ctx.user ? zUserDoc.parse(ctx.user) : null
   },
   { returns: zUserDocOrNull }
 )
@@ -275,10 +275,11 @@ export const getUserByTokenId = zInternalQuery(
   internalQuery,
   { tokenId: z.string() },
   async (ctx, { tokenId }) => {
-    return await ctx.db
+    const user = await ctx.db
       .query('users')
       .withIndex('tokenId', (q: any) => q.eq('tokenId', tokenId))
       .first()
+    return user ? zUserDoc.parse(user) : null
   },
   { returns: zUserDocOrNull }
 )
@@ -292,7 +293,7 @@ export const getByTokenId = zInternalQuery(
       .query('users')
       .withIndex('tokenId', (q: any) => q.eq('tokenId', tokenId))
       .unique()
-    return user
+    return user ? zUserDoc.parse(user) : null
   },
   { returns: zUserDocOrNull }
 )

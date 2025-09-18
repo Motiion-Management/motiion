@@ -5,7 +5,7 @@ import { Id } from '../_generated/dataModel'
 import { zQuery, zMutation } from 'zodvex'
 import { z } from 'zod'
 import { zid } from 'zodvex'
-import { zFileUploadObjectArray } from '../schemas/base'
+import { zFileUploadObjectArray, zFileUploadObject } from '../schemas/base'
 
 export const getMyHeadshots = zQuery(
   authQuery,
@@ -39,6 +39,11 @@ export const getMyHeadshots = zQuery(
         ...headshot
       }))
     )
+  },
+  {
+    returns: z.array(
+      zFileUploadObject.extend({ url: z.union([z.string(), z.null()]) })
+    )
   }
 )
 
@@ -57,6 +62,11 @@ export const getHeadshots = zQuery(
         url: await ctx.storage.getUrl(headshot.storageId),
         ...headshot
       }))
+    )
+  },
+  {
+    returns: z.array(
+      zFileUploadObject.extend({ url: z.union([z.string(), z.null()]) })
     )
   }
 )

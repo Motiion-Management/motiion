@@ -46,7 +46,7 @@ export const dancers = {
   resumeImportedAt: z.string().optional(),
 
   // Future dancer-specific features (placeholders)
-  availability: z.any().optional(), // Calendar/availability system
+  availability: z.object({}).optional(), // Calendar/availability system
   danceStyles: z.array(z.string()).optional(),
   performanceVideos: zFileUploadObjectArray.optional(),
   spotlightOrder: z.number().optional() // For featured dancers

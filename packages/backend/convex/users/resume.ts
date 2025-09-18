@@ -5,11 +5,12 @@ import { z } from 'zod'
 import { zid } from 'zodvex'
 import { UserDoc, resume as resumeObj } from '../schemas/users'
 import type { Id } from '../_generated/dataModel'
-import { zFileUploadObjectArray } from '../schemas/base'
+import { zFileUploadObjectArray, zFileUploadObject } from '../schemas/base'
 import {
   PROJECT_TITLE_MAP as EXPERIENCE_TITLE_MAP,
   PROJECT_TYPES as EXPERIENCE_TYPES
 } from '../schemas/projects'
+import { zProjectsDoc } from '../schemas/projects'
 import { getAll } from 'convex-helpers/server/relationships'
 import { getActiveProfileTarget } from './profileHelpers'
 
@@ -51,9 +52,24 @@ export const getResume = zQuery(
   { userId: zid('users') },
   async (ctx, args) => {
     const user = await ctx.db.get(args.userId)
-    if (!user) return
+    if (!user) return null
 
-    return await augmentResume(ctx, user, true)
+    return (await augmentResume(ctx, user, true)) ?? null
+  },
+  {
+    returns: z
+      .object({
+        skills: z.array(z.string()).optional(),
+        experiences: z.array(z.array(zProjectsDoc)).optional(),
+        uploads: z
+          .array(
+            zFileUploadObject.extend({
+              url: z.union([z.string(), z.null()])
+            })
+          )
+          .optional()
+      })
+      .nullable()
   }
 )
 
@@ -61,7 +77,7 @@ export const getMyResume = zQuery(
   authQuery,
   {},
   async (ctx) => {
-    if (!ctx.user) return
+    if (!ctx.user) return null
 
     // PROFILE-FIRST: Get resume from active profile if it exists
     let userWithResume = ctx.user
@@ -81,7 +97,22 @@ export const getMyResume = zQuery(
       }
     }
 
-    return await augmentResume(ctx, userWithResume)
+    return (await augmentResume(ctx, userWithResume)) ?? null
+  },
+  {
+    returns: z
+      .object({
+        skills: z.array(z.string()).optional(),
+        experiences: z.array(z.array(zProjectsDoc)).optional(),
+        uploads: z
+          .array(
+            zFileUploadObject.extend({
+              url: z.union([z.string(), z.null()])
+            })
+          )
+          .optional()
+      })
+      .nullable()
   }
 )
 
@@ -114,6 +145,11 @@ export const getMyExperienceCounts = zQuery(
       title: EXPERIENCE_TITLE_MAP[type],
       slug: type
     }))
+  },
+  {
+    returns: z.array(
+      z.object({ count: z.number(), title: z.string(), slug: z.enum(EXPERIENCE_TYPES) })
+    )
   }
 )
 
@@ -133,6 +169,11 @@ export const getUserPublicExperienceCounts = zQuery(
       title: EXPERIENCE_TITLE_MAP[type],
       slug: type
     }))
+  },
+  {
+    returns: z.array(
+      z.object({ count: z.number(), title: z.string(), slug: z.enum(EXPERIENCE_TYPES) })
+    )
   }
 )
 

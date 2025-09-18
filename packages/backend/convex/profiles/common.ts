@@ -4,6 +4,8 @@ import { zQuery, zMutation, zid } from 'zodvex'
 import { z } from 'zod'
 import { authQuery, authMutation } from '../util'
 import { Id } from '../_generated/dataModel'
+import { zDancers } from '../schemas/dancers'
+import { zChoreographers } from '../schemas/choreographers'
 
 // Profile type enum
 export const zProfileEnum = z.enum(['dancer', 'choreographer'])
@@ -17,6 +19,9 @@ export interface ActiveProfile {
 }
 
 // Get the active profile for the authenticated user (any type)
+const zDancerDoc = zDancers.extend({ _id: zid('dancers'), _creationTime: z.number() })
+const zChoreoDoc = zChoreographers.extend({ _id: zid('choreographers'), _creationTime: z.number() })
+
 export const getMyActiveProfile = zQuery(
   authQuery,
   {},
@@ -27,10 +32,11 @@ export const getMyActiveProfile = zQuery(
     if (ctx.user.activeProfileType === 'dancer' && ctx.user.activeDancerId) {
       const dancerProfile = await ctx.db.get(ctx.user.activeDancerId)
       if (dancerProfile) {
+        const typed = zDancerDoc.parse(dancerProfile)
         return {
           type: 'dancer',
-          profileId: dancerProfile._id as Id<'dancers'>,
-          profile: dancerProfile
+          profileId: typed._id as Id<'dancers'>,
+          profile: typed
         }
       }
     }
@@ -41,17 +47,26 @@ export const getMyActiveProfile = zQuery(
     ) {
       const choreoProfile = await ctx.db.get(ctx.user.activeChoreographerId)
       if (choreoProfile) {
+        const typed = zChoreoDoc.parse(choreoProfile)
         return {
           type: 'choreographer',
-          profileId: choreoProfile._id as Id<'choreographers'>,
-          profile: choreoProfile
+          profileId: typed._id as Id<'choreographers'>,
+          profile: typed
         }
       }
     }
 
     return null
   },
-  { returns: z.any().nullable() }
+  {
+    returns: z
+      .object({
+        type: zProfileEnum,
+        profileId: z.union([zid('dancers'), zid('choreographers')]),
+        profile: z.union([zDancerDoc, zChoreoDoc])
+      })
+      .nullable()
+  }
 )
 
 // Get all profiles for a user (both dancers and choreographers)
@@ -70,13 +85,22 @@ export const getUserProfiles = zQuery(
         .collect()
     ])
 
+    const dancersTyped = z.array(zDancerDoc).parse(dancerProfiles)
+    const choreosTyped = z.array(zChoreoDoc).parse(choreoProfiles)
+
     return {
-      dancers: dancerProfiles,
-      choreographers: choreoProfiles,
-      total: dancerProfiles.length + choreoProfiles.length
+      dancers: dancersTyped,
+      choreographers: choreosTyped,
+      total: dancersTyped.length + choreosTyped.length
     }
   },
-  { returns: z.any() }
+  {
+    returns: z.object({
+      dancers: z.array(zDancerDoc),
+      choreographers: z.array(zChoreoDoc),
+      total: z.number()
+    })
+  }
 )
 
 // Switch between profiles (updates discriminate values on users table)
@@ -84,7 +108,7 @@ export const switchProfile = zMutation(
   authMutation,
   {
     profileType: zProfileEnum,
-    profileId: z.string() // We'll validate the ID type based on profileType
+    profileId: z.union([zid('dancers'), zid('choreographers')])
   },
   async (ctx, { profileType, profileId }) => {
     // Validate the selected profile belongs to this user

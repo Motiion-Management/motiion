@@ -34,7 +34,7 @@ export const choreographers = {
 
   // Teaching/Workshop info (future)
   teachingLocations: z.array(zLocation).optional(),
-  workshopSchedule: z.any().optional(), // Future: structured event data
+  workshopSchedule: z.object({}).optional(), // Future: structured event data
   rates: z.object({
     hourly: z.number().optional(),
     daily: z.number().optional(),
@@ -57,7 +57,7 @@ export const choreographers = {
   resumeImportedAt: z.string().optional(),
 
   // Future choreographer-specific features (placeholders)
-  availability: z.any().optional(), // Calendar/availability system
+  availability: z.object({}).optional(), // Calendar/availability system
   portfolio: zFileUploadObjectArray.optional(), // Work samples/videos
   certifications: z.array(z.string()).optional(),
   awardsRecognition: z.array(z.string()).optional()

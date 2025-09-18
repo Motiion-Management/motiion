@@ -3,9 +3,12 @@ import { ConvexError } from 'convex/values'
 import { zid, zQuery, zMutation, zInternalMutation, zCrud } from 'zodvex'
 import { z } from 'zod'
 import { authQuery, authMutation } from './util'
-import { Dancers, zCreateDancerInput } from './schemas/dancers'
+import { Dancers, zCreateDancerInput, zDancers } from './schemas/dancers'
+import { zid as zidHelper } from 'zodvex'
 
 // Get the active dancer profile for the authenticated user
+const zDancerDoc = zDancers.extend({ _id: zidHelper('dancers'), _creationTime: z.number() })
+
 export const getMyDancerProfile = zQuery(
   authQuery,
   {},
@@ -14,12 +17,13 @@ export const getMyDancerProfile = zQuery(
 
     // Use discriminate value from users table for efficient lookup
     if (ctx.user.activeProfileType === 'dancer' && ctx.user.activeDancerId) {
-      return await ctx.db.get(ctx.user.activeDancerId)
+      const doc = await ctx.db.get(ctx.user.activeDancerId)
+      return doc ? zDancerDoc.parse(doc) : null
     }
 
     return null
   },
-  { returns: z.any().nullable() }
+  { returns: z.union([zDancerDoc, z.null()]) }
 )
 
 // Get all dancer profiles for a user
@@ -27,12 +31,13 @@ export const getUserDancerProfiles = zQuery(
   query,
   { userId: zid('users') },
   async (ctx, { userId }) => {
-    return await ctx.db
+    const results = await ctx.db
       .query('dancers')
       .withIndex('by_userId', (q) => q.eq('userId', userId))
       .collect()
+    return z.array(zDancerDoc).parse(results)
   },
-  { returns: z.array(z.any()) }
+  { returns: z.array(zDancerDoc) }
 )
 
 // Create a new dancer profile
@@ -77,7 +82,7 @@ export const updateDancerProfile = zMutation(
   authMutation,
   {
     profileId: zid('dancers'),
-    updates: z.any()
+    updates: zDancers.partial()
   },
   async (ctx, { profileId, updates }) => {
     // Verify ownership
@@ -146,9 +151,9 @@ export const searchDancers = zQuery(
       )
       .take(limit)
 
-    return results
+    return z.array(zDancerDoc).parse(results)
   },
-  { returns: z.array(z.any()) }
+  { returns: z.array(zDancerDoc) }
 )
 
 // Calculate dancer profile completeness percentage

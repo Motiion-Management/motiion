@@ -3,11 +3,14 @@ import { query } from '../_generated/server'
 import { zQuery, zMutation } from 'zodvex'
 import { z } from 'zod'
 import { zid } from 'zodvex'
+import { zProjects, zProjectsDoc } from '../schemas/projects'
 
 // Create a new project for the authenticated user
+const zProjectInput = zProjects.omit({ userId: true, profileType: true, profileId: true })
+
 export const addMyProject = zMutation(
   authMutation,
-  z.any(),
+  zProjectInput,
   async (ctx, project) => {
     // Add profile references if user has an active profile
     let profileInfo = {}
@@ -55,7 +58,7 @@ export const addMyProject = zMutation(
       })
     }
 
-    return projId
+  return projId
   },
   { returns: zid('projects') }
 )
@@ -120,12 +123,13 @@ export const getMyProjects = zQuery(
       .query('projects')
       .withIndex('userId', (q) => q.eq('userId', ctx.user._id))
       .collect()
-    return projs.filter(notEmpty).sort((a, b) => {
+    const sorted = projs.filter(notEmpty).sort((a, b) => {
       if (!a.startDate || !b.startDate) return 0
       return new Date(b.startDate).getTime() - new Date(a.startDate).getTime()
     })
+    return z.array(zProjectsDoc).parse(sorted)
   },
-  { returns: z.array(z.any()) }
+  { returns: z.array(zProjectsDoc) }
 )
 
 export const getMyProjectsByType = zQuery(
@@ -144,15 +148,16 @@ export const getMyProjectsByType = zQuery(
       .query('projects')
       .withIndex('userId', (q) => q.eq('userId', ctx.user._id))
       .collect()
-    return projs
+    const filtered = projs
       .filter(notEmpty)
       .filter((p) => p.type === args.type)
       .sort((a, b) => {
         if (!a.startDate || !b.startDate) return 0
         return new Date(b.startDate).getTime() - new Date(a.startDate).getTime()
       })
+    return z.array(zProjectsDoc).parse(filtered)
   },
-  { returns: z.array(z.any()) }
+  { returns: z.array(zProjectsDoc) }
 )
 
 // Public projects for a given user from unified table
@@ -164,14 +169,15 @@ export const getUserPublicProjects = zQuery(
       .query('projects')
       .withIndex('userId', (q) => q.eq('userId', args.userId))
       .collect()
-    return projs
+    const filtered = projs
       .filter((p) => !p?.private)
       .sort((a, b) => {
         if (!a.startDate || !b.startDate) return 0
         return new Date(b.startDate).getTime() - new Date(a.startDate).getTime()
       })
+    return z.array(zProjectsDoc).parse(filtered)
   },
-  { returns: z.array(z.any()) }
+  { returns: z.array(zProjectsDoc) }
 )
 
 export const getUserPublicProjectsByType = zQuery(
@@ -190,15 +196,16 @@ export const getUserPublicProjectsByType = zQuery(
       .query('projects')
       .withIndex('userId', (q) => q.eq('userId', args.userId))
       .collect()
-    return projs
+    const filtered = projs
       .filter((p) => p.type === args.type)
       .filter((p) => !p?.private)
       .sort((a, b) => {
         if (!a.startDate || !b.startDate) return 0
         return new Date(b.startDate).getTime() - new Date(a.startDate).getTime()
       })
+    return z.array(zProjectsDoc).parse(filtered)
   },
-  { returns: z.array(z.any()) }
+  { returns: z.array(zProjectsDoc) }
 )
 
 // Get the 3 most recently added projects for the authenticated user
@@ -212,8 +219,7 @@ export const getMyRecentProjects = zQuery(
       .withIndex('userId', (q) => q.eq('userId', ctx.user._id))
       .order('desc')
       .take(3)
-    return projs.filter(notEmpty)
+    return z.array(zProjectsDoc).parse(projs.filter(notEmpty))
   },
-  { returns: z.array(z.any()) }
+  { returns: z.array(zProjectsDoc) }
 )
-

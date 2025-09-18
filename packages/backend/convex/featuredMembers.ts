@@ -3,6 +3,8 @@ import { authMutation, authQuery, notEmpty } from './util'
 import { zCrud, zQuery } from 'zodvex'
 import { FeaturedMembers } from './schemas/featuredMembers'
 import { getAll } from 'convex-helpers/server/relationships'
+import { z } from 'zod'
+import { zid } from 'zodvex'
 
 export const { read } = zCrud(FeaturedMembers, query, mutation)
 
@@ -20,7 +22,7 @@ export const getFeaturedChoreographers = zQuery(
     const users = await getAll(ctx.db, result?.choreographers || [])
 
     if (users.length === 0) {
-      return
+      return []
     }
     return Promise.all(
       users.filter(notEmpty).map(async (user: any) => {
@@ -34,6 +36,15 @@ export const getFeaturedChoreographers = zQuery(
         }
       })
     )
+  },
+  {
+    returns: z.array(
+      z.object({
+        userId: zid('users'),
+        label: z.string(),
+        headshotUrl: z.string()
+      })
+    )
   }
 )
 
@@ -45,7 +56,7 @@ export const getFeaturedTalent = zQuery(
     const users = await getAll(ctx.db, result?.talent || [])
 
     if (users.length === 0) {
-      return
+      return []
     }
     return Promise.all(
       users.filter(notEmpty).map(async (user: any) => {
@@ -57,6 +68,15 @@ export const getFeaturedTalent = zQuery(
             ? (await ctx.storage.getUrl(headshots[0].storageId)) || ''
             : ''
         }
+      })
+    )
+  },
+  {
+    returns: z.array(
+      z.object({
+        userId: zid('users'),
+        label: z.string(),
+        headshotUrl: z.string()
       })
     )
   }

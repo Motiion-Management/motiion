@@ -1,29 +1,26 @@
-import { zodToConvex } from 'zodvex'
+import { zInternalAction, zMutation } from 'zodvex'
 import { internalAction } from './_generated/server'
 import { authMutation } from './util'
 import { zFileUploadObjectArray } from './schemas/base'
-import type { RegisteredMutation } from 'convex/server'
-import type { DataModel } from './_generated/dataModel'
+import { z } from 'zod'
 
-export const generateUploadUrl: RegisteredMutation<
-  'public',
-  Record<string, never>,
-  Promise<string>
-> = authMutation({
-  handler: async (ctx) => {
+export const generateUploadUrl = zMutation(
+  authMutation,
+  {},
+  async (ctx) => {
     return await ctx.storage.generateUploadUrl()
-  }
-})
-
-export const ensureOnlyFive = internalAction({
-  args: {
-    files: zodToConvex(zFileUploadObjectArray) // other args...
   },
-  handler: async (ctx, args) => {
-    while (args.files.length > 5) {
-      const current = args.files.pop()
+  { returns: z.string() }
+)
+
+export const ensureOnlyFive = zInternalAction(
+  internalAction,
+  { files: zFileUploadObjectArray },
+  async (ctx, { files }) => {
+    while (files.length > 5) {
+      const current = files.pop()
       console.log('deleting', current)
       await ctx.storage.delete(current!.storageId)
     }
   }
-})
+)

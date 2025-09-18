@@ -125,7 +125,14 @@ export const migrateAllUsers = zInternalMutation(
 
     return results
   },
-  { returns: z.any() }
+  {
+    returns: z.object({
+      migrated: z.array(z.string()),
+      alreadyMigrated: z.array(z.string()),
+      errors: z.array(z.object({ userId: z.string(), error: z.string() })),
+      totalProcessed: z.number()
+    })
+  }
 )
 
 // Action wrapper to run the migration
@@ -152,6 +159,12 @@ export const runMigration = zInternalAction(
 
     return results
   },
-  { returns: z.any() }
+  {
+    returns: z.object({
+      migrated: z.array(z.string()),
+      alreadyMigrated: z.array(z.string()),
+      errors: z.array(z.object({ userId: z.string(), error: z.string() })),
+      totalProcessed: z.number()
+    })
+  }
 )
-

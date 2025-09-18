@@ -8,7 +8,7 @@ import { authMutation, authQuery } from './util'
 import { zCrud, zQuery } from 'zodvex'
 import { z } from 'zod'
 import { zid } from 'zodvex'
-import { Agencies } from './schemas/agencies'
+import { Agencies, zAgencies } from './schemas/agencies'
 import { Doc } from './_generated/dataModel'
 
 export type AgencyDoc = Doc<'agencies'>
@@ -30,6 +30,11 @@ export const { read: internalRead } = zCrud(
   internalMutation
 )
 
+const zAgencyDoc = zAgencies.extend({
+  _id: zid('agencies'),
+  _creationTime: z.number()
+})
+
 export const search = zQuery(
   query,
   { query: z.string() },
@@ -40,8 +45,11 @@ export const search = zQuery(
       .filter((q: any) => q.eq(q.field('listed'), true))
       .take(10)
 
-    return results
-  }
+    // Validate/shape results to match returns type
+    const typed = z.array(zAgencyDoc).parse(results)
+    return typed
+  },
+  { returns: z.array(zAgencyDoc) }
 )
 
 type AgencyDocWithLogo = AgencyDoc & { logoUrl: string | null }
@@ -49,7 +57,7 @@ type AgencyDocWithLogo = AgencyDoc & { logoUrl: string | null }
 export const getAgency = zQuery(
   query,
   { id: zid('agencies').optional() },
-  async (ctx, args): Promise<AgencyDocWithLogo | null> => {
+  async (ctx, args) => {
     if (!args.id) {
       return null
     }
@@ -62,9 +70,16 @@ export const getAgency = zQuery(
     if (agency.logo) {
       logoUrl = await ctx.storage.getUrl(agency.logo)
     }
-    return {
-      ...agency,
-      logoUrl
-    }
+    const withLogo = { ...agency, logoUrl }
+    // Validate/shape to match returns type
+    return zAgencyDoc
+      .extend({ logoUrl: z.union([z.string(), z.null()]) })
+      .parse(withLogo)
+  },
+  {
+    returns: z.union([
+      zAgencyDoc.extend({ logoUrl: z.union([z.string(), z.null()]) }),
+      z.null()
+    ])
   }
 )
