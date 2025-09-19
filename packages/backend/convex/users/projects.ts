@@ -145,7 +145,7 @@ export const getMyProjects = zQuery(
       if (!a.startDate || !b.startDate) return 0
       return new Date(b.startDate).getTime() - new Date(a.startDate).getTime()
     })
-    return sorted as z.infer<typeof zProjectsDoc>[]
+    return sorted
   },
   { returns: z.array(zProjectsDoc) }
 )
@@ -168,7 +168,7 @@ export const getMyProjectsByType = zQuery(
         if (!a.startDate || !b.startDate) return 0
         return new Date(b.startDate).getTime() - new Date(a.startDate).getTime()
       })
-    return filtered as z.infer<typeof zProjectsDoc>[]
+    return filtered
   },
   { returns: z.array(zProjectsDoc) }
 )
@@ -188,7 +188,7 @@ export const getUserPublicProjects = zQuery(
         if (!a.startDate || !b.startDate) return 0
         return new Date(b.startDate).getTime() - new Date(a.startDate).getTime()
       })
-    return filtered as z.infer<typeof zProjectsDoc>[]
+    return filtered
   },
   { returns: z.array(zProjectsDoc) }
 )
@@ -211,7 +211,7 @@ export const getUserPublicProjectsByType = zQuery(
         if (!a.startDate || !b.startDate) return 0
         return new Date(b.startDate).getTime() - new Date(a.startDate).getTime()
       })
-    return filtered as z.infer<typeof zProjectsDoc>[]
+    return filtered
   },
   { returns: z.array(zProjectsDoc) }
 )
@@ -227,7 +227,7 @@ export const getMyRecentProjects = zQuery(
       .withIndex('userId', (q) => q.eq('userId', ctx.user._id))
       .order('desc')
       .take(3)
-    return projs.filter(notEmpty) as z.infer<typeof zProjectsDoc>[]
+    return projs.filter(notEmpty)
   },
   { returns: z.array(zProjectsDoc) }
 )
