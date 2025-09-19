@@ -24,16 +24,22 @@ const webhookSecret = ensureEnvironmentVariable('CLERK_WEBHOOK_SECRET')
 export const fulfill = zInternalAction(
   internalAction,
   {
-    headers: z.object({
-      'svix-id': z.string(),
-      'svix-timestamp': z.string(),
-      'svix-signature': z.string()
-    }),
+    headers: z
+      .object({
+        svixId: z.string().min(1),
+        svixTimestamp: z.string().min(1),
+        svixSignature: z.string().min(1)
+      })
+      .strict(),
     payload: z.string()
   },
   async (ctx, args) => {
     const wh = new Webhook(webhookSecret)
-    const payload = wh.verify(args.payload, args.headers) as WebhookEvent
+    const payload = wh.verify(args.payload, {
+      'svix-id': args.headers.svixId,
+      'svix-timestamp': args.headers.svixTimestamp,
+      'svix-signature': args.headers.svixSignature
+    }) as WebhookEvent
     return payload
   }
 )

@@ -126,11 +126,11 @@ export const getMyUser = zQuery(
             : {})
         }
 
-        return zUserDoc.parse(mergedUser)
+        return mergedUser as z.infer<typeof zUserDoc>
       }
     }
 
-    return ctx.user ? zUserDoc.parse(ctx.user) : null
+    return (ctx.user as z.infer<typeof zUserDoc>) || null
   },
   { returns: zUserDocOrNull }
 )
@@ -279,7 +279,7 @@ export const getUserByTokenId = zInternalQuery(
       .query('users')
       .withIndex('tokenId', (q: any) => q.eq('tokenId', tokenId))
       .first()
-    return user ? zUserDoc.parse(user) : null
+    return (user as z.infer<typeof zUserDoc>) || null
   },
   { returns: zUserDocOrNull }
 )
@@ -293,7 +293,7 @@ export const getByTokenId = zInternalQuery(
       .query('users')
       .withIndex('tokenId', (q: any) => q.eq('tokenId', tokenId))
       .unique()
-    return user ? zUserDoc.parse(user) : null
+    return (user as z.infer<typeof zUserDoc>) || null
   },
   { returns: zUserDocOrNull }
 )

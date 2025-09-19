@@ -45,9 +45,8 @@ export const search = zQuery(
       .filter((q: any) => q.eq(q.field('listed'), true))
       .take(10)
 
-    // Validate/shape results to match returns type
-    const typed = z.array(zAgencyDoc).parse(results)
-    return typed
+    // Let zodvex validate returns; cast for TS
+    return results as z.infer<typeof zAgencyDoc>[]
   },
   { returns: z.array(zAgencyDoc) }
 )
@@ -71,10 +70,7 @@ export const getAgency = zQuery(
       logoUrl = await ctx.storage.getUrl(agency.logo)
     }
     const withLogo = { ...agency, logoUrl }
-    // Validate/shape to match returns type
-    return zAgencyDoc
-      .extend({ logoUrl: z.union([z.string(), z.null()]) })
-      .parse(withLogo)
+    return withLogo as z.infer<typeof zAgencyDoc> & { logoUrl: string | null }
   },
   {
     returns: z.union([

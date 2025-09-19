@@ -1,5 +1,5 @@
 import { authMutation, authQuery, notEmpty } from './util'
-import { Training, trainingInput, zTrainingInput } from './schemas/training'
+import { Training, trainingInput, zTrainingInput, zTrainingFormDoc } from './schemas/training'
 import { getAll } from 'convex-helpers/server/relationships'
 import { query } from './_generated/server'
 import { zCrud, zMutation, zQuery } from 'zodvex'
@@ -136,7 +136,8 @@ export const getMyTraining = zQuery(
       .filter(notEmpty)
       .sort((a, b) => (a.orderIndex || 0) - (b.orderIndex || 0))
       .map(({ orderIndex, userId, profileType, profileId, ...rest }: any) => rest)
-  }
+  },
+  { returns: z.array(zTrainingFormDoc) }
 )
 
 // Get user's training by type
@@ -169,7 +170,8 @@ export const getMyTrainingByType = zQuery(
       .filter((t) => t.type === args.type)
       .sort((a, b) => (a.orderIndex || 0) - (b.orderIndex || 0))
       .map(({ orderIndex, userId, profileType, profileId, ...rest }: any) => rest)
-  }
+  },
+  { returns: z.array(zTrainingFormDoc) }
 )
 
 // Reorder training items
@@ -202,5 +204,6 @@ export const getUserPublicTraining = zQuery(
       .filter(notEmpty)
       .sort((a, b) => (a.orderIndex || 0) - (b.orderIndex || 0))
       .map(({ orderIndex, userId, ...rest }: any) => rest)
-  }
+  },
+  { returns: z.array(zTrainingFormDoc) }
 )

@@ -18,7 +18,7 @@ export const getMyChoreographerProfile = zQuery(
     // Use discriminate value from users table for efficient lookup
     if (ctx.user.activeProfileType === 'choreographer' && ctx.user.activeChoreographerId) {
       const doc = await ctx.db.get(ctx.user.activeChoreographerId)
-      return doc ? zChoreoDoc.parse(doc) : null
+      return (doc as z.infer<typeof zChoreoDoc>) || null
     }
 
     return null
@@ -35,7 +35,7 @@ export const getUserChoreographerProfiles = zQuery(
       .query('choreographers')
       .withIndex('by_userId', (q) => q.eq('userId', userId))
       .collect()
-    return z.array(zChoreoDoc).parse(results)
+    return results as z.infer<typeof zChoreoDoc>[]
   },
   { returns: z.array(zChoreoDoc) }
 )
@@ -140,7 +140,7 @@ export const getVerifiedChoreographers = zQuery(
       .query('choreographers')
       .withIndex('by_verified', (q) => q.eq('verified', true))
       .take(limit)
-    return z.array(zChoreoDoc).parse(results)
+    return results as z.infer<typeof zChoreoDoc>[]
   },
   { returns: z.array(zChoreoDoc) }
 )
@@ -178,7 +178,7 @@ export const searchChoreographers = zQuery(
     }
 
     const sliced = results.slice(0, limit)
-    return z.array(zChoreoDoc).parse(sliced)
+    return sliced as z.infer<typeof zChoreoDoc>[]
   },
   { returns: z.array(zChoreoDoc) }
 )

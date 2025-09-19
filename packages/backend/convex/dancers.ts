@@ -18,7 +18,7 @@ export const getMyDancerProfile = zQuery(
     // Use discriminate value from users table for efficient lookup
     if (ctx.user.activeProfileType === 'dancer' && ctx.user.activeDancerId) {
       const doc = await ctx.db.get(ctx.user.activeDancerId)
-      return doc ? zDancerDoc.parse(doc) : null
+      return (doc as z.infer<typeof zDancerDoc>) || null
     }
 
     return null
@@ -35,7 +35,7 @@ export const getUserDancerProfiles = zQuery(
       .query('dancers')
       .withIndex('by_userId', (q) => q.eq('userId', userId))
       .collect()
-    return z.array(zDancerDoc).parse(results)
+    return results as z.infer<typeof zDancerDoc>[]
   },
   { returns: z.array(zDancerDoc) }
 )
@@ -151,7 +151,7 @@ export const searchDancers = zQuery(
       )
       .take(limit)
 
-    return z.array(zDancerDoc).parse(results)
+    return results as z.infer<typeof zDancerDoc>[]
   },
   { returns: z.array(zDancerDoc) }
 )

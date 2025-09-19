@@ -38,9 +38,9 @@ http.route({
       const event = await ctx.runAction(internal.clerk.fulfill, {
         payload: payloadString,
         headers: {
-          'svix-id': headerPayload.get('svix-id')!,
-          'svix-timestamp': headerPayload.get('svix-timestamp')!,
-          'svix-signature': headerPayload.get('svix-signature')!
+          svixId: headerPayload.get('svix-id')!,
+          svixTimestamp: headerPayload.get('svix-timestamp')!,
+          svixSignature: headerPayload.get('svix-signature')!
         }
       })
 
