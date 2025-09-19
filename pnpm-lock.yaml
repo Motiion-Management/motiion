@@ -156,8 +156,8 @@ importers:
         specifier: ^2.1.1
         version: 2.1.1
       convex:
-        specifier: ^1.27.0
-        version: 1.27.0(@clerk/clerk-react@5.43.1(react-dom@19.0.0(react@19.0.0))(react@19.0.0))(react@19.0.0)
+        specifier: ^1.27.1
+        version: 1.27.1(@clerk/clerk-react@5.43.1(react-dom@19.0.0(react@19.0.0))(react@19.0.0))(react@19.0.0)
       date-fns:
         specifier: ^4.1.0
         version: 4.1.0
@@ -416,11 +416,11 @@ importers:
         specifier: ^4.0.37
         version: 4.3.19(react@19.0.0)(zod@4.1.8)
       convex:
-        specifier: ^1.27.0
-        version: 1.27.0(@clerk/clerk-react@5.43.1(react-dom@19.0.0(react@19.0.0))(react@19.0.0))(react@19.0.0)
+        specifier: ^1.27.1
+        version: 1.27.1(@clerk/clerk-react@5.43.1(react-dom@19.0.0(react@19.0.0))(react@19.0.0))(react@19.0.0)
       convex-helpers:
         specifier: 0.1.101-alpha.1
-        version: 0.1.101-alpha.1(convex@1.27.0(@clerk/clerk-react@5.43.1(react-dom@19.0.0(react@19.0.0))(react@19.0.0))(react@19.0.0))(react@19.0.0)(typescript@5.8.3)(zod@4.1.8)
+        version: 0.1.101-alpha.1(convex@1.27.1(@clerk/clerk-react@5.43.1(react-dom@19.0.0(react@19.0.0))(react@19.0.0))(react@19.0.0))(react@19.0.0)(typescript@5.8.3)(zod@4.1.8)
       date-fns:
         specifier: ^3.6.0
         version: 3.6.0
@@ -677,11 +677,11 @@ importers:
         specifier: ^2.1.1
         version: 2.1.1
       convex:
-        specifier: ^1.27.0
-        version: 1.27.0(@clerk/clerk-react@5.43.1(react-dom@19.0.0(react@19.0.0))(react@19.0.0))(react@19.0.0)
+        specifier: ^1.27.1
+        version: 1.27.1(@clerk/clerk-react@5.43.1(react-dom@19.0.0(react@19.0.0))(react@19.0.0))(react@19.0.0)
       convex-helpers:
         specifier: 0.1.101-alpha.1
-        version: 0.1.101-alpha.1(convex@1.27.0(@clerk/clerk-react@5.43.1(react-dom@19.0.0(react@19.0.0))(react@19.0.0))(react@19.0.0))(react@19.0.0)(typescript@5.8.3)(zod@4.1.8)
+        version: 0.1.101-alpha.1(convex@1.27.1(@clerk/clerk-react@5.43.1(react-dom@19.0.0(react@19.0.0))(react@19.0.0))(react@19.0.0))(react@19.0.0)(typescript@5.8.3)(zod@4.1.8)
       date-fns:
         specifier: ^3.6.0
         version: 3.6.0
@@ -4316,6 +4316,22 @@ packages:
 
   convex@1.27.0:
     resolution: {integrity: sha512-IHkqZX3GtY4nKFPTAR4mvWHHhDiQX9PM7EjpEv0pJWoMoq0On6oOL3iZ7Xz4Ls96dF7WJd4AjfitJsg2hUnLSQ==}
+    engines: {node: '>=18.0.0', npm: '>=7.0.0'}
+    hasBin: true
+    peerDependencies:
+      '@auth0/auth0-react': ^2.0.1
+      '@clerk/clerk-react': ^4.12.8 || ^5.0.0
+      react: ^18.0.0 || ^19.0.0-0 || ^19.0.0
+    peerDependenciesMeta:
+      '@auth0/auth0-react':
+        optional: true
+      '@clerk/clerk-react':
+        optional: true
+      react:
+        optional: true
+
+  convex@1.27.1:
+    resolution: {integrity: sha512-kep7JFn5Bil9/OUZUsL1bgoo0G9DmEf7stkBW67+NqP2FrzBt2TX8yz4V6oKLygzepGy90Ura2FtqXawYKXYIg==}
     engines: {node: '>=18.0.0', npm: '>=7.0.0'}
     hasBin: true
     peerDependencies:
@@ -12732,15 +12748,24 @@ snapshots:
 
   convert-source-map@2.0.0: {}
 
-  convex-helpers@0.1.101-alpha.1(convex@1.27.0(@clerk/clerk-react@5.43.1(react-dom@19.0.0(react@19.0.0))(react@19.0.0))(react@19.0.0))(react@19.0.0)(typescript@5.8.3)(zod@4.1.8):
+  convex-helpers@0.1.101-alpha.1(convex@1.27.1(@clerk/clerk-react@5.43.1(react-dom@19.0.0(react@19.0.0))(react@19.0.0))(react@19.0.0))(react@19.0.0)(typescript@5.8.3)(zod@4.1.8):
     dependencies:
-      convex: 1.27.0(@clerk/clerk-react@5.43.1(react-dom@19.0.0(react@19.0.0))(react@19.0.0))(react@19.0.0)
+      convex: 1.27.1(@clerk/clerk-react@5.43.1(react-dom@19.0.0(react@19.0.0))(react@19.0.0))(react@19.0.0)
     optionalDependencies:
       react: 19.0.0
       typescript: 5.8.3
       zod: 4.1.8
 
   convex@1.27.0(@clerk/clerk-react@5.43.1(react-dom@19.0.0(react@19.0.0))(react@19.0.0))(react@19.0.0):
+    dependencies:
+      esbuild: 0.25.4
+      jwt-decode: 4.0.0
+      prettier: 3.6.2
+    optionalDependencies:
+      '@clerk/clerk-react': 5.43.1(react-dom@19.0.0(react@19.0.0))(react@19.0.0)
+      react: 19.0.0
+
+  convex@1.27.1(@clerk/clerk-react@5.43.1(react-dom@19.0.0(react@19.0.0))(react@19.0.0))(react@19.0.0):
     dependencies:
       esbuild: 0.25.4
       jwt-decode: 4.0.0

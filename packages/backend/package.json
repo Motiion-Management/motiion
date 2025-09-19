@@ -15,7 +15,7 @@
     "@ai-sdk/openai": "^1.0.10",
     "@clerk/backend": "^2.5.0",
     "ai": "^4.0.37",
-    "convex": "^1.27.0",
+    "convex": "^1.27.1",
     "convex-helpers": "0.1.101-alpha.1",
     "date-fns": "^3.6.0",
     "mammoth": "^1.10.0",

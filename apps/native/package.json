@@ -66,7 +66,7 @@
     "@xixixao/uploadstuff": "^0.0.5",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
-    "convex": "^1.27.0",
+    "convex": "^1.27.1",
     "date-fns": "^4.1.0",
     "expo": "53.0.20",
     "expo-asset": "~11.1.7",
