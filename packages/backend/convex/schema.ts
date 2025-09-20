@@ -50,11 +50,13 @@ const schema = defineSchema(
 
     // agency
     agencies: Agencies.table.searchIndex('search_name', { searchField: 'name' })
+  },
+  {
+    // Ensure TS infers literal table names for DataModel
+    strictTableNameTypes: true
+    // Enable when doing schema migrations to skip full runtime validation
+    // schemaValidation: false
   }
-  // {
-  //   // ONLY ENABLE WHEN DOING SCHEMA MIGRATION
-  //   schemaValidation: false
-  // }
 )
 
 export default schema

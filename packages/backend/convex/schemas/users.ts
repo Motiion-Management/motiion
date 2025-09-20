@@ -1,4 +1,4 @@
-import { zid } from 'zodvex'
+import { zid, zLoose } from 'zodvex'
 import { zodTable, zodToConvex } from 'zodvex'
 import { z } from 'zod'
 import { zFileUploadObjectArray, zLocation } from './base'
@@ -117,7 +117,7 @@ export const users = {
   activeDancerId: zid('dancers').optional(),
   activeChoreographerId: zid('choreographers').optional()
 }
-export const zUsers = z.object(users)
+export const zUsers = zLoose(z.object(users))
 
 // Combined table definition with integrated codec
 export const Users = zodTable('users', zUsers)

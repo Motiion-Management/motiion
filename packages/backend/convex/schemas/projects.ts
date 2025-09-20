@@ -1,5 +1,6 @@
-import { zid } from 'zodvex'
+import { zid, zodToConvexFields, zLoose } from 'zodvex'
 import { zodTable } from 'zodvex'
+import { Table } from 'convex-helpers/server'
 import { z } from 'zod'
 import { Doc } from '../_generated/dataModel'
 
@@ -13,12 +14,12 @@ export const PROJECT_TYPES = [
 ] as const
 
 export const PROJECT_TITLE_MAP: Record<(typeof PROJECT_TYPES)[number], string> =
-  {
-    'tv-film': 'Television & Film',
-    'music-video': 'Music Videos',
-    'live-performance': 'Live Performances',
-    commercial: 'Commercials'
-  }
+{
+  'tv-film': 'Television & Film',
+  'music-video': 'Music Videos',
+  'live-performance': 'Live Performances',
+  commercial: 'Commercials'
+}
 
 export const LIVE_EVENT_SUBTYPES = [
   'festival',
@@ -72,7 +73,7 @@ export const projects = {
   searchPattern: z.string().optional()
 }
 
-export const zProjects = z.object(projects)
+export const zProjects = zLoose(z.object(projects))
 
 // Full Convex document schema (includes system fields)
 export const zProjectsDoc = zProjects.extend({
@@ -82,7 +83,7 @@ export const zProjectsDoc = zProjects.extend({
 
 // Aliases for clarity in imports
 export const zProjectsBase = zProjects
-
+const fields = zodToConvexFields(zProjects)
 export const Projects = zodTable('projects', zProjects)
 
 export type ProjectDoc = Doc<'projects'>

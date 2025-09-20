@@ -44,3 +44,8 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 
+# test files
+test-*.ts
+**/test-*.ts
+test-*.js
+packages/backend/convex/test-*.ts
