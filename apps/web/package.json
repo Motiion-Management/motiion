@@ -14,7 +14,7 @@
     "@packages/backend": "workspace:*",
     "@xixixao/uploadstuff": "0.0.5",
     "@xyflow/react": "^12.3.1",
-    "convex": "^1.27.0",
+    "convex": "^1.27.1",
     "next": "14.2.31",
     "react": "19.0.0",
     "react-dom": "19.0.0"
