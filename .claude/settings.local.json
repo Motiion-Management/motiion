@@ -51,7 +51,14 @@
       "Bash(npx convex dev:*)",
       "Bash(npx convex run:*)",
       "Bash(pnpm typecheck:*)",
-      "Bash(./scripts/extract-to-repo.sh:*)"
+      "Bash(./scripts/extract-to-repo.sh:*)",
+      "Read(//Users/jshebert/Development/zodvex-standalone/**)",
+      "Read(//Users/jshebert/zodvex-standalone/dist/**)",
+      "Bash(pnpm install:*)",
+      "Bash(timeout 10 npx tsc --noEmit convex/test-minimal.ts)",
+      "Read(//Users/jshebert/zodvex-standalone/src/**)",
+      "Read(//Users/jshebert/zodvex-standalone/**)",
+      "Bash(bun run:*)"
     ]
   },
   "enableAllProjectMcpServers": true
