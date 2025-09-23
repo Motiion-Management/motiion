@@ -1,30 +1,31 @@
 import { query, mutation } from './_generated/server'
 import { authMutation, authQuery, notEmpty } from './util'
-
-import { crud } from 'convex-helpers/server'
-import { FeaturedMembers } from './validators/featuredMembers'
+import { zCrud, zQuery } from 'zodvex'
+import { FeaturedMembers } from './schemas/featuredMembers'
 import { getAll } from 'convex-helpers/server/relationships'
-import type { RegisteredQuery } from 'convex/server'
+import { z } from 'zod'
+import { zid } from 'zodvex'
 
-export const { read } = crud(FeaturedMembers, query, mutation)
+export const { read } = zCrud(FeaturedMembers, query, mutation)
 
-export const { create, update, destroy } = crud(
+export const { create, update, destroy } = zCrud(
   FeaturedMembers,
   authQuery,
   authMutation
 )
 
-export const getFeaturedChoreographers = query({
-  args: {},
-  handler: async (ctx) => {
+export const getFeaturedChoreographers = zQuery(
+  query,
+  {},
+  async (ctx) => {
     const result = await ctx.db.query('featuredMembers').first()
     const users = await getAll(ctx.db, result?.choreographers || [])
 
     if (users.length === 0) {
-      return
+      return []
     }
     return Promise.all(
-      users.filter(notEmpty).map(async (user) => {
+      users.filter(notEmpty).map(async (user: any) => {
         const headshots = user.headshots?.filter(notEmpty) || []
         return {
           userId: user._id,
@@ -35,28 +36,30 @@ export const getFeaturedChoreographers = query({
         }
       })
     )
+  },
+  {
+    returns: z.array(
+      z.object({
+        userId: zid('users'),
+        label: z.string(),
+        headshotUrl: z.string()
+      })
+    )
   }
-})
+)
 
-export const getFeaturedTalent: RegisteredQuery<
-  'public',
-  Record<string, never>,
-  | Array<{
-      userId: string
-      label: string
-      headshotUrl: string
-    }>
-  | undefined
-> = query({
-  async handler(ctx) {
+export const getFeaturedTalent = zQuery(
+  query,
+  {},
+  async (ctx) => {
     const result = await ctx.db.query('featuredMembers').first()
     const users = await getAll(ctx.db, result?.talent || [])
 
     if (users.length === 0) {
-      return
+      return []
     }
     return Promise.all(
-      users.filter(notEmpty).map(async (user) => {
+      users.filter(notEmpty).map(async (user: any) => {
         const headshots = user.headshots?.filter(notEmpty) || []
         return {
           userId: user._id,
@@ -67,5 +70,14 @@ export const getFeaturedTalent: RegisteredQuery<
         }
       })
     )
+  },
+  {
+    returns: z.array(
+      z.object({
+        userId: zid('users'),
+        label: z.string(),
+        headshotUrl: z.string()
+      })
+    )
   }
-})
+)

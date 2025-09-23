@@ -1,5 +1,4 @@
 import { httpRouter } from 'convex/server'
-
 import { internal } from './_generated/api'
 import { httpAction } from './_generated/server'
 
@@ -39,9 +38,9 @@ http.route({
       const event = await ctx.runAction(internal.clerk.fulfill, {
         payload: payloadString,
         headers: {
-          'svix-id': headerPayload.get('svix-id')!,
-          'svix-timestamp': headerPayload.get('svix-timestamp')!,
-          'svix-signature': headerPayload.get('svix-signature')!
+          svixId: headerPayload.get('svix-id')!,
+          svixTimestamp: headerPayload.get('svix-timestamp')!,
+          svixSignature: headerPayload.get('svix-signature')!
         }
       })
 
@@ -50,7 +49,7 @@ http.route({
         // const customerId = await ctx.runAction(internal.stripe.createCustomer)
         // await ctx.runAction(internal.stripe.startTrial, { customerId })
         case 'user.updated':
-          await ctx.runAction(internal.users.updateOrCreateUserByTokenId, {
+          await ctx.runMutation(internal.users.updateOrCreateUserByTokenId, {
             data: {
               tokenId: event.data.id,
               email: event.data.email_addresses[0]?.email_address,
@@ -64,7 +63,7 @@ http.route({
           break
 
         case 'user.deleted':
-          await ctx.runAction(internal.users.deleteUserByTokenId, {
+          await ctx.runMutation(internal.users.deleteUserByTokenId, {
             tokenId: event.data.id!
           })
           break

@@ -1,13 +1,17 @@
-import { v } from 'convex/values'
+import type { Id } from '../_generated/dataModel'
 import { query } from '../_generated/server'
+import { zQuery } from 'zodvex'
+import { z } from 'zod'
+import { zid } from 'zodvex'
 
 /**
  * Optimized query that returns headshot metadata immediately
  * URLs are generated client-side or through a separate query
  */
-export const getMyHeadshotsMetadata = query({
-  args: {},
-  handler: async (ctx) => {
+export const getMyHeadshotsMetadata = zQuery(
+  query,
+  {},
+  async (ctx) => {
     const identity = await ctx.auth.getUserIdentity()
     if (!identity) return []
 
@@ -21,7 +25,8 @@ export const getMyHeadshotsMetadata = query({
     }
 
     // Return headshot metadata without URLs, including position (defaulting to index)
-    return user.headshots.map((headshot, index) => ({
+    type Headshot = { storageId: Id<'_storage'>; title?: string; uploadDate: string; position?: number }
+    return user.headshots.map((headshot: Headshot, index: number) => ({
       id: `headshot-${index}`,
       storageId: headshot.storageId,
       title: headshot.title,
@@ -29,42 +34,34 @@ export const getMyHeadshotsMetadata = query({
       position: (headshot as any).position ?? index
     }))
   }
-})
+)
 
 /**
  * Separate query to get a single headshot URL
  * Called on-demand when the image needs to be displayed
  */
-export const getHeadshotUrl = query({
-  args: {
-    storageId: v.id('_storage')
-  },
-  returns: v.union(v.string(), v.null()),
-  handler: async (ctx, { storageId }) => {
+export const getHeadshotUrl = zQuery(
+  query,
+  { storageId: zid('_storage') },
+  async (ctx, { storageId }) => {
     try {
       const url = await ctx.storage.getUrl(storageId)
       return url
     } catch {
       return null
     }
-  }
-})
+  },
+  { returns: z.union([z.string(), z.null()]) }
+)
 
 /**
  * Batch query to get multiple headshot URLs
  * More efficient than multiple individual queries
  */
-export const getHeadshotUrls = query({
-  args: {
-    storageIds: v.array(v.id('_storage'))
-  },
-  returns: v.array(
-    v.object({
-      storageId: v.id('_storage'),
-      url: v.union(v.string(), v.null())
-    })
-  ),
-  handler: async (ctx, { storageIds }) => {
+export const getHeadshotUrls = zQuery(
+  query,
+  { storageIds: z.array(zid('_storage')) },
+  async (ctx, { storageIds }) => {
     const urls = await Promise.all(
       storageIds.map(async (storageId) => {
         try {
@@ -76,5 +73,13 @@ export const getHeadshotUrls = query({
       })
     )
     return urls
+  },
+  {
+    returns: z.array(
+      z.object({
+        storageId: zid('_storage'),
+        url: z.union([z.string(), z.null()])
+      })
+    )
   }
-})
+)

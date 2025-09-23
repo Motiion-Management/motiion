@@ -1,107 +1,257 @@
-import { v, ConvexError } from 'convex/values'
+import { ConvexError } from 'convex/values'
 import { paginationOptsValidator } from 'convex/server'
 import { filter } from 'convex-helpers/server/filter'
 import {
   internalQuery,
   query,
   mutation,
-  internalMutation,
-  internalAction
+  internalMutation
 } from './_generated/server'
 import { authMutation, authQuery, notEmpty } from './util'
 
-import { getAll, getOneFrom } from 'convex-helpers/server/relationships'
-import { crud } from 'convex-helpers/server'
-import { UserDoc, Users, clerkCreateUserFields } from './validators/users'
+import { getAll } from 'convex-helpers/server/relationships'
+import { UserDoc, Users, zUsers } from './schemas/users'
 import { z } from 'zod'
-import { zodToConvex } from 'convex-helpers/server/zod'
-import { attributesPlainObject } from './validators/attributes'
-import { internal } from './_generated/api'
-import { literals, partial } from 'convex-helpers/validators'
+import { zQuery, zMutation, zInternalQuery, zInternalMutation, zCrud } from 'zodvex'
+import { zid } from 'zodvex'
+import { attributesPlainObject } from './schemas/attributes'
 import { NEW_USER_DEFAULTS, formatFullName } from './users/helpers'
 import { AgencyDoc } from './agencies'
 
-export const { read } = crud(Users, query, mutation)
+export const { read } = zCrud(Users, query, mutation)
 
-export const {
-  create,
-  update: internalUpdate,
-  destroy
-} = crud(Users, internalQuery, internalMutation)
+export const { create, update: internalUpdate, destroy } = zCrud(
+  Users,
+  internalQuery,
+  internalMutation
+)
 
-export const { update } = crud(Users, authQuery, authMutation)
+export const { update } = zCrud(Users, authQuery, authMutation)
 
-export const getMyUser = authQuery({
-  args: {},
-  async handler(ctx) {
+async function computeDerived(
+  ctx: { db: { get: (id: any) => Promise<any> } },
+  user: any
+): Promise<{ fullName: string; searchPattern: string }> {
+  let agency: AgencyDoc | null = null
+  if (user.representation?.agencyId) {
+    agency = await ctx.db.get(user.representation.agencyId)
+  }
+  const fullName = formatFullName(user.firstName, user.lastName)
+  const searchPattern = `${fullName} ${user.displayName || ''} ${user.location?.city || ''
+    } ${user.location?.state || ''} ${agency?.name || ''}`.trim()
+  return { fullName, searchPattern }
+}
+
+// Return value schemas
+const zUserDoc = zUsers.extend({ _id: zid('users'), _creationTime: z.number() })
+const zUserDocOrNull = z.union([zUserDoc, z.null()])
+
+export const getMyUser = zQuery(
+  authQuery,
+  {},
+  async (ctx) => {
     console.log('🔍 CONVEX_GET_USER: Query called', {
       userId: ctx.user?._id,
       hasUser: !!ctx.user,
       timestamp: new Date().toISOString()
     })
-    return ctx.user
-  }
-})
 
-export const updateMyUser = authMutation({
-  args: partial(Users.withoutSystemFields),
-  async handler(ctx, args): Promise<void> {
-    await ctx.db.patch(ctx.user._id, {
-      ...args
-    })
+    if (!ctx.user) return null
 
-    const user = {
-      ...ctx.user,
-      ...args
+    // AUTO-MIGRATE: If user has profileType but no active profile, migrate them
+    if (
+      ctx.user.profileType &&
+      !ctx.user.activeDancerId &&
+      !ctx.user.activeChoreographerId
+    ) {
+      console.log('🔄 AUTO-MIGRATION: User needs profile migration', {
+        userId: ctx.user._id,
+        profileType: ctx.user.profileType
+      })
+
+      // This is a query, so we can't mutate directly
+      // Return user as-is but log for monitoring
+      // The autoMigrateAndCleanup script will handle the actual migration
     }
 
-    await ctx.scheduler.runAfter(0, internal.users.afterUpdate, user)
-  }
-})
+    // If user has an active profile, merge the profile data for backward compatibility
+    if (
+      ctx.user.activeProfileType &&
+      (ctx.user.activeDancerId || ctx.user.activeChoreographerId)
+    ) {
+      let profile = null
 
-export const updateMySizingField = authMutation({
-  args: {
-    section: v.string(),
-    field: v.string(),
-    value: v.string()
+      if (ctx.user.activeProfileType === 'dancer' && ctx.user.activeDancerId) {
+        profile = await ctx.db.get(ctx.user.activeDancerId)
+      } else if (
+        ctx.user.activeProfileType === 'choreographer' &&
+        ctx.user.activeChoreographerId
+      ) {
+        profile = await ctx.db.get(ctx.user.activeChoreographerId)
+      }
+
+      if (profile) {
+        // Merge profile data back into user for backward compatibility
+        // Profile data takes precedence over user data
+        const mergedUser = {
+          ...ctx.user,
+          // Profile fields that might differ
+          headshots: profile.headshots || ctx.user.headshots,
+          attributes: profile.attributes || ctx.user.attributes,
+          sizing: profile.sizing || ctx.user.sizing,
+          resume: profile.resume || ctx.user.resume,
+          links: profile.links || ctx.user.links,
+          representation: profile.representation || ctx.user.representation,
+          representationStatus:
+            profile.representationStatus || ctx.user.representationStatus,
+          profileTipDismissed:
+            profile.profileTipDismissed || ctx.user.profileTipDismissed,
+          // Dancer-specific
+          ...(ctx.user.activeProfileType === 'dancer'
+            ? {
+              sagAftraId: profile.sagAftraId || ctx.user.sagAftraId,
+              training: profile.training || ctx.user.training,
+              workLocation: profile.workLocation || ctx.user.workLocation,
+              location: profile.location || ctx.user.location
+            }
+            : {}),
+          // Choreographer-specific
+          ...(ctx.user.activeProfileType === 'choreographer'
+            ? {
+              companyName: profile.companyName || ctx.user.companyName,
+              workLocation: profile.workLocation || ctx.user.workLocation,
+              location: profile.location || ctx.user.location,
+              databaseUse: profile.databaseUse || ctx.user.databaseUse
+            }
+            : {})
+        }
+
+        return mergedUser as z.infer<typeof zUserDoc>
+      }
+    }
+
+    return (ctx.user as z.infer<typeof zUserDoc>) || null
   },
-  async handler(ctx, { section, field, value }): Promise<void> {
-    // Get current sizing data
-    const currentSizing = ctx.user.sizing || {}
-    const currentSection = (currentSizing as any)[section] || {}
+  { returns: zUserDocOrNull }
+)
 
-    // Merge the new field value with existing section data
+// Zod-validated mutation using convex-helpers + codecs
+// Use existing authMutation (from util.ts) to supply ctx.user, and zMutation for Zod args parsing
+export const updateMyUser = zMutation(
+  authMutation,
+  zUsers.partial(),
+  async (ctx, args) => {
+    const nextUser = { ...ctx.user, ...args }
+    const derived = await computeDerived(ctx, nextUser)
+
+    // Only update user's account-level fields
+    // Profile-specific fields should be updated through profile-specific functions
+    await ctx.db.patch(ctx.user._id, { ...args, ...derived })
+  }
+)
+
+export const updateMySizingField = zMutation(
+  authMutation,
+  { section: z.string(), field: z.string(), value: z.string() },
+  async (ctx, { section, field, value }) => {
+    // Update profile if active, otherwise update user
+    if (
+      ctx.user.activeProfileType &&
+      (ctx.user.activeDancerId || ctx.user.activeChoreographerId)
+    ) {
+      let profileId = null
+      if (ctx.user.activeProfileType === 'dancer' && ctx.user.activeDancerId) {
+        profileId = ctx.user.activeDancerId
+      } else if (
+        ctx.user.activeProfileType === 'choreographer' &&
+        ctx.user.activeChoreographerId
+      ) {
+        profileId = ctx.user.activeChoreographerId
+      }
+
+      if (profileId) {
+        const profile = await ctx.db.get(profileId)
+        if (profile) {
+          const currentSizing: Record<string, unknown> = profile.sizing || {}
+          const currentSection: Record<string, unknown> =
+            (currentSizing as any)[section] || {}
+          const updatedSection = {
+            ...currentSection,
+            [field]: value
+          }
+          const newSizing = {
+            ...currentSizing,
+            [section]: updatedSection
+          }
+
+          await ctx.db.patch(profileId, { sizing: newSizing })
+          return
+        }
+      }
+    }
+
+    // Fallback to user if no profile
+    const currentSizing: Record<string, unknown> = ctx.user.sizing || {}
+    const currentSection: Record<string, unknown> =
+      (currentSizing as any)[section] || {}
     const updatedSection = {
       ...currentSection,
       [field]: value
     }
-
-    // Update the user with merged sizing data
-    await ctx.db.patch(ctx.user._id, {
-      sizing: {
-        ...currentSizing,
-        [section]: updatedSection
-      } as any
-    })
-
-    // Trigger afterUpdate for any derived calculations
-    const updatedUser = {
+    const nextUser = {
       ...ctx.user,
       sizing: {
         ...currentSizing,
         [section]: updatedSection
-      } as any
+      }
     }
-    await ctx.scheduler.runAfter(0, internal.users.afterUpdate, updatedUser)
+    const derived = await computeDerived(ctx, nextUser)
+    await ctx.db.patch(ctx.user._id, {
+      sizing: nextUser.sizing,
+      ...derived
+    })
   }
-})
+)
 
 // Patch only specific fields inside `attributes`, merging with existing
-export const patchUserAttributes = authMutation({
-  args: {
-    attributes: zodToConvex(z.object(attributesPlainObject).partial())
-  },
-  async handler(ctx, { attributes }): Promise<void> {
+export const patchUserAttributes = zMutation(
+  authMutation,
+  { attributes: z.object(attributesPlainObject).partial() },
+  async (ctx, { attributes }) => {
+    // Update profile if active, otherwise update user
+    if (
+      ctx.user.activeProfileType &&
+      (ctx.user.activeDancerId || ctx.user.activeChoreographerId)
+    ) {
+      let profileId = null
+      if (ctx.user.activeProfileType === 'dancer' && ctx.user.activeDancerId) {
+        profileId = ctx.user.activeDancerId
+      } else if (
+        ctx.user.activeProfileType === 'choreographer' &&
+        ctx.user.activeChoreographerId
+      ) {
+        profileId = ctx.user.activeChoreographerId
+      }
+
+      if (profileId) {
+        const profile = await ctx.db.get(profileId)
+        if (profile) {
+          const currentAttributes = (profile.attributes || {}) as Record<
+            string,
+            unknown
+          >
+          const mergedAttributes = {
+            ...currentAttributes,
+            ...attributes
+          } as any
+
+          await ctx.db.patch(profileId, { attributes: mergedAttributes })
+          return
+        }
+      }
+    }
+
+    // Fallback to user if no profile
     const currentAttributes = (ctx.user.attributes || {}) as Record<
       string,
       unknown
@@ -111,75 +261,75 @@ export const patchUserAttributes = authMutation({
       ...attributes
     } as any
 
+    const nextUser = { ...ctx.user, attributes: mergedAttributes }
+    const derived = await computeDerived(ctx, nextUser)
     await ctx.db.patch(ctx.user._id, {
-      attributes: mergedAttributes
+      attributes: mergedAttributes,
+      ...derived
     })
-
-    const updatedUser = {
-      ...ctx.user,
-      attributes: mergedAttributes
-    }
-
-    await ctx.scheduler.runAfter(0, internal.users.afterUpdate, updatedUser)
   }
-})
+)
 
 // clerk webhook functions
-export const getUserByTokenId = internalQuery({
-  args: { tokenId: Users.withoutSystemFields.tokenId },
-  handler: async (ctx, args): Promise<UserDoc | null> => {
-    const user = await getOneFrom(ctx.db, 'users', 'tokenId', args.tokenId)
-
-    return user
-  }
-})
-
-export const afterUpdate = internalAction({
-  args: Users.withSystemFields,
-  handler: async (ctx, user): Promise<void> => {
-    console.log('updating user', user._id, user.fullName, user.displayName)
-    let agency: AgencyDoc | null = null
-    if (user.representation?.agencyId) {
-      agency = await ctx.runQuery(internal.agencies.internalRead, {
-        id: user.representation?.agencyId
-      })
-    }
-
-    const fullName = formatFullName(user.firstName, user.lastName)
-    const searchPattern =
-      `${fullName} ${user.displayName || ''} ${user.location?.city || ''} ${user.location?.state || ''} ${agency?.name || ''}`.trim()
-
-    console.log({ fullName, searchPattern })
-
-    await ctx.runMutation(internal.users.internalUpdate, {
-      id: user._id,
-      patch: {
-        fullName,
-        searchPattern
-      }
-    })
-  }
-})
-
-export const updateOrCreateUserByTokenId = internalAction({
-  args: {
-    data: clerkCreateUserFields,
-    eventType: literals('user.created', 'user.updated')
+export const getUserByTokenId = zInternalQuery(
+  internalQuery,
+  { tokenId: z.string() },
+  async (ctx, { tokenId }) => {
+    const user = await ctx.db
+      .query('users')
+      .withIndex('tokenId', (q: any) => q.eq('tokenId', tokenId))
+      .first()
+    return (user as z.infer<typeof zUserDoc>) || null
   },
-  handler: async (ctx, { data, eventType }) => {
+  { returns: zUserDocOrNull }
+)
+
+// Minimal-typing variant to use from actions without heavy generics
+export const getByTokenId = zInternalQuery(
+  internalQuery,
+  { tokenId: z.string() },
+  async (ctx, { tokenId }) => {
+    const user = await ctx.db
+      .query('users')
+      .withIndex('tokenId', (q: any) => q.eq('tokenId', tokenId))
+      .unique()
+    return (user as z.infer<typeof zUserDoc>) || null
+  },
+  { returns: zUserDocOrNull }
+)
+
+// Deferred afterUpdate removed; derived fields computed inline above
+
+export const updateOrCreateUserByTokenId = zInternalMutation(
+  internalMutation,
+  {
+    data: z.object({
+      tokenId: z.string(),
+      email: z.string().optional(),
+      firstName: z.string().optional(),
+      lastName: z.string().optional(),
+      phone: z.string().optional()
+    }),
+    eventType: z.enum(['user.created', 'user.updated'])
+  },
+  async (ctx, { data, eventType }) => {
     console.log('🔄 CONVEX_USER_SYNC: Starting user sync', {
       tokenId: data.tokenId,
       eventType,
       timestamp: new Date().toISOString()
     })
 
-    const user = await ctx.runQuery(internal.users.getUserByTokenId, {
-      tokenId: data.tokenId
-    })
+    const parsed = data
+
+    // In mutation context, look up via db
+    const user = await ctx.db
+      .query('users')
+      .withIndex('tokenId', (q: any) => q.eq('tokenId', parsed.tokenId))
+      .unique()
 
     const userData = {
-      ...data,
-      fullName: formatFullName(data.firstName, data.lastName)
+      ...parsed,
+      fullName: formatFullName(parsed.firstName, parsed.lastName)
     }
 
     if (user) {
@@ -192,17 +342,11 @@ export const updateOrCreateUserByTokenId = internalAction({
         )
       } else {
         console.log('📝 CONVEX_USER_SYNC: Updating existing user', data.tokenId)
-        await ctx.runMutation(internal.users.internalUpdate, {
-          id: user._id,
-          patch: userData
-        })
+        await ctx.db.patch(user._id, userData)
       }
     } else {
       console.log('✨ CONVEX_USER_SYNC: Creating new user', data.tokenId)
-      await ctx.runMutation(internal.users.create, {
-        ...NEW_USER_DEFAULTS,
-        ...userData
-      })
+      await ctx.db.insert('users', { ...NEW_USER_DEFAULTS, ...userData })
     }
 
     console.log('✅ CONVEX_USER_SYNC: User sync completed', {
@@ -211,33 +355,34 @@ export const updateOrCreateUserByTokenId = internalAction({
       timestamp: new Date().toISOString()
     })
   }
-})
+)
 
-export const deleteUserByTokenId = internalAction({
-  args: { tokenId: Users.withoutSystemFields.tokenId },
-  handler: async (ctx, args) => {
-    const user = await ctx.runQuery(internal.users.getUserByTokenId, args)
-
-    if (!user) {
-      throw new ConvexError('user not found')
-    }
-
-    await ctx.runMutation(internal.users.destroy, { id: user._id })
+export const deleteUserByTokenId = zInternalMutation(
+  internalMutation,
+  { tokenId: z.string() },
+  async (ctx, { tokenId }) => {
+    const user = await ctx.db
+      .query('users')
+      .withIndex('tokenId', (q: any) => q.eq('tokenId', tokenId))
+      .unique()
+    if (!user) throw new ConvexError('user not found')
+    await ctx.db.delete(user._id)
   }
-})
+)
 
-export const search = query({
-  args: {
-    query: v.string()
-  },
-  handler: async (ctx, { query }) => {
+export const search = zQuery(
+  query,
+  { query: z.string() },
+  async (ctx, { query }) => {
     const results = await ctx.db
       .query('users')
-      .withSearchIndex('search_user', (q) => q.search('searchPattern', query))
+      .withSearchIndex('search_user', (q: any) =>
+        q.search('searchPattern', query)
+      )
       .take(10)
 
     const fullResults = await Promise.all(
-      results.map(async (result) => {
+      results.map(async (result: any) => {
         let headshot
         let representationName
         if (result.representation?.agencyId) {
@@ -264,53 +409,55 @@ export const search = query({
 
     return fullResults
   }
-})
+)
 
-export const updateDerivedPatterns = internalMutation({
-  args: {},
-  handler: async (ctx) => {
+export const updateDerivedPatterns = zInternalMutation(
+  internalMutation,
+  {},
+  async (ctx) => {
     const users = await ctx.db.query('users').take(1000)
-
-    users.forEach(async (user) => {
-      ctx.scheduler.runAfter(0, internal.users.afterUpdate, user)
-    })
+    for (const user of users) {
+      const derived = await computeDerived(ctx, user)
+      await ctx.db.patch(user._id, derived)
+    }
   }
-})
+)
 
-export const addFavoriteUser = authMutation({
-  args: {
-    userId: v.id('users')
-  },
-  handler: async (ctx, { userId }) => {
+export const addFavoriteUser = zMutation(
+  authMutation,
+  { userId: zid('users') },
+  async (ctx, { userId }) => {
     const existing = ctx.user.favoriteUsers || []
     await ctx.db.patch(ctx.user._id, {
       favoriteUsers: existing.concat(userId)
     })
   }
-})
+)
 
-export const removeFavoriteUser = authMutation({
-  args: {
-    userId: v.id('users')
-  },
-  handler: async (ctx, { userId }) => {
+export const removeFavoriteUser = zMutation(
+  authMutation,
+  { userId: zid('users') },
+  async (ctx, { userId }) => {
     const existing = ctx.user.favoriteUsers || []
     await ctx.db.patch(ctx.user._id, {
-      favoriteUsers: existing.filter((id) => id !== userId)
+      favoriteUsers: existing.filter(
+        (id: import('./_generated/dataModel').Id<'users'>) => id !== userId
+      )
     })
   }
-})
+)
 
-export const getFavoriteUsersForCarousel = authQuery({
-  args: {},
-  handler: async (ctx) => {
+export const getFavoriteUsersForCarousel = zQuery(
+  authQuery,
+  {},
+  async (ctx) => {
     const users = await getAll(ctx.db, ctx.user?.favoriteUsers || [])
 
     if (users.length === 0) {
       return
     }
     return Promise.all(
-      users.filter(notEmpty).map(async (user) => {
+      users.filter(notEmpty).map(async (user: any) => {
         const headshots = user.headshots?.filter(notEmpty) || []
         return {
           userId: user._id,
@@ -322,11 +469,11 @@ export const getFavoriteUsersForCarousel = authQuery({
       })
     )
   }
-})
+)
 
 export const paginateProfiles = query({
   args: { paginationOpts: paginationOptsValidator },
-  async handler(ctx, args) {
+  handler: async (ctx, args) => {
     const results = await filter(
       ctx.db.query('users'),
       async (user) => user.onboardingCompleted === true
@@ -335,7 +482,7 @@ export const paginateProfiles = query({
     return {
       ...results,
       page: await Promise.all(
-        results.page.map(async (user) => {
+        results.page.map(async (user: any) => {
           const headshots = user.headshots?.filter(notEmpty) || []
           return {
             userId: user._id,
@@ -350,32 +497,39 @@ export const paginateProfiles = query({
   }
 })
 
-export const isFavoriteUser = authQuery({
-  args: {
-    userId: v.id('users')
-  },
-  handler: async (ctx, { userId }) => {
+export const isFavoriteUser = zQuery(
+  authQuery,
+  { userId: zid('users') },
+  async (ctx, { userId }) => {
     return ctx.user && (ctx.user.favoriteUsers || []).includes(userId)
-  }
-})
-
-export const saveMyPushToken = authMutation({
-  args: {
-    token: v.string(),
-    platform: v.union(v.literal('ios'), v.literal('android'))
   },
-  async handler(ctx, { token, platform }) {
+  { returns: z.boolean() }
+)
+
+export const saveMyPushToken = zMutation(
+  authMutation,
+  { token: z.string(), platform: z.enum(['ios', 'android']) },
+  async (ctx, { token, platform }) => {
     const existing = ctx.user.pushTokens || []
     // Remove duplicates of the same token
-    const filtered = existing.filter((t) => t.token !== token)
+    const filtered = existing.filter(
+      (t: { token: string; platform: 'ios' | 'android'; updatedAt: number }) =>
+        t.token !== token
+    )
     // Optionally keep only the latest per platform (dedupe by platform)
-    const withoutPlatform = filtered.filter((t) => t.platform !== platform)
+    const withoutPlatform = filtered.filter(
+      (t: { token: string; platform: 'ios' | 'android'; updatedAt: number }) =>
+        t.platform !== platform
+    )
 
     const updated = [
       ...withoutPlatform,
       { token, platform, updatedAt: Date.now() }
     ]
 
-    await ctx.db.patch(ctx.user._id, { pushTokens: updated as any })
+    // Use the generated UserDoc type to derive the push token type
+    type PushToken = NonNullable<UserDoc['pushTokens']>[number]
+    const typed = updated as PushToken[]
+    await ctx.db.patch(ctx.user._id, { pushTokens: typed })
   }
-})
+)

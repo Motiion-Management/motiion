@@ -33,5 +33,10 @@
   "workspaces": [
     "apps/*",
     "packages/*"
-  ]
+  ],
+  "pnpm": {
+    "overrides": {
+      "zodvex": "link:/Users/jshebert/zodvex-standalone"
+    }
+  }
 }

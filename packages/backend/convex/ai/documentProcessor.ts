@@ -1,10 +1,12 @@
 'use node'
 
 import { internalAction } from '../_generated/server'
-import { internal } from '../_generated/api'
-import { v } from 'convex/values'
 import OpenAI from 'openai'
 import { ConvexError } from 'convex/values'
+import { zInternalAction } from 'zodvex'
+import type { Id } from '../_generated/dataModel'
+import { z } from 'zod'
+import { zid } from 'zodvex'
 import {
   resumeSchema,
   resumeAISchema,
@@ -14,8 +16,8 @@ import {
 import {
   PROJECT_TYPES as EXPERIENCE_TYPES,
   LIVE_EVENT_SUBTYPES
-} from '../validators/projects'
-import { TRAINING_TYPES } from '../validators/training'
+} from '../schemas/projects'
+import { TRAINING_TYPES } from '../schemas/training'
 import mammoth from 'mammoth'
 import {
   processAIResponse,
@@ -25,68 +27,17 @@ import {
   createVisionExtractionPrompt
 } from './shared'
 
-export const parseResumeDocument = internalAction({
-  args: {
-    storageId: v.id('_storage'),
-    retryCount: v.optional(v.number())
+export const parseResumeDocument = zInternalAction(
+  internalAction,
+  {
+    storageId: zid('_storage'),
+    retryCount: z.number().optional()
   },
-  returns: v.object({
-    experiences: v.array(
-      v.object({
-        type: v.union(
-          v.literal('tv-film'),
-          v.literal('music-video'),
-          v.literal('live-performance'),
-          v.literal('commercial')
-        ),
-        title: v.optional(v.string()),
-        startDate: v.optional(v.string()),
-        endDate: v.optional(v.string()),
-        roles: v.optional(v.array(v.string())),
-        studio: v.optional(v.string()),
-        artists: v.optional(v.array(v.string())),
-        companyName: v.optional(v.string()),
-        productionCompany: v.optional(v.string()),
-        tourArtist: v.optional(v.string()),
-        venue: v.optional(v.string()),
-        subtype: v.optional(
-          v.union(
-            v.literal('festival'),
-            v.literal('tour'),
-            v.literal('concert'),
-            v.literal('corporate'),
-            v.literal('award-show'),
-            v.literal('theater'),
-            v.literal('other')
-          )
-        ),
-        mainTalent: v.optional(v.array(v.string())),
-        choreographers: v.optional(v.array(v.string())),
-        associateChoreographers: v.optional(v.array(v.string())),
-        directors: v.optional(v.array(v.string()))
-      })
-    ),
-    training: v.array(
-      v.object({
-        type: v.union(
-          v.literal('education'),
-          v.literal('dance-school'),
-          v.literal('programs-intensives'),
-          v.literal('scholarships'),
-          v.literal('other')
-        ),
-        institution: v.string(),
-        instructors: v.optional(v.array(v.string())),
-        startYear: v.optional(v.number()),
-        endYear: v.optional(v.number()),
-        degree: v.optional(v.string())
-      })
-    ),
-    skills: v.array(v.string()),
-    genres: v.array(v.string()),
-    sagAftraId: v.optional(v.string())
-  }),
-  handler: async (ctx, args): Promise<ParsedResumeData> => {
+  async (ctx, args): Promise<ParsedResumeData> => {
+    // Load the internal API at runtime to avoid TypeScript's deep type
+    // instantiation on the giant ApiFromModules type during compilation.
+    // Use require cast to any to avoid importing heavy types at compile time
+    const internalApi: any = (require as any)('../_generated/api').internal
     const retryCount = args.retryCount || 0
     const maxRetries = 2
 
@@ -102,12 +53,17 @@ export const parseResumeDocument = internalAction({
       }
 
       // Get file metadata using system query
-      const metadata = await ctx.runQuery(
-        internal.ai.fileMetadata.getFileMetadata,
-        {
-          storageId: args.storageId
-        }
-      )
+      // Break circular/deep type inference on the internal API reference by
+      // narrowing to the minimal argument/return types used here.
+      const getFileMetadata = internalApi.ai.fileMetadata
+        .getFileMetadata as (
+          ctx: unknown,
+          args: { storageId: string }
+        ) => Promise<{ contentType?: string } | null>
+
+      const metadata: { contentType?: string } | null = await ctx.runQuery(getFileMetadata, {
+        storageId: args.storageId
+      })
 
       if (!metadata) {
         throw new ConvexError('File metadata not found')
@@ -138,15 +94,23 @@ export const parseResumeDocument = internalAction({
         throw error
       }
 
+      // Narrow internal action reference to avoid deep type instantiation
+      const parseResumeDocumentAction = internalApi.ai.documentProcessor
+        .parseResumeDocument as (
+          ctx: unknown,
+          args: { storageId: string; retryCount?: number }
+        ) => Promise<ParsedResumeData>
+
       return await handleRetryableError(error, retryCount, maxRetries, () =>
-        ctx.runAction(internal.ai.documentProcessor.parseResumeDocument, {
+        ctx.runAction(parseResumeDocumentAction, {
           storageId: args.storageId,
           retryCount: retryCount + 1
         })
       )
     }
-  }
-})
+  },
+  { returns: resumeSchema }
+)
 
 // Helper function to determine if file is a Word document
 function isWordDocument(contentType: string, fileName: string): boolean {

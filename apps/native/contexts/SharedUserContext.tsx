@@ -1,7 +1,7 @@
 import React, { createContext, useContext, ReactNode } from 'react';
 import { api } from '@packages/backend/convex/_generated/api';
 import { useQuery } from 'convex/react';
-import { UserDoc } from '@packages/backend/convex/validators/users';
+import { UserDoc } from '@packages/backend/convex/schemas/users';
 
 export interface SharedUserContextValue {
   user: UserDoc | undefined;

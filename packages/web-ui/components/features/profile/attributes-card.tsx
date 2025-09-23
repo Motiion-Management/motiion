@@ -1,6 +1,6 @@
 import React from 'react'
 import { AccordionCard } from '@/components/ui/accordion-card'
-import { UserDoc } from '@packages/backend/convex/validators/users'
+import { UserDoc } from '@packages/backend/convex/schemas/users'
 import { Stat, StatGroup } from '@/components/features/stats'
 import { calculateAge, formatHeight } from '@/lib/utils'
 

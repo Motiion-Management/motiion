@@ -13,8 +13,9 @@ import {
 } from 'convex-helpers/server/customFunctions'
 import { query } from './_generated/server'
 import { ConvexError } from 'convex/values'
-import { internal } from './_generated/api'
+// Avoid depending on internal API function names here to reduce coupling
 import { Id } from './_generated/dataModel'
+import { internal } from './_generated/api'
 
 export const authQuery = customQuery(
   query,
@@ -27,16 +28,24 @@ export const authQuery = customQuery(
   })
 )
 
+type AuthCtxExtra = {
+  user: {
+    _id: Id<'users'>
+    userId: string
+    isPremium: boolean
+  } | null
+}
+
 export const authAction = customAction(
   action,
-  customCtx(async (ctx) => {
+  customCtx(async (ctx): Promise<AuthCtxExtra> => {
     const tokenId = (await ctx.auth.getUserIdentity())?.subject
 
     if (!tokenId) {
       throw new ConvexError('must be logged in')
     }
 
-    const user: any = await ctx.runQuery(internal.users.getUserByTokenId, {
+    const user: any = await ctx.runQuery(internal.users.getByTokenId, {
       tokenId
     })
 
@@ -62,16 +71,23 @@ export const authMutation = customMutation(
   customCtx(async (ctx) => ({ user: await getUserOrThrow(ctx) }))
 )
 
+type AdminAuthCtxExtra = {
+  user: {
+    _id: Id<'users'>
+    tokenId: string
+  }
+}
+
 export const adminAuthAction = customAction(
   action,
-  customCtx(async (ctx) => {
+  customCtx(async (ctx): Promise<AdminAuthCtxExtra> => {
     const tokenId = (await ctx.auth.getUserIdentity())?.subject
 
     if (!tokenId) {
       throw new ConvexError('must be logged in')
     }
 
-    const user: any = await ctx.runQuery(internal.users.getUserByTokenId, {
+    const user: any = await ctx.runQuery(internal.users.getByTokenId, {
       tokenId
     })
 

@@ -1,7 +1,7 @@
 import { FC } from 'react'
 import { AccordionCard } from '@/components/ui/accordion-card'
 import { Stat, StatGroup } from '@/components/features/stats'
-import { UserDoc } from '@packages/backend/convex/validators/users'
+import { UserDoc } from '@packages/backend/convex/schemas/users'
 
 export const SizingCard: FC<{
   user: UserDoc

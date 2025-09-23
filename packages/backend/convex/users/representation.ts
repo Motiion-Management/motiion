@@ -1,54 +1,77 @@
 import { authMutation } from '../util'
-import { v } from 'convex/values'
+import { zMutation } from 'zodvex'
+import { z } from 'zod'
+import { zid } from 'zodvex'
+import { getActiveProfileTarget } from './profileHelpers'
 
-export const addMyRepresentation = authMutation({
-  args: {
-    agencyId: v.id('agencies')
-  },
-  handler: async (ctx, { agencyId }) => {
-    await ctx.db.patch(ctx.user._id, {
-      representation: {
-        ...ctx.user.representation,
-        agencyId
-      }
+export const addMyRepresentation = zMutation(
+  authMutation,
+  { agencyId: zid('agencies') },
+  async (ctx, { agencyId }) => {
+    const { targetId, profile } = await getActiveProfileTarget(ctx.db, ctx.user)
+    const currentRep = profile?.representation || ctx.user.representation
+
+    const updatedRep = {
+      ...currentRep,
+      agencyId
+    }
+
+    await ctx.db.patch(targetId, {
+      representation: updatedRep
     })
   }
-})
+)
 
-export const removeMyRepresentation = authMutation({
-  args: {},
-  handler: async (ctx) => {
-    await ctx.db.patch(ctx.user._id, {
-      representation: {
-        ...ctx.user.representation,
-        agencyId: undefined
-      }
+export const removeMyRepresentation = zMutation(
+  authMutation,
+  {},
+  async (ctx) => {
+    const { targetId, profile } = await getActiveProfileTarget(ctx.db, ctx.user)
+    const currentRep = profile?.representation || ctx.user.representation
+
+    const updatedRep = {
+      ...currentRep,
+      agencyId: undefined
+    }
+
+    await ctx.db.patch(targetId, {
+      representation: updatedRep
     })
   }
-})
+)
 
-export const setDisplayRep = authMutation({
-  args: {
-    displayRep: v.boolean()
-  },
-  handler: async (ctx, { displayRep }) => {
-    await ctx.db.patch(ctx.user._id, {
-      representation: {
-        ...ctx.user.representation,
-        displayRep
-      }
+export const setDisplayRep = zMutation(
+  authMutation,
+  { displayRep: z.boolean() },
+  async (ctx, { displayRep }) => {
+    const { targetId, profile } = await getActiveProfileTarget(ctx.db, ctx.user)
+    const currentRep = profile?.representation || ctx.user.representation
+
+    const updatedRep = {
+      ...currentRep,
+      displayRep
+    }
+
+    await ctx.db.patch(targetId, {
+      representation: updatedRep
     })
   }
-})
+)
 
-export const dismissRepresentationTip = authMutation({
-  args: {},
-  handler: async (ctx) => {
-    await ctx.db.patch(ctx.user._id, {
-      representation: {
-        ...ctx.user.representation,
-        tipDismissed: true
-      }
+export const dismissRepresentationTip = zMutation(
+  authMutation,
+  {},
+  async (ctx) => {
+    const { targetId, profile } = await getActiveProfileTarget(ctx.db, ctx.user)
+    const currentRep = profile?.representation || ctx.user.representation
+
+    const updatedRep = {
+      ...currentRep,
+      tipDismissed: true
+    }
+
+    await ctx.db.patch(targetId, {
+      representation: updatedRep
     })
   }
-})
+)
