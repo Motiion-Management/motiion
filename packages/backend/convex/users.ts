@@ -10,9 +10,17 @@ import {
 import { authMutation, authQuery, notEmpty } from './util'
 
 import { getAll } from 'convex-helpers/server/relationships'
-import { UserDoc, Users, zUsers } from './schemas/users'
+import { UserDoc, ZodUserDoc, Users, zUsers } from './schemas/users'
 import { z } from 'zod'
-import { zQuery, zMutation, zInternalQuery, zInternalMutation, zCrud } from '@packages/zodvex'
+import {
+  zQuery,
+  zMutation,
+  zInternalQuery,
+  zInternalMutation,
+  zCrud,
+  zodDoc,
+  zodDocOrNull
+} from '@packages/zodvex'
 import { zid } from 'convex-helpers/server/zodV4'
 import { attributesPlainObject } from './schemas/attributes'
 import { NEW_USER_DEFAULTS, formatFullName } from './users/helpers'
@@ -20,11 +28,11 @@ import { AgencyDoc } from './agencies'
 
 export const { read } = zCrud(Users, query, mutation)
 
-export const { create, update: internalUpdate, destroy } = zCrud(
-  Users,
-  internalQuery,
-  internalMutation
-)
+export const {
+  create,
+  update: internalUpdate,
+  destroy
+} = zCrud(Users, internalQuery, internalMutation)
 
 export const { update } = zCrud(Users, authQuery, authMutation)
 
@@ -42,9 +50,16 @@ async function computeDerived(
   return { fullName, searchPattern }
 }
 
-// Return value schemas
-const zUserDoc = z.custom<UserDoc>()
-const zUserDocOrNull = z.union([zUserDoc, z.null()])
+// Return value schemas using logical construction instead of z.custom
+const zUserDoc = zodDoc('users', zUsers)
+// Direct test of zodDoc output
+const testZodDoc: z.infer<typeof zUserDoc> = {} as any
+// Test the extend directly
+const testExtend: z.infer<ReturnType<typeof zUsers.extend>> = {} as any
+// Test that the type is properly inferred - should show full user fields
+const testUserZod: ZodUserDoc = {} as any
+const testUserConvex: UserDoc = {} as any
+const zUserDocOrNull = zodDocOrNull('users', zUsers)
 
 export const getMyUser = zQuery(
   authQuery,

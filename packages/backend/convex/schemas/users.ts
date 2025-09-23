@@ -122,6 +122,8 @@ export const zUsers = z.object(users)
 // Combined table definition with integrated codec
 export const Users = zodTable('users', zUsers)
 export type UserDoc = Doc<'users'>
+// Alternative type derived from Zod schema with proper type information
+export type ZodUserDoc = z.infer<ReturnType<typeof Users.doc>>
 
 // Legacy compatibility export for web app (temporary)
 export const ONBOARDING_STEPS = {
