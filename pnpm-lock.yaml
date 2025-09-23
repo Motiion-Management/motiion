@@ -8878,9 +8878,9 @@ packages:
     resolution: {directory: ../../../zodvex-standalone, type: directory}
     engines: {bun: '>=1.0.0', node: '>=20'}
     peerDependencies:
-      convex: 1.27.3
+      convex: 1.27.0
       convex-helpers: 0.1.101-alpha.1
-      zod: 4.1.11
+      zod: 4.1.8
 
   zustand@4.5.7:
     resolution: {integrity: sha512-CHOUy7mu3lbD6o6LJLfllpjkzhHXSBlX8B9+qPddUsIfeF5S/UZ5q0kmCsnRqT1UHFQZchNFDDzMbQsuesHWlw==}
