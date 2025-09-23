@@ -1,5 +1,5 @@
 {
-  "name": "zodvex",
+  "name": "@packages/zodvex",
   "version": "0.1.0",
   "description": "Zod v4 → Convex validator mapping with correct optional/nullable semantics",
   "keywords": [
