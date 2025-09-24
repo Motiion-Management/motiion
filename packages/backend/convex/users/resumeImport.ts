@@ -286,10 +286,7 @@ export const applyParsedResumeData = authMutation({
       if (experienceIds.length > 0) {
         updates.resume = {
           ...ctx.user.resume,
-          projects: [
-            ...(ctx.user.resume?.projects || []),
-            ...experienceIds
-          ],
+          projects: [...(ctx.user.resume?.projects || []), ...experienceIds],
           skills:
             args.skills.length > 0 ? args.skills : ctx.user.resume?.skills,
           genres: args.genres.length > 0 ? args.genres : ctx.user.resume?.genres

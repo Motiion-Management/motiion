@@ -3,12 +3,12 @@ import { useCallback, useMemo } from 'react';
 import { api } from '@packages/backend/convex/_generated/api';
 import { useMutation } from 'convex/react';
 import { useUser } from './useUser';
-import { 
-  ONBOARDING_GROUPS, 
+import {
+  ONBOARDING_GROUPS,
   ONBOARDING_GROUP_FLOWS,
   type OnboardingGroupKey as GroupKey,
   type OnboardingGroupConfig as GroupConfig,
-  type ProfileType
+  type ProfileType,
 } from '@packages/backend/convex/onboardingConfig';
 
 // Re-export for backwards compatibility
@@ -63,9 +63,13 @@ export function useOnboardingGroupFlow(): UseOnboardingGroupFlowReturn {
 
   // Extract current path info
   const { currentGroup, currentStepId } = useMemo(() => {
-    if (segments.length >= 3 && segments[1] === 'onboarding') {
-      const groupSegment = segments[2] as GroupKey;
-      const stepSegment = segments[3] || 'index';
+    // Handle both old and new expo-router segment formats
+    const isOnboardingRoute = segments.some(segment => segment === 'onboarding');
+    const onboardingIndex = segments.findIndex(segment => segment === 'onboarding');
+
+    if (isOnboardingRoute && onboardingIndex >= 0) {
+      const groupSegment = segments[onboardingIndex + 1] as GroupKey | undefined;
+      const stepSegment = segments[onboardingIndex + 2] || 'index';
 
       // Map URL segments to step IDs
       const stepMap: Record<string, string> = {
@@ -87,8 +91,8 @@ export function useOnboardingGroupFlow(): UseOnboardingGroupFlowReturn {
       };
 
       return {
-        currentGroup: groupSegment,
-        currentStepId: stepMap[stepSegment] || stepSegment,
+        currentGroup: groupSegment || null,
+        currentStepId: groupSegment ? stepMap[stepSegment] || stepSegment : null,
       };
     }
     return { currentGroup: null, currentStepId: null };

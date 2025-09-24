@@ -9,6 +9,7 @@ import Reanimated, {
   scrollTo,
   runOnUI,
 } from 'react-native-reanimated';
+import type { SharedValue } from 'react-native-reanimated';
 import { TabIndicator } from './TabIndicator';
 import { useMeasureFlatListTabsLayout } from './use-measure-flat-list-tabs-layout';
 
@@ -20,8 +21,8 @@ const TAB_BAR_GAP = 24;
 // Minimal local type definitions matching react-native-collapsible-tab-view
 type TabName = string;
 type Props = {
-  focusedTab: Reanimated.SharedValue<TabName>;
-  indexDecimal: Reanimated.SharedValue<number>;
+  focusedTab: SharedValue<TabName>;
+  indexDecimal: SharedValue<number>;
   onTabPress: (name: TabName) => void;
   tabNames: TabName[];
 };

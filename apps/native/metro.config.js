@@ -11,7 +11,9 @@ const projectRoot = __dirname;
 const workspaceRoot = path.resolve(projectRoot, '../..');
 
 const globalCSS = path.resolve(projectRoot, 'global.css');
-const config = getDefaultConfig(projectRoot);
+const config = getDefaultConfig(projectRoot, {
+  isCSSEnabled: true,
+});
 
 // #1 - Watch all files in the monorepo
 config.watchFolders = [workspaceRoot];

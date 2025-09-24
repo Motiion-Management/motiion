@@ -9,6 +9,7 @@ export const featuredMembers = {
 
 export const zFeaturedMembers = z.object(featuredMembers)
 
+const convexFields = zodToConvexFields(featuredMembers)
 export const FeaturedMembers = Table(
   'featuredMembers',
   zodToConvexFields(featuredMembers)
