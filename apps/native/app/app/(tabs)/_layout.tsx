@@ -90,21 +90,25 @@ function CustomTabsLayout() {
 
 function NativeTabsLayout() {
   return (
-    <NativeTabs iconColor="white">
+    <NativeTabs iconColor="#8B8B8B" tintColor="white" disableTransparentOnScrollEdge>
       <NativeTabs.Trigger name="home">
-        <Icon sf="house.fill" drawable="custom_android_drawable" />
+        <Icon sf="house.fill" drawable="custom_android_drawable" selectedColor="white" />
         <Label hidden />
       </NativeTabs.Trigger>
       <NativeTabs.Trigger name="discover">
-        <Icon sf="magnifyingglass" drawable="custom_search_drawable" />
+        <Icon sf="magnifyingglass" drawable="custom_search_drawable" selectedColor="white" />
         <Label hidden />
       </NativeTabs.Trigger>
       <NativeTabs.Trigger name="activity">
-        <Icon sf="note" drawable="custom_notifications_drawable" />
+        <Icon sf="note" drawable="custom_notifications_drawable" selectedColor="white" />
         <Label hidden />
       </NativeTabs.Trigger>
       <NativeTabs.Trigger name="profile">
-        <Icon sf="rectangle.stack.person.crop" drawable="custom_settings_drawable" />
+        <Icon
+          sf="rectangle.stack.person.crop"
+          drawable="custom_settings_drawable"
+          selectedColor="white"
+        />
         <Label hidden />
       </NativeTabs.Trigger>
     </NativeTabs>
@@ -112,9 +116,5 @@ function NativeTabsLayout() {
 }
 
 export default function TabLayout() {
-  return Platform.OS === 'ios' && !isLiquidGlassAvailable() ? (
-    <CustomTabsLayout />
-  ) : (
-    <NativeTabsLayout />
-  );
+  return Platform.OS !== 'ios' ? <CustomTabsLayout /> : <NativeTabsLayout />;
 }
