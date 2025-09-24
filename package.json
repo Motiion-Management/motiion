@@ -17,6 +17,7 @@
     "format": "prettier --write \"**/*.{ts,tsx,js,jsx,json,md}\" --ignore-path .gitignore"
   },
   "devDependencies": {
+    "globby": "^11.1.0",
     "eslint": "^8.57.1",
     "eslint-config-next": "15.4.2",
     "eslint-config-prettier": "^10.1.8",
