@@ -6,7 +6,7 @@ import OpenAI from 'openai'
 import { ConvexError } from 'convex/values'
 import { zInternalAction } from '@packages/zodvex'
 import { z } from 'zod'
-import { zid } from 'convex-helpers/server/zodV4'
+import { zid } from '@packages/zodvex'
 import {
   resumeSchema,
   resumeAISchema,

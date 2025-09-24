@@ -15,6 +15,4 @@ export const agencies = {
   managerList: z.array(zid('users')).optional()
 }
 
-export const zAgencies = z.object(agencies)
-
-export const Agencies = zodTable('agencies', zAgencies)
+export const Agencies = zodTable('agencies', agencies)

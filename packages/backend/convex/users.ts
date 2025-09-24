@@ -21,7 +21,7 @@ import {
   zodDoc,
   zodDocOrNull
 } from '@packages/zodvex'
-import { zid } from 'convex-helpers/server/zodV4'
+import { zid } from '@packages/zodvex'
 import { attributesPlainObject } from './schemas/attributes'
 import { NEW_USER_DEFAULTS, formatFullName } from './users/helpers'
 import { AgencyDoc } from './agencies'

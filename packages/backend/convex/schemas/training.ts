@@ -1,4 +1,4 @@
-import { zid } from 'convex-helpers/server/zodV4'
+import { zid } from '@packages/zodvex'
 import { zodTable } from '@packages/zodvex'
 import { z } from 'zod'
 import { Doc } from '../_generated/dataModel'
@@ -46,7 +46,7 @@ export const zTrainingDoc = zTraining.extend({
   _creationTime: z.number()
 })
 
-export const Training = zodTable('training', zTraining)
+export const Training = zodTable('training', training)
 
 // This is the full document type from the database
 export type TrainingDoc = Doc<'training'>

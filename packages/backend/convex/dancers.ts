@@ -2,7 +2,7 @@ import { query, mutation, internalMutation } from './_generated/server'
 import { ConvexError } from 'convex/values'
 import { zQuery, zMutation, zInternalMutation } from '@packages/zodvex'
 import { z } from 'zod'
-import { zid } from 'convex-helpers/server/zodV4'
+import { zid } from '@packages/zodvex'
 import { authQuery, authMutation } from './util'
 import { Dancers, zCreateDancerInput } from './schemas/dancers'
 

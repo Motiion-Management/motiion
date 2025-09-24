@@ -4,7 +4,7 @@ import { getAll } from 'convex-helpers/server/relationships'
 import { query } from './_generated/server'
 import { zCrud, zMutation, zQuery } from '@packages/zodvex'
 import { z } from 'zod'
-import { zid } from 'convex-helpers/server/zodV4'
+import { zid } from '@packages/zodvex'
 
 // Basic CRUD operations
 export const { read } = zCrud(Training, query, authMutation)

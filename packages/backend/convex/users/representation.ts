@@ -1,7 +1,7 @@
 import { authMutation } from '../util'
 import { zMutation } from '@packages/zodvex'
 import { z } from 'zod'
-import { zid } from 'convex-helpers/server/zodV4'
+import { zid } from '@packages/zodvex'
 import { getActiveProfileTarget } from './profileHelpers'
 
 export const addMyRepresentation = zMutation(

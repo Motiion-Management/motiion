@@ -1,4 +1,4 @@
-import { zid } from 'convex-helpers/server/zodV4'
+import { zid } from '@packages/zodvex'
 import { zodTable } from '@packages/zodvex'
 import { z } from 'zod'
 
@@ -9,4 +9,5 @@ export const featuredMembers = {
 
 export const zFeaturedMembers = z.object(featuredMembers)
 
-export const FeaturedMembers = zodTable('featuredMembers', zFeaturedMembers)
+// Now zodTable can accept either a ZodObject or the raw shape directly
+export const FeaturedMembers = zodTable('featuredMembers', featuredMembers)

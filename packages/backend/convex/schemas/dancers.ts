@@ -1,4 +1,4 @@
-import { zid } from 'convex-helpers/server/zodV4'
+import { zid } from '@packages/zodvex'
 import { zodTable } from '@packages/zodvex'
 import { z } from 'zod'
 import { Doc } from '../_generated/dataModel'
@@ -55,7 +55,7 @@ export const dancers = {
 export const zDancers = z.object(dancers)
 
 // Table definition with indexes
-export const Dancers = zodTable('dancers', zDancers)
+export const Dancers = zodTable('dancers', dancers)
 export type DancerDoc = Doc<'dancers'>
 
 // Helper type for creating a new dancer profile

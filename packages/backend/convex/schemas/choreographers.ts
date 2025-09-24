@@ -1,4 +1,4 @@
-import { zid } from 'convex-helpers/server/zodV4'
+import { zid } from '@packages/zodvex'
 import { zodTable } from '@packages/zodvex'
 import { z } from 'zod'
 import { Doc } from '../_generated/dataModel'
@@ -35,11 +35,13 @@ export const choreographers = {
   // Teaching/Workshop info (future)
   teachingLocations: z.array(zLocation).optional(),
   workshopSchedule: z.any().optional(), // Future: structured event data
-  rates: z.object({
-    hourly: z.number().optional(),
-    daily: z.number().optional(),
-    project: z.string().optional() // "Contact for quote" etc
-  }).optional(),
+  rates: z
+    .object({
+      hourly: z.number().optional(),
+      daily: z.number().optional(),
+      project: z.string().optional() // "Contact for quote" etc
+    })
+    .optional(),
 
   // Search and discovery
   searchPattern: z.string().optional(), // For text search
@@ -66,7 +68,7 @@ export const choreographers = {
 export const zChoreographers = z.object(choreographers)
 
 // Table definition with indexes
-export const Choreographers = zodTable('choreographers', zChoreographers)
+export const Choreographers = zodTable('choreographers', choreographers)
 export type ChoreographerDoc = Doc<'choreographers'>
 
 // Helper type for creating a new choreographer profile

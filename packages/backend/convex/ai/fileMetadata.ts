@@ -2,7 +2,7 @@ import { internalQuery } from '../_generated/server'
 import { Id } from '../_generated/dataModel'
 import { zInternalQuery } from '@packages/zodvex'
 import { z } from 'zod'
-import { zid } from 'convex-helpers/server/zodV4'
+import { zid } from '@packages/zodvex'
 
 // Define the file metadata schema
 const fileMetadataSchema = z.object({

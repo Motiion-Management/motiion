@@ -1,4 +1,4 @@
-import { zid } from 'convex-helpers/server/zodV4'
+import { zid } from '@packages/zodvex'
 import { zodTable, zodToConvex } from '@packages/zodvex'
 import { z } from 'zod'
 import { zFileUploadObjectArray, zLocation } from './base'
@@ -120,10 +120,10 @@ export const users = {
 export const zUsers = z.object(users)
 
 // Combined table definition with integrated codec
-export const Users = zodTable('users', zUsers)
+export const Users = zodTable('users', users)
 export type UserDoc = Doc<'users'>
 // Alternative type derived from Zod schema with proper type information
-export type ZodUserDoc = z.infer<ReturnType<typeof Users.doc>>
+export type ZodUserDoc = typeof Users.doc
 
 // Legacy compatibility export for web app (temporary)
 export const ONBOARDING_STEPS = {

@@ -2,7 +2,7 @@ import { authMutation, authQuery, notEmpty } from '../util'
 import { query } from '../_generated/server'
 import { zQuery, zMutation } from '@packages/zodvex'
 import { z } from 'zod'
-import { zid } from 'convex-helpers/server/zodV4'
+import { zid } from '@packages/zodvex'
 
 // Create a new project for the authenticated user
 export const addMyProject = zMutation(

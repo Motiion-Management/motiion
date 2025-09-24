@@ -1,5 +1,5 @@
 import { zLocation, zVisibility } from './base'
-import { zid } from 'convex-helpers/server/zodV4'
+import { zid } from '@packages/zodvex'
 import { zodTable } from '@packages/zodvex'
 import { z } from 'zod'
 import { Doc } from '../_generated/dataModel'
@@ -32,8 +32,7 @@ export const events = {
     .optional()
 }
 
-export const zEvents = z.object(events)
-export const Events = zodTable('events', zEvents)
+export const Events = zodTable('events', events)
 
 export const generateAttendanceCode = () =>
   ((1 + Math.random() * 9) | 0) +
