@@ -1,4 +1,4 @@
-import { zodTable, zid } from 'zodvex'
+import { zodTable, zid } from '@packages/zodvex'
 import { z } from 'zod'
 import { zLocation } from './base'
 
@@ -15,4 +15,5 @@ export const agencies = {
   managerList: z.array(zid('users')).optional()
 }
 
+export const zAgencies = z.object(agencies)
 export const Agencies = zodTable('agencies', agencies)

@@ -4,7 +4,11 @@ import { zQuery, zMutation, zInternalMutation } from '@packages/zodvex'
 import { z } from 'zod'
 import { zid } from '@packages/zodvex'
 import { authQuery, authMutation } from './util'
-import { Dancers, zCreateDancerInput } from './schemas/dancers'
+import { Dancers, zCreateDancerInput, zDancers, DancerDoc } from './schemas/dancers'
+import { zodDoc, zodDocOrNull } from '@packages/zodvex'
+
+const zDancerDoc = zodDoc('dancers', zDancers)
+const zDancerDocOrNull = zodDocOrNull('dancers', zDancers)
 
 // Get the active dancer profile for the authenticated user
 export const getMyDancerProfile = zQuery(
@@ -20,7 +24,7 @@ export const getMyDancerProfile = zQuery(
 
     return null
   },
-  { returns: z.any().nullable() }
+  { returns: zDancerDocOrNull }
 )
 
 // Get all dancer profiles for a user
@@ -33,7 +37,7 @@ export const getUserDancerProfiles = zQuery(
       .withIndex('by_userId', (q) => q.eq('userId', userId))
       .collect()
   },
-  { returns: z.array(z.any()) }
+  { returns: z.array(zDancerDoc) }
 )
 
 // Create a new dancer profile
@@ -78,7 +82,7 @@ export const updateDancerProfile = zMutation(
   authMutation,
   {
     profileId: zid('dancers'),
-    updates: z.any()
+    updates: zDancers.partial()
   },
   async (ctx, { profileId, updates }) => {
     // Verify ownership
@@ -149,7 +153,7 @@ export const searchDancers = zQuery(
 
     return results
   },
-  { returns: z.array(z.any()) }
+  { returns: z.array(zDancerDoc) }
 )
 
 // Calculate dancer profile completeness percentage
@@ -196,7 +200,7 @@ export const calculateDancerCompleteness = zMutation(
 )
 
 // Helper function to generate search pattern
-function generateSearchPattern(data: any): string {
+function generateSearchPattern(data: Partial<DancerDoc>): string {
   const parts = []
 
   // Add basic info if available

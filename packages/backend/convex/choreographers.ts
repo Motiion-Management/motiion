@@ -4,7 +4,11 @@ import { zQuery, zMutation, zInternalMutation } from '@packages/zodvex'
 import { z } from 'zod'
 import { zid } from '@packages/zodvex'
 import { authQuery, authMutation } from './util'
-import { Choreographers, zCreateChoreographerInput } from './schemas/choreographers'
+import { Choreographers, zCreateChoreographerInput, zChoreographers, ChoreographerDoc } from './schemas/choreographers'
+import { zodDoc, zodDocOrNull } from '@packages/zodvex'
+
+const zChoreographerDoc = zodDoc('choreographers', zChoreographers)
+const zChoreographerDocOrNull = zodDocOrNull('choreographers', zChoreographers)
 
 // Get the active choreographer profile for the authenticated user
 export const getMyChoreographerProfile = zQuery(
@@ -20,7 +24,7 @@ export const getMyChoreographerProfile = zQuery(
 
     return null
   },
-  { returns: z.any().nullable() }
+  { returns: zChoreographerDocOrNull }
 )
 
 // Get all choreographer profiles for a user
@@ -33,7 +37,7 @@ export const getUserChoreographerProfiles = zQuery(
       .withIndex('by_userId', (q) => q.eq('userId', userId))
       .collect()
   },
-  { returns: z.array(z.any()) }
+  { returns: z.array(zChoreographerDoc) }
 )
 
 // Create a new choreographer profile
@@ -80,7 +84,7 @@ export const updateChoreographerProfile = zMutation(
   authMutation,
   {
     profileId: zid('choreographers'),
-    updates: z.any()
+    updates: zChoreographers.partial()
   },
   async (ctx, { profileId, updates }) => {
     // Verify ownership
@@ -137,7 +141,7 @@ export const getVerifiedChoreographers = zQuery(
       .withIndex('by_verified', (q) => q.eq('verified', true))
       .take(limit)
   },
-  { returns: z.array(z.any()) }
+  { returns: z.array(zChoreographerDoc) }
 )
 
 // Delete choreographer profile (internal only, for cleanup)
@@ -174,7 +178,7 @@ export const searchChoreographers = zQuery(
 
     return results.slice(0, limit)
   },
-  { returns: z.array(z.any()) }
+  { returns: z.array(zChoreographerDoc) }
 )
 
 // Admin function to verify a choreographer
@@ -231,7 +235,7 @@ export const calculateChoreographerCompleteness = zMutation(
 )
 
 // Helper function to generate search pattern
-function generateSearchPattern(data: any): string {
+function generateSearchPattern(data: Partial<ChoreographerDoc>): string {
   const parts = []
 
   // Add company name

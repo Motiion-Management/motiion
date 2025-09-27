@@ -1,5 +1,5 @@
 import { authMutation, authQuery, notEmpty } from './util'
-import { Training, trainingInput, zTrainingInput } from './schemas/training'
+import { Training, trainingInput, zTrainingInput, zTrainingFormDoc } from './schemas/training'
 import { getAll } from 'convex-helpers/server/relationships'
 import { query } from './_generated/server'
 import { zCrud, zMutation, zQuery } from '@packages/zodvex'
@@ -69,7 +69,8 @@ export const addMyTraining = zMutation(
     }
 
     return null
-  }
+  },
+  { returns: z.null() }
 )
 
 // Remove training from user
@@ -104,7 +105,8 @@ export const removeMyTraining = zMutation(
 
     await ctx.db.delete(args.trainingId)
     return null
-  }
+  },
+  { returns: z.null() }
 )
 
 // Get user's training
@@ -135,8 +137,9 @@ export const getMyTraining = zQuery(
     return training
       .filter(notEmpty)
       .sort((a, b) => (a.orderIndex || 0) - (b.orderIndex || 0))
-      .map(({ orderIndex, userId, profileType, profileId, ...rest }: any) => rest)
-  }
+      .map(({ orderIndex, userId, profileType, profileId, ...rest }) => rest)
+  },
+  { returns: z.array(zTrainingFormDoc) }
 )
 
 // Get user's training by type
@@ -168,8 +171,9 @@ export const getMyTrainingByType = zQuery(
       .filter(notEmpty)
       .filter((t) => t.type === args.type)
       .sort((a, b) => (a.orderIndex || 0) - (b.orderIndex || 0))
-      .map(({ orderIndex, userId, profileType, profileId, ...rest }: any) => rest)
-  }
+      .map(({ orderIndex, userId, profileType, profileId, ...rest }) => rest)
+  },
+  { returns: z.array(zTrainingFormDoc) }
 )
 
 // Reorder training items
@@ -184,7 +188,8 @@ export const reorderMyTraining = zMutation(
       })
     }
     return null
-  }
+  },
+  { returns: z.null() }
 )
 
 // Get public training for a user
@@ -201,6 +206,7 @@ export const getUserPublicTraining = zQuery(
     return training
       .filter(notEmpty)
       .sort((a, b) => (a.orderIndex || 0) - (b.orderIndex || 0))
-      .map(({ orderIndex, userId, ...rest }: any) => rest)
-  }
+      .map(({ orderIndex, userId, ...rest }) => rest)
+  },
+  { returns: z.array(zTrainingFormDoc) }
 )
