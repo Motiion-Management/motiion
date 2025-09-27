@@ -37,8 +37,8 @@ export const {
 export const { update } = zCrud(Users, authQuery, authMutation)
 
 async function computeDerived(
-  ctx: { db: { get: (id: any) => Promise<any> } },
-  user: any
+  ctx: { db: { get: (id: any) => Promise<AgencyDoc | null> } },
+  user: Partial<UserDoc>
 ): Promise<{ fullName: string; searchPattern: string }> {
   let agency: AgencyDoc | null = null
   if (user.representation?.agencyId) {
@@ -50,15 +50,7 @@ async function computeDerived(
   return { fullName, searchPattern }
 }
 
-// Return value schemas using logical construction instead of z.custom
-const zUserDoc = zodDoc('users', zUsers)
-// Direct test of zodDoc output
-const testZodDoc: z.infer<typeof zUserDoc> = {} as any
-// Test the extend directly
-const testExtend: z.infer<ReturnType<typeof zUsers.extend>> = {} as any
-// Test that the type is properly inferred - should show full user fields
-const testUserZod: ZodUserDoc = {} as any
-const testUserConvex: UserDoc = {} as any
+// Return value schemas
 const zUserDocOrNull = zodDocOrNull('users', zUsers)
 
 export const getMyUser = zQuery(
@@ -162,7 +154,8 @@ export const updateMyUser = zMutation(
     // Only update user's account-level fields
     // Profile-specific fields should be updated through profile-specific functions
     await ctx.db.patch(ctx.user._id, { ...args, ...derived })
-  }
+  },
+  { returns: z.null() }
 )
 
 export const updateMySizingField = zMutation(
@@ -292,7 +285,7 @@ export const getUserByTokenId = zInternalQuery(
   async (ctx, { tokenId }) => {
     return await ctx.db
       .query('users')
-      .withIndex('tokenId', (q: any) => q.eq('tokenId', tokenId))
+      .withIndex('tokenId', (q) => q.eq('tokenId', tokenId))
       .first()
   },
   { returns: zUserDocOrNull }
@@ -305,7 +298,7 @@ export const getByTokenId = zInternalQuery(
   async (ctx, { tokenId }) => {
     const user = await ctx.db
       .query('users')
-      .withIndex('tokenId', (q: any) => q.eq('tokenId', tokenId))
+      .withIndex('tokenId', (q) => q.eq('tokenId', tokenId))
       .unique()
     return user
   },
@@ -377,7 +370,7 @@ export const deleteUserByTokenId = zInternalMutation(
   async (ctx, { tokenId }) => {
     const user = await ctx.db
       .query('users')
-      .withIndex('tokenId', (q: any) => q.eq('tokenId', tokenId))
+      .withIndex('tokenId', (q) => q.eq('tokenId', tokenId))
       .unique()
     if (!user) throw new ConvexError('user not found')
     await ctx.db.delete(user._id)
@@ -390,9 +383,7 @@ export const search = zQuery(
   async (ctx, { query }) => {
     const results = await ctx.db
       .query('users')
-      .withSearchIndex('search_user', (q: any) =>
-        q.search('searchPattern', query)
-      )
+      .withSearchIndex('search_user', (q) => q.search('searchPattern', query))
       .take(10)
 
     const fullResults = await Promise.all(
@@ -482,12 +473,24 @@ export const getFavoriteUsersForCarousel = zQuery(
         }
       })
     )
+  },
+  {
+    returns: z
+      .array(
+        z.object({
+          userId: zid('users'),
+          label: z.string(),
+          headshotUrl: z.string()
+        })
+      )
+      .optional()
   }
 )
 
-export const paginateProfiles = query({
-  args: { paginationOpts: paginationOptsValidator },
-  handler: async (ctx, args) => {
+export const paginateProfiles = zQuery(
+  query,
+  { paginationOpts: z.custom<typeof paginationOptsValidator>() },
+  async (ctx, args) => {
     const results = await filter(
       ctx.db.query('users'),
       async (user) => user.onboardingCompleted === true
@@ -496,7 +499,7 @@ export const paginateProfiles = query({
     return {
       ...results,
       page: await Promise.all(
-        results.page.map(async (user: any) => {
+        results.page.map(async (user) => {
           const headshots = user.headshots?.filter(notEmpty) || []
           return {
             userId: user._id,
@@ -508,8 +511,21 @@ export const paginateProfiles = query({
         })
       )
     }
+  },
+  {
+    returns: z.object({
+      page: z.array(
+        z.object({
+          userId: zid('users'),
+          label: z.string(),
+          headshotUrl: z.string()
+        })
+      ),
+      isDone: z.boolean(),
+      continueCursor: z.string()
+    })
   }
-})
+)
 
 export const isFavoriteUser = zQuery(
   authQuery,
@@ -545,5 +561,6 @@ export const saveMyPushToken = zMutation(
     type PushToken = NonNullable<UserDoc['pushTokens']>[number]
     const typed = updated as PushToken[]
     await ctx.db.patch(ctx.user._id, { pushTokens: typed })
-  }
+  },
+  { returns: z.null() }
 )
