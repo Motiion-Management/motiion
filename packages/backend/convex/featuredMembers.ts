@@ -1,8 +1,10 @@
 import { query, mutation } from './_generated/server'
 import { authMutation, authQuery, notEmpty } from './util'
-import { zCrud, zQuery } from '@packages/zodvex'
+import { zCrud, zQuery, zid } from '@packages/zodvex'
 import { FeaturedMembers } from './schemas/featuredMembers'
 import { getAll } from 'convex-helpers/server/relationships'
+import { z } from 'zod'
+import { UserDoc } from './schemas/users'
 
 export const { read } = zCrud(FeaturedMembers, query, mutation)
 
@@ -11,6 +13,12 @@ export const { create, update, destroy } = zCrud(
   authQuery,
   authMutation
 )
+
+const zFeaturedUser = z.object({
+  userId: zid('users'),
+  label: z.string(),
+  headshotUrl: z.string()
+})
 
 export const getFeaturedChoreographers = zQuery(
   query,
@@ -23,7 +31,7 @@ export const getFeaturedChoreographers = zQuery(
       return
     }
     return Promise.all(
-      users.filter(notEmpty).map(async (user: any) => {
+      users.filter(notEmpty).map(async (user) => {
         const headshots = user.headshots?.filter(notEmpty) || []
         return {
           userId: user._id,
@@ -34,7 +42,8 @@ export const getFeaturedChoreographers = zQuery(
         }
       })
     )
-  }
+  },
+  { returns: z.array(zFeaturedUser).optional() }
 )
 
 export const getFeaturedTalent = zQuery(
@@ -48,7 +57,7 @@ export const getFeaturedTalent = zQuery(
       return
     }
     return Promise.all(
-      users.filter(notEmpty).map(async (user: any) => {
+      users.filter(notEmpty).map(async (user) => {
         const headshots = user.headshots?.filter(notEmpty) || []
         return {
           userId: user._id,
@@ -59,5 +68,6 @@ export const getFeaturedTalent = zQuery(
         }
       })
     )
-  }
+  },
+  { returns: z.array(zFeaturedUser).optional() }
 )
