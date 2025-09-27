@@ -55,7 +55,7 @@ export const createChoreographerProfile = zMutation(
     const isPrimary = !existing
 
     // Create the choreographer profile
-    const profileId = await ctx.db.insert('choreographers', {
+    const insertData: any = {
       ...input,
       userId: ctx.user._id,
       isPrimary,
@@ -64,7 +64,8 @@ export const createChoreographerProfile = zMutation(
       verified: false,
       featured: false,
       searchPattern: generateSearchPattern(input)
-    })
+    }
+    const profileId = await ctx.db.insert('choreographers', insertData)
 
     // If this is the first choreographer profile, set it as active
     if (isPrimary) {
@@ -98,10 +99,11 @@ export const updateChoreographerProfile = zMutation(
     delete updates.featured
 
     // Update the profile
-    await ctx.db.patch(profileId, {
+    const patchData: any = {
       ...updates,
       searchPattern: generateSearchPattern({ ...profile, ...updates })
-    })
+    }
+    await ctx.db.patch(profileId, patchData)
 
     return { success: true }
   },
@@ -216,13 +218,20 @@ export const calculateChoreographerCompleteness = zMutation(
     }
 
     let score = 0
-    if (profile.headshots && profile.headshots.length > 0) score += weights.headshots
+    if (profile.headshots && Array.isArray(profile.headshots) && profile.headshots.length > 0)
+      score += weights.headshots
     if (profile.companyName) score += weights.companyName
     if (profile.resume) score += weights.resume
-    if (profile.specialties && profile.specialties.length > 0) score += weights.specialties
+    if (profile.specialties && Array.isArray(profile.specialties) && profile.specialties.length > 0)
+      score += weights.specialties
     if (profile.location) score += weights.location
     if (profile.links) score += weights.links
-    if (profile.notableWorks && profile.notableWorks.length > 0) score += weights.notableWorks
+    if (
+      profile.notableWorks &&
+      Array.isArray(profile.notableWorks) &&
+      profile.notableWorks.length > 0
+    )
+      score += weights.notableWorks
 
     const completeness = Math.min(100, Math.round(score))
 
@@ -235,7 +244,7 @@ export const calculateChoreographerCompleteness = zMutation(
 )
 
 // Helper function to generate search pattern
-function generateSearchPattern(data: Partial<ChoreographerDoc>): string {
+function generateSearchPattern(data: any): string {
   const parts = []
 
   // Add company name

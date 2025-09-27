@@ -25,14 +25,14 @@ export const getFeaturedChoreographers = zQuery(
   {},
   async (ctx) => {
     const result = await ctx.db.query('featuredMembers').first()
-    const users = await getAll(ctx.db, result?.choreographers || [])
+    const users = await getAll(ctx.db as any, result?.choreographers || [])
 
     if (users.length === 0) {
       return
     }
     return Promise.all(
       users.filter(notEmpty).map(async (user) => {
-        const headshots = user.headshots?.filter(notEmpty) || []
+        const headshots: any = Array.isArray(user.headshots) ? user.headshots.filter(notEmpty) : []
         return {
           userId: user._id,
           label: user.displayName || user.fullName || '',
@@ -41,7 +41,7 @@ export const getFeaturedChoreographers = zQuery(
             : ''
         }
       })
-    )
+    ) as any
   },
   { returns: z.array(zFeaturedUser).optional() }
 )
@@ -51,14 +51,14 @@ export const getFeaturedTalent = zQuery(
   {},
   async (ctx) => {
     const result = await ctx.db.query('featuredMembers').first()
-    const users = await getAll(ctx.db, result?.talent || [])
+    const users = await getAll(ctx.db as any, result?.talent || [])
 
     if (users.length === 0) {
       return
     }
     return Promise.all(
       users.filter(notEmpty).map(async (user) => {
-        const headshots = user.headshots?.filter(notEmpty) || []
+        const headshots: any = Array.isArray(user.headshots) ? user.headshots.filter(notEmpty) : []
         return {
           userId: user._id,
           label: user.displayName || user.fullName || '',
@@ -67,7 +67,7 @@ export const getFeaturedTalent = zQuery(
             : ''
         }
       })
-    )
+    ) as any
   },
   { returns: z.array(zFeaturedUser).optional() }
 )

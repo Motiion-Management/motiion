@@ -77,11 +77,11 @@ export const getMyResume = zQuery(
 
       if (profile?.resume) {
         // Create a user object with profile's resume for augmentResume
-        userWithResume = { ...ctx.user, resume: profile.resume }
+        userWithResume = { ...ctx.user, resume: profile.resume as any }
       }
     }
 
-    return await augmentResume(ctx, userWithResume)
+    return await augmentResume(ctx as any, userWithResume)
   }
 )
 
@@ -102,11 +102,11 @@ export const getMyExperienceCounts = zQuery(
       }
 
       if (profile?.resume) {
-        resume = profile.resume
+        resume = profile.resume as any
       }
     }
 
-    const exp = resume?.projects
+    const exp: any = resume?.projects
     const experiences = exp ? await getAll(ctx.db, exp) : []
 
     return EXPERIENCE_TYPES.map((type) => ({
@@ -123,8 +123,8 @@ export const getUserPublicExperienceCounts = zQuery(
   async (ctx, args) => {
     const user = await ctx.db.get(args.id)
 
-    const exp = user?.resume?.projects
-    const experiences = (exp ? await getAll(ctx.db, exp) : []).filter(
+    const exp: any = user?.resume?.projects
+    const experiences = (exp ? await getAll(ctx.db as any, exp) : []).filter(
       (e) => !e?.private
     )
 

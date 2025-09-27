@@ -10,16 +10,14 @@ import {
 import { authMutation, authQuery, notEmpty } from './util'
 
 import { getAll } from 'convex-helpers/server/relationships'
-import { UserDoc, ZodUserDoc, Users, zUsers } from './schemas/users'
+import { UserDoc, Users, zUsers } from './schemas/users'
 import { z } from 'zod'
 import {
   zQuery,
   zMutation,
   zInternalQuery,
   zInternalMutation,
-  zCrud,
-  zodDoc,
-  zodDocOrNull
+  zCrud
 } from '@packages/zodvex'
 import { zid } from '@packages/zodvex'
 import { attributesPlainObject } from './schemas/attributes'
@@ -37,7 +35,7 @@ export const {
 export const { update } = zCrud(Users, authQuery, authMutation)
 
 async function computeDerived(
-  ctx: { db: { get: (id: any) => Promise<AgencyDoc | null> } },
+  ctx: { db: { get: (id: any) => Promise<any> } },
   user: Partial<UserDoc>
 ): Promise<{ fullName: string; searchPattern: string }> {
   let agency: AgencyDoc | null = null
@@ -45,13 +43,14 @@ async function computeDerived(
     agency = await ctx.db.get(user.representation.agencyId)
   }
   const fullName = formatFullName(user.firstName, user.lastName)
-  const searchPattern = `${fullName} ${user.displayName || ''} ${user.location?.city || ''
-    } ${user.location?.state || ''} ${agency?.name || ''}`.trim()
+  const searchPattern = `${fullName} ${user.displayName || ''} ${
+    user.location?.city || ''
+  } ${user.location?.state || ''} ${agency?.name || ''}`.trim()
   return { fullName, searchPattern }
 }
 
 // Return value schemas
-const zUserDocOrNull = zodDocOrNull('users', zUsers)
+const zUserDocOrNull = Users.zDoc.nullable()
 
 export const getMyUser = zQuery(
   authQuery,
@@ -100,7 +99,7 @@ export const getMyUser = zQuery(
       if (profile) {
         // Merge profile data back into user for backward compatibility
         // Profile data takes precedence over user data
-        const mergedUser = {
+        const mergedUser: any = {
           ...ctx.user,
           // Profile fields that might differ
           headshots: profile.headshots || ctx.user.headshots,
@@ -116,20 +115,20 @@ export const getMyUser = zQuery(
           // Dancer-specific
           ...(ctx.user.activeProfileType === 'dancer'
             ? {
-              sagAftraId: profile.sagAftraId || ctx.user.sagAftraId,
-              training: profile.training || ctx.user.training,
-              workLocation: profile.workLocation || ctx.user.workLocation,
-              location: profile.location || ctx.user.location
-            }
+                sagAftraId: profile.sagAftraId || ctx.user.sagAftraId,
+                training: profile.training || ctx.user.training,
+                workLocation: profile.workLocation || ctx.user.workLocation,
+                location: profile.location || ctx.user.location
+              }
             : {}),
           // Choreographer-specific
           ...(ctx.user.activeProfileType === 'choreographer'
             ? {
-              companyName: profile.companyName || ctx.user.companyName,
-              workLocation: profile.workLocation || ctx.user.workLocation,
-              location: profile.location || ctx.user.location,
-              databaseUse: profile.databaseUse || ctx.user.databaseUse
-            }
+                companyName: profile.companyName || ctx.user.companyName,
+                workLocation: profile.workLocation || ctx.user.workLocation,
+                location: profile.location || ctx.user.location,
+                databaseUse: profile.databaseUse || ctx.user.databaseUse
+              }
             : {})
         }
 
@@ -148,12 +147,19 @@ export const updateMyUser = zMutation(
   authMutation,
   zUsers.partial(),
   async (ctx, args) => {
-    const nextUser = { ...ctx.user, ...args }
+    const nextUser = {
+      firstName: args.firstName ?? ctx.user.firstName,
+      lastName: args.lastName ?? ctx.user.lastName,
+      displayName: args.displayName ?? ctx.user.displayName,
+      location: args.location ?? ctx.user.location,
+      representation: args.representation ?? ctx.user.representation
+    }
     const derived = await computeDerived(ctx, nextUser)
 
     // Only update user's account-level fields
     // Profile-specific fields should be updated through profile-specific functions
     await ctx.db.patch(ctx.user._id, { ...args, ...derived })
+    return null
   },
   { returns: z.null() }
 )
@@ -180,9 +186,11 @@ export const updateMySizingField = zMutation(
       if (profileId) {
         const profile = await ctx.db.get(profileId)
         if (profile) {
-          const currentSizing: Record<string, unknown> = profile.sizing || {}
-          const currentSection: Record<string, unknown> =
-            (currentSizing as any)[section] || {}
+          const currentSizing = (profile.sizing || {}) as Record<string, any>
+          const currentSection = (currentSizing[section] || {}) as Record<
+            string,
+            any
+          >
           const updatedSection = {
             ...currentSection,
             [field]: value
@@ -199,9 +207,8 @@ export const updateMySizingField = zMutation(
     }
 
     // Fallback to user if no profile
-    const currentSizing: Record<string, unknown> = ctx.user.sizing || {}
-    const currentSection: Record<string, unknown> =
-      (currentSizing as any)[section] || {}
+    const currentSizing = ctx.user.sizing || {}
+    const currentSection = (currentSizing as Record<string, any>)[section] || {}
     const updatedSection = {
       ...currentSection,
       [field]: value
@@ -353,7 +360,14 @@ export const updateOrCreateUserByTokenId = zInternalMutation(
       }
     } else {
       console.log('✨ CONVEX_USER_SYNC: Creating new user', data.tokenId)
-      await ctx.db.insert('users', { ...NEW_USER_DEFAULTS, ...userData })
+      if (!parsed.email) {
+        throw new Error('Email is required when creating a new user')
+      }
+      await ctx.db.insert('users', {
+        ...NEW_USER_DEFAULTS,
+        ...userData,
+        email: parsed.email
+      })
     }
 
     console.log('✅ CONVEX_USER_SYNC: User sync completed', {
@@ -391,9 +405,9 @@ export const search = zQuery(
         let headshot
         let representationName
         if (result.representation?.agencyId) {
-          const representation = await ctx.db.get(
+          const representation = (await ctx.db.get(
             result.representation.agencyId
-          )
+          )) as AgencyDoc | null
           representationName = representation?.shortName || representation?.name
         }
 
@@ -478,7 +492,7 @@ export const getFavoriteUsersForCarousel = zQuery(
     returns: z
       .array(
         z.object({
-          userId: zid('users'),
+          userId: z.string(),
           label: z.string(),
           headshotUrl: z.string()
         })
@@ -489,17 +503,24 @@ export const getFavoriteUsersForCarousel = zQuery(
 
 export const paginateProfiles = zQuery(
   query,
-  { paginationOpts: z.custom<typeof paginationOptsValidator>() },
+  {
+    paginationOpts: z.object({
+      numItems: z.number(),
+      cursor: z.string().nullable()
+    })
+  },
   async (ctx, args) => {
-    const results = await filter(
-      ctx.db.query('users'),
-      async (user) => user.onboardingCompleted === true
+    const results = await (
+      filter(
+        ctx.db.query('users') as any,
+        async (user: any) => user.onboardingCompleted === true
+      ) as any
     ).paginate(args.paginationOpts)
 
     return {
       ...results,
       page: await Promise.all(
-        results.page.map(async (user) => {
+        results.page.map(async (user: UserDoc) => {
           const headshots = user.headshots?.filter(notEmpty) || []
           return {
             userId: user._id,
@@ -516,7 +537,7 @@ export const paginateProfiles = zQuery(
     returns: z.object({
       page: z.array(
         z.object({
-          userId: zid('users'),
+          userId: z.string(),
           label: z.string(),
           headshotUrl: z.string()
         })
@@ -531,7 +552,7 @@ export const isFavoriteUser = zQuery(
   authQuery,
   { userId: zid('users') },
   async (ctx, { userId }) => {
-    return ctx.user && (ctx.user.favoriteUsers || []).includes(userId)
+    return !!(ctx.user && (ctx.user.favoriteUsers || []).includes(userId))
   },
   { returns: z.boolean() }
 )
@@ -561,6 +582,7 @@ export const saveMyPushToken = zMutation(
     type PushToken = NonNullable<UserDoc['pushTokens']>[number]
     const typed = updated as PushToken[]
     await ctx.db.patch(ctx.user._id, { pushTokens: typed })
+    return null
   },
   { returns: z.null() }
 )

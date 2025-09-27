@@ -5,11 +5,7 @@ import { zFileUploadObjectArray } from './schemas/base'
 import type { RegisteredMutation } from 'convex/server'
 import type { DataModel } from './_generated/dataModel'
 
-export const generateUploadUrl: RegisteredMutation<
-  'public',
-  Record<string, never>,
-  Promise<string>
-> = authMutation({
+export const generateUploadUrl = authMutation({
   handler: async (ctx) => {
     return await ctx.storage.generateUploadUrl()
   }

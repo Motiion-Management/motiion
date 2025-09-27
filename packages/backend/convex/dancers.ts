@@ -1,43 +1,31 @@
 import { query, mutation, internalMutation } from './_generated/server'
 import { ConvexError } from 'convex/values'
-import { zQuery, zMutation, zInternalMutation } from '@packages/zodvex'
+import {
+  zid,
+  zQuery,
+  zMutation,
+  zInternalMutation,
+  zCrud
+} from '@packages/zodvex'
 import { z } from 'zod'
-import { zid } from '@packages/zodvex'
 import { authQuery, authMutation } from './util'
-import { Dancers, zCreateDancerInput, zDancers, DancerDoc } from './schemas/dancers'
-import { zodDoc, zodDocOrNull } from '@packages/zodvex'
+import { Dancers, zCreateDancerInput, zDancers } from './schemas/dancers'
+import { zodDoc } from '@packages/zodvex'
+import { crud } from 'convex-helpers/server/crud'
+import schema from './schema'
 
-const zDancerDoc = zodDoc('dancers', zDancers)
-const zDancerDocOrNull = zodDocOrNull('dancers', zDancers)
-
-// Get the active dancer profile for the authenticated user
-export const getMyDancerProfile = zQuery(
-  authQuery,
-  {},
-  async (ctx) => {
-    if (!ctx.user) return null
-
-    // Use discriminate value from users table for efficient lookup
-    if (ctx.user.activeProfileType === 'dancer' && ctx.user.activeDancerId) {
-      return await ctx.db.get(ctx.user.activeDancerId)
-    }
-
-    return null
-  },
-  { returns: zDancerDocOrNull }
+export const { create, read, update, destroy, paginate } = crud(
+  schema,
+  'dancers'
 )
 
-// Get all dancer profiles for a user
-export const getUserDancerProfiles = zQuery(
+export const get = zQuery(
   query,
-  { userId: zid('users') },
-  async (ctx, { userId }) => {
-    return await ctx.db
-      .query('dancers')
-      .withIndex('by_userId', (q) => q.eq('userId', userId))
-      .collect()
+  { id: zid('dancers') },
+  async (ctx, args) => {
+    return await ctx.db.get(args.id)
   },
-  { returns: z.array(zDancerDoc) }
+  { returns: Dancers.zDoc.nullable() }
 )
 
 // Create a new dancer profile
@@ -55,14 +43,15 @@ export const createDancerProfile = zMutation(
     const isPrimary = !existing
 
     // Create the dancer profile
-    const profileId = await ctx.db.insert('dancers', {
+    const insertData: any = {
       ...input,
       userId: ctx.user._id,
       isPrimary,
       createdAt: new Date().toISOString(),
       profileCompleteness: 0,
       searchPattern: generateSearchPattern(input)
-    })
+    }
+    const profileId = await ctx.db.insert('dancers', insertData)
 
     // If this is the first dancer profile, set it as active
     if (isPrimary) {
@@ -92,10 +81,11 @@ export const updateDancerProfile = zMutation(
     }
 
     // Update the profile
-    await ctx.db.patch(profileId, {
+    const patchData: any = {
       ...updates,
       searchPattern: generateSearchPattern({ ...profile, ...updates })
-    })
+    }
+    await ctx.db.patch(profileId, patchData)
 
     return { success: true }
   },
@@ -153,7 +143,7 @@ export const searchDancers = zQuery(
 
     return results
   },
-  { returns: z.array(zDancerDoc) }
+  { returns: z.array(Dancers.zDoc) }
 )
 
 // Calculate dancer profile completeness percentage
@@ -179,12 +169,36 @@ export const calculateDancerCompleteness = zMutation(
     }
 
     let score = 0
-    if (profile.headshots && profile.headshots.length > 0) score += weights.headshots
+    if (
+      profile.headshots &&
+      Array.isArray(profile.headshots) &&
+      profile.headshots.length > 0
+    )
+      score += weights.headshots
     if (profile.attributes) score += weights.attributes
     if (profile.sizing) score += weights.sizing
-    if (profile.resume?.projects && profile.resume.projects.length > 0) score += weights.resume
-    if (profile.resume?.skills && profile.resume.skills.length > 0) score += weights.skills
-    if (profile.training && profile.training.length > 0) score += weights.training
+    if (
+      profile.resume &&
+      typeof profile.resume === 'object' &&
+      'projects' in profile.resume &&
+      Array.isArray(profile.resume.projects) &&
+      profile.resume.projects.length > 0
+    )
+      score += weights.resume
+    if (
+      profile.resume &&
+      typeof profile.resume === 'object' &&
+      'skills' in profile.resume &&
+      Array.isArray(profile.resume.skills) &&
+      profile.resume.skills.length > 0
+    )
+      score += weights.skills
+    if (
+      profile.training &&
+      Array.isArray(profile.training) &&
+      profile.training.length > 0
+    )
+      score += weights.training
     if (profile.location) score += weights.location
     if (profile.links) score += weights.links
     if (profile.representation) score += weights.representation
@@ -200,7 +214,7 @@ export const calculateDancerCompleteness = zMutation(
 )
 
 // Helper function to generate search pattern
-function generateSearchPattern(data: Partial<DancerDoc>): string {
+function generateSearchPattern(data: any): string {
   const parts = []
 
   // Add basic info if available

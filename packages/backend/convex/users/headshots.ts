@@ -23,8 +23,8 @@ export const getMyHeadshots = zQuery(
         profile = await ctx.db.get(ctx.user.activeChoreographerId)
       }
 
-      if (profile?.headshots) {
-        headshots = profile.headshots
+      if (profile?.headshots && Array.isArray(profile.headshots)) {
+        headshots = profile.headshots as any
       }
     }
 
@@ -81,21 +81,21 @@ export const saveHeadshotIds = zMutation(
     if (!ctx.user) return
 
     // Determine where to save headshots
-    let targetId = ctx.user._id
-    let currentHeadshots = ctx.user.headshots || []
+    let targetId: any = ctx.user._id
+    let currentHeadshots: any = ctx.user.headshots || []
 
     if (ctx.user.activeProfileType && (ctx.user.activeDancerId || ctx.user.activeChoreographerId)) {
       if (ctx.user.activeProfileType === 'dancer' && ctx.user.activeDancerId) {
         const profile = await ctx.db.get(ctx.user.activeDancerId)
         if (profile) {
           targetId = ctx.user.activeDancerId
-          currentHeadshots = profile.headshots || []
+          currentHeadshots = Array.isArray(profile.headshots) ? profile.headshots : []
         }
       } else if (ctx.user.activeProfileType === 'choreographer' && ctx.user.activeChoreographerId) {
         const profile = await ctx.db.get(ctx.user.activeChoreographerId)
         if (profile) {
           targetId = ctx.user.activeChoreographerId
-          currentHeadshots = profile.headshots || []
+          currentHeadshots = Array.isArray(profile.headshots) ? profile.headshots : []
         }
       }
     }
@@ -132,21 +132,21 @@ export const removeHeadshot = zMutation(
     await ctx.storage.delete(args.headshotId)
 
     // Determine where to remove from
-    let targetId = ctx.user._id
-    let currentHeadshots = ctx.user.headshots || []
+    let targetId: any = ctx.user._id
+    let currentHeadshots: any = ctx.user.headshots || []
 
     if (ctx.user.activeProfileType && (ctx.user.activeDancerId || ctx.user.activeChoreographerId)) {
       if (ctx.user.activeProfileType === 'dancer' && ctx.user.activeDancerId) {
         const profile = await ctx.db.get(ctx.user.activeDancerId)
         if (profile) {
           targetId = ctx.user.activeDancerId
-          currentHeadshots = profile.headshots || []
+          currentHeadshots = Array.isArray(profile.headshots) ? profile.headshots : []
         }
       } else if (ctx.user.activeProfileType === 'choreographer' && ctx.user.activeChoreographerId) {
         const profile = await ctx.db.get(ctx.user.activeChoreographerId)
         if (profile) {
           targetId = ctx.user.activeChoreographerId
-          currentHeadshots = profile.headshots || []
+          currentHeadshots = Array.isArray(profile.headshots) ? profile.headshots : []
         }
       }
     }
@@ -176,21 +176,21 @@ export const updateHeadshotPosition = zMutation(
     if (!ctx.user) return
 
     // Determine where to update
-    let targetId = ctx.user._id
-    let current = ctx.user.headshots || []
+    let targetId: any = ctx.user._id
+    let current: any = ctx.user.headshots || []
 
     if (ctx.user.activeProfileType && (ctx.user.activeDancerId || ctx.user.activeChoreographerId)) {
       if (ctx.user.activeProfileType === 'dancer' && ctx.user.activeDancerId) {
         const profile = await ctx.db.get(ctx.user.activeDancerId)
         if (profile) {
           targetId = ctx.user.activeDancerId
-          current = profile.headshots || []
+          current = Array.isArray(profile.headshots) ? profile.headshots : []
         }
       } else if (ctx.user.activeProfileType === 'choreographer' && ctx.user.activeChoreographerId) {
         const profile = await ctx.db.get(ctx.user.activeChoreographerId)
         if (profile) {
           targetId = ctx.user.activeChoreographerId
-          current = profile.headshots || []
+          current = Array.isArray(profile.headshots) ? profile.headshots : []
         }
       }
     }

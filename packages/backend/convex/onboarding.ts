@@ -67,10 +67,11 @@ export const completeOnboarding: RegisteredMutation<
           })
 
           // Update user with profile references
-          await ctx.db.patch(user._id, {
+          const patchData: any = {
             activeProfileType: 'dancer',
             activeDancerId: profileId
-          })
+          }
+          await ctx.db.patch(user._id, patchData)
         }
       } else if (user.profileType === 'choreographer') {
         // Check if profile already exists
@@ -81,15 +82,13 @@ export const completeOnboarding: RegisteredMutation<
 
         if (!existingProfile) {
           // Create choreographer profile with user's data
-          const profileId = await ctx.db.insert('choreographers', {
+          const insertData: any = {
             userId: user._id,
             isPrimary: true,
             createdAt: new Date().toISOString(),
             headshots: user.headshots,
             representation: user.representation,
             representationStatus: user.representationStatus,
-            attributes: user.attributes,
-            sizing: user.sizing,
             resume: user.resume,
             links: user.links,
             companyName: user.companyName,
@@ -104,13 +103,15 @@ export const completeOnboarding: RegisteredMutation<
             resumeImportVersion: user.resumeImportVersion,
             resumeImportedAt: user.resumeImportedAt,
             searchPattern: user.searchPattern || ''
-          })
+          }
+          const profileId = await ctx.db.insert('choreographers', insertData)
 
           // Update user with profile references
-          await ctx.db.patch(user._id, {
+          const patchData: any = {
             activeProfileType: 'choreographer',
             activeChoreographerId: profileId
-          })
+          }
+          await ctx.db.patch(user._id, patchData)
         }
       }
     }

@@ -68,17 +68,18 @@ export const migrateAllUsers = zInternalMutation(
           })
 
           // Update user with profile references
-          await ctx.db.patch(user._id, {
+          const dancerPatch: any = {
             activeProfileType: 'dancer',
             activeDancerId: profileId
-          })
+          }
+          await ctx.db.patch(user._id, dancerPatch)
 
           results.migrated.push(user._id)
           console.log(`✅ Migrated dancer: ${user.email}`)
 
         } else if (user.profileType === 'choreographer') {
           // Create choreographer profile
-          const profileId = await ctx.db.insert('choreographers', {
+          const choreoData: any = {
             userId: user._id,
             isPrimary: true,
             createdAt: new Date().toISOString(),
@@ -87,8 +88,6 @@ export const migrateAllUsers = zInternalMutation(
             headshots: user.headshots,
             representation: user.representation,
             representationStatus: user.representationStatus,
-            attributes: user.attributes,
-            sizing: user.sizing,
             resume: user.resume,
             links: user.links,
             companyName: user.companyName,
@@ -103,13 +102,15 @@ export const migrateAllUsers = zInternalMutation(
             resumeImportVersion: user.resumeImportVersion,
             resumeImportedAt: user.resumeImportedAt,
             searchPattern: user.searchPattern || ''
-          })
+          }
+          const profileId = await ctx.db.insert('choreographers', choreoData)
 
           // Update user with profile references
-          await ctx.db.patch(user._id, {
+          const choreoPatch: any = {
             activeProfileType: 'choreographer',
             activeChoreographerId: profileId
-          })
+          }
+          await ctx.db.patch(user._id, choreoPatch)
 
           results.migrated.push(user._id)
           console.log(`✅ Migrated choreographer: ${user.email}`)

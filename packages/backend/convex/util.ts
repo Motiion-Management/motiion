@@ -18,8 +18,8 @@ import { Id } from './_generated/dataModel'
 import { internal } from './_generated/api'
 
 export const authQuery = customQuery(
-  query,
-  customCtx(async (ctx) => {
+  query as any,
+  customCtx(async (ctx: any) => {
     try {
       return { user: await getUserOrThrow(ctx) }
     } catch (err) {
@@ -29,8 +29,8 @@ export const authQuery = customQuery(
 )
 
 export const authAction = customAction(
-  action,
-  customCtx(async (ctx) => {
+  action as any,
+  customCtx(async (ctx: any) => {
     const tokenId = (await ctx.auth.getUserIdentity())?.subject
 
     if (!tokenId) {
@@ -59,13 +59,13 @@ export const authAction = customAction(
 )
 
 export const authMutation = customMutation(
-  mutation,
-  customCtx(async (ctx) => ({ user: await getUserOrThrow(ctx) }))
+  mutation as any,
+  customCtx(async (ctx: any) => ({ user: await getUserOrThrow(ctx) }))
 )
 
 export const adminAuthAction = customAction(
-  action,
-  customCtx(async (ctx) => {
+  action as any,
+  customCtx(async (ctx: any) => {
     const tokenId = (await ctx.auth.getUserIdentity())?.subject
 
     if (!tokenId) {

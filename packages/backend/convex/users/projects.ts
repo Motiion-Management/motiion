@@ -38,11 +38,12 @@ export const addMyProject = zMutation(
 
     // Update resume.projects list in profile or user
     if (profile) {
+      const resume: any = profile.resume || {}
       const updatedResume = {
-        ...profile.resume,
-        projects: [...(profile.resume?.projects || []), projId]
+        ...resume,
+        projects: [...(resume.projects || []), projId]
       }
-      await ctx.db.patch(profile._id, {
+      await ctx.db.patch(profile._id as any, {
         resume: updatedResume
       })
     } else {
@@ -83,13 +84,15 @@ export const removeMyProject = zMutation(
 
     // Detach from resume list in profile or user
     if (profile) {
+      const resume: any = profile.resume || {}
+      const projects: any = resume.projects || []
       const updatedResume = {
-        ...profile.resume,
-        projects: (profile.resume?.projects || []).filter(
+        ...resume,
+        projects: projects.filter(
           (id: import('../_generated/dataModel').Id<'projects'>) => id !== args.projectId
         )
       }
-      await ctx.db.patch(profile._id, {
+      await ctx.db.patch(profile._id as any, {
         resume: updatedResume
       })
     } else {
@@ -121,8 +124,9 @@ export const getMyProjects = zQuery(
       .withIndex('userId', (q) => q.eq('userId', ctx.user._id))
       .collect()
     return projs.filter(notEmpty).sort((a, b) => {
-      if (!a.startDate || !b.startDate) return 0
-      return new Date(b.startDate).getTime() - new Date(a.startDate).getTime()
+      const aDate = a.startDate ? new Date(a.startDate as any).getTime() : 0
+      const bDate = b.startDate ? new Date(b.startDate as any).getTime() : 0
+      return bDate - aDate
     })
   },
   { returns: z.array(z.any()) }
@@ -148,8 +152,9 @@ export const getMyProjectsByType = zQuery(
       .filter(notEmpty)
       .filter((p) => p.type === args.type)
       .sort((a, b) => {
-        if (!a.startDate || !b.startDate) return 0
-        return new Date(b.startDate).getTime() - new Date(a.startDate).getTime()
+        const aDate = a.startDate ? new Date(a.startDate as any).getTime() : 0
+        const bDate = b.startDate ? new Date(b.startDate as any).getTime() : 0
+        return bDate - aDate
       })
   },
   { returns: z.array(z.any()) }
@@ -167,8 +172,9 @@ export const getUserPublicProjects = zQuery(
     return projs
       .filter((p) => !p?.private)
       .sort((a, b) => {
-        if (!a.startDate || !b.startDate) return 0
-        return new Date(b.startDate).getTime() - new Date(a.startDate).getTime()
+        const aDate = a.startDate ? new Date(a.startDate as any).getTime() : 0
+        const bDate = b.startDate ? new Date(b.startDate as any).getTime() : 0
+        return bDate - aDate
       })
   },
   { returns: z.array(z.any()) }
@@ -194,8 +200,9 @@ export const getUserPublicProjectsByType = zQuery(
       .filter((p) => p.type === args.type)
       .filter((p) => !p?.private)
       .sort((a, b) => {
-        if (!a.startDate || !b.startDate) return 0
-        return new Date(b.startDate).getTime() - new Date(a.startDate).getTime()
+        const aDate = a.startDate ? new Date(a.startDate as any).getTime() : 0
+        const bDate = b.startDate ? new Date(b.startDate as any).getTime() : 0
+        return bDate - aDate
       })
   },
   { returns: z.array(z.any()) }
