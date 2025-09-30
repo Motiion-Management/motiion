@@ -1,13 +1,11 @@
-import { query, mutation, internalMutation } from './_generated/server'
 import { ConvexError } from 'convex/values'
-import { zid, zCrud } from '@packages/zodvex'
+import { zid } from '@packages/zodvex'
 import { zq, zm, zim, zAuthMutation } from './util'
 import { z } from 'zod'
 import { Dancers, zCreateDancerInput, zDancers } from './schemas/dancers'
 import { zodDoc } from '@packages/zodvex'
 import { crud } from 'convex-helpers/server/crud'
 import schema from './schema'
-import { getUser } from './util'
 
 export const { create, read, update, destroy, paginate } = crud(
   schema,
@@ -100,14 +98,14 @@ export const setActiveDancerProfile = zAuthMutation({
       activeProfileType: 'dancer',
       activeDancerId: profileId,
       activeChoreographerId: undefined
-    })
+    } as any)
 
     return { success: true }
   }
 })
 
 // Delete dancer profile (internal only, for cleanup)
-export const deleteDancerProfile = zim(internalMutation)({
+export const deleteDancerProfile = zim({
   args: { profileId: zid('dancers') },
   returns: z.object({ success: z.boolean() }),
   handler: async (ctx, { profileId }) => {
@@ -117,7 +115,7 @@ export const deleteDancerProfile = zim(internalMutation)({
 })
 
 // Search dancers (public)
-export const searchDancers = zq(query)({
+export const searchDancers = zq({
   args: {
     searchTerm: z.string(),
     limit: z.number().optional().default(10)
