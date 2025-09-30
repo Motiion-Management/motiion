@@ -1,38 +1,32 @@
 import { query, mutation, internalMutation } from './_generated/server'
 import { ConvexError } from 'convex/values'
-import {
-  zid,
-  zQuery,
-  zMutation,
-  zInternalMutation,
-  zCrud
-} from '@packages/zodvex'
+import { zid, zCrud } from '@packages/zodvex'
+import { zq, zm, zim, zAuthMutation } from './util'
 import { z } from 'zod'
-import { authQuery, authMutation } from './util'
 import { Dancers, zCreateDancerInput, zDancers } from './schemas/dancers'
 import { zodDoc } from '@packages/zodvex'
 import { crud } from 'convex-helpers/server/crud'
 import schema from './schema'
+import { getUser } from './util'
 
 export const { create, read, update, destroy, paginate } = crud(
   schema,
   'dancers'
 )
 
-export const get = zQuery(
-  query,
-  { id: zid('dancers') },
-  async (ctx, args) => {
-    return await ctx.db.get(args.id)
-  },
-  { returns: Dancers.zDoc.nullable() }
-)
+export const get = zq({
+  args: { id: zid('dancers') },
+  returns: Dancers.zDoc.nullable(),
+  handler: async (ctx, { id }) => {
+    return await ctx.db.get(id)
+  }
+})
 
 // Create a new dancer profile
-export const createDancerProfile = zMutation(
-  authMutation,
-  zCreateDancerInput,
-  async (ctx, input) => {
+export const createDancerProfile = zAuthMutation({
+  args: zCreateDancerInput,
+  returns: zid('dancers'),
+  handler: async (ctx, input) => {
     // Check if user already has a dancer profile
     const existing = await ctx.db
       .query('dancers')
@@ -62,18 +56,17 @@ export const createDancerProfile = zMutation(
     }
 
     return profileId
-  },
-  { returns: zid('dancers') }
-)
+  }
+})
 
 // Update dancer profile
-export const updateDancerProfile = zMutation(
-  authMutation,
-  {
+export const updateDancerProfile = zAuthMutation({
+  args: {
     profileId: zid('dancers'),
     updates: zDancers.partial()
   },
-  async (ctx, { profileId, updates }) => {
+  returns: z.object({ success: z.boolean() }),
+  handler: async (ctx, { profileId, updates }) => {
     // Verify ownership
     const profile = await ctx.db.get(profileId)
     if (!profile || profile.userId !== ctx.user._id) {
@@ -88,15 +81,14 @@ export const updateDancerProfile = zMutation(
     await ctx.db.patch(profileId, patchData)
 
     return { success: true }
-  },
-  { returns: z.object({ success: z.boolean() }) }
-)
+  }
+})
 
 // Set active dancer profile
-export const setActiveDancerProfile = zMutation(
-  authMutation,
-  { profileId: zid('dancers') },
-  async (ctx, { profileId }) => {
+export const setActiveDancerProfile = zAuthMutation({
+  args: { profileId: zid('dancers') },
+  returns: z.object({ success: z.boolean() }),
+  handler: async (ctx, { profileId }) => {
     // Verify ownership
     const profile = await ctx.db.get(profileId)
     if (!profile || profile.userId !== ctx.user._id) {
@@ -111,29 +103,27 @@ export const setActiveDancerProfile = zMutation(
     })
 
     return { success: true }
-  },
-  { returns: z.object({ success: z.boolean() }) }
-)
+  }
+})
 
 // Delete dancer profile (internal only, for cleanup)
-export const deleteDancerProfile = zInternalMutation(
-  internalMutation,
-  { profileId: zid('dancers') },
-  async (ctx, { profileId }) => {
+export const deleteDancerProfile = zim(internalMutation)({
+  args: { profileId: zid('dancers') },
+  returns: z.object({ success: z.boolean() }),
+  handler: async (ctx, { profileId }) => {
     await ctx.db.delete(profileId)
     return { success: true }
-  },
-  { returns: z.object({ success: z.boolean() }) }
-)
+  }
+})
 
 // Search dancers (public)
-export const searchDancers = zQuery(
-  query,
-  {
+export const searchDancers = zq(query)({
+  args: {
     searchTerm: z.string(),
     limit: z.number().optional().default(10)
   },
-  async (ctx, { searchTerm, limit }) => {
+  returns: z.array(Dancers.zDoc),
+  handler: async (ctx, { searchTerm, limit }) => {
     const results = await ctx.db
       .query('dancers')
       .withSearchIndex('search_dancer', (q) =>
@@ -142,15 +132,14 @@ export const searchDancers = zQuery(
       .take(limit)
 
     return results
-  },
-  { returns: z.array(Dancers.zDoc) }
-)
+  }
+})
 
 // Calculate dancer profile completeness percentage
-export const calculateDancerCompleteness = zMutation(
-  authMutation,
-  { profileId: zid('dancers') },
-  async (ctx, { profileId }) => {
+export const calculateDancerCompleteness = zAuthMutation({
+  args: { profileId: zid('dancers') },
+  returns: z.object({ completeness: z.number() }),
+  handler: async (ctx, { profileId }) => {
     const profile = await ctx.db.get(profileId)
     if (!profile || profile.userId !== ctx.user._id) {
       throw new ConvexError('Profile not found or access denied')
@@ -209,9 +198,8 @@ export const calculateDancerCompleteness = zMutation(
     await ctx.db.patch(profileId, { profileCompleteness: completeness })
 
     return { completeness }
-  },
-  { returns: z.object({ completeness: z.number() }) }
-)
+  }
+})
 
 // Helper function to generate search pattern
 function generateSearchPattern(data: any): string {
