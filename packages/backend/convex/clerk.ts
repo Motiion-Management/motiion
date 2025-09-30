@@ -2,9 +2,9 @@
 
 import type { WebhookEvent } from '@clerk/backend'
 import { internalAction } from './_generated/server'
+import { zia } from './util'
 import { Webhook } from 'svix'
 import { missingEnvVariableUrl } from 'convex-helpers/server'
-import { zInternalAction } from '@packages/zodvex'
 import { z } from 'zod'
 
 function ensureEnvironmentVariable(name: string): string {
@@ -21,12 +21,11 @@ function ensureEnvironmentVariable(name: string): string {
 }
 const webhookSecret = ensureEnvironmentVariable('CLERK_WEBHOOK_SECRET')
 
-export const fulfill = zInternalAction(
-  internalAction,
-  { headers: z.any(), payload: z.string() },
-  async (ctx, args) => {
+export const fulfill = zia({
+  args: { headers: z.any(), payload: z.string() },
+  handler: async (ctx, args) => {
     const wh = new Webhook(webhookSecret)
     const payload = wh.verify(args.payload, args.headers) as WebhookEvent
     return payload
   }
-)
+})

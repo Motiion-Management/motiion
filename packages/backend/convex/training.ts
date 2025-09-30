@@ -1,24 +1,25 @@
-import { authMutation, authQuery, notEmpty } from './util'
+import { authMutation, authQuery, notEmpty, zq } from './util'
 import { Training, trainingInput, zTrainingInput, zTrainingFormDoc } from './schemas/training'
 import { getAll } from 'convex-helpers/server/relationships'
+import { crud } from 'convex-helpers/server/crud'
+import schema from './schema'
 import { query } from './_generated/server'
-import { zCrud, zMutation, zQuery } from '@packages/zodvex'
 import { z } from 'zod'
 import { zid } from '@packages/zodvex'
 
 // Basic CRUD operations
-export const { read } = zCrud(Training, query, authMutation)
-export const { create, update, destroy } = zCrud(
+export const { read } = crud(schema, 'training', query, authMutation)
+export const { create, update, destroy } = crud(
   Training,
   authQuery,
   authMutation
 )
 
 // Add training to user
-export const addMyTraining = zMutation(
-  authMutation,
-  trainingInput,
-  async (ctx, training) => {
+export const addMyTraining = authMutation({
+  args: trainingInput,
+  returns: z.null(),
+  handler: async (ctx, training) => {
     // Get profile if active
     let profileInfo = {}
     let profile = null
@@ -72,15 +73,14 @@ export const addMyTraining = zMutation(
     }
 
     return null
-  },
-  { returns: z.null() }
-)
+  }
+})
 
 // Remove training from user
-export const removeMyTraining = zMutation(
-  authMutation,
-  { trainingId: zid('training') },
-  async (ctx, args) => {
+export const removeMyTraining = authMutation({
+  args: { trainingId: zid('training') },
+  returns: z.null(),
+  handler: async (ctx, args) => {
     // Get profile if active
     let profile = null
     if (ctx.user.activeProfileType && (ctx.user.activeDancerId || ctx.user.activeChoreographerId)) {
@@ -110,15 +110,13 @@ export const removeMyTraining = zMutation(
 
     await ctx.db.delete(args.trainingId)
     return null
-  },
-  { returns: z.null() }
-)
+  }
+})
 
 // Get user's training
-export const getMyTraining = zQuery(
-  authQuery,
-  {},
-  async (ctx) => {
+export const getMyTraining = authQuery({
+  returns: z.array(zTrainingFormDoc),
+  handler: async (ctx) => {
     // PROFILE-FIRST: Get training from profile if active
     let trainingIds = ctx.user?.training || []
 
@@ -143,15 +141,14 @@ export const getMyTraining = zQuery(
       .filter(notEmpty)
       .sort((a, b) => ((a.orderIndex as number) || 0) - ((b.orderIndex as number) || 0))
       .map(({ orderIndex, userId, profileType, profileId, ...rest }) => rest) as any
-  },
-  { returns: z.array(zTrainingFormDoc) }
-)
+  }
+})
 
 // Get user's training by type
-export const getMyTrainingByType = zQuery(
-  authQuery,
-  { type: zTrainingInput.shape.type },
-  async (ctx, args) => {
+export const getMyTrainingByType = authQuery({
+  args: { type: zTrainingInput.shape.type },
+  returns: z.array(zTrainingFormDoc),
+  handler: async (ctx, args) => {
     // PROFILE-FIRST: Get training from profile if active
     let trainingIds = ctx.user?.training || []
 
@@ -177,15 +174,14 @@ export const getMyTrainingByType = zQuery(
       .filter((t) => t.type === args.type)
       .sort((a, b) => ((a.orderIndex as number) || 0) - ((b.orderIndex as number) || 0))
       .map(({ orderIndex, userId, profileType, profileId, ...rest }) => rest) as any
-  },
-  { returns: z.array(zTrainingFormDoc) }
-)
+  }
+})
 
 // Reorder training items
-export const reorderMyTraining = zMutation(
-  authMutation,
-  { trainingIds: z.array(zid('training')) },
-  async (ctx, args) => {
+export const reorderMyTraining = authMutation({
+  args: { trainingIds: z.array(zid('training')) },
+  returns: z.null(),
+  handler: async (ctx, args) => {
     // Update order indexes
     for (let i = 0; i < args.trainingIds.length; i++) {
       await ctx.db.patch(args.trainingIds[i], {
@@ -193,15 +189,14 @@ export const reorderMyTraining = zMutation(
       })
     }
     return null
-  },
-  { returns: z.null() }
-)
+  }
+})
 
 // Get public training for a user
-export const getUserPublicTraining = zQuery(
-  query,
-  { userId: zid('users') },
-  async (ctx, args) => {
+export const getUserPublicTraining = zq({
+  args: { userId: zid('users') },
+  returns: z.array(zTrainingFormDoc),
+  handler: async (ctx, args) => {
     const user = await ctx.db.get(args.userId)
     if (!user?.training) return []
 
@@ -212,6 +207,5 @@ export const getUserPublicTraining = zQuery(
       .filter(notEmpty)
       .sort((a, b) => ((a.orderIndex as number) || 0) - ((b.orderIndex as number) || 0))
       .map(({ orderIndex, userId, ...rest }) => rest) as any
-  },
-  { returns: z.array(zTrainingFormDoc) }
-)
+  }
+})

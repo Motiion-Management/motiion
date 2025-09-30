@@ -1,6 +1,6 @@
 import type { Id } from '../_generated/dataModel'
 import { query } from '../_generated/server'
-import { zQuery } from '@packages/zodvex'
+import { zq } from '../util'
 import { z } from 'zod'
 import { zid } from '@packages/zodvex'
 
@@ -8,10 +8,8 @@ import { zid } from '@packages/zodvex'
  * Optimized query that returns headshot metadata immediately
  * URLs are generated client-side or through a separate query
  */
-export const getMyHeadshotsMetadata = zQuery(
-  query,
-  {},
-  async (ctx) => {
+export const getMyHeadshotsMetadata = zq({
+  handler: async (ctx) => {
     const identity = await ctx.auth.getUserIdentity()
     if (!identity) return []
 
@@ -34,34 +32,38 @@ export const getMyHeadshotsMetadata = zQuery(
       position: (headshot as any).position ?? index
     }))
   }
-)
+})
 
 /**
  * Separate query to get a single headshot URL
  * Called on-demand when the image needs to be displayed
  */
-export const getHeadshotUrl = zQuery(
-  query,
-  { storageId: zid('_storage') },
-  async (ctx, { storageId }) => {
+export const getHeadshotUrl = zq({
+  args: { storageId: zid('_storage') },
+  returns: z.union([z.string(), z.null()]),
+  handler: async (ctx, { storageId }) => {
     try {
       const url = await ctx.storage.getUrl(storageId)
       return url
     } catch {
       return null
     }
-  },
-  { returns: z.union([z.string(), z.null()]) }
-)
+  }
+})
 
 /**
  * Batch query to get multiple headshot URLs
  * More efficient than multiple individual queries
  */
-export const getHeadshotUrls = zQuery(
-  query,
-  { storageIds: z.array(zid('_storage')) },
-  async (ctx, { storageIds }) => {
+export const getHeadshotUrls = zq({
+  args: { storageIds: z.array(zid('_storage')) },
+  returns: z.array(
+      z.object({
+        storageId: zid('_storage'),
+        url: z.union([z.string(), z.null()])
+      })
+    ),
+  handler: async (ctx, { storageIds }) => {
     const urls = await Promise.all(
       storageIds.map(async (storageId) => {
         try {
@@ -73,13 +75,5 @@ export const getHeadshotUrls = zQuery(
       })
     )
     return urls
-  },
-  {
-    returns: z.array(
-      z.object({
-        storageId: zid('_storage'),
-        url: z.union([z.string(), z.null()])
-      })
-    )
   }
-)
+})

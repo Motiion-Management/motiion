@@ -4,8 +4,10 @@ import {
   internalQuery,
   internalMutation
 } from './_generated/server'
-import { authMutation, authQuery } from './util'
-import { zCrud, zQuery, zid, zodDoc } from '@packages/zodvex'
+import { crud } from 'convex-helpers/server/crud'
+import schema from './schema'
+import { authMutation, authQuery, zq } from './util'
+import { zid, zodDoc } from '@packages/zodvex'
 import { z } from 'zod'
 import { Agencies, zAgencies } from './schemas/agencies'
 import { Doc } from './_generated/dataModel'
@@ -13,28 +15,30 @@ import { Doc } from './_generated/dataModel'
 export type AgencyDoc = Doc<'agencies'>
 
 // Public CRUD operations
-export const { read } = zCrud(Agencies, query, mutation)
+export const { read } = crud(schema, 'agencies', query, mutation)
 
 // Authenticated CRUD operations
-export const { create, update, destroy } = zCrud(
-  Agencies,
+export const { create, update, destroy } = crud(
+  schema,
+  'agencies',
   authQuery,
   authMutation
 )
 
 // Internal CRUD operations
-export const { read: internalRead } = zCrud(
-  Agencies,
+export const { read: internalRead } = crud(
+  schema,
+  'agencies',
   internalQuery,
   internalMutation
 )
 
 const zAgencyDoc = zodDoc('agencies', zAgencies)
 
-export const search = zQuery(
-  query,
-  { query: z.string() },
-  async (ctx, { query }) => {
+export const search = zq({
+  args: { query: z.string() },
+  returns: z.array(zAgencyDoc),
+  handler: async (ctx, { query }) => {
     const results = await ctx.db
       .query('agencies')
       .withSearchIndex('search_name', (q) => q.search('name', query))
@@ -42,17 +46,16 @@ export const search = zQuery(
       .take(10)
 
     return results
-  },
-  { returns: z.array(zAgencyDoc) }
-)
+  }
+})
 
 type AgencyDocWithLogo = AgencyDoc & { logoUrl: string | null }
 const zAgencyDocWithLogo = zAgencyDoc.extend({ logoUrl: z.string().nullable() })
 
-export const getAgency = zQuery(
-  query,
-  { id: zid('agencies').optional() },
-  async (ctx, args) => {
+export const getAgency = zq({
+  args: { id: zid('agencies').optional() },
+  returns: zAgencyDocWithLogo.nullable(),
+  handler: async (ctx, args) => {
     if (!args.id) {
       return null
     }
@@ -69,6 +72,5 @@ export const getAgency = zQuery(
       ...agency,
       logoUrl
     }
-  },
-  { returns: zAgencyDocWithLogo.nullable() }
-)
+  }
+})

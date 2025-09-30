@@ -1,6 +1,5 @@
 import { QueryCtx, query } from '../_generated/server'
-import { authMutation, authQuery } from '../util'
-import { zQuery, zMutation } from '@packages/zodvex'
+import { authMutation, authQuery, zq } from '../util'
 import { z } from 'zod'
 import { zid } from '@packages/zodvex'
 import { UserDoc, resume as resumeObj } from '../schemas/users'
@@ -46,21 +45,18 @@ export async function augmentResume(
     uploads
   }
 }
-export const getResume = zQuery(
-  query,
-  { userId: zid('users') },
-  async (ctx, args) => {
+export const getResume = zq({
+  args: { userId: zid('users') },
+  handler: async (ctx, args) => {
     const user = await ctx.db.get(args.userId)
     if (!user) return
 
     return await augmentResume(ctx, user, true)
   }
-)
+})
 
-export const getMyResume = zQuery(
-  authQuery,
-  {},
-  async (ctx) => {
+export const getMyResume = authQuery({
+  handler: async (ctx) => {
     if (!ctx.user) return
 
     // PROFILE-FIRST: Get resume from active profile if it exists
@@ -83,12 +79,10 @@ export const getMyResume = zQuery(
 
     return await augmentResume(ctx as any, userWithResume)
   }
-)
+})
 
-export const getMyExperienceCounts = zQuery(
-  authQuery,
-  {},
-  async (ctx) => {
+export const getMyExperienceCounts = authQuery({
+  handler: async (ctx) => {
     // PROFILE-FIRST: Get resume from active profile if it exists
     let resume = ctx.user?.resume
 
@@ -115,12 +109,11 @@ export const getMyExperienceCounts = zQuery(
       slug: type
     }))
   }
-)
+})
 
-export const getUserPublicExperienceCounts = zQuery(
-  query,
-  { id: zid('users') },
-  async (ctx, args) => {
+export const getUserPublicExperienceCounts = zq({
+  args: { id: zid('users') },
+  handler: async (ctx, args) => {
     const user = await ctx.db.get(args.id)
 
     const exp: any = user?.resume?.projects
@@ -134,12 +127,11 @@ export const getUserPublicExperienceCounts = zQuery(
       slug: type
     }))
   }
-)
+})
 
-export const saveResumeUploadIds = zMutation(
-  authMutation,
-  { resumeUploads: zFileUploadObjectArray },
-  async (ctx, args) => {
+export const saveResumeUploadIds = authMutation({
+  args: { resumeUploads: zFileUploadObjectArray },
+  handler: async (ctx, args) => {
     if (!ctx.user) return
 
     const { targetId, profile } = await getActiveProfileTarget(ctx.db, ctx.user)
@@ -159,12 +151,11 @@ export const saveResumeUploadIds = zMutation(
       resume: updatedResume
     })
   }
-)
+})
 
-export const removeResumeUpload = zMutation(
-  authMutation,
-  { resumeUploadId: zid('_storage') },
-  async (ctx, args) => {
+export const removeResumeUpload = authMutation({
+  args: { resumeUploadId: zid('_storage') },
+  handler: async (ctx, args) => {
     if (!ctx.user) {
       return
     }
@@ -184,16 +175,15 @@ export const removeResumeUpload = zMutation(
       resume: updatedResume
     })
   }
-)
+})
 
-export const updateMyResume = zMutation(
-  authMutation,
-  {
+export const updateMyResume = authMutation({
+  args: {
     projects: resumeObj.projects,
     skills: resumeObj.skills,
     genres: resumeObj.genres
   },
-  async (ctx, args) => {
+  handler: async (ctx, args) => {
     if (!ctx.user) return
 
     const { targetId, profile } = await getActiveProfileTarget(ctx.db, ctx.user)
@@ -210,4 +200,4 @@ export const updateMyResume = zMutation(
       resume: updatedResume
     })
   }
-)
+})

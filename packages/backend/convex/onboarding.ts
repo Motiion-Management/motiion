@@ -1,6 +1,6 @@
 import { query, mutation } from './_generated/server'
+import { zm } from './util'
 import { ConvexError, v } from 'convex/values'
-import { zMutation } from '@packages/zodvex'
 import { z } from 'zod'
 import {
   getOnboardingFlow as getOnboardingFlowConfig,
@@ -165,10 +165,10 @@ export const resetOnboarding: RegisteredMutation<
 
 // Removed legacy advance step — client controls flow
 
-export const setOnboardingStep = zMutation(
-  mutation,
-  { step: z.string() },
-  async (ctx, { step }) => {
+export const setOnboardingStep = zm({
+  args: { step: z.string() },
+  returns: z.object({ success: z.boolean() }),
+  handler: async (ctx, { step }) => {
     const identity = await ctx.auth.getUserIdentity()
     if (!identity) {
       throw new ConvexError('Not authenticated')
@@ -197,9 +197,8 @@ export const setOnboardingStep = zMutation(
     })
 
     return { success: true }
-  },
-  { returns: z.object({ success: z.boolean() }) }
-)
+  }
+})
 
 // Minimal redirect target for client guard: no heavy analysis, no flow logic
 export const getOnboardingRedirect = query({

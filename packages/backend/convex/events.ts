@@ -1,8 +1,9 @@
 import { query, mutation } from './_generated/server'
+import { crud } from 'convex-helpers/server/crud'
+import schema from './schema'
 import { authMutation, authQuery } from './util'
-import { zCrud } from '@packages/zodvex'
 import { Events } from './schemas/events'
 
-export const { read } = zCrud(Events, query, mutation)
+export const { read } = crud(schema, 'events', query, mutation)
 
-export const { create, update, destroy } = zCrud(Events, authQuery, authMutation)
+export const { create, update, destroy } = crud(schema, 'events', authQuery, authMutation)

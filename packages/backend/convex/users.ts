@@ -7,32 +7,27 @@ import {
   mutation,
   internalMutation
 } from './_generated/server'
-import { authMutation, authQuery, notEmpty } from './util'
+import { authMutation, authQuery, notEmpty, zq, zm, ziq, zim } from './util'
 
 import { getAll } from 'convex-helpers/server/relationships'
 import { UserDoc, Users, zUsers } from './schemas/users'
 import { z } from 'zod'
-import {
-  zQuery,
-  zMutation,
-  zInternalQuery,
-  zInternalMutation,
-  zCrud
-} from '@packages/zodvex'
+import { crud } from 'convex-helpers/server/crud'
 import { zid } from '@packages/zodvex'
 import { attributesPlainObject } from './schemas/attributes'
 import { NEW_USER_DEFAULTS, formatFullName } from './users/helpers'
 import { AgencyDoc } from './agencies'
+import schema from './schema'
 
-export const { read } = zCrud(Users, query, mutation)
+export const { read, paginate } = crud(schema, 'users', query, mutation)
 
 export const {
   create,
   update: internalUpdate,
   destroy
-} = zCrud(Users, internalQuery, internalMutation)
+} = crud(schema, 'users', internalQuery, internalMutation)
 
-export const { update } = zCrud(Users, authQuery, authMutation)
+// Note: Can't use crud for auth-wrapped update, keep as separate function
 
 async function computeDerived(
   ctx: { db: { get: (id: any) => Promise<any> } },
@@ -52,10 +47,10 @@ async function computeDerived(
 // Return value schemas
 const zUserDocOrNull = Users.zDoc.nullable()
 
-export const getMyUser = zQuery(
-  authQuery,
-  {},
-  async (ctx) => {
+export const getMyUser = authQuery({
+  args: {},
+  returns: zUserDocOrNull,
+  handler: async (ctx) => {
     console.log('🔍 CONVEX_GET_USER: Query called', {
       userId: ctx.user?._id,
       hasUser: !!ctx.user,
@@ -137,16 +132,15 @@ export const getMyUser = zQuery(
     }
 
     return ctx.user
-  },
-  { returns: zUserDocOrNull }
-)
+  }
+})
 
 // Zod-validated mutation using convex-helpers + codecs
-// Use existing authMutation (from util.ts) to supply ctx.user, and zMutation for Zod args parsing
-export const updateMyUser = zMutation(
-  authMutation,
-  zUsers.partial(),
-  async (ctx, args) => {
+// Use existing authMutation (from util.ts) to supply ctx.user
+export const updateMyUser = authMutation({
+  args: zUsers.partial(),
+  returns: z.null(),
+  handler: async (ctx, args) => {
     const nextUser = {
       firstName: args.firstName ?? ctx.user.firstName,
       lastName: args.lastName ?? ctx.user.lastName,
@@ -160,14 +154,12 @@ export const updateMyUser = zMutation(
     // Profile-specific fields should be updated through profile-specific functions
     await ctx.db.patch(ctx.user._id, { ...args, ...derived })
     return null
-  },
-  { returns: z.null() }
-)
+  }
+})
 
-export const updateMySizingField = zMutation(
-  authMutation,
-  { section: z.string(), field: z.string(), value: z.string() },
-  async (ctx, { section, field, value }) => {
+export const updateMySizingField = authMutation({
+  args: { section: z.string(), field: z.string(), value: z.string() },
+  handler: async (ctx, { section, field, value }) => {
     // Update profile if active, otherwise update user
     if (
       ctx.user.activeProfileType &&
@@ -226,13 +218,12 @@ export const updateMySizingField = zMutation(
       ...derived
     })
   }
-)
+})
 
 // Patch only specific fields inside `attributes`, merging with existing
-export const patchUserAttributes = zMutation(
-  authMutation,
-  { attributes: z.object(attributesPlainObject).partial() },
-  async (ctx, { attributes }) => {
+export const patchUserAttributes = authMutation({
+  args: { attributes: z.object(attributesPlainObject).partial() },
+  handler: async (ctx, { attributes }) => {
     // Update profile if active, otherwise update user
     if (
       ctx.user.activeProfileType &&
@@ -283,40 +274,37 @@ export const patchUserAttributes = zMutation(
       ...derived
     })
   }
-)
+})
 
 // clerk webhook functions
-export const getUserByTokenId = zInternalQuery(
-  internalQuery,
-  { tokenId: z.string() },
-  async (ctx, { tokenId }) => {
+export const getUserByTokenId = ziq({
+  args: { tokenId: z.string() },
+  returns: zUserDocOrNull,
+  handler: async (ctx, { tokenId }) => {
     return await ctx.db
       .query('users')
       .withIndex('tokenId', (q) => q.eq('tokenId', tokenId))
       .first()
-  },
-  { returns: zUserDocOrNull }
-)
+  }
+})
 
 // Minimal-typing variant to use from actions without heavy generics
-export const getByTokenId = zInternalQuery(
-  internalQuery,
-  { tokenId: z.string() },
-  async (ctx, { tokenId }) => {
+export const getByTokenId = ziq({
+  args: { tokenId: z.string() },
+  returns: zUserDocOrNull,
+  handler: async (ctx, { tokenId }) => {
     const user = await ctx.db
       .query('users')
       .withIndex('tokenId', (q) => q.eq('tokenId', tokenId))
       .unique()
     return user
-  },
-  { returns: zUserDocOrNull }
-)
+  }
+})
 
 // Deferred afterUpdate removed; derived fields computed inline above
 
-export const updateOrCreateUserByTokenId = zInternalMutation(
-  internalMutation,
-  {
+export const updateOrCreateUserByTokenId = zim({
+  args: {
     data: z.object({
       tokenId: z.string(),
       email: z.string().optional(),
@@ -326,7 +314,7 @@ export const updateOrCreateUserByTokenId = zInternalMutation(
     }),
     eventType: z.enum(['user.created', 'user.updated'])
   },
-  async (ctx, { data, eventType }) => {
+  handler: async (ctx, { data, eventType }) => {
     console.log('🔄 CONVEX_USER_SYNC: Starting user sync', {
       tokenId: data.tokenId,
       eventType,
@@ -376,12 +364,11 @@ export const updateOrCreateUserByTokenId = zInternalMutation(
       timestamp: new Date().toISOString()
     })
   }
-)
+})
 
-export const deleteUserByTokenId = zInternalMutation(
-  internalMutation,
-  { tokenId: z.string() },
-  async (ctx, { tokenId }) => {
+export const deleteUserByTokenId = zim({
+  args: { tokenId: z.string() },
+  handler: async (ctx, { tokenId }) => {
     const user = await ctx.db
       .query('users')
       .withIndex('tokenId', (q) => q.eq('tokenId', tokenId))
@@ -389,12 +376,11 @@ export const deleteUserByTokenId = zInternalMutation(
     if (!user) throw new ConvexError('user not found')
     await ctx.db.delete(user._id)
   }
-)
+})
 
-export const search = zQuery(
-  query,
-  { query: z.string() },
-  async (ctx, { query }) => {
+export const search = zq({
+  args: { query: z.string() },
+  handler: async (ctx, { query }) => {
     const results = await ctx.db
       .query('users')
       .withSearchIndex('search_user', (q) => q.search('searchPattern', query))
@@ -428,35 +414,32 @@ export const search = zQuery(
 
     return fullResults
   }
-)
+})
 
-export const updateDerivedPatterns = zInternalMutation(
-  internalMutation,
-  {},
-  async (ctx) => {
+export const updateDerivedPatterns = zim({
+  args: {},
+  handler: async (ctx) => {
     const users = await ctx.db.query('users').take(1000)
     for (const user of users) {
       const derived = await computeDerived(ctx, user)
       await ctx.db.patch(user._id, derived)
     }
   }
-)
+})
 
-export const addFavoriteUser = zMutation(
-  authMutation,
-  { userId: zid('users') },
-  async (ctx, { userId }) => {
+export const addFavoriteUser = authMutation({
+  args: { userId: zid('users') },
+  handler: async (ctx, { userId }) => {
     const existing = ctx.user.favoriteUsers || []
     await ctx.db.patch(ctx.user._id, {
       favoriteUsers: existing.concat(userId)
     })
   }
-)
+})
 
-export const removeFavoriteUser = zMutation(
-  authMutation,
-  { userId: zid('users') },
-  async (ctx, { userId }) => {
+export const removeFavoriteUser = authMutation({
+  args: { userId: zid('users') },
+  handler: async (ctx, { userId }) => {
     const existing = ctx.user.favoriteUsers || []
     await ctx.db.patch(ctx.user._id, {
       favoriteUsers: existing.filter(
@@ -464,12 +447,20 @@ export const removeFavoriteUser = zMutation(
       )
     })
   }
-)
+})
 
-export const getFavoriteUsersForCarousel = zQuery(
-  authQuery,
-  {},
-  async (ctx) => {
+export const getFavoriteUsersForCarousel = authQuery({
+  args: {},
+  returns: z
+    .array(
+      z.object({
+        userId: z.string(),
+        label: z.string(),
+        headshotUrl: z.string()
+      })
+    )
+    .optional(),
+  handler: async (ctx) => {
     const users = await getAll(ctx.db, ctx.user?.favoriteUsers || [])
 
     if (users.length === 0) {
@@ -487,29 +478,28 @@ export const getFavoriteUsersForCarousel = zQuery(
         }
       })
     )
-  },
-  {
-    returns: z
-      .array(
-        z.object({
-          userId: z.string(),
-          label: z.string(),
-          headshotUrl: z.string()
-        })
-      )
-      .optional()
   }
-)
+})
 
-export const paginateProfiles = zQuery(
-  query,
-  {
+export const paginateProfiles = zq({
+  args: {
     paginationOpts: z.object({
       numItems: z.number(),
       cursor: z.string().nullable()
     })
   },
-  async (ctx, args) => {
+  returns: z.object({
+    page: z.array(
+      z.object({
+        userId: z.string(),
+        label: z.string(),
+        headshotUrl: z.string()
+      })
+    ),
+    isDone: z.boolean(),
+    continueCursor: z.string()
+  }),
+  handler: async (ctx, args) => {
     const results = await (
       filter(
         ctx.db.query('users') as any,
@@ -532,35 +522,21 @@ export const paginateProfiles = zQuery(
         })
       )
     }
-  },
-  {
-    returns: z.object({
-      page: z.array(
-        z.object({
-          userId: z.string(),
-          label: z.string(),
-          headshotUrl: z.string()
-        })
-      ),
-      isDone: z.boolean(),
-      continueCursor: z.string()
-    })
   }
-)
+})
 
-export const isFavoriteUser = zQuery(
-  authQuery,
-  { userId: zid('users') },
-  async (ctx, { userId }) => {
+export const isFavoriteUser = authQuery({
+  args: { userId: zid('users') },
+  returns: z.boolean(),
+  handler: async (ctx, { userId }) => {
     return !!(ctx.user && (ctx.user.favoriteUsers || []).includes(userId))
-  },
-  { returns: z.boolean() }
-)
+  }
+})
 
-export const saveMyPushToken = zMutation(
-  authMutation,
-  { token: z.string(), platform: z.enum(['ios', 'android']) },
-  async (ctx, { token, platform }) => {
+export const saveMyPushToken = authMutation({
+  args: { token: z.string(), platform: z.enum(['ios', 'android']) },
+  returns: z.null(),
+  handler: async (ctx, { token, platform }) => {
     const existing = ctx.user.pushTokens || []
     // Remove duplicates of the same token
     const filtered = existing.filter(
@@ -583,6 +559,5 @@ export const saveMyPushToken = zMutation(
     const typed = updated as PushToken[]
     await ctx.db.patch(ctx.user._id, { pushTokens: typed })
     return null
-  },
-  { returns: z.null() }
-)
+  }
+})

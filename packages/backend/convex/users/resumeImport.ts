@@ -2,7 +2,6 @@ import { authMutation, authAction } from '../util'
 import { internal } from '../_generated/api'
 import { ConvexError, v } from 'convex/values'
 import { Id } from '../_generated/dataModel'
-import { zMutation } from '@packages/zodvex'
 import { z } from 'zod'
 import { zid } from '@packages/zodvex'
 
@@ -103,10 +102,10 @@ export const parseResumeTextDirect: any = authAction({
   }
 })
 
-export const applyParsedResumeData = zMutation(
-  authMutation,
-  parsedResumeSchema,
-  async (ctx, args) => {
+export const applyParsedResumeData = authMutation({
+  args: parsedResumeSchema,
+  returns: z.null(),
+  handler: async (ctx, args) => {
     if (!ctx.user) {
       throw new ConvexError('User not authenticated')
     }
@@ -177,6 +176,5 @@ export const applyParsedResumeData = zMutation(
         `Failed to save resume data: ${error instanceof Error ? error.message : 'Unknown error'}`
       )
     }
-  },
-  { returns: z.null() }
-)
+  }
+})

@@ -1,13 +1,11 @@
 import { authMutation } from '../util'
-import { zMutation } from '@packages/zodvex'
 import { z } from 'zod'
 import { zid } from '@packages/zodvex'
 import { getActiveProfileTarget } from './profileHelpers'
 
-export const addMyRepresentation = zMutation(
-  authMutation,
-  { agencyId: zid('agencies') },
-  async (ctx, { agencyId }) => {
+export const addMyRepresentation = authMutation({
+  args: { agencyId: zid('agencies') },
+  handler: async (ctx, { agencyId }) => {
     const { targetId, profile } = await getActiveProfileTarget(ctx.db, ctx.user)
     const currentRep = profile?.representation || ctx.user.representation
 
@@ -20,12 +18,10 @@ export const addMyRepresentation = zMutation(
       representation: updatedRep
     })
   }
-)
+})
 
-export const removeMyRepresentation = zMutation(
-  authMutation,
-  {},
-  async (ctx) => {
+export const removeMyRepresentation = authMutation({
+  handler: async (ctx) => {
     const { targetId, profile } = await getActiveProfileTarget(ctx.db, ctx.user)
     const currentRep = profile?.representation || ctx.user.representation
 
@@ -38,12 +34,11 @@ export const removeMyRepresentation = zMutation(
       representation: updatedRep
     })
   }
-)
+})
 
-export const setDisplayRep = zMutation(
-  authMutation,
-  { displayRep: z.boolean() },
-  async (ctx, { displayRep }) => {
+export const setDisplayRep = authMutation({
+  args: { displayRep: z.boolean() },
+  handler: async (ctx, { displayRep }) => {
     const { targetId, profile } = await getActiveProfileTarget(ctx.db, ctx.user)
     const currentRep = profile?.representation || ctx.user.representation
 
@@ -56,12 +51,10 @@ export const setDisplayRep = zMutation(
       representation: updatedRep
     })
   }
-)
+})
 
-export const dismissRepresentationTip = zMutation(
-  authMutation,
-  {},
-  async (ctx) => {
+export const dismissRepresentationTip = authMutation({
+  handler: async (ctx) => {
     const { targetId, profile } = await getActiveProfileTarget(ctx.db, ctx.user)
     const currentRep = profile?.representation || ctx.user.representation
 
@@ -74,4 +67,4 @@ export const dismissRepresentationTip = zMutation(
       representation: updatedRep
     })
   }
-)
+})
