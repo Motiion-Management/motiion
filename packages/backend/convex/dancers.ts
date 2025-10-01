@@ -6,6 +6,8 @@ import { Dancers, zCreateDancerInput, zDancers } from './schemas/dancers'
 import { zodDoc } from '@packages/zodvex'
 import { crud } from 'convex-helpers/server/crud'
 import schema from './schema'
+import { attributesPlainObject } from './schemas/attributes'
+import { sizingPlainObject } from './schemas/sizing'
 
 export const { create, read, update, destroy, paginate } = crud(
   schema,
@@ -101,6 +103,91 @@ export const setActiveDancerProfile = zAuthMutation({
     } as any)
 
     return { success: true }
+  }
+})
+
+// ============================================================================
+// ACTIVE PROFILE MUTATIONS (automatically target user's active dancer profile)
+// ============================================================================
+
+// Update arbitrary fields on the active dancer profile
+export const updateMyDancerProfile = zAuthMutation({
+  args: zDancers.partial(),
+  returns: z.null(),
+  handler: async (ctx, updates) => {
+    if (!ctx.user.activeDancerId) {
+      throw new ConvexError('No active dancer profile found')
+    }
+
+    const profile = await ctx.db.get(ctx.user.activeDancerId)
+    if (!profile || profile.userId !== ctx.user._id) {
+      throw new ConvexError('Profile not found or access denied')
+    }
+
+    const patchData: any = {
+      ...updates,
+      searchPattern: generateSearchPattern({ ...profile, ...updates })
+    }
+    await ctx.db.patch(ctx.user.activeDancerId, patchData)
+
+    return null
+  }
+})
+
+// Patch specific attributes on the active dancer profile
+export const patchDancerAttributes = zAuthMutation({
+  args: { attributes: z.object(attributesPlainObject).partial() },
+  returns: z.null(),
+  handler: async (ctx, { attributes }) => {
+    if (!ctx.user.activeDancerId) {
+      throw new ConvexError('No active dancer profile found')
+    }
+
+    const profile = await ctx.db.get(ctx.user.activeDancerId)
+    if (!profile || profile.userId !== ctx.user._id) {
+      throw new ConvexError('Profile not found or access denied')
+    }
+
+    const currentAttributes = (profile.attributes || {}) as Record<string, unknown>
+    const mergedAttributes = {
+      ...currentAttributes,
+      ...attributes
+    } as any
+
+    await ctx.db.patch(ctx.user.activeDancerId, { attributes: mergedAttributes })
+
+    return null
+  }
+})
+
+// Update a specific sizing field on the active dancer profile
+export const updateDancerSizingField = zAuthMutation({
+  args: { section: z.string(), field: z.string(), value: z.string() },
+  returns: z.null(),
+  handler: async (ctx, { section, field, value }) => {
+    if (!ctx.user.activeDancerId) {
+      throw new ConvexError('No active dancer profile found')
+    }
+
+    const profile = await ctx.db.get(ctx.user.activeDancerId)
+    if (!profile || profile.userId !== ctx.user._id) {
+      throw new ConvexError('Profile not found or access denied')
+    }
+
+    const currentSizing = (profile.sizing || {}) as Record<string, any>
+    const currentSection = (currentSizing[section] || {}) as Record<string, any>
+    const updatedSection = {
+      ...currentSection,
+      [field]: value
+    }
+    const newSizing = {
+      ...currentSizing,
+      [section]: updatedSection
+    }
+
+    await ctx.db.patch(ctx.user.activeDancerId, { sizing: newSizing })
+
+    return null
   }
 })
 

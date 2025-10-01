@@ -4,6 +4,7 @@ import { ConvexError, v } from 'convex/values'
 import { Id } from '../_generated/dataModel'
 import { z } from 'zod'
 import { zid } from '@packages/zodvex'
+import { getActiveProfileTarget } from './profileHelpers'
 
 // Schema definitions must come first for type inference
 
@@ -111,11 +112,30 @@ export const applyParsedResumeData = authMutation({
     }
 
     try {
+      const { targetId, profile } = await getActiveProfileTarget(ctx.db, ctx.user)
+
+      // Add profile info for projects/training
+      let profileInfo = {}
+      if (profile) {
+        if (ctx.user.activeProfileType === 'dancer') {
+          profileInfo = {
+            profileType: 'dancer' as const,
+            profileId: ctx.user.activeDancerId
+          }
+        } else if (ctx.user.activeProfileType === 'choreographer') {
+          profileInfo = {
+            profileType: 'choreographer' as const,
+            profileId: ctx.user.activeChoreographerId
+          }
+        }
+      }
+
       // Create experiences
       const experienceIds: Id<'projects'>[] = []
       for (const experience of args.experiences) {
         const experienceId = await ctx.db.insert('projects', {
           userId: ctx.user._id,
+          ...profileInfo,
           ...experience
         })
         experienceIds.push(experienceId)
@@ -127,46 +147,51 @@ export const applyParsedResumeData = authMutation({
         const training = args.training[i]
         const trainingId = await ctx.db.insert('training', {
           userId: ctx.user._id,
+          ...profileInfo,
           orderIndex: i,
           ...training
         })
         trainingIds.push(trainingId)
       }
 
-      // Update user profile
+      // Get current data from profile or user
+      const currentResume = profile?.resume || ctx.user.resume
+      const currentTraining = profile?.training || ctx.user.training
+
+      // Build updates object
       const updates: any = {}
 
       // Update resume with project references
       if (experienceIds.length > 0) {
         updates.resume = {
-          ...ctx.user.resume,
-          projects: [...(ctx.user.resume?.projects || []), ...experienceIds],
+          ...currentResume,
+          projects: [...(currentResume?.projects || []), ...experienceIds],
           skills:
-            args.skills.length > 0 ? args.skills : ctx.user.resume?.skills,
-          genres: args.genres.length > 0 ? args.genres : ctx.user.resume?.genres
+            args.skills.length > 0 ? args.skills : currentResume?.skills,
+          genres: args.genres.length > 0 ? args.genres : currentResume?.genres
         }
       } else if (args.skills.length > 0 || args.genres.length > 0) {
         updates.resume = {
-          ...ctx.user.resume,
+          ...currentResume,
           skills:
-            args.skills.length > 0 ? args.skills : ctx.user.resume?.skills,
-          genres: args.genres.length > 0 ? args.genres : ctx.user.resume?.genres
+            args.skills.length > 0 ? args.skills : currentResume?.skills,
+          genres: args.genres.length > 0 ? args.genres : currentResume?.genres
         }
       }
 
       // Update training references
       if (trainingIds.length > 0) {
-        updates.training = [...(ctx.user.training || []), ...trainingIds]
+        updates.training = [...(currentTraining || []), ...trainingIds]
       }
 
-      // Update SAG ID if provided
-      if (args.sagAftraId) {
+      // Update SAG ID if provided (dancer-specific field)
+      if (args.sagAftraId && ctx.user.activeProfileType === 'dancer') {
         updates.sagAftraId = args.sagAftraId
       }
 
-      // Apply all updates
+      // Apply all updates to profile or user
       if (Object.keys(updates).length > 0) {
-        await ctx.db.patch(ctx.user._id, updates)
+        await ctx.db.patch(targetId, updates)
       }
 
       return null

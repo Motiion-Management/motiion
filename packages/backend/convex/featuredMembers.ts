@@ -1,20 +1,52 @@
-import { query, mutation } from './_generated/server'
-import { authMutation, authQuery, notEmpty, zq } from './util'
+import { authMutation, notEmpty, zq, zodDoc } from './util'
 import { zid } from '@packages/zodvex'
-import { FeaturedMembers } from './schemas/featuredMembers'
+import { FeaturedMembers, featuredMembers } from './schemas/featuredMembers'
 import { getAll } from 'convex-helpers/server/relationships'
-import { crud } from 'convex-helpers/server/crud'
-import schema from './schema'
 import { z } from 'zod'
 import { UserDoc } from './schemas/users'
 
-export const { read } = crud(schema, 'featuredmembers', query, mutation)
+const zFeaturedMembersDoc = zodDoc('featuredMembers', featuredMembers)
 
-export const { create, update, destroy } = crud(
-  FeaturedMembers,
-  authQuery,
-  authMutation
-)
+// Public read
+export const read = zq({
+  args: { id: zid('featuredMembers') },
+  returns: zFeaturedMembersDoc.nullable(),
+  handler: async (ctx, { id }) => {
+    return await ctx.db.get(id)
+  }
+})
+
+// Authenticated create
+export const create = authMutation({
+  args: z.object(featuredMembers),
+  returns: zid('featuredMembers'),
+  handler: async (ctx, args) => {
+    return await ctx.db.insert('featuredMembers', args)
+  }
+})
+
+// Authenticated update
+export const update = authMutation({
+  args: z.object({
+    id: zid('featuredMembers'),
+    patch: z.object(featuredMembers).partial()
+  }),
+  returns: z.null(),
+  handler: async (ctx, { id, patch }) => {
+    await ctx.db.patch(id, patch)
+    return null
+  }
+})
+
+// Authenticated destroy
+export const destroy = authMutation({
+  args: { id: zid('featuredMembers') },
+  returns: z.null(),
+  handler: async (ctx, { id }) => {
+    await ctx.db.delete(id)
+    return null
+  }
+})
 
 const zFeaturedUser = z.object({
   userId: zid('users'),

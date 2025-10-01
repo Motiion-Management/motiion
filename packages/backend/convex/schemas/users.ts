@@ -88,7 +88,9 @@ export const users = {
   dateOfBirth: z.string().optional(),
   location: zLocation.optional(),
 
-  // talent profile
+  // DEPRECATED: These fields are being migrated to dancers/choreographers tables
+  // They remain optional for backward compatibility during migration
+  // TODO: Remove these fields after migration is complete and verified
   profileTipDismissed: z.boolean().optional(),
   headshots: zFileUploadObjectArray.optional(),
   representation: zRepresentation.optional(),
@@ -96,16 +98,15 @@ export const users = {
   sizing: z.object(sizingPlainObject).optional(),
   resume: zResume.optional(),
   links: zLinks.optional(),
-
-  // onboarding-specific fields
   sagAftraId: z.string().optional(),
   companyName: z.string().optional(),
-  workLocation: z.array(z.string()).optional(), // Work location preferences
-  training: z.array(zid('training')).optional(), // Training items (separate from experiences)
-  databaseUse: z.string().optional(), // How user intends to use the database
+  workLocation: z.array(z.string()).optional(),
+  training: z.array(zid('training')).optional(),
+  databaseUse: z.string().optional(),
   representationStatus: z
     .enum(['represented', 'seeking', 'independent'])
-    .optional(), // Representation status
+    .optional(),
+  // searchPattern field kept once for backward compatibility during migration
 
   // Resume import tracking
   resumeImportedFields: z.array(z.string()).optional(), // Fields that were populated from resume import

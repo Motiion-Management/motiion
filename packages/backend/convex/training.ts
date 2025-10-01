@@ -1,19 +1,51 @@
-import { authMutation, authQuery, notEmpty, zq } from './util'
-import { Training, trainingInput, zTrainingInput, zTrainingFormDoc } from './schemas/training'
+import { authMutation, authQuery, notEmpty, zq, zodDoc } from './util'
+import { Training, trainingInput, zTrainingInput, zTrainingFormDoc, training } from './schemas/training'
 import { getAll } from 'convex-helpers/server/relationships'
-import { crud } from 'convex-helpers/server/crud'
-import schema from './schema'
-import { query } from './_generated/server'
 import { z } from 'zod'
 import { zid } from '@packages/zodvex'
 
-// Basic CRUD operations
-export const { read } = crud(schema, 'training', query, authMutation)
-export const { create, update, destroy } = crud(
-  Training,
-  authQuery,
-  authMutation
-)
+const zTrainingDoc = zodDoc('training', training)
+
+// Public read
+export const read = zq({
+  args: { id: zid('training') },
+  returns: zTrainingDoc.nullable(),
+  handler: async (ctx, { id }) => {
+    return await ctx.db.get(id)
+  }
+})
+
+// Authenticated create
+export const create = authMutation({
+  args: z.object(training),
+  returns: zid('training'),
+  handler: async (ctx, args) => {
+    return await ctx.db.insert('training', args)
+  }
+})
+
+// Authenticated update
+export const update = authMutation({
+  args: z.object({
+    id: zid('training'),
+    patch: z.object(training).partial()
+  }),
+  returns: z.null(),
+  handler: async (ctx, { id, patch }) => {
+    await ctx.db.patch(id, patch)
+    return null
+  }
+})
+
+// Authenticated destroy
+export const destroy = authMutation({
+  args: { id: zid('training') },
+  returns: z.null(),
+  handler: async (ctx, { id }) => {
+    await ctx.db.delete(id)
+    return null
+  }
+})
 
 // Add training to user
 export const addMyTraining = authMutation({

@@ -1,39 +1,63 @@
-import {
-  query,
-  mutation,
-  internalQuery,
-  internalMutation
-} from './_generated/server'
-import { crud } from 'convex-helpers/server/crud'
-import schema from './schema'
-import { authMutation, authQuery, zq } from './util'
+import { ConvexError } from 'convex/values'
+import { zq, authMutation, ziq } from './util'
 import { zid, zodDoc } from '@packages/zodvex'
 import { z } from 'zod'
 import { Agencies, zAgencies } from './schemas/agencies'
-import { Doc } from './_generated/dataModel'
+import { Doc, Id } from './_generated/dataModel'
 
 export type AgencyDoc = Doc<'agencies'>
 
-// Public CRUD operations
-export const { read } = crud(schema, 'agencies', query, mutation)
-
-// Authenticated CRUD operations
-export const { create, update, destroy } = crud(
-  schema,
-  'agencies',
-  authQuery,
-  authMutation
-)
-
-// Internal CRUD operations
-export const { read: internalRead } = crud(
-  schema,
-  'agencies',
-  internalQuery,
-  internalMutation
-)
-
 const zAgencyDoc = zodDoc('agencies', zAgencies)
+
+// Public read
+export const read = zq({
+  args: { id: zid('agencies') },
+  returns: zAgencyDoc.nullable(),
+  handler: async (ctx, { id }) => {
+    return await ctx.db.get(id)
+  }
+})
+
+// Authenticated create
+export const create = authMutation({
+  args: zAgencies,
+  returns: zid('agencies'),
+  handler: async (ctx, args) => {
+    return await ctx.db.insert('agencies', args)
+  }
+})
+
+// Authenticated update
+export const update = authMutation({
+  args: z.object({
+    id: zid('agencies'),
+    patch: zAgencies.partial()
+  }),
+  returns: z.null(),
+  handler: async (ctx, { id, patch }) => {
+    await ctx.db.patch(id, patch)
+    return null
+  }
+})
+
+// Authenticated destroy
+export const destroy = authMutation({
+  args: { id: zid('agencies') },
+  returns: z.null(),
+  handler: async (ctx, { id }) => {
+    await ctx.db.delete(id)
+    return null
+  }
+})
+
+// Internal read
+export const internalRead = ziq({
+  args: { id: zid('agencies') },
+  returns: zAgencyDoc.nullable(),
+  handler: async (ctx, { id }) => {
+    return await ctx.db.get(id)
+  }
+})
 
 export const search = zq({
   args: { query: z.string() },

@@ -9,12 +9,15 @@ import {
   internalMutation,
   internalAction
 } from './_generated/server'
-import { customCtx, NoOp } from 'convex-helpers/server/customFunctions'
+import { customCtx, customQuery, customMutation, NoOp } from 'convex-helpers/server/customFunctions'
 import { ConvexError } from 'convex/values'
-import { zCustomQuery, zCustomMutation, zCustomAction } from '@packages/zodvex'
+import { zCustomQuery, zCustomMutation, zCustomAction, zid, zodDoc } from '@packages/zodvex'
 // Avoid depending on internal API function names here to reduce coupling
 import { Id, Doc } from './_generated/dataModel'
 import { internal } from './_generated/api'
+
+// Re-export zodvex helpers
+export { zid, zodDoc }
 
 // Plain zodvex wrappers with our app's specific DataModel
 export const zq = zCustomQuery(query, NoOp)
@@ -23,6 +26,23 @@ export const za = zCustomAction(action, NoOp)
 export const ziq = zCustomQuery(internalQuery, NoOp)
 export const zim = zCustomMutation(internalMutation, NoOp)
 export const zia = zCustomAction(internalAction, NoOp)
+
+// Plain auth wrappers for use with crud() and other convex-helpers functions
+export const plainAuthQuery = customQuery(
+  query,
+  customCtx(async (ctx) => {
+    const user = await getUserOrThrow(ctx)
+    return { user }
+  })
+)
+
+export const plainAuthMutation = customMutation(
+  mutation,
+  customCtx(async (ctx) => {
+    const user = await getUserOrThrow(ctx)
+    return { user }
+  })
+)
 
 // Auth-wrapped zodvex mutation
 export const zAuthMutation = zCustomMutation(

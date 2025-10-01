@@ -22,7 +22,7 @@ export const SizingPickerSheet: React.FC<SizingPickerSheetProps> = ({
   isOpen,
   onOpenChange,
 }) => {
-  const updateSizingField = useMutation(api.users.updateMySizingField);
+  const updateDancerSizingField = useMutation(api.dancers.updateDancerSizingField);
   // Initialize with initialValue or first available value
   const defaultValue = initialValue || metric.values[0];
   const [selectedValue, setSelectedValue] = useState(defaultValue);
@@ -41,7 +41,7 @@ export const SizingPickerSheet: React.FC<SizingPickerSheetProps> = ({
     setIsSaving(true);
     try {
       // Use the dedicated sizing field mutation
-      await updateSizingField({
+      await updateDancerSizingField({
         section: metric.section,
         field: metric.field,
         value: selectedValue,
@@ -53,7 +53,7 @@ export const SizingPickerSheet: React.FC<SizingPickerSheetProps> = ({
     } finally {
       setIsSaving(false);
     }
-  }, [selectedValue, updateSizingField, metric.section, metric.field, onOpenChange]);
+  }, [selectedValue, updateDancerSizingField, metric.section, metric.field, onOpenChange]);
 
   const handleValueChange = useCallback((value: string) => {
     setSelectedValue(value);

@@ -1,33 +1,66 @@
 import { ConvexError } from 'convex/values'
 import { paginationOptsValidator } from 'convex/server'
 import { filter } from 'convex-helpers/server/filter'
-import {
-  internalQuery,
-  query,
-  mutation,
-  internalMutation
-} from './_generated/server'
-import { authMutation, authQuery, notEmpty, zq, zm, ziq, zim } from './util'
+import { authMutation, authQuery, notEmpty, zq, zm, ziq, zim, zodDoc } from './util'
 
 import { getAll } from 'convex-helpers/server/relationships'
 import { UserDoc, Users, zUsers } from './schemas/users'
 import { z } from 'zod'
-import { crud } from 'convex-helpers/server/crud'
 import { zid } from '@packages/zodvex'
 import { attributesPlainObject } from './schemas/attributes'
 import { NEW_USER_DEFAULTS, formatFullName } from './users/helpers'
 import { AgencyDoc } from './agencies'
-import schema from './schema'
 
-export const { read, paginate } = crud(schema, 'users', query, mutation)
+const zUserDoc = zodDoc('users', zUsers)
 
-export const {
-  create,
-  update: internalUpdate,
-  destroy
-} = crud(schema, 'users', internalQuery, internalMutation)
+// Public read
+export const read = zq({
+  args: { id: zid('users') },
+  returns: zUserDoc.nullable(),
+  handler: async (ctx, { id }) => {
+    return await ctx.db.get(id)
+  }
+})
 
-// Note: Can't use crud for auth-wrapped update, keep as separate function
+// Public paginate
+export const paginate = zq({
+  args: { paginationOpts: paginationOptsValidator },
+  handler: async (ctx, { paginationOpts }) => {
+    return await ctx.db.query('users').paginate(paginationOpts)
+  }
+})
+
+// Internal create
+export const create = zim({
+  args: z.object(zUsers),
+  returns: zid('users'),
+  handler: async (ctx, args) => {
+    return await ctx.db.insert('users', args)
+  }
+})
+
+// Internal update
+export const internalUpdate = zim({
+  args: z.object({
+    id: zid('users'),
+    patch: z.object(zUsers).partial()
+  }),
+  returns: z.null(),
+  handler: async (ctx, { id, patch }) => {
+    await ctx.db.patch(id, patch)
+    return null
+  }
+})
+
+// Internal destroy
+export const destroy = zim({
+  args: { id: zid('users') },
+  returns: z.null(),
+  handler: async (ctx, { id }) => {
+    await ctx.db.delete(id)
+    return null
+  }
+})
 
 async function computeDerived(
   ctx: { db: { get: (id: any) => Promise<any> } },
@@ -137,144 +170,40 @@ export const getMyUser = authQuery({
 
 // Zod-validated mutation using convex-helpers + codecs
 // Use existing authMutation (from util.ts) to supply ctx.user
+// ACCOUNT-LEVEL ONLY: For profile data, use dancer/choreographer mutations
 export const updateMyUser = authMutation({
-  args: zUsers.partial(),
+  args: z.object({
+    firstName: z.string().optional(),
+    lastName: z.string().optional(),
+    displayName: z.string().optional(),
+    email: z.string().optional(),
+    phone: z.string().optional(),
+    dateOfBirth: z.string().optional(),
+    profileType: z.enum(['dancer', 'choreographer', 'guest']).optional(),
+    onboardingCompleted: z.boolean().optional(),
+    onboardingCompletedAt: z.string().optional(),
+    onboardingVersion: z.string().optional(),
+    currentOnboardingStep: z.string().optional(),
+    currentOnboardingStepIndex: z.number().optional()
+  }),
   returns: z.null(),
   handler: async (ctx, args) => {
+    // Only update account-level fields
     const nextUser = {
       firstName: args.firstName ?? ctx.user.firstName,
       lastName: args.lastName ?? ctx.user.lastName,
-      displayName: args.displayName ?? ctx.user.displayName,
-      location: args.location ?? ctx.user.location,
-      representation: args.representation ?? ctx.user.representation
+      displayName: args.displayName ?? ctx.user.displayName
     }
     const derived = await computeDerived(ctx, nextUser)
 
-    // Only update user's account-level fields
-    // Profile-specific fields should be updated through profile-specific functions
     await ctx.db.patch(ctx.user._id, { ...args, ...derived })
     return null
   }
 })
 
-export const updateMySizingField = authMutation({
-  args: { section: z.string(), field: z.string(), value: z.string() },
-  handler: async (ctx, { section, field, value }) => {
-    // Update profile if active, otherwise update user
-    if (
-      ctx.user.activeProfileType &&
-      (ctx.user.activeDancerId || ctx.user.activeChoreographerId)
-    ) {
-      let profileId = null
-      if (ctx.user.activeProfileType === 'dancer' && ctx.user.activeDancerId) {
-        profileId = ctx.user.activeDancerId
-      } else if (
-        ctx.user.activeProfileType === 'choreographer' &&
-        ctx.user.activeChoreographerId
-      ) {
-        profileId = ctx.user.activeChoreographerId
-      }
-
-      if (profileId) {
-        const profile = await ctx.db.get(profileId)
-        if (profile) {
-          const currentSizing = (profile.sizing || {}) as Record<string, any>
-          const currentSection = (currentSizing[section] || {}) as Record<
-            string,
-            any
-          >
-          const updatedSection = {
-            ...currentSection,
-            [field]: value
-          }
-          const newSizing = {
-            ...currentSizing,
-            [section]: updatedSection
-          }
-
-          await ctx.db.patch(profileId, { sizing: newSizing })
-          return
-        }
-      }
-    }
-
-    // Fallback to user if no profile
-    const currentSizing = ctx.user.sizing || {}
-    const currentSection = (currentSizing as Record<string, any>)[section] || {}
-    const updatedSection = {
-      ...currentSection,
-      [field]: value
-    }
-    const nextUser = {
-      ...ctx.user,
-      sizing: {
-        ...currentSizing,
-        [section]: updatedSection
-      }
-    }
-    const derived = await computeDerived(ctx, nextUser)
-    await ctx.db.patch(ctx.user._id, {
-      sizing: nextUser.sizing,
-      ...derived
-    })
-  }
-})
-
-// Patch only specific fields inside `attributes`, merging with existing
-export const patchUserAttributes = authMutation({
-  args: { attributes: z.object(attributesPlainObject).partial() },
-  handler: async (ctx, { attributes }) => {
-    // Update profile if active, otherwise update user
-    if (
-      ctx.user.activeProfileType &&
-      (ctx.user.activeDancerId || ctx.user.activeChoreographerId)
-    ) {
-      let profileId = null
-      if (ctx.user.activeProfileType === 'dancer' && ctx.user.activeDancerId) {
-        profileId = ctx.user.activeDancerId
-      } else if (
-        ctx.user.activeProfileType === 'choreographer' &&
-        ctx.user.activeChoreographerId
-      ) {
-        profileId = ctx.user.activeChoreographerId
-      }
-
-      if (profileId) {
-        const profile = await ctx.db.get(profileId)
-        if (profile) {
-          const currentAttributes = (profile.attributes || {}) as Record<
-            string,
-            unknown
-          >
-          const mergedAttributes = {
-            ...currentAttributes,
-            ...attributes
-          } as any
-
-          await ctx.db.patch(profileId, { attributes: mergedAttributes })
-          return
-        }
-      }
-    }
-
-    // Fallback to user if no profile
-    const currentAttributes = (ctx.user.attributes || {}) as Record<
-      string,
-      unknown
-    >
-    const mergedAttributes = {
-      ...currentAttributes,
-      ...attributes
-    } as any
-
-    const nextUser = { ...ctx.user, attributes: mergedAttributes }
-    const derived = await computeDerived(ctx, nextUser)
-    await ctx.db.patch(ctx.user._id, {
-      attributes: mergedAttributes,
-      ...derived
-    })
-  }
-})
+// REMOVED: updateMySizingField - moved to dancers.ts
+// REMOVED: patchUserAttributes - moved to dancers.ts
+// Profile data should be updated via dancer/choreographer specific mutations
 
 // clerk webhook functions
 export const getUserByTokenId = ziq({

@@ -20,7 +20,8 @@ export default function DynamicOnboardingStep() {
 
   // Mutations for saving data
   const updateMyUser = useMutation(api.users.updateMyUser);
-  const patchUserAttributes = useMutation(api.users.patchUserAttributes);
+  const patchDancerAttributes = useMutation(api.dancers.patchDancerAttributes);
+  const updateMyDancerProfile = useMutation(api.dancers.updateMyDancerProfile);
   const updateMyResume = useMutation(api.users.resume.updateMyResume);
   const addMyRepresentation = useMutation(api.users.representation.addMyRepresentation);
 
@@ -50,7 +51,8 @@ export default function DynamicOnboardingStep() {
         .save(values, {
           data,
           updateMyUser,
-          patchUserAttributes,
+          patchDancerAttributes,
+          updateMyDancerProfile,
           updateMyResume,
           addMyRepresentation,
         })
