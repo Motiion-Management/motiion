@@ -20,10 +20,11 @@
     "eslint": "^8.57.1",
     "eslint-config-next": "15.4.2",
     "eslint-config-prettier": "^10.1.8",
+    "globby": "^11.1.0",
     "next": "15.4.2",
     "prettier": "^3.6.2",
     "prettier-plugin-tailwindcss": "^0.6.14",
-    "turbo": "latest",
+    "turbo": "^2.5.8",
     "typescript": "^5.6.2",
     "typescript-eslint": "^8.37.0"
   },

@@ -21,8 +21,9 @@ export default function ReviewEditModal() {
   const formRef = useRef<FormHandle>(null);
   const { data, isLoading } = useOnboardingData();
   // Convex mutations for save context
-  const updateMyUser = useMutation(api.users.updateMyUser);
-  const patchUserAttributes = useMutation(api.users.patchUserAttributes);
+  const updateMyUser = useMutation(api.users.users.updateMyUser);
+  const patchDancerAttributes = useMutation(api.dancers.patchDancerAttributes);
+  const updateMyDancerProfile = useMutation(api.dancers.updateMyDancerProfile);
   const updateMyResume = useMutation(api.users.resume.updateMyResume);
   const addMyRepresentation = useMutation(api.users.representation.addMyRepresentation);
 
@@ -45,7 +46,8 @@ export default function ReviewEditModal() {
         def?.save?.(values, {
           data,
           updateMyUser,
-          patchUserAttributes,
+          patchDancerAttributes,
+          updateMyDancerProfile,
           updateMyResume,
           addMyRepresentation,
         })

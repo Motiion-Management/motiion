@@ -4,7 +4,7 @@ import { useConvexAuth, useQuery } from 'convex/react';
 export function useAuthenticated() {
   const { isLoading, isAuthenticated } = useConvexAuth();
 
-  const user = useQuery(api.users.getMyUser);
+  const user = useQuery(api.users.users.getMyUser);
 
   // If loading, return null to avoid rendering protected content
   if (isLoading || user === undefined) {

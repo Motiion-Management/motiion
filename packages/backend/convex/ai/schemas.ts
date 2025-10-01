@@ -1,6 +1,6 @@
 import { z } from 'zod'
-import { zProjects } from '../validators/projects'
-import { zTrainingInput } from '../validators/training'
+import { zProjects } from '../schemas/projects'
+import { zTrainingInput } from '../schemas/training'
 
 // Use centralized validators but omit fields that AI shouldn't handle
 export const experienceSchema = zProjects.omit({

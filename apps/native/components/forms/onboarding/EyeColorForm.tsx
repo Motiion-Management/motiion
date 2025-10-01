@@ -2,13 +2,13 @@ import React, { forwardRef, useEffect, useImperativeHandle } from 'react';
 import * as z from 'zod';
 import { useStore } from '@tanstack/react-form';
 
-import { EYECOLOR } from '@packages/backend/convex/validators/attributes';
+import { EYECOLOR } from '@packages/backend/convex/schemas/attributes';
 import { ValidationModeForm } from '~/components/form/ValidationModeForm';
 import { useAppForm } from '~/components/form/appForm';
 import type { FormHandle, FormProps } from '~/components/forms/onboarding/contracts';
 
 export const eyeColorSchema = z.object({
-  eyeColor: z.enum(EYECOLOR, { required_error: 'Please select an eye color' }),
+  eyeColor: z.enum(EYECOLOR, { message: 'Please select an eye color' }),
 });
 
 export type EyeColorValues = z.infer<typeof eyeColorSchema>;

@@ -45,7 +45,7 @@ export function useResumeUpload({
   const [errorMessage, setErrorMessage] = useState<string>();
 
   const generateUploadUrl = useMutation(api.files.generateUploadUrl);
-  const parseResumeDocument = useAction(api.users.resumeImport.parseResumeDocument);
+  const parseResumeDocument = useAction((api.users.resumeImport as any).parseResumeDocument);
 
   const clearError = useCallback(() => {
     setHasError(false);

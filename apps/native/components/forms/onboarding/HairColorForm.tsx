@@ -2,13 +2,13 @@ import React, { forwardRef, useEffect, useImperativeHandle } from 'react';
 import * as z from 'zod';
 import { useStore } from '@tanstack/react-form';
 
-import { HAIRCOLOR } from '@packages/backend/convex/validators/attributes';
+import { HAIRCOLOR } from '@packages/backend/convex/schemas/attributes';
 import { ValidationModeForm } from '~/components/form/ValidationModeForm';
 import { useAppForm } from '~/components/form/appForm';
 import type { FormHandle, FormProps } from '~/components/forms/onboarding/contracts';
 
 export const hairColorSchema = z.object({
-  hairColor: z.enum(HAIRCOLOR, { required_error: 'Please select a hair color' }),
+  hairColor: z.enum(HAIRCOLOR, { message: 'Please select a hair color' }),
 });
 
 export type HairColorValues = z.infer<typeof hairColorSchema>;

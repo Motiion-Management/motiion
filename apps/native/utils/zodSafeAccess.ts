@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { registryHelpers } from '@packages/zodvex';
 
 /**
  * Safe utility functions for accessing Zod schema properties
@@ -23,7 +24,63 @@ export function isZodSchema(value: unknown): value is z.ZodTypeAny {
  */
 export function getTypeName(schema: unknown): string | null {
   if (!isZodSchema(schema)) return null;
-  return schema._def?.typeName || null;
+  const def = (schema as any)._def;
+  return def?.typeName || null;
+}
+
+/**
+ * Deeply unwrap Zod v4 wrappers to reveal the base runtime type.
+ * Handles: Optional/Nullable/Default/Catch, Branded, Pipeline/Pipe/Transform, Effects (v3 legacy)
+ */
+export function unwrapAll(schema: z.ZodTypeAny): z.ZodTypeAny {
+  let current: any = schema;
+  const seen = new Set<any>();
+
+  while (isZodSchema(current) && !seen.has(current)) {
+    seen.add(current);
+
+    // First peel optional/nullable/default using existing helper
+    const afterBasic = unwrapOptional(current);
+    if (afterBasic !== current) {
+      current = afterBasic;
+      continue;
+    }
+
+    const typeName = getTypeName(current);
+    const def: any = (current as any)?._def;
+
+    // Branded → follow inner type
+    if (typeName === 'ZodBranded' && def?.type && isZodSchema(def.type)) {
+      current = def.type;
+      continue;
+    }
+
+    // Pipeline/Pipe/Transform (v4)
+    if (typeName === 'ZodPipeline' || typeName === 'ZodPipe' || typeName === 'ZodTransform') {
+      const inner = def?.innerType || def?.left || def?.schema;
+      if (isZodSchema(inner)) {
+        current = inner;
+        continue;
+      }
+    }
+
+    // Effects (v3 legacy)
+    if (typeName === 'ZodEffects' && def?.schema && isZodSchema(def.schema)) {
+      current = def.schema;
+      continue;
+    }
+
+    // Catch-all: if any common inner property exists, follow it
+    const fallback = def?.type || def?.schema || def?.innerType || def?.left;
+    if (isZodSchema(fallback)) {
+      current = fallback;
+      continue;
+    }
+
+    break;
+  }
+
+  return current as z.ZodTypeAny;
 }
 
 /**
@@ -63,10 +120,11 @@ export function hasChecks(
  * Safely check for email validation
  */
 export function hasEmailCheck(schema: z.ZodTypeAny): boolean {
-  if (!hasChecks(schema)) return false;
+  const base = unwrapAll(schema);
+  if (!hasChecks(base)) return false;
 
   try {
-    return (schema as any)._def.checks.some((check: any) => check?.kind === 'email');
+    return (base as any)._def.checks.some((check: any) => check?.kind === 'email');
   } catch {
     return false;
   }
@@ -76,10 +134,11 @@ export function hasEmailCheck(schema: z.ZodTypeAny): boolean {
  * Safely check for regex validation
  */
 export function hasRegexCheck(schema: z.ZodTypeAny, pattern?: string): boolean {
-  if (!hasChecks(schema)) return false;
+  const base = unwrapAll(schema);
+  if (!hasChecks(base)) return false;
 
   try {
-    return (schema as any)._def.checks.some((check: any) => {
+    return (base as any)._def.checks.some((check: any) => {
       if (check?.kind !== 'regex') return false;
       if (!pattern) return true;
 
@@ -93,12 +152,23 @@ export function hasRegexCheck(schema: z.ZodTypeAny, pattern?: string): boolean {
   }
 }
 
+/** Detect Zod v4 string().datetime() */
+export function hasDatetimeCheck(schema: z.ZodTypeAny): boolean {
+  const base = unwrapAll(schema);
+  if (!hasChecks(base)) return false;
+  try {
+    return (base as any)._def.checks.some((check: any) => check?.kind === 'datetime');
+  } catch {
+    return false;
+  }
+}
+
 /**
  * Safely get the shape from a Zod object schema
  */
 export function getObjectShape(schema: z.ZodTypeAny): Record<string, z.ZodTypeAny> | null {
   const typeName = getTypeName(schema);
-  if (typeName !== 'ZodObject') return null;
+  if (typeName !== 'ZodObject' && typeName !== 'ZodInterface') return null;
 
   try {
     // Try standard Zod shape property
@@ -138,6 +208,18 @@ export interface ConvexIdInfo {
 export function detectConvexId(schema: z.ZodTypeAny): ConvexIdInfo {
   try {
     const typeName = getTypeName(schema);
+
+    // zodvex zid adds a _tableName marker on the branded type
+    const tableNameProp = (schema as any)?._tableName;
+    if (typeof tableNameProp === 'string' && tableNameProp.length > 0) {
+      return { isConvexId: true, tableName: tableNameProp };
+    }
+
+    // zodvex registry metadata may mark ConvexId
+    const meta = registryHelpers.getMetadata(schema as any);
+    if (meta?.isConvexId === true && typeof meta?.tableName === 'string') {
+      return { isConvexId: true, tableName: meta.tableName };
+    }
 
     // Check for ZodBranded (how zid is implemented)
     if (typeName === 'ZodBranded') {
@@ -183,12 +265,8 @@ export function detectConvexId(schema: z.ZodTypeAny): ConvexIdInfo {
     }
 
     // Unwrap optional/nullable and check again
-    if (typeName === 'ZodOptional' || typeName === 'ZodNullable') {
-      const inner = unwrapOptional(schema);
-      if (inner !== schema) {
-        return detectConvexId(inner);
-      }
-    }
+    const unwrapped = unwrapAll(schema);
+    if (unwrapped !== schema) return detectConvexId(unwrapped);
 
     // Fallback: detect via description marker e.g., 'convexId:table'
     const desc = getDescription(schema);
@@ -211,21 +289,24 @@ export function getEnumValues(schema: z.ZodTypeAny): string[] | null {
     const typeName = getTypeName(schema);
 
     if (typeName === 'ZodEnum') {
-      const values = (schema as z.ZodEnum<any>)._def?.values;
+      const def = (schema as any)._def;
+      const values = def?.values;
       if (Array.isArray(values)) {
         return values;
       }
     }
 
     if (typeName === 'ZodNativeEnum') {
-      const enumObj = (schema as z.ZodNativeEnum<any>)._def?.values;
+      const def = (schema as any)._def;
+      const enumObj = def?.values;
       if (enumObj && typeof enumObj === 'object') {
         return Object.values(enumObj).filter((v) => typeof v === 'string') as string[];
       }
     }
 
     if (typeName === 'ZodLiteral') {
-      const value = (schema as z.ZodLiteral<any>)._def?.value;
+      const def = (schema as any)._def;
+      const value = def?.value;
       if (value !== undefined) {
         return [String(value)];
       }
@@ -319,10 +400,12 @@ export interface ValidationRules {
   pattern?: string;
   email?: boolean;
   enumValues?: string[];
+  nullable?: boolean;
+  datetime?: boolean;
 }
 
 export function extractValidationRules(schema: z.ZodTypeAny): ValidationRules {
-  const unwrapped = unwrapOptional(schema);
+  const unwrapped = unwrapAll(schema);
   const typeName = getTypeName(unwrapped) || 'unknown';
 
   const rules: ValidationRules = {
@@ -354,6 +437,9 @@ export function extractValidationRules(schema: z.ZodTypeAny): ValidationRules {
             rules.pattern = check.regex.source;
           }
           break;
+        case 'datetime':
+          rules.datetime = true;
+          break;
       }
     }
   }
@@ -363,6 +449,11 @@ export function extractValidationRules(schema: z.ZodTypeAny): ValidationRules {
   if (enumValues) {
     rules.enumValues = enumValues;
   }
+
+  // Nullability (presence vs. null allowed)
+  const tn = getTypeName(schema);
+  if (tn === 'ZodNullable') rules.nullable = true;
+  if (tn === 'ZodOptional' || tn === 'ZodDefault') rules.required = false;
 
   return rules;
 }
@@ -374,8 +465,17 @@ export function isRequired(schema: z.ZodTypeAny): boolean {
   const typeName = getTypeName(schema);
 
   if (typeName === 'ZodOptional') return false;
-  if (typeName === 'ZodNullable') return false;
   if (typeName === 'ZodDefault') return false;
+  // Nullable does not mean omittable; still required in presence
+  if (typeName === 'ZodNullable') return true;
+
+  // Union that includes undefined → optional
+  if (typeName === 'ZodUnion') {
+    const opts = (schema as any)?._def?.options;
+    if (Array.isArray(opts)) {
+      if (opts.some((o: any) => getTypeName(o) === 'ZodUndefined')) return false;
+    }
+  }
 
   return true;
 }

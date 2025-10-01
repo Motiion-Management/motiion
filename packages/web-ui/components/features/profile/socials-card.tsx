@@ -3,7 +3,7 @@ import Image from 'next/image'
 import WorldIcon from '@/public/Geography.svg'
 import { AccordionContent } from '@/components/ui/accordion'
 import { SocialLink, SocialLinkProps } from '@/components/ui/social-link'
-import { UserDoc } from '@packages/backend/convex/validators/users'
+import { UserDoc } from '@packages/backend/convex/schemas/users'
 
 export const SocialLinksCard: React.FC<{ user: UserDoc }> = ({ user }) => {
   return (

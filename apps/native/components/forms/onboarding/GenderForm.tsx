@@ -2,13 +2,13 @@ import React, { forwardRef, useEffect, useImperativeHandle } from 'react';
 import * as z from 'zod';
 import { useStore } from '@tanstack/react-form';
 
-import { GENDER } from '@packages/backend/convex/validators/attributes';
+import { GENDER } from '@packages/backend/convex/schemas/attributes';
 import { ValidationModeForm } from '~/components/form/ValidationModeForm';
 import { useAppForm } from '~/components/form/appForm';
 import type { FormHandle, FormProps } from '~/components/forms/onboarding/contracts';
 
 export const genderSchema = z.object({
-  gender: z.enum(GENDER, { required_error: 'Please select your gender' }),
+  gender: z.enum(GENDER, { message: 'Please select your gender' }),
 });
 
 export type GenderValues = z.infer<typeof genderSchema>;

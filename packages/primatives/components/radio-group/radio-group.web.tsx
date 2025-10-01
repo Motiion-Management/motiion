@@ -15,7 +15,7 @@ const RadioGroupContext = React.createContext<RootProps | null>(null)
 
 const Root = React.forwardRef<RootRef, RootProps>(
   ({ asChild, value, onValueChange, disabled = false, ...viewProps }, ref) => {
-    const Component = asChild ? Slot.View : View
+    const Component = (asChild ? Slot.View : View) as React.ElementType
     return (
       <RadioGroupContext.Provider
         value={{
@@ -58,7 +58,7 @@ const Item = React.forwardRef<ItemRef, ItemProps>(
       onValueChange(value)
     }
 
-    const Component = asChild ? Slot.Pressable : Pressable
+    const Component = (asChild ? Slot.Pressable : Pressable) as React.ElementType
     return (
       <RadioGroup.Item value={value} asChild>
         <Component ref={ref as any} onPress={onPress} {...props} />
@@ -71,7 +71,7 @@ Item.displayName = 'ItemRadioGroup'
 
 const Indicator = React.forwardRef<IndicatorRef, IndicatorProps>(
   ({ asChild, ...props }, ref) => {
-    const Component = asChild ? Slot.View : View
+    const Component = (asChild ? Slot.View : View) as React.ElementType
     return (
       <RadioGroup.Indicator asChild>
         <Component ref={ref} {...props} />

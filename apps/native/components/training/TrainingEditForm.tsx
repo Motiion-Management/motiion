@@ -9,8 +9,8 @@ import { type Id } from '@packages/backend/convex/_generated/dataModel';
 import {
   type TrainingFormDoc,
   zTrainingFormDoc,
-} from '@packages/backend/convex/validators/training';
-import { TRAINING_TYPES } from '@packages/backend/convex/validators/training';
+} from '@packages/backend/convex/schemas/training';
+import { TRAINING_TYPES } from '@packages/backend/convex/schemas/training';
 import {
   trainingMetadata,
   baseTrainingMetadata,
@@ -71,7 +71,7 @@ export const TrainingEditForm = forwardRef<TrainingEditFormHandle, TrainingEditF
 
     const sharedForm = useAppForm({
       defaultValues: selectedTraining,
-      validators: { onChange: schema },
+      validators: { onChange: schema as any },
       onSubmit: async ({ value }) => {
         const { _id, _creationTime, ...payload } = value;
         try {

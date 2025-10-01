@@ -3,7 +3,7 @@ import { View } from 'react-native';
 import { Sheet } from '~/components/ui/sheet';
 
 import { type Id } from '@packages/backend/convex/_generated/dataModel';
-import { type TrainingFormDoc } from '@packages/backend/convex/validators/training';
+import { type TrainingFormDoc } from '@packages/backend/convex/schemas/training';
 import { TrainingEditForm } from './TrainingEditForm';
 
 interface TrainingEditSheetProps {

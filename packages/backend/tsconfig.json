@@ -13,7 +13,15 @@
     "isolatedModules": true,
     "jsx": "preserve",
     "incremental": true,
-    "composite": true
+    "composite": true,
+    "declaration": true,
+    "declarationMap": true,
+    "suppressExcessPropertyErrors": false
+  },
+  "ts-node": {
+    "compilerOptions": {
+      "module": "commonjs"
+    }
   },
   "include": ["**/*.ts", "**/*.tsx"],
   "exclude": ["node_modules"]

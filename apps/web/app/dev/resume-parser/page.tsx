@@ -136,6 +136,7 @@ export default function Page() {
   const client = useMemo(() => new ConvexReactClient(convexUrl), [convexUrl])
 
   return (
+    // @ts-expect-error - React 19 type incompatibility with convex (deprecated app)
     <ConvexProvider client={client}>
       <ResumeParserTester />
     </ConvexProvider>

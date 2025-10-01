@@ -668,3 +668,4 @@ export default function App() {
   return <div>Hello World</div>;
 }
 ```
+- if you start running into type errors, we do not want to start branding things as any to make them work. think carefully about what is going wrong, and see if you have suggestions for me about other files or functions that are incompatible with changes we've just made, present the issues to me for consideration and approval, and a plan if you can put one together

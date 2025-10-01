@@ -1,16 +1,17 @@
 import { query, mutation } from './_generated/server'
+import { zm } from './util'
 import { ConvexError, v } from 'convex/values'
+import { z } from 'zod'
 import {
-  CURRENT_ONBOARDING_VERSION,
   getOnboardingFlow as getOnboardingFlowConfig,
-  getStepRoute,
   ProfileType,
   STEP,
   STEP_ROUTES,
   getFlowCompletionStatus,
+  CURRENT_ONBOARDING_VERSION,
   isStepComplete
 } from './onboardingConfig'
-import type { RegisteredMutation, RegisteredQuery } from 'convex/server'
+import type { RegisteredMutation } from 'convex/server'
 
 export const completeOnboarding: RegisteredMutation<
   'public',
@@ -33,11 +34,94 @@ export const completeOnboarding: RegisteredMutation<
       throw new ConvexError('User not found')
     }
 
+    // Create profile in new table if it doesn't exist
+    if (user.profileType && !user.activeDancerId && !user.activeChoreographerId) {
+      if (user.profileType === 'dancer') {
+        // Check if profile already exists
+        const existingProfile = await ctx.db
+          .query('dancers')
+          .withIndex('by_userId', (q) => q.eq('userId', user._id))
+          .first()
+
+        if (!existingProfile) {
+          // Create dancer profile with user's data
+          const profileId = await ctx.db.insert('dancers', {
+            userId: user._id,
+            isPrimary: true,
+            createdAt: new Date().toISOString(),
+            headshots: user.headshots,
+            representation: user.representation,
+            representationStatus: user.representationStatus,
+            attributes: user.attributes,
+            sizing: user.sizing,
+            resume: user.resume,
+            links: user.links,
+            sagAftraId: user.sagAftraId,
+            training: user.training,
+            workLocation: user.workLocation,
+            location: user.location,
+            profileCompleteness: 0,
+            profileTipDismissed: user.profileTipDismissed,
+            resumeImportedFields: user.resumeImportedFields,
+            resumeImportVersion: user.resumeImportVersion,
+            resumeImportedAt: user.resumeImportedAt,
+            searchPattern: user.searchPattern || ''
+          })
+
+          // Update user with profile references
+          const patchData: any = {
+            activeProfileType: 'dancer',
+            activeDancerId: profileId
+          }
+          await ctx.db.patch(user._id, patchData)
+        }
+      } else if (user.profileType === 'choreographer') {
+        // Check if profile already exists
+        const existingProfile = await ctx.db
+          .query('choreographers')
+          .withIndex('by_userId', (q) => q.eq('userId', user._id))
+          .first()
+
+        if (!existingProfile) {
+          // Create choreographer profile with user's data
+          const insertData: any = {
+            userId: user._id,
+            isPrimary: true,
+            createdAt: new Date().toISOString(),
+            headshots: user.headshots,
+            representation: user.representation,
+            representationStatus: user.representationStatus,
+            resume: user.resume,
+            links: user.links,
+            companyName: user.companyName,
+            workLocation: user.workLocation,
+            location: user.location,
+            databaseUse: user.databaseUse,
+            verified: false,
+            featured: false,
+            profileCompleteness: 0,
+            profileTipDismissed: user.profileTipDismissed,
+            resumeImportedFields: user.resumeImportedFields,
+            resumeImportVersion: user.resumeImportVersion,
+            resumeImportedAt: user.resumeImportedAt,
+            searchPattern: user.searchPattern || ''
+          }
+          const profileId = await ctx.db.insert('choreographers', insertData)
+
+          // Update user with profile references
+          const patchData: any = {
+            activeProfileType: 'choreographer',
+            activeChoreographerId: profileId
+          }
+          await ctx.db.patch(user._id, patchData)
+        }
+      }
+    }
+
     // Mark onboarding as completed (non-blocking; individual screens own validation)
     await ctx.db.patch(user._id, {
       onboardingCompleted: true,
-      onboardingCompletedAt: new Date().toISOString(),
-      onboardingVersion: CURRENT_ONBOARDING_VERSION
+      onboardingCompletedAt: new Date().toISOString()
     })
 
     return { success: true }
@@ -83,8 +167,9 @@ export const resetOnboarding: RegisteredMutation<
 
 // Removed legacy advance step — client controls flow
 
-export const setOnboardingStep = mutation({
-  args: { step: v.string() },
+export const setOnboardingStep = zm({
+  args: { step: z.string() },
+  returns: z.object({ success: z.boolean() }),
   handler: async (ctx, { step }) => {
     const identity = await ctx.auth.getUserIdentity()
     if (!identity) {
@@ -101,7 +186,7 @@ export const setOnboardingStep = mutation({
     }
 
     const profileType = (user.profileType || 'dancer') as ProfileType
-    const flow = getOnboardingFlowConfig(profileType, CURRENT_ONBOARDING_VERSION)
+    const flow = getOnboardingFlowConfig(profileType)
     const stepIndex = flow.findIndex((s) => s.step === step)
 
     if (stepIndex === -1) {
@@ -177,15 +262,15 @@ export const updateOnboardingStatus = mutation({
 
     const profileType = (user.profileType || 'dancer') as ProfileType
     const status = getFlowCompletionStatus(user, profileType)
-    
+
     // Update user's current step if it's different
     let wasUpdated = false
     const newStep = status.nextIncompleteStep || 'review'
-    
+
     if (user.currentOnboardingStep !== newStep) {
       const flow = getOnboardingFlowConfig(profileType)
-      const stepIndex = flow.findIndex(s => s.step === newStep)
-      
+      const stepIndex = flow.findIndex((s) => s.step === newStep)
+
       await ctx.db.patch(user._id, {
         currentOnboardingStep: newStep,
         currentOnboardingStepIndex: stepIndex
@@ -230,7 +315,7 @@ export const getOnboardingStatus = query({
 
     const profileType = (user.profileType || 'dancer') as ProfileType
     const status = getFlowCompletionStatus(user, profileType)
-    
+
     return {
       currentStep: status.nextIncompleteStep || 'review',
       completedSteps: status.completedSteps,

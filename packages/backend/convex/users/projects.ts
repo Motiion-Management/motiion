@@ -1,44 +1,111 @@
-import { authMutation, authQuery, notEmpty } from '../util'
-import { v } from 'convex/values'
+import { authMutation, authQuery, notEmpty, zq } from '../util'
 import { query } from '../_generated/server'
+import { z } from 'zod'
+import { zid } from 'zodvex'
+import { Projects } from '../schemas/projects'
 
 // Create a new project for the authenticated user
 export const addMyProject = authMutation({
-  args: v.any(),
-  returns: v.id('projects'),
-  handler: async (ctx, project) => {
-    const payload = { ...(project || {}), userId: ctx.user._id } as any
-    const projId = await ctx.db.insert('projects', payload)
-    // Keep resume.projects list in sync
-    await ctx.db.patch(ctx.user._id, {
-      resume: {
-        ...ctx.user.resume,
-        projects: [...(ctx.user?.resume?.projects || []), projId]
+  args: z.object({ project: z.any() }),
+  returns: zid('projects'),
+  handler: async (ctx, { project }) => {
+    // Add profile references if user has an active profile
+    let profileInfo = {}
+    let profile = null
+
+    if (ctx.user.activeProfileType && (ctx.user.activeDancerId || ctx.user.activeChoreographerId)) {
+      if (ctx.user.activeProfileType === 'dancer' && ctx.user.activeDancerId) {
+        profile = await ctx.db.get(ctx.user.activeDancerId)
+        profileInfo = {
+          profileType: 'dancer' as const,
+          profileId: ctx.user.activeDancerId
+        }
+      } else if (ctx.user.activeProfileType === 'choreographer' && ctx.user.activeChoreographerId) {
+        profile = await ctx.db.get(ctx.user.activeChoreographerId)
+        profileInfo = {
+          profileType: 'choreographer' as const,
+          profileId: ctx.user.activeChoreographerId
+        }
       }
-    })
+    }
+
+    const payload = {
+      ...(project || {}),
+      userId: ctx.user._id,
+      ...profileInfo
+    }
+    const projId = await ctx.db.insert('projects', payload)
+
+    // Update resume.projects list in profile or user
+    if (profile) {
+      const resume: any = profile.resume || {}
+      const updatedResume = {
+        ...resume,
+        projects: [...(resume.projects || []), projId]
+      }
+      await ctx.db.patch(profile._id as any, {
+        resume: updatedResume
+      })
+    } else {
+      const updatedResume = {
+        ...ctx.user.resume,
+        projects: [...(ctx.user.resume?.projects || []), projId]
+      }
+      await ctx.db.patch(ctx.user._id, {
+        resume: updatedResume
+      })
+    }
+
     return projId
   }
 })
 
 // Remove a project that belongs to the authenticated user
 export const removeMyProject = authMutation({
-  args: { projectId: v.id('projects') },
-  returns: v.null(),
+  args: { projectId: zid('projects') },
+  returns: z.null(),
   handler: async (ctx, args) => {
     const doc = await ctx.db.get(args.projectId)
     if (!doc || doc.userId !== ctx.user._id) {
       // Not found or not owned by user; do nothing
       return null
     }
-    // Detach from resume list
-    await ctx.db.patch(ctx.user._id, {
-      resume: {
-        ...ctx.user.resume,
-        projects: (ctx.user.resume?.projects || []).filter(
-          (id) => id !== args.projectId
+
+    // Get profile if active
+    let profile = null
+    if (ctx.user.activeProfileType && (ctx.user.activeDancerId || ctx.user.activeChoreographerId)) {
+      if (ctx.user.activeProfileType === 'dancer' && ctx.user.activeDancerId) {
+        profile = await ctx.db.get(ctx.user.activeDancerId)
+      } else if (ctx.user.activeProfileType === 'choreographer' && ctx.user.activeChoreographerId) {
+        profile = await ctx.db.get(ctx.user.activeChoreographerId)
+      }
+    }
+
+    // Detach from resume list in profile or user
+    if (profile) {
+      const resume: any = profile.resume || {}
+      const projects: any = resume.projects || []
+      const updatedResume = {
+        ...resume,
+        projects: projects.filter(
+          (id: import('../_generated/dataModel').Id<'projects'>) => id !== args.projectId
         )
       }
-    })
+      await ctx.db.patch(profile._id as any, {
+        resume: updatedResume
+      })
+    } else {
+      const updatedResume = {
+        ...ctx.user.resume,
+        projects: (ctx.user.resume?.projects || []).filter(
+          (id: import('../_generated/dataModel').Id<'projects'>) => id !== args.projectId
+        )
+      }
+      await ctx.db.patch(ctx.user._id, {
+        resume: updatedResume
+      })
+    }
+
     await ctx.db.delete(args.projectId)
     return null
   }
@@ -47,7 +114,7 @@ export const removeMyProject = authMutation({
 // List my projects from the unified table via index
 export const getMyProjects = authQuery({
   args: {},
-  returns: v.array(v.any()),
+  returns: z.array(Projects.zDoc),
   handler: async (ctx) => {
     if (!ctx.user) return []
     const projs = await ctx.db
@@ -55,22 +122,23 @@ export const getMyProjects = authQuery({
       .withIndex('userId', (q) => q.eq('userId', ctx.user._id))
       .collect()
     return projs.filter(notEmpty).sort((a, b) => {
-      if (!a.startDate || !b.startDate) return 0
-      return new Date(b.startDate).getTime() - new Date(a.startDate).getTime()
+      const aDate = a.startDate ? new Date(a.startDate as any).getTime() : 0
+      const bDate = b.startDate ? new Date(b.startDate as any).getTime() : 0
+      return bDate - aDate
     })
   }
 })
 
 export const getMyProjectsByType = authQuery({
   args: {
-    type: v.union(
-      v.literal('tv-film'),
-      v.literal('music-video'),
-      v.literal('live-performance'),
-      v.literal('commercial')
-    )
+    type: z.enum([
+      'tv-film',
+      'music-video',
+      'live-performance',
+      'commercial'
+    ])
   },
-  returns: v.array(v.any()),
+  returns: z.array(Projects.zDoc),
   handler: async (ctx, args) => {
     if (!ctx.user) return []
     const projs = await ctx.db
@@ -81,16 +149,17 @@ export const getMyProjectsByType = authQuery({
       .filter(notEmpty)
       .filter((p) => p.type === args.type)
       .sort((a, b) => {
-        if (!a.startDate || !b.startDate) return 0
-        return new Date(b.startDate).getTime() - new Date(a.startDate).getTime()
+        const aDate = a.startDate ? new Date(a.startDate as any).getTime() : 0
+        const bDate = b.startDate ? new Date(b.startDate as any).getTime() : 0
+        return bDate - aDate
       })
   }
 })
 
 // Public projects for a given user from unified table
-export const getUserPublicProjects = query({
-  args: { userId: v.id('users') },
-  returns: v.array(v.any()),
+export const getUserPublicProjects = zq({
+  args: { userId: zid('users') },
+  returns: z.array(Projects.zDoc),
   handler: async (ctx, args) => {
     const projs = await ctx.db
       .query('projects')
@@ -99,23 +168,24 @@ export const getUserPublicProjects = query({
     return projs
       .filter((p) => !p?.private)
       .sort((a, b) => {
-        if (!a.startDate || !b.startDate) return 0
-        return new Date(b.startDate).getTime() - new Date(a.startDate).getTime()
+        const aDate = a.startDate ? new Date(a.startDate as any).getTime() : 0
+        const bDate = b.startDate ? new Date(b.startDate as any).getTime() : 0
+        return bDate - aDate
       })
   }
 })
 
-export const getUserPublicProjectsByType = query({
+export const getUserPublicProjectsByType = zq({
   args: {
-    userId: v.id('users'),
-    type: v.union(
-      v.literal('tv-film'),
-      v.literal('music-video'),
-      v.literal('live-performance'),
-      v.literal('commercial')
-    )
+    userId: zid('users'),
+    type: z.enum([
+      'tv-film',
+      'music-video',
+      'live-performance',
+      'commercial'
+    ])
   },
-  returns: v.array(v.any()),
+  returns: z.array(Projects.zDoc),
   handler: async (ctx, args) => {
     const projs = await ctx.db
       .query('projects')
@@ -125,8 +195,9 @@ export const getUserPublicProjectsByType = query({
       .filter((p) => p.type === args.type)
       .filter((p) => !p?.private)
       .sort((a, b) => {
-        if (!a.startDate || !b.startDate) return 0
-        return new Date(b.startDate).getTime() - new Date(a.startDate).getTime()
+        const aDate = a.startDate ? new Date(a.startDate as any).getTime() : 0
+        const bDate = b.startDate ? new Date(b.startDate as any).getTime() : 0
+        return bDate - aDate
       })
   }
 })
@@ -134,7 +205,7 @@ export const getUserPublicProjectsByType = query({
 // Get the 3 most recently added projects for the authenticated user
 export const getMyRecentProjects = authQuery({
   args: {},
-  returns: v.array(v.any()),
+  returns: z.array(Projects.zDoc),
   handler: async (ctx) => {
     if (!ctx.user) return []
     const projs = await ctx.db
@@ -145,12 +216,3 @@ export const getMyRecentProjects = authQuery({
     return projs.filter(notEmpty)
   }
 })
-
-// Backwards compatibility exports (redirect to new names)
-export const addMyExperience = addMyProject
-export const removeMyExperience = removeMyProject
-export const getMyExperiences = getMyProjects
-export const getMyExperiencesByType = getMyProjectsByType
-export const getUserPublicExperiences = getUserPublicProjects
-export const getUserPublicExperiencesByType = getUserPublicProjectsByType
-export const getMyRecentExperiences = getMyRecentProjects

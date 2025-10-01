@@ -12,11 +12,9 @@ export interface OnboardingFlow {
 }
 
 export interface OnboardingFlows {
-  [version: string]: {
-    dancer: OnboardingStep[]
-    choreographer: OnboardingStep[]
-    guest: OnboardingStep[]
-  }
+  dancer: OnboardingStep[]
+  choreographer: OnboardingStep[]
+  guest: OnboardingStep[]
 }
 
 export const CURRENT_ONBOARDING_VERSION = 'v2'
@@ -26,228 +24,290 @@ export const ONBOARDING_GROUPS = {
   profile: {
     key: 'profile' as const,
     label: 'Profile',
-    steps: ['profile-type', 'resume'] as readonly string[],
-    basePath: '/app/onboarding/profile',
+    steps: [
+      'profile-type',
+      'resume',
+      'headshots',
+      'display-name',
+      'database-use',
+      'company'
+    ] as readonly string[],
+    basePath: '/app/onboarding/profile'
   },
   attributes: {
     key: 'attributes' as const,
     label: 'Attributes',
-    steps: ['display-name', 'height', 'ethnicity', 'hair-color', 'eye-color', 'gender'] as readonly string[],
-    basePath: '/app/onboarding/attributes',
+    steps: [
+      'height',
+      'ethnicity',
+      'hair-color',
+      'eye-color',
+      'gender'
+    ] as readonly string[],
+    basePath: '/app/onboarding/attributes'
   },
   'work-details': {
     key: 'work-details' as const,
-    label: 'Work',
-    steps: ['headshots', 'sizing', 'location', 'work-location', 'representation', 'agency', 'training', 'skills', 'union'] as readonly string[],
-    basePath: '/app/onboarding/work-details',
+    label: 'Work Details',
+    steps: [
+      'sizing',
+      'location',
+      'work-location',
+      'representation',
+      'agency',
+      'union'
+    ] as readonly string[],
+    basePath: '/app/onboarding/work-details'
   },
   experiences: {
     key: 'experiences' as const,
     label: 'Experience',
-    steps: ['projects'] as readonly string[],
-    basePath: '/app/onboarding/experiences',
+    steps: ['projects', 'training', 'skills'] as readonly string[],
+    basePath: '/app/onboarding/experiences'
   },
   review: {
     key: 'review' as const,
     label: 'Review',
     steps: ['review', 'projects-review'] as readonly string[],
-    basePath: '/app/onboarding/review',
+    basePath: '/app/onboarding/review'
   }
 } as const
 
 // Export types derived from the constants
 export type OnboardingGroupKey = keyof typeof ONBOARDING_GROUPS
-export type OnboardingGroupConfig = typeof ONBOARDING_GROUPS[OnboardingGroupKey]
+export type OnboardingGroupConfig =
+  (typeof ONBOARDING_GROUPS)[OnboardingGroupKey]
 
 // Define which groups are shown for each profile type
 export const ONBOARDING_GROUP_FLOWS = {
-  dancer: ['profile', 'attributes', 'work-details', 'experiences', 'review'] as readonly OnboardingGroupKey[],
-  choreographer: ['profile', 'attributes', 'work-details', 'experiences', 'review'] as readonly OnboardingGroupKey[],
+  dancer: [
+    'profile',
+    'attributes',
+    'work-details',
+    'experiences',
+    'review'
+  ] as readonly OnboardingGroupKey[],
+  choreographer: [
+    'profile',
+    'attributes',
+    'work-details',
+    'experiences',
+    'review'
+  ] as readonly OnboardingGroupKey[],
   guest: ['profile', 'review'] as readonly OnboardingGroupKey[]
 } as const
 
 export const ONBOARDING_FLOWS: OnboardingFlows = {
-  v2: {
-    dancer: [
-      {
-        step: 'profile-type',
-        required: ['profileType'],
-        description: 'Select your profile type'
-      },
-      {
-        step: 'resume',
-        required: [],
-        description: 'Import or attach your resume (optional)'
-      },
-      {
-        step: 'display-name',
-        required: ['displayName'],
-        description: 'Set your preferred display name'
-      },
-      {
-        step: 'height',
-        required: ['height'],
-        description: 'Your height information'
-      },
-      {
-        step: 'ethnicity',
-        required: ['ethnicity'],
-        description: 'Your ethnicity'
-      },
-      {
-        step: 'hair-color',
-        required: ['hairColor'],
-        description: 'Your hair color'
-      },
-      {
-        step: 'eye-color',
-        required: ['eyeColor'],
-        description: 'Your eye color'
-      },
-      {
-        step: 'gender',
-        required: ['gender'],
-        description: 'Your gender'
-      },
-      {
-        step: 'headshots',
-        required: ['headshots'],
-        minItems: 1,
-        description: 'Upload professional headshots'
-      },
-      {
-        step: 'sizing',
-        required: ['sizing'],
-        description: 'Clothing and measurement details'
-      },
-      {
-        step: 'location',
-        required: ['location'],
-        description: 'Your location'
-      },
-      {
-        step: 'work-location',
-        required: ['workLocation'],
-        description: 'Your work location preferences'
-      },
-      {
-        step: 'representation',
-        required: ['representationStatus'],
-        description: 'Agency and representation information'
-      },
-      {
-        step: 'agency',
-        required: ['agency'],
-        description: 'Agency selection (conditional)'
-      },
-      {
-        step: 'training',
-        required: ['training'],
-        description: 'Training and education'
-      },
-      {
-        step: 'projects',
-        required: ['projects'],
-        minItems: 1,
-        description: 'Professional projects'
-      },
-      {
-        step: 'skills',
-        required: ['skills'],
-        description: 'Skills and abilities'
-      },
-      {
-        step: 'union',
-        required: [],
-        description: 'SAG-AFTRA membership (optional)'
-      },
-      {
-        step: 'review',
-        required: [],
-        description: 'Review profile information'
-      }
-    ],
-    choreographer: [
-      {
-        step: 'profile-type',
-        required: ['profileType'],
-        description: 'Select your profile type'
-      },
-      {
-        step: 'resume',
-        required: [],
-        description: 'Import or attach your resume (optional)'
-      },
-      {
-        step: 'display-name',
-        required: ['displayName'],
-        description: 'Set your preferred display name'
-      },
-      {
-        step: 'headshots',
-        required: ['headshots'],
-        minItems: 1,
-        description: 'Upload professional headshots'
-      },
-      {
-        step: 'location',
-        required: ['location'],
-        description: 'Your location'
-      },
-      {
-        step: 'representation',
-        required: ['representationStatus'],
-        description: 'Agency and representation information'
-      },
-      {
-        step: 'agency',
-        required: ['agency'],
-        description: 'Agency selection (conditional)'
-      },
-      {
-        step: 'training',
-        required: ['training'],
-        description: 'Training and education'
-      },
-      {
-        step: 'projects',
-        required: ['projects'],
-        minItems: 1,
-        description: 'Professional projects'
-      },
-      {
-        step: 'review',
-        required: [],
-        description: 'Review profile information'
-      }
-    ],
-    guest: [
-      {
-        step: 'profile-type',
-        required: ['profileType'],
-        description: 'Select your profile type'
-      },
-      {
-        step: 'database-use',
-        required: ['databaseUse'],
-        description: 'How will you use the database'
-      },
-      {
-        step: 'company',
-        required: ['companyName'],
-        description: 'Company or organization information'
-      },
-      {
-        step: 'review',
-        required: [],
-        description: 'Review profile information'
-      }
-    ]
-  }
+  dancer: [
+    // Profile group
+    {
+      step: 'profile-type',
+      required: ['profileType'],
+      description: 'Select your profile type'
+    },
+    {
+      step: 'resume',
+      required: [],
+      description: 'Import or attach your resume (optional)'
+    },
+    {
+      step: 'headshots',
+      required: ['headshots'],
+      minItems: 1,
+      description: 'Upload professional headshots'
+    },
+    {
+      step: 'display-name',
+      required: ['displayName'],
+      description: 'Set your preferred display name'
+    },
+    // Attributes group
+    {
+      step: 'height',
+      required: ['height'],
+      description: 'Your height information'
+    },
+    {
+      step: 'ethnicity',
+      required: ['ethnicity'],
+      description: 'Your ethnicity'
+    },
+    {
+      step: 'hair-color',
+      required: ['hairColor'],
+      description: 'Your hair color'
+    },
+    {
+      step: 'eye-color',
+      required: ['eyeColor'],
+      description: 'Your eye color'
+    },
+    {
+      step: 'gender',
+      required: ['gender'],
+      description: 'Your gender'
+    },
+    // Work Details group
+    {
+      step: 'sizing',
+      required: ['sizing'],
+      description: 'Clothing and measurement details'
+    },
+    {
+      step: 'location',
+      required: ['location'],
+      description: 'Your location'
+    },
+    {
+      step: 'work-location',
+      required: ['workLocation'],
+      description: 'Your work location preferences'
+    },
+    {
+      step: 'representation',
+      required: ['representationStatus'],
+      description: 'Agency and representation information'
+    },
+    {
+      step: 'agency',
+      required: ['agency'],
+      description: 'Agency selection (conditional)'
+    },
+    {
+      step: 'union',
+      required: [],
+      description: 'SAG-AFTRA membership (optional)'
+    },
+    // Experience group
+    {
+      step: 'projects',
+      required: ['projects'],
+      minItems: 1,
+      description: 'Professional projects'
+    },
+    {
+      step: 'training',
+      required: ['training'],
+      description: 'Training and education'
+    },
+    {
+      step: 'skills',
+      required: ['skills'],
+      description: 'Skills and abilities'
+    },
+    // Review group
+    {
+      step: 'review',
+      required: [],
+      description: 'Review profile information'
+    }
+  ],
+  choreographer: [
+    // Profile group
+    {
+      step: 'profile-type',
+      required: ['profileType'],
+      description: 'Select your profile type'
+    },
+    {
+      step: 'resume',
+      required: [],
+      description: 'Import or attach your resume (optional)'
+    },
+    {
+      step: 'headshots',
+      required: ['headshots'],
+      minItems: 1,
+      description: 'Upload professional headshots'
+    },
+    {
+      step: 'display-name',
+      required: ['displayName'],
+      description: 'Set your preferred display name'
+    },
+    // Work Details group
+    {
+      step: 'sizing',
+      required: [],
+      description: 'Clothing and measurement details (optional)'
+    },
+    {
+      step: 'location',
+      required: ['location'],
+      description: 'Your location'
+    },
+    {
+      step: 'work-location',
+      required: ['workLocation'],
+      description: 'Your work location preferences'
+    },
+    {
+      step: 'representation',
+      required: ['representationStatus'],
+      description: 'Agency and representation information'
+    },
+    {
+      step: 'agency',
+      required: ['agency'],
+      description: 'Agency selection (conditional)'
+    },
+    {
+      step: 'union',
+      required: [],
+      description: 'SAG-AFTRA membership (optional)'
+    },
+    // Experience group
+    {
+      step: 'projects',
+      required: ['projects'],
+      minItems: 1,
+      description: 'Professional projects'
+    },
+    {
+      step: 'training',
+      required: ['training'],
+      description: 'Training and education'
+    },
+    {
+      step: 'skills',
+      required: ['skills'],
+      description: 'Skills and abilities'
+    },
+    // Review group
+    {
+      step: 'review',
+      required: [],
+      description: 'Review profile information'
+    }
+  ],
+  guest: [
+    // Profile group
+    {
+      step: 'profile-type',
+      required: ['profileType'],
+      description: 'Select your profile type'
+    },
+    {
+      step: 'database-use',
+      required: ['databaseUse'],
+      description: 'How will you use the database'
+    },
+    {
+      step: 'company',
+      required: ['companyName'],
+      description: 'Company or organization information'
+    },
+    // Review group
+    {
+      step: 'review',
+      required: [],
+      description: 'Review profile information'
+    }
+  ]
 }
 
 export const STEP_ROUTES = {
-  'profile-type': '/app/onboarding/profile/type',
+  'profile-type': '/app/onboarding/profile/profile-type',
   'display-name': '/app/onboarding/attributes/display-name',
   headshots: '/app/onboarding/work-details/headshots',
   height: '/app/onboarding/attributes/height',
@@ -260,7 +320,7 @@ export const STEP_ROUTES = {
   'work-location': '/app/onboarding/work-details/work-location',
   representation: '/app/onboarding/work-details/representation',
   agency: '/app/onboarding/work-details/agency',
-  resume: '/app/onboarding/work-details/resume',
+  resume: '/app/onboarding/profile/resume',
   projects: '/app/onboarding/experiences/projects',
   training: '/app/onboarding/work-details/training',
   skills: '/app/onboarding/work-details/skills',
@@ -272,24 +332,14 @@ export const STEP_ROUTES = {
 
 export type STEP = keyof typeof STEP_ROUTES
 
-export function getOnboardingFlow(
-  profileType: ProfileType,
-  version: string = CURRENT_ONBOARDING_VERSION
-): OnboardingStep[] {
-  const flows = ONBOARDING_FLOWS[version]
-  if (!flows) {
-    // Default to v2 if version not found
-    console.warn(`Onboarding version ${version} not found, using v2`)
-    return ONBOARDING_FLOWS.v2[profileType] || ONBOARDING_FLOWS.v2.dancer
-  }
-
-  const flow = flows[profileType]
+export function getOnboardingFlow(profileType: ProfileType): OnboardingStep[] {
+  const flow = ONBOARDING_FLOWS[profileType]
   if (!flow) {
     // Default to dancer flow if profile type not found
     console.warn(
-      `Onboarding flow for ${profileType} not found in version ${version}, using dancer flow`
+      `Onboarding flow for ${profileType} not found, using dancer flow`
     )
-    return flows.dancer || []
+    return ONBOARDING_FLOWS.dancer || []
   }
 
   return flow
@@ -302,11 +352,8 @@ export function getStepRoute(step: string): string {
   )
 }
 
-export function getTotalSteps(
-  profileType: ProfileType,
-  version: string = CURRENT_ONBOARDING_VERSION
-): number {
-  return getOnboardingFlow(profileType, version).length
+export function getTotalSteps(profileType: ProfileType): number {
+  return getOnboardingFlow(profileType).length
 }
 
 // Step validator type
@@ -315,55 +362,59 @@ export type StepValidator = (user: any) => boolean
 // Validation matrix for each step
 export const STEP_VALIDATORS: Record<string, StepValidator> = {
   'profile-type': (user) => !!user.profileType,
-  
+
   'display-name': (user) => !!user.displayName,
-  
-  'height': (user) => !!(user.attributes?.height?.feet && user.attributes?.height?.inches),
-  
-  'ethnicity': (user) => !!(user.attributes?.ethnicity && user.attributes.ethnicity.length > 0),
-  
+
+  height: (user) =>
+    !!(user.attributes?.height?.feet && user.attributes?.height?.inches),
+
+  ethnicity: (user) =>
+    !!(user.attributes?.ethnicity && user.attributes.ethnicity.length > 0),
+
   'hair-color': (user) => !!user.attributes?.hairColor,
-  
+
   'eye-color': (user) => !!user.attributes?.eyeColor,
-  
-  'gender': (user) => !!user.attributes?.gender,
-  
-  'headshots': (user) => !!(user.headshots && user.headshots.length > 0),
-  
-  'sizing': (user) => {
+
+  gender: (user) => !!user.attributes?.gender,
+
+  headshots: (user) => !!(user.headshots && user.headshots.length > 0),
+
+  sizing: (user) => {
     const sizing = user.sizing
     if (!sizing) return false
     // Check if at least some sizing data exists
     return !!(sizing.general || sizing.male || sizing.female)
   },
-  
-  'location': (user) => !!user.location,
-  
-  'work-location': (user) => !!(user.workLocation && user.workLocation.length > 0),
-  
-  'representation': (user) => !!user.representationStatus,
-  
-  'agency': (user) => {
+
+  location: (user) => !!user.location,
+
+  'work-location': (user) =>
+    !!(user.workLocation && user.workLocation.length > 0),
+
+  representation: (user) => !!user.representationStatus,
+
+  agency: (user) => {
     // Only required if representationStatus is 'represented'
     if (user.representationStatus !== 'represented') return true
     return !!user.representation?.agencyId
   },
-  
-  'training': (user) => !!(user.training && user.training.length > 0),
-  
-  'projects': (user) => !!(user.resume?.projects && user.resume.projects.length > 0),
-  
-  'skills': (user) => !!(user.resume?.skills && user.resume.skills.length > 0),
-  
-  'union': (user) => true, // Optional step, always considered complete
-  
+
+  training: (user) => !!(user.training && user.training.length > 0),
+
+  projects: (user) =>
+    !!(user.resume?.projects && user.resume.projects.length > 0),
+
+  skills: (user) => !!(user.resume?.skills && user.resume.skills.length > 0),
+
+  union: (user) => true, // Optional step, always considered complete
+
   'database-use': (user) => !!user.databaseUse,
-  
-  'company': (user) => !!user.companyName,
-  
-  'resume': (user) => true, // Optional step
-  
-  'review': (user) => true // Review step has no data requirements
+
+  company: (user) => !!user.companyName,
+
+  resume: (user) => true, // Optional step
+
+  review: (user) => true // Review step has no data requirements
 }
 
 // Helper to check if a step is complete
@@ -374,19 +425,19 @@ export function isStepComplete(step: string, user: any): boolean {
 
 // Helper to get completion status for entire flow
 export function getFlowCompletionStatus(
-  user: any, 
+  user: any,
   profileType: ProfileType,
   version: string = CURRENT_ONBOARDING_VERSION
-): { 
-  completedSteps: string[], 
-  incompleteSteps: string[],
-  nextIncompleteStep: string | null,
+): {
+  completedSteps: string[]
+  incompleteSteps: string[]
+  nextIncompleteStep: string | null
   completionPercentage: number
 } {
-  const flow = getOnboardingFlow(profileType, version)
+  const flow = getOnboardingFlow(profileType)
   const completedSteps: string[] = []
   const incompleteSteps: string[] = []
-  
+
   for (const step of flow) {
     if (isStepComplete(step.step, user)) {
       completedSteps.push(step.step)
@@ -394,10 +445,12 @@ export function getFlowCompletionStatus(
       incompleteSteps.push(step.step)
     }
   }
-  
+
   const nextIncompleteStep = incompleteSteps[0] || null
-  const completionPercentage = Math.round((completedSteps.length / flow.length) * 100)
-  
+  const completionPercentage = Math.round(
+    (completedSteps.length / flow.length) * 100
+  )
+
   return {
     completedSteps,
     incompleteSteps,

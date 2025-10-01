@@ -11,7 +11,7 @@ import { OnboardingFormProps, OnboardingFormRef } from './types';
 
 const profileTypeValidator = z.object({
   profileType: z.enum(['dancer', 'choreographer'], {
-    required_error: 'Please select a profile type',
+    message: 'Please select a profile type',
   }),
 });
 
@@ -25,8 +25,8 @@ export const ProfileTypeForm = forwardRef<
   OnboardingFormRef,
   OnboardingFormProps<ProfileTypeFormData>
 >(({ initialData, onComplete, onCancel, mode = 'fullscreen', onValidationChange }, ref) => {
-  const user = useQuery(api.users.getMyUser);
-  const updateUser = useMutation(api.users.updateMyUser);
+  const user = useQuery(api.users.users.getMyUser);
+  const updateUser = useMutation(api.users.users.updateMyUser);
 
   const form = useAppForm({
     defaultValues: {

@@ -50,7 +50,7 @@ export function MultiImageUploadOptimized({ onImageCountChange }: MultiImageUplo
   const headshotsMetadata = useQuery(api.users.headshotsOptimized.getMyHeadshotsMetadata);
   const getHeadshotUrls = useQuery(
     api.users.headshotsOptimized.getHeadshotUrls,
-    headshotsMetadata ? { storageIds: headshotsMetadata.map((h) => h.storageId) } : 'skip'
+    headshotsMetadata ? { storageIds: headshotsMetadata.map((h: any) => h.storageId) } : 'skip'
   );
 
   // Update local state when metadata or URLs change
@@ -62,7 +62,7 @@ export function MultiImageUploadOptimized({ onImageCountChange }: MultiImageUplo
         return ap - bp;
       });
       const updatedHeadshots = sortedMeta.map((metadata) => {
-        const urlData = getHeadshotUrls?.find((u) => u.storageId === metadata.storageId);
+        const urlData = getHeadshotUrls?.find((u: any) => u.storageId === metadata.storageId);
         return {
           ...metadata,
           url: urlData?.url,

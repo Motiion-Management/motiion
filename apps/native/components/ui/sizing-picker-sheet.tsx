@@ -22,7 +22,7 @@ export const SizingPickerSheet: React.FC<SizingPickerSheetProps> = ({
   isOpen,
   onOpenChange,
 }) => {
-  const updateSizingField = useMutation(api.users.updateMySizingField);
+  const updateDancerSizingField = useMutation(api.dancers.updateDancerSizingField);
   // Initialize with initialValue or first available value
   const defaultValue = initialValue || metric.values[0];
   const [selectedValue, setSelectedValue] = useState(defaultValue);
@@ -41,7 +41,7 @@ export const SizingPickerSheet: React.FC<SizingPickerSheetProps> = ({
     setIsSaving(true);
     try {
       // Use the dedicated sizing field mutation
-      await updateSizingField({
+      await updateDancerSizingField({
         section: metric.section,
         field: metric.field,
         value: selectedValue,
@@ -53,7 +53,7 @@ export const SizingPickerSheet: React.FC<SizingPickerSheetProps> = ({
     } finally {
       setIsSaving(false);
     }
-  }, [selectedValue, updateSizingField, metric.section, metric.field, onOpenChange]);
+  }, [selectedValue, updateDancerSizingField, metric.section, metric.field, onOpenChange]);
 
   const handleValueChange = useCallback((value: string) => {
     setSelectedValue(value);
@@ -72,7 +72,7 @@ export const SizingPickerSheet: React.FC<SizingPickerSheetProps> = ({
           <View className="h-[178px] w-full overflow-hidden rounded-lg">
             <View className="relative h-full">
               {/* Highlight region */}
-              <View className="absolute left-0 right-0 top-1/2 h-14 -translate-y-1/2 border-b border-t border-border-accent bg-surface-high" />
+              <View className="absolute left-0 right-0 top-1/2 h-14 -translate-y-1/2 border-b border-t border-border-accent bg-surface-accent" />
 
               {/* Picker */}
               <View className="h-full items-center justify-center">

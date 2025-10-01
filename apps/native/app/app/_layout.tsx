@@ -24,7 +24,7 @@ export default function AppLayout() {
           />
         </Stack>
         {/* Dev-only floating tools for onboarding iteration */}
-        <DevOnboardingTools />
+        {/* <DevOnboardingTools /> */}
       </BackgroundGradientView>
     </SharedUserProvider>
   );

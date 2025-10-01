@@ -1,27 +1,45 @@
-import { query, mutation } from './_generated/server'
-import { authMutation, authQuery } from './util'
+import { zq, authMutation, zid } from './util'
+import { z } from 'zod'
+import { Events, events } from './schemas/events'
 
-import { crud } from 'convex-helpers/server'
-import { filter } from 'convex-helpers/server/filter'
-import { Events } from './validators/events'
-import { paginationOptsValidator } from 'convex/server'
+const zEventsDoc = Events.zDoc
 
-export const { read } = crud(Events, query, mutation)
+// Public read
+export const read = zq({
+  args: { id: zid('events') },
+  handler: async (ctx, { id }) => {
+    return await ctx.db.get(id)
+  }
+})
 
-export const { create, update, destroy } = crud(Events, authQuery, authMutation)
+// Authenticated create
+export const create = authMutation({
+  args: events,
+  returns: zid('events'),
+  handler: async (ctx, args) => {
+    return await ctx.db.insert('events', args)
+  }
+})
 
-export const paginate = query({
-  args: { paginationOpts: paginationOptsValidator },
-  async handler(ctx, args) {
-    const events = await filter(
-      ctx.db.query('events'),
-      async (event) => event.active
-    )
-      .withIndex('startDate')
-      .filter((q) => q.eq(q.field('active'), true))
-      .order('desc')
-      .paginate(args.paginationOpts)
+// Authenticated update
+export const update = authMutation({
+  args: {
+    id: zid('events'),
+    patch: z.any()
+  },
+  returns: z.null(),
+  handler: async (ctx, { id, patch }) => {
+    await ctx.db.patch(id, patch)
+    return null
+  }
+})
 
-    return events
+// Authenticated destroy
+export const destroy = authMutation({
+  args: { id: zid('events') },
+  returns: z.null(),
+  handler: async (ctx, { id }) => {
+    await ctx.db.delete(id)
+    return null
   }
 })

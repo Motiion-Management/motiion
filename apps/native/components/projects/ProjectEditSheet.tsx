@@ -2,7 +2,7 @@ import React, { useCallback } from 'react';
 import { View } from 'react-native';
 import { Sheet } from '~/components/ui/sheet';
 import { type Id } from '@packages/backend/convex/_generated/dataModel';
-import { type ProjectFormDoc } from '@packages/backend/convex/validators/projects';
+import { type ProjectFormDoc } from '@packages/backend/convex/schemas/projects';
 import { ProjectEditForm } from './ProjectEditForm';
 
 interface ProjectEditSheetProps {

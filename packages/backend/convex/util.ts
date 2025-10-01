@@ -3,22 +3,65 @@ import {
   MutationCtx,
   QueryCtx,
   action,
-  mutation
-} from './_generated/server'
-import {
-  customQuery,
-  customCtx,
-  customMutation,
-  customAction
-} from 'convex-helpers/server/customFunctions'
-import { query } from './_generated/server'
-import { ConvexError } from 'convex/values'
-import { internal } from './_generated/api'
-import { Id } from './_generated/dataModel'
-
-export const authQuery = customQuery(
+  mutation,
   query,
-  customCtx(async (ctx) => {
+  internalQuery,
+  internalMutation,
+  internalAction
+} from './_generated/server'
+import { customCtx } from 'convex-helpers/server/customFunctions'
+import { ConvexError } from 'convex/values'
+import {
+  zStrictQuery,
+  zStrictMutation,
+  zStrictAction,
+  zid
+} from 'zodvex'
+// Avoid depending on internal API function names here to reduce coupling
+import { Id, Doc } from './_generated/dataModel'
+import { internal } from './_generated/api'
+
+// Re-export zodvex helpers
+export { zid }
+
+// Plain zodvex wrappers with our app's specific DataModel (strict typing)
+export const zq = zStrictQuery(
+  query,
+  customCtx(async (_ctx: QueryCtx) => ({}))
+)
+export const zm = zStrictMutation(
+  mutation,
+  customCtx(async (_ctx: MutationCtx) => ({}))
+)
+export const za = zStrictAction(
+  action,
+  customCtx(async (_ctx: ActionCtx) => ({}))
+)
+export const ziq = zStrictQuery(
+  internalQuery,
+  customCtx(async (_ctx: QueryCtx) => ({}))
+)
+export const zim = zStrictMutation(
+  internalMutation,
+  customCtx(async (_ctx: MutationCtx) => ({}))
+)
+export const zia = zStrictAction(
+  internalAction,
+  customCtx(async (_ctx: ActionCtx) => ({}))
+)
+
+// Auth-wrapped zodvex mutation
+export const zAuthMutation = zStrictMutation(
+  mutation,
+  customCtx(async (ctx: MutationCtx) => {
+    const user = await getUserOrThrow(ctx)
+    return { user }
+  })
+)
+
+export const authQuery = zStrictQuery(
+  query,
+  customCtx(async (ctx: QueryCtx) => {
     try {
       return { user: await getUserOrThrow(ctx) }
     } catch (err) {
@@ -27,76 +70,95 @@ export const authQuery = customQuery(
   })
 )
 
-export const authAction = customAction(
+export const authAction = zStrictAction(
   action,
-  customCtx(async (ctx) => {
-    const tokenId = (await ctx.auth.getUserIdentity())?.subject
-
-    if (!tokenId) {
-      throw new ConvexError('must be logged in')
-    }
-
-    const user: any = await ctx.runQuery(internal.users.getUserByTokenId, {
-      tokenId
-    })
-
-    if (!user) {
-      throw new ConvexError('user not found')
-    }
-
-    const _id: Id<'users'> = user._id
-    const isPremium: boolean = user.isPremium
-
-    return {
+  customCtx(
+    async (
+      ctx: ActionCtx
+    ): Promise<{
       user: {
-        _id,
-        userId: tokenId,
-        isPremium
+        _id: Id<'users'>
+        userId: string
+        isPremium: boolean
       }
-    }
-  })
-)
+    }> => {
+      const tokenId = (await ctx.auth.getUserIdentity())?.subject
 
-export const authMutation = customMutation(
-  mutation,
-  customCtx(async (ctx) => ({ user: await getUserOrThrow(ctx) }))
-)
+      if (!tokenId) {
+        throw new ConvexError('must be logged in')
+      }
 
-export const adminAuthAction = customAction(
-  action,
-  customCtx(async (ctx) => {
-    const tokenId = (await ctx.auth.getUserIdentity())?.subject
-
-    if (!tokenId) {
-      throw new ConvexError('must be logged in')
-    }
-
-    const user: any = await ctx.runQuery(internal.users.getUserByTokenId, {
-      tokenId
-    })
-
-    if (!user) {
-      throw new ConvexError('user not found')
-    }
-
-    if (!user.isAdmin) {
-      throw new ConvexError('must be admin to run this action')
-    }
-
-    const _id: Id<'users'> = user._id
-
-    return {
-      user: {
-        _id,
+      const user: any = await ctx.runQuery(internal.users.users.getByTokenId, {
         tokenId
+      })
+
+      if (!user) {
+        throw new ConvexError('user not found')
+      }
+
+      const _id: Id<'users'> = user._id
+      const isPremium = (user as any).isPremium ?? false
+
+      return {
+        user: {
+          _id,
+          userId: tokenId,
+          isPremium
+        }
       }
     }
-  })
+  )
 )
 
-export const adminAuthMutation = customMutation(
+export const authMutation = zStrictMutation(
   mutation,
-  customCtx(async (ctx) => {
+  customCtx(async (ctx: MutationCtx) => ({ user: await getUserOrThrow(ctx) }))
+)
+
+export const adminAuthAction = zStrictAction(
+  action,
+  customCtx(
+    async (
+      ctx: ActionCtx
+    ): Promise<{
+      user: {
+        _id: Id<'users'>
+        tokenId: string
+      }
+    }> => {
+      const tokenId = (await ctx.auth.getUserIdentity())?.subject
+
+      if (!tokenId) {
+        throw new ConvexError('must be logged in')
+      }
+
+      const user = await ctx.runQuery(internal.users.users.getByTokenId, {
+        tokenId
+      })
+
+      if (!user) {
+        throw new ConvexError('user not found')
+      }
+
+      if (!user.isAdmin) {
+        throw new ConvexError('must be admin to run this action')
+      }
+
+      const _id: Id<'users'> = user._id
+
+      return {
+        user: {
+          _id,
+          tokenId
+        }
+      }
+    }
+  )
+)
+
+export const adminAuthMutation = zStrictMutation(
+  mutation,
+  customCtx(async (ctx: MutationCtx) => {
     const user = await getUserOrThrow(ctx)
 
     if (!user.isAdmin) {
@@ -135,12 +197,12 @@ export const getUser = async (ctx: QueryCtx | MutationCtx | ActionCtx) => {
 type RecursivelyReplaceNullWithUndefined<T> = T extends null
   ? undefined
   : T extends Date
-    ? T
-    : {
-        [K in keyof T]: T[K] extends (infer U)[]
-          ? RecursivelyReplaceNullWithUndefined<U>[]
-          : RecursivelyReplaceNullWithUndefined<T[K]>
-      }
+  ? T
+  : {
+    [K in keyof T]: T[K] extends (infer U)[]
+    ? RecursivelyReplaceNullWithUndefined<U>[]
+    : RecursivelyReplaceNullWithUndefined<T[K]>
+  }
 
 export function nullsToUndefined<T>(
   obj: T
