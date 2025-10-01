@@ -186,10 +186,7 @@ export const setOnboardingStep = zm({
     }
 
     const profileType = (user.profileType || 'dancer') as ProfileType
-    const flow = getOnboardingFlowConfig(
-      profileType,
-      CURRENT_ONBOARDING_VERSION
-    )
+    const flow = getOnboardingFlowConfig(profileType)
     const stepIndex = flow.findIndex((s) => s.step === step)
 
     if (stepIndex === -1) {
