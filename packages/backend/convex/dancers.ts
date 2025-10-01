@@ -16,8 +16,10 @@ export const { create, read, update, destroy, paginate } = crud(
 
 export const get = zq({
   args: { id: zid('dancers') },
+  returns: Dancers.zDoc.nullable(),
   handler: async (ctx, { id }) => {
-    return await ctx.db.get(id)
+    const dancer = await ctx.db.get(id)
+    return dancer
   }
 })
 
@@ -147,13 +149,18 @@ export const patchDancerAttributes = zAuthMutation({
       throw new ConvexError('Profile not found or access denied')
     }
 
-    const currentAttributes = (profile.attributes || {}) as Record<string, unknown>
+    const currentAttributes = (profile.attributes || {}) as Record<
+      string,
+      unknown
+    >
     const mergedAttributes = {
       ...currentAttributes,
       ...attributes
     } as any
 
-    await ctx.db.patch(ctx.user.activeDancerId, { attributes: mergedAttributes })
+    await ctx.db.patch(ctx.user.activeDancerId, {
+      attributes: mergedAttributes
+    })
 
     return null
   }

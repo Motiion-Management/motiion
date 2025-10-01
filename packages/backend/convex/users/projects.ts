@@ -2,6 +2,7 @@ import { authMutation, authQuery, notEmpty, zq } from '../util'
 import { query } from '../_generated/server'
 import { z } from 'zod'
 import { zid } from '@packages/zodvex'
+import { Projects } from '../schemas/projects'
 
 // Create a new project for the authenticated user
 export const addMyProject = authMutation({
@@ -112,7 +113,7 @@ export const removeMyProject = authMutation({
 
 // List my projects from the unified table via index
 export const getMyProjects = authQuery({
-  returns: z.array(z.any()),
+  returns: z.array(Projects.zDoc),
   handler: async (ctx) => {
     if (!ctx.user) return []
     const projs = await ctx.db
@@ -136,7 +137,7 @@ export const getMyProjectsByType = authQuery({
       'commercial'
     ])
   },
-  returns: z.array(z.any()),
+  returns: z.array(Projects.zDoc),
   handler: async (ctx, args) => {
     if (!ctx.user) return []
     const projs = await ctx.db
@@ -157,7 +158,7 @@ export const getMyProjectsByType = authQuery({
 // Public projects for a given user from unified table
 export const getUserPublicProjects = zq({
   args: { userId: zid('users') },
-  returns: z.array(z.any()),
+  returns: z.array(Projects.zDoc),
   handler: async (ctx, args) => {
     const projs = await ctx.db
       .query('projects')
@@ -183,7 +184,7 @@ export const getUserPublicProjectsByType = zq({
       'commercial'
     ])
   },
-  returns: z.array(z.any()),
+  returns: z.array(Projects.zDoc),
   handler: async (ctx, args) => {
     const projs = await ctx.db
       .query('projects')
@@ -202,7 +203,7 @@ export const getUserPublicProjectsByType = zq({
 
 // Get the 3 most recently added projects for the authenticated user
 export const getMyRecentProjects = authQuery({
-  returns: z.array(z.any()),
+  returns: z.array(Projects.zDoc),
   handler: async (ctx) => {
     if (!ctx.user) return []
     const projs = await ctx.db
@@ -213,4 +214,3 @@ export const getMyRecentProjects = authQuery({
     return projs.filter(notEmpty)
   }
 })
-

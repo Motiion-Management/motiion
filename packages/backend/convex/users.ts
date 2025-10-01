@@ -1,11 +1,13 @@
 import { ConvexError } from 'convex/values'
-import { paginationOptsValidator } from 'convex/server'
+// Convex exposes a pagination validator in convex/values, but zCustomQuery expects Zod.
+// Define a Zod equivalent for args typing here.
+import { z } from 'zod'
 import { filter } from 'convex-helpers/server/filter'
 import { authMutation, authQuery, notEmpty, zq, zm, ziq, zim, zid } from './util'
 
 import { getAll } from 'convex-helpers/server/relationships'
 import { UserDoc, Users, zUsers } from './schemas/users'
-import { z } from 'zod'
+import { zPaginated } from '@packages/zodvex'
 import { attributesPlainObject } from './schemas/attributes'
 import { NEW_USER_DEFAULTS, formatFullName } from './users/helpers'
 import { AgencyDoc } from './agencies'
@@ -15,14 +17,20 @@ const zUserDoc = Users.zDoc
 // Public read
 export const read = zq({
   args: { id: zid('users') },
+  returns: Users.zDoc.nullable(),
   handler: async (ctx, { id }) => {
     return await ctx.db.get(id)
   }
 })
 
 // Public paginate
+const zPaginationOpts = z.object({
+  numItems: z.number(),
+  cursor: z.string().nullable()
+})
 export const paginate = zq({
-  args: { paginationOpts: paginationOptsValidator },
+  args: { paginationOpts: zPaginationOpts },
+  returns: zPaginated(Users.zDoc),
   handler: async (ctx, { paginationOpts }) => {
     return await ctx.db.query('users').paginate(paginationOpts)
   }

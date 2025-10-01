@@ -7,6 +7,15 @@ import { zid } from '@packages/zodvex'
 import { zFileUploadObjectArray } from '../schemas/base'
 
 export const getMyHeadshots = authQuery({
+  returns: z.array(
+    z.object({
+      url: z.union([z.string(), z.null()]),
+      storageId: zid('_storage'),
+      title: z.string().optional(),
+      uploadDate: z.string(),
+      position: z.number().optional()
+    })
+  ),
   handler: async (ctx) => {
     // PROFILE-FIRST: Check active profile first, then fall back to user
     let headshots = ctx.user?.headshots || []
@@ -41,6 +50,15 @@ export const getMyHeadshots = authQuery({
 
 export const getHeadshots = zq({
   args: { userId: zid('users') },
+  returns: z.array(
+    z.object({
+      url: z.union([z.string(), z.null()]),
+      storageId: zid('_storage'),
+      title: z.string().optional(),
+      uploadDate: z.string(),
+      position: z.number().optional()
+    })
+  ),
   handler: async (ctx, args) => {
     const user = await ctx.db.get(args.userId)
     if (!user?.headshots) {

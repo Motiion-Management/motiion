@@ -9,6 +9,15 @@ import { zid } from '@packages/zodvex'
  * URLs are generated client-side or through a separate query
  */
 export const getMyHeadshotsMetadata = zq({
+  returns: z.array(
+    z.object({
+      id: z.string(),
+      storageId: zid('_storage'),
+      title: z.string().optional(),
+      uploadDate: z.string(),
+      position: z.number().optional()
+    })
+  ),
   handler: async (ctx) => {
     const identity = await ctx.auth.getUserIdentity()
     if (!identity) return []
