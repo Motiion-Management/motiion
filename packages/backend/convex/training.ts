@@ -1,15 +1,13 @@
-import { authMutation, authQuery, notEmpty, zq, zodDoc } from './util'
+import { authMutation, authQuery, notEmpty, zq, zid } from './util'
 import { Training, trainingInput, zTrainingInput, zTrainingFormDoc, training } from './schemas/training'
 import { getAll } from 'convex-helpers/server/relationships'
 import { z } from 'zod'
-import { zid } from '@packages/zodvex'
 
-const zTrainingDoc = zodDoc('training', training)
+const zTrainingDoc = Training.zDoc
 
 // Public read
 export const read = zq({
   args: { id: zid('training') },
-  returns: zTrainingDoc.nullable(),
   handler: async (ctx, { id }) => {
     return await ctx.db.get(id)
   }
@@ -17,7 +15,7 @@ export const read = zq({
 
 // Authenticated create
 export const create = authMutation({
-  args: z.object(training),
+  args: training,
   returns: zid('training'),
   handler: async (ctx, args) => {
     return await ctx.db.insert('training', args)
@@ -26,10 +24,10 @@ export const create = authMutation({
 
 // Authenticated update
 export const update = authMutation({
-  args: z.object({
+  args: {
     id: zid('training'),
-    patch: z.object(training).partial()
-  }),
+    patch: z.any()
+  },
   returns: z.null(),
   handler: async (ctx, { id, patch }) => {
     await ctx.db.patch(id, patch)

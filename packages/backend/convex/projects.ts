@@ -1,16 +1,15 @@
-import { zq, authMutation, zodDoc, zid } from './util'
+import { zq, authMutation, zid } from './util'
 import { z } from 'zod'
 import { Doc } from './_generated/dataModel'
 
 // Import schema from schemas folder
-import { projects } from './schemas/projects'
+import { Projects, projects } from './schemas/projects'
 
-const zProjectDoc = zodDoc('projects', projects)
+const zProjectDoc = Projects.zDoc
 
 // Public read
 export const read = zq({
   args: { id: zid('projects') },
-  returns: zProjectDoc.nullable(),
   handler: async (ctx, { id }) => {
     return await ctx.db.get(id)
   }
@@ -18,7 +17,7 @@ export const read = zq({
 
 // Authenticated create
 export const create = authMutation({
-  args: z.object(projects),
+  args: projects,
   returns: zid('projects'),
   handler: async (ctx, args) => {
     return await ctx.db.insert('projects', args)
@@ -27,10 +26,10 @@ export const create = authMutation({
 
 // Authenticated update
 export const update = authMutation({
-  args: z.object({
+  args: {
     id: zid('projects'),
-    patch: z.object(projects).partial()
-  }),
+    patch: z.any()
+  },
   returns: z.null(),
   handler: async (ctx, { id, patch }) => {
     await ctx.db.patch(id, patch)

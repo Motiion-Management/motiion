@@ -1,22 +1,20 @@
 import { ConvexError } from 'convex/values'
 import { paginationOptsValidator } from 'convex/server'
 import { filter } from 'convex-helpers/server/filter'
-import { authMutation, authQuery, notEmpty, zq, zm, ziq, zim, zodDoc } from './util'
+import { authMutation, authQuery, notEmpty, zq, zm, ziq, zim, zid } from './util'
 
 import { getAll } from 'convex-helpers/server/relationships'
 import { UserDoc, Users, zUsers } from './schemas/users'
 import { z } from 'zod'
-import { zid } from '@packages/zodvex'
 import { attributesPlainObject } from './schemas/attributes'
 import { NEW_USER_DEFAULTS, formatFullName } from './users/helpers'
 import { AgencyDoc } from './agencies'
 
-const zUserDoc = zodDoc('users', zUsers)
+const zUserDoc = Users.zDoc
 
 // Public read
 export const read = zq({
   args: { id: zid('users') },
-  returns: zUserDoc.nullable(),
   handler: async (ctx, { id }) => {
     return await ctx.db.get(id)
   }
@@ -32,7 +30,7 @@ export const paginate = zq({
 
 // Internal create
 export const create = zim({
-  args: z.object(zUsers),
+  args: zUsers,
   returns: zid('users'),
   handler: async (ctx, args) => {
     return await ctx.db.insert('users', args)
@@ -41,10 +39,10 @@ export const create = zim({
 
 // Internal update
 export const internalUpdate = zim({
-  args: z.object({
+  args: {
     id: zid('users'),
-    patch: z.object(zUsers).partial()
-  }),
+    patch: z.any()
+  },
   returns: z.null(),
   handler: async (ctx, { id, patch }) => {
     await ctx.db.patch(id, patch)
@@ -208,7 +206,6 @@ export const updateMyUser = authMutation({
 // clerk webhook functions
 export const getUserByTokenId = ziq({
   args: { tokenId: z.string() },
-  returns: zUserDocOrNull,
   handler: async (ctx, { tokenId }) => {
     return await ctx.db
       .query('users')
@@ -220,7 +217,6 @@ export const getUserByTokenId = ziq({
 // Minimal-typing variant to use from actions without heavy generics
 export const getByTokenId = ziq({
   args: { tokenId: z.string() },
-  returns: zUserDocOrNull,
   handler: async (ctx, { tokenId }) => {
     const user = await ctx.db
       .query('users')

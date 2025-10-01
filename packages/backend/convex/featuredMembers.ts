@@ -1,16 +1,14 @@
-import { authMutation, notEmpty, zq, zodDoc } from './util'
-import { zid } from '@packages/zodvex'
+import { authMutation, notEmpty, zq, zid } from './util'
 import { FeaturedMembers, featuredMembers } from './schemas/featuredMembers'
 import { getAll } from 'convex-helpers/server/relationships'
 import { z } from 'zod'
 import { UserDoc } from './schemas/users'
 
-const zFeaturedMembersDoc = zodDoc('featuredMembers', featuredMembers)
+const zFeaturedMembersDoc = FeaturedMembers.zDoc
 
 // Public read
 export const read = zq({
   args: { id: zid('featuredMembers') },
-  returns: zFeaturedMembersDoc.nullable(),
   handler: async (ctx, { id }) => {
     return await ctx.db.get(id)
   }
@@ -18,7 +16,7 @@ export const read = zq({
 
 // Authenticated create
 export const create = authMutation({
-  args: z.object(featuredMembers),
+  args: featuredMembers,
   returns: zid('featuredMembers'),
   handler: async (ctx, args) => {
     return await ctx.db.insert('featuredMembers', args)
@@ -27,10 +25,10 @@ export const create = authMutation({
 
 // Authenticated update
 export const update = authMutation({
-  args: z.object({
+  args: {
     id: zid('featuredMembers'),
-    patch: z.object(featuredMembers).partial()
-  }),
+    patch: z.any()
+  },
   returns: z.null(),
   handler: async (ctx, { id, patch }) => {
     await ctx.db.patch(id, patch)

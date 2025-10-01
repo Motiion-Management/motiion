@@ -5,9 +5,9 @@ import { zid } from '@packages/zodvex'
 
 // Create a new project for the authenticated user
 export const addMyProject = authMutation({
-  args: z.any(),
+  args: z.object({ project: z.any() }),
   returns: zid('projects'),
-  handler: async (ctx, project) => {
+  handler: async (ctx, { project }) => {
     // Add profile references if user has an active profile
     let profileInfo = {}
     let profile = null

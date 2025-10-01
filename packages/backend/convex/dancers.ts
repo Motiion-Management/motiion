@@ -16,7 +16,6 @@ export const { create, read, update, destroy, paginate } = crud(
 
 export const get = zq({
   args: { id: zid('dancers') },
-  returns: Dancers.zDoc.nullable(),
   handler: async (ctx, { id }) => {
     return await ctx.db.get(id)
   }
@@ -207,7 +206,6 @@ export const searchDancers = zq({
     searchTerm: z.string(),
     limit: z.number().optional().default(10)
   },
-  returns: z.array(Dancers.zDoc),
   handler: async (ctx, { searchTerm, limit }) => {
     const results = await ctx.db
       .query('dancers')

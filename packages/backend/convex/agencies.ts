@@ -1,18 +1,16 @@
 import { ConvexError } from 'convex/values'
-import { zq, authMutation, ziq } from './util'
-import { zid, zodDoc } from '@packages/zodvex'
+import { zq, authMutation, ziq, zid } from './util'
 import { z } from 'zod'
 import { Agencies, zAgencies } from './schemas/agencies'
 import { Doc, Id } from './_generated/dataModel'
 
 export type AgencyDoc = Doc<'agencies'>
 
-const zAgencyDoc = zodDoc('agencies', zAgencies)
+const zAgencyDoc = Agencies.zDoc
 
 // Public read
 export const read = zq({
   args: { id: zid('agencies') },
-  returns: zAgencyDoc.nullable(),
   handler: async (ctx, { id }) => {
     return await ctx.db.get(id)
   }
@@ -29,10 +27,10 @@ export const create = authMutation({
 
 // Authenticated update
 export const update = authMutation({
-  args: z.object({
+  args: {
     id: zid('agencies'),
-    patch: zAgencies.partial()
-  }),
+    patch: z.any()
+  },
   returns: z.null(),
   handler: async (ctx, { id, patch }) => {
     await ctx.db.patch(id, patch)
@@ -53,7 +51,6 @@ export const destroy = authMutation({
 // Internal read
 export const internalRead = ziq({
   args: { id: zid('agencies') },
-  returns: zAgencyDoc.nullable(),
   handler: async (ctx, { id }) => {
     return await ctx.db.get(id)
   }
@@ -61,7 +58,6 @@ export const internalRead = ziq({
 
 export const search = zq({
   args: { query: z.string() },
-  returns: z.array(zAgencyDoc),
   handler: async (ctx, { query }) => {
     const results = await ctx.db
       .query('agencies')
@@ -83,18 +79,19 @@ export const getAgency = zq({
     if (!args.id) {
       return null
     }
-    const agency: AgencyDoc | null = await ctx.db.get(args.id)
+    const agency = await ctx.db.get(args.id)
 
     if (!agency) {
       return null
     }
     let logoUrl: string | null = null
-    if (agency.logo) {
-      logoUrl = await ctx.storage.getUrl(agency.logo)
+    const logo = (agency as any).logo
+    if (logo) {
+      logoUrl = await ctx.storage.getUrl(logo)
     }
     return {
       ...agency,
       logoUrl
-    }
+    } as any
   }
 })
