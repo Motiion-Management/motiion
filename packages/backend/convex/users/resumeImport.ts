@@ -74,11 +74,12 @@ type TrainingEntry = z.infer<typeof trainingSchema>
 // Note: keeping original authAction to avoid TypeScript circularity issues
 export const parseResumeDocument: any = authAction({
   args: {
-    storageId: v.id('_storage')
+    storageId: zid('_storage')
   },
   handler: async (ctx, args) => {
     // Call the new unified document processor
     return await ctx.runAction(
+      // @ts-expect-error - Type instantiation is excessively deep
       internal.ai.documentProcessor.parseResumeDocument,
       {
         storageId: args.storageId,
@@ -92,7 +93,7 @@ export const parseResumeDocument: any = authAction({
 // Note: keeping original authAction to avoid TypeScript circularity issues
 export const parseResumeTextDirect: any = authAction({
   args: {
-    text: v.string()
+    text: z.string()
   },
   handler: async (ctx, args) => {
     // Call the text parser

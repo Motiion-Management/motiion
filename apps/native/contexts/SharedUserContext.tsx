@@ -11,7 +11,7 @@ export interface SharedUserContextValue {
 export const SharedUserContext = createContext<SharedUserContextValue | undefined>(undefined);
 
 export function SharedUserProvider({ children }: { children: ReactNode }) {
-  const user = useQuery(api.users.getMyUser) || undefined;
+  const user = useQuery(api.users.users.getMyUser) || undefined;
   const isLoading = user === undefined;
 
   return (

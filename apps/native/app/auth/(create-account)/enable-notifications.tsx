@@ -16,7 +16,7 @@ import { Button } from '~/components/ui/button';
 
 export default function EnableNotificationsScreen() {
   const [isProcessing, setIsProcessing] = useState(false);
-  const savePushToken = useMutation(api.users.saveMyPushToken);
+  const savePushToken = useMutation(api.users.users.saveMyPushToken);
 
   async function onEnable() {
     try {

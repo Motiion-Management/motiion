@@ -49,7 +49,7 @@ http.route({
         // const customerId = await ctx.runAction(internal.stripe.createCustomer)
         // await ctx.runAction(internal.stripe.startTrial, { customerId })
         case 'user.updated':
-          await ctx.runMutation(internal.users.updateOrCreateUserByTokenId, {
+          await ctx.runMutation(internal.users.users.updateOrCreateUserByTokenId, {
             data: {
               tokenId: event.data.id,
               email: event.data.email_addresses[0]?.email_address,
@@ -63,7 +63,7 @@ http.route({
           break
 
         case 'user.deleted':
-          await ctx.runMutation(internal.users.deleteUserByTokenId, {
+          await ctx.runMutation(internal.users.users.deleteUserByTokenId, {
             tokenId: event.data.id!
           })
           break

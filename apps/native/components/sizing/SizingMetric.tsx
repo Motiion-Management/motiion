@@ -15,7 +15,7 @@ interface SizingMetricProps {
 }
 
 export function SizingMetric({ metric, className }: SizingMetricProps) {
-  const user = useQuery(api.users.getMyUser);
+  const user = useQuery(api.users.users.getMyUser);
   const { isOpen, open, close } = useSheetState();
 
   // Get current value from user data

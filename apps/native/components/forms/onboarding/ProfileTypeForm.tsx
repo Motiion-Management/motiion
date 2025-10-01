@@ -25,8 +25,8 @@ export const ProfileTypeForm = forwardRef<
   OnboardingFormRef,
   OnboardingFormProps<ProfileTypeFormData>
 >(({ initialData, onComplete, onCancel, mode = 'fullscreen', onValidationChange }, ref) => {
-  const user = useQuery(api.users.getMyUser);
-  const updateUser = useMutation(api.users.updateMyUser);
+  const user = useQuery(api.users.users.getMyUser);
+  const updateUser = useMutation(api.users.users.updateMyUser);
 
   const form = useAppForm({
     defaultValues: {

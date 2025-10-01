@@ -3,14 +3,14 @@ import { ConvexError } from 'convex/values'
 // Define a Zod equivalent for args typing here.
 import { z } from 'zod'
 import { filter } from 'convex-helpers/server/filter'
-import { authMutation, authQuery, notEmpty, zq, zm, ziq, zim, zid } from './util'
+import { authMutation, authQuery, notEmpty, zq, zm, ziq, zim, zid } from '../util'
 
 import { getAll } from 'convex-helpers/server/relationships'
-import { UserDoc, Users, zUsers } from './schemas/users'
+import { UserDoc, Users, zUsers } from '../schemas/users'
 import { zPaginated } from '@packages/zodvex'
-import { attributesPlainObject } from './schemas/attributes'
-import { NEW_USER_DEFAULTS, formatFullName } from './users/helpers'
-import { AgencyDoc } from './agencies'
+import { attributesPlainObject } from '../schemas/attributes'
+import { NEW_USER_DEFAULTS, formatFullName } from './helpers'
+import { AgencyDoc } from '../agencies'
 
 const zUserDoc = Users.zDoc
 

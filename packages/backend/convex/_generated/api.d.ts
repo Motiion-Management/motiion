@@ -45,10 +45,6 @@ import type * as schemas_sizing from "../schemas/sizing.js";
 import type * as schemas_training from "../schemas/training.js";
 import type * as schemas_users from "../schemas/users.js";
 import type * as training from "../training.js";
-import type * as typechecks_diagnose from "../typechecks/diagnose.js";
-import type * as typechecks_enum_type_test from "../typechecks/enum-type-test.js";
-import type * as typechecks_simple_enum_test from "../typechecks/simple-enum-test.js";
-import type * as typechecks_type_inspect from "../typechecks/type-inspect.js";
 import type * as users_headshots from "../users/headshots.js";
 import type * as users_headshotsOptimized from "../users/headshotsOptimized.js";
 import type * as users_helpers from "../users/helpers.js";
@@ -57,7 +53,7 @@ import type * as users_projects from "../users/projects.js";
 import type * as users_representation from "../users/representation.js";
 import type * as users_resume from "../users/resume.js";
 import type * as users_resumeImport from "../users/resumeImport.js";
-import type * as users from "../users.js";
+import type * as users_users from "../users/users.js";
 import type * as util from "../util.js";
 
 /**
@@ -101,10 +97,6 @@ declare const fullApi: ApiFromModules<{
   "schemas/training": typeof schemas_training;
   "schemas/users": typeof schemas_users;
   training: typeof training;
-  "typechecks/diagnose": typeof typechecks_diagnose;
-  "typechecks/enum-type-test": typeof typechecks_enum_type_test;
-  "typechecks/simple-enum-test": typeof typechecks_simple_enum_test;
-  "typechecks/type-inspect": typeof typechecks_type_inspect;
   "users/headshots": typeof users_headshots;
   "users/headshotsOptimized": typeof users_headshotsOptimized;
   "users/helpers": typeof users_helpers;
@@ -113,7 +105,7 @@ declare const fullApi: ApiFromModules<{
   "users/representation": typeof users_representation;
   "users/resume": typeof users_resume;
   "users/resumeImport": typeof users_resumeImport;
-  users: typeof users;
+  "users/users": typeof users_users;
   util: typeof util;
 }>;
 export declare const api: FilterApi<

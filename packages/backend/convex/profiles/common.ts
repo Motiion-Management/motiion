@@ -74,6 +74,12 @@ export const getUserProfiles = zq({
 })
 
 // Switch between profiles (updates discriminate values on users table)
-export const switchProfile = authMutation({
-  returns: z.object({ success: z.boolean() }),
-})
+// TODO: Implement switchProfile handler
+// export const switchProfile = authMutation({
+//   args: { profileType: zProfileEnum, profileId: z.string() },
+//   returns: z.object({ success: z.boolean() }),
+//   handler: async (ctx, { profileType, profileId }) => {
+//     // Implementation needed
+//     return { success: false }
+//   }
+// })

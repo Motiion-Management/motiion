@@ -82,7 +82,7 @@ export const authAction = zStrictAction(
         throw new ConvexError('must be logged in')
       }
 
-      const user: any = await ctx.runQuery(internal.users.getByTokenId, {
+      const user: any = await ctx.runQuery(internal.users.users.getByTokenId, {
         tokenId
       })
 
@@ -126,7 +126,7 @@ export const adminAuthAction = zStrictAction(
         throw new ConvexError('must be logged in')
       }
 
-      const user = await ctx.runQuery(internal.users.getByTokenId, {
+      const user = await ctx.runQuery(internal.users.users.getByTokenId, {
         tokenId
       })
 

@@ -5,7 +5,7 @@ import { useState, useCallback, useEffect } from 'react';
 import { HeightValue } from '~/components/ui/height-picker';
 
 export function useHeightForm() {
-  const user = useQuery(api.users.getMyUser);
+  const user = useQuery(api.users.users.getMyUser);
   const patchDancerAttributes = useMutation(api.dancers.patchDancerAttributes);
 
   const [height, setHeight] = useState<HeightValue>({ feet: 5, inches: 6 });
