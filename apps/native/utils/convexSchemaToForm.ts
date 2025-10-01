@@ -116,7 +116,7 @@ export function getZodType(schema: z.ZodTypeAny): string {
   // Handle effects (refinements, transforms)
   if (typeName === 'ZodEffects') {
     try {
-      const innerSchema = (schema as z.ZodEffects<any>)._def?.schema;
+      const innerSchema = (schema as any)._def?.schema;
       if (isZodSchema(innerSchema)) {
         return getZodType(innerSchema);
       }

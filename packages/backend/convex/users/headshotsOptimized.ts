@@ -9,6 +9,7 @@ import { zid } from '@packages/zodvex'
  * URLs are generated client-side or through a separate query
  */
 export const getMyHeadshotsMetadata = zq({
+  args: {},
   returns: z.array(
     z.object({
       id: z.string(),

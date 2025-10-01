@@ -8,7 +8,7 @@ import { useAppForm } from '~/components/form/appForm';
 import type { FormHandle, FormProps } from '~/components/forms/onboarding/contracts';
 
 export const eyeColorSchema = z.object({
-  eyeColor: z.enum(EYECOLOR, { required_error: 'Please select an eye color' }),
+  eyeColor: z.enum(EYECOLOR, { message: 'Please select an eye color' }),
 });
 
 export type EyeColorValues = z.infer<typeof eyeColorSchema>;

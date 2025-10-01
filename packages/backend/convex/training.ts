@@ -150,6 +150,7 @@ export const removeMyTraining = authMutation({
 
 // Get user's training
 export const getMyTraining = authQuery({
+  args: {},
   returns: z.array(zTrainingFormDoc),
   handler: async (ctx) => {
     // PROFILE-FIRST: Get training from profile if active

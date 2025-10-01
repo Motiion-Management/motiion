@@ -71,7 +71,7 @@ export const TrainingEditForm = forwardRef<TrainingEditFormHandle, TrainingEditF
 
     const sharedForm = useAppForm({
       defaultValues: selectedTraining,
-      validators: { onChange: schema },
+      validators: { onChange: schema as any },
       onSubmit: async ({ value }) => {
         const { _id, _creationTime, ...payload } = value;
         try {

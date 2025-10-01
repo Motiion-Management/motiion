@@ -8,7 +8,7 @@ import { useAppForm } from '~/components/form/appForm';
 import type { FormHandle, FormProps } from '~/components/forms/onboarding/contracts';
 
 export const hairColorSchema = z.object({
-  hairColor: z.enum(HAIRCOLOR, { required_error: 'Please select a hair color' }),
+  hairColor: z.enum(HAIRCOLOR, { message: 'Please select a hair color' }),
 });
 
 export type HairColorValues = z.infer<typeof hairColorSchema>;

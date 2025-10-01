@@ -8,7 +8,7 @@ import type { FormHandle, FormProps } from '~/components/forms/onboarding/contra
 
 export const representationSchema = z.object({
   representationStatus: z.enum(['represented', 'seeking', 'independent'], {
-    required_error: 'Please select your representation status',
+    message: 'Please select your representation status',
   }),
 });
 

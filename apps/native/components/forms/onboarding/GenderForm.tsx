@@ -8,7 +8,7 @@ import { useAppForm } from '~/components/form/appForm';
 import type { FormHandle, FormProps } from '~/components/forms/onboarding/contracts';
 
 export const genderSchema = z.object({
-  gender: z.enum(GENDER, { required_error: 'Please select your gender' }),
+  gender: z.enum(GENDER, { message: 'Please select your gender' }),
 });
 
 export type GenderValues = z.infer<typeof genderSchema>;

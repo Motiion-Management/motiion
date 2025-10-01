@@ -7,7 +7,7 @@ import type { FormHandle, FormProps } from '~/components/forms/onboarding/contra
 
 export const profileTypeSchema = z.object({
   profileType: z.enum(['dancer', 'choreographer'], {
-    required_error: 'Please select a profile type',
+    message: 'Please select a profile type',
   }),
 });
 

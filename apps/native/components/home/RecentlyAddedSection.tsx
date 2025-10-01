@@ -16,7 +16,7 @@ export function RecentlyAddedSection({ onAddPress, onItemPress }: RecentlyAddedS
   const items: ResumeCardItem[] = React.useMemo(() => {
     if (!recentExperiences) return [];
 
-    return recentExperiences.map((exp, index) => {
+    return recentExperiences.map((exp: any, index: number) => {
       const title = getProjectDisplayTitle(exp);
       const subtitle = getProjectDisplaySubtitle(exp);
       const displayTitle = subtitle ? `${title} - ${subtitle}` : title;

@@ -11,7 +11,7 @@ import { OnboardingFormProps, OnboardingFormRef } from './types';
 
 const profileTypeValidator = z.object({
   profileType: z.enum(['dancer', 'choreographer'], {
-    required_error: 'Please select a profile type',
+    message: 'Please select a profile type',
   }),
 });
 

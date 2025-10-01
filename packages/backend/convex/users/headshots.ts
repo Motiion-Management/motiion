@@ -7,6 +7,7 @@ import { zid } from '@packages/zodvex'
 import { zFileUploadObjectArray } from '../schemas/base'
 
 export const getMyHeadshots = authQuery({
+  args: {},
   returns: z.array(
     z.object({
       url: z.union([z.string(), z.null()]),

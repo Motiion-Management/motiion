@@ -63,7 +63,8 @@ export interface StepDef<T = any> {
 export interface SaveContext {
   data: OnboardingData;
   updateMyUser: (args: any) => Promise<any>;
-  patchUserAttributes: (args: any) => Promise<any>;
+  patchDancerAttributes: (args: any) => Promise<any>;
+  updateMyDancerProfile: (args: any) => Promise<any>;
   updateMyResume: (args: any) => Promise<any>;
   addMyRepresentation: (args: any) => Promise<any>;
 }
@@ -114,7 +115,7 @@ export const STEP_REGISTRY = {
     Component: HeightForm as unknown as ComponentType<FormProps<any>>,
     getInitialValues: (data: OnboardingData) => ({ height: selectHeight(data) }),
     save: async (values: any, ctx) => {
-      await ctx.patchUserAttributes({ attributes: { height: values.height } });
+      await ctx.patchDancerAttributes({ attributes: { height: values.height } });
     },
   },
   ethnicity: {
@@ -126,7 +127,7 @@ export const STEP_REGISTRY = {
     schema: ethnicitySchema,
     getInitialValues: (data: OnboardingData) => ({ ethnicity: selectEthnicity(data) }),
     save: async (values: any, ctx) => {
-      await ctx.patchUserAttributes({ attributes: { ethnicity: values.ethnicity } });
+      await ctx.patchDancerAttributes({ attributes: { ethnicity: values.ethnicity } });
     },
   },
   'hair-color': {
@@ -138,7 +139,7 @@ export const STEP_REGISTRY = {
     schema: hairColorSchema,
     getInitialValues: (data: OnboardingData) => ({ hairColor: selectHairColor(data) }),
     save: async (values: any, ctx) => {
-      await ctx.patchUserAttributes({ attributes: { hairColor: values.hairColor } });
+      await ctx.patchDancerAttributes({ attributes: { hairColor: values.hairColor } });
     },
   },
   'eye-color': {
@@ -150,7 +151,7 @@ export const STEP_REGISTRY = {
     schema: eyeColorSchema,
     getInitialValues: (data: OnboardingData) => ({ eyeColor: selectEyeColor(data) }),
     save: async (values: any, ctx) => {
-      await ctx.patchUserAttributes({ attributes: { eyeColor: values.eyeColor } });
+      await ctx.patchDancerAttributes({ attributes: { eyeColor: values.eyeColor } });
     },
   },
   gender: {
@@ -162,7 +163,7 @@ export const STEP_REGISTRY = {
     schema: genderSchema,
     getInitialValues: (data: OnboardingData) => ({ gender: selectGender(data) }),
     save: async (values: any, ctx) => {
-      await ctx.patchUserAttributes({ attributes: { gender: values.gender } });
+      await ctx.patchDancerAttributes({ attributes: { gender: values.gender } });
     },
   },
   location: {

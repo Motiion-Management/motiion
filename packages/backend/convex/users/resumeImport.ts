@@ -71,11 +71,12 @@ type Experience = z.infer<typeof experienceSchema>
 type TrainingEntry = z.infer<typeof trainingSchema>
 
 // New unified document parsing action
-// Note: keeping original authAction to avoid TypeScript circularity issues
+// Note: Using `any` type to avoid TypeScript circularity issues with authAction type inference
 export const parseResumeDocument: any = authAction({
   args: {
     storageId: zid('_storage')
   },
+  returns: parsedResumeSchema,
   handler: async (ctx, args) => {
     // Call the new unified document processor
     return await ctx.runAction(
@@ -89,11 +90,12 @@ export const parseResumeDocument: any = authAction({
 })
 
 // Text-only parsing action for direct text input
-// Note: keeping original authAction to avoid TypeScript circularity issues
+// Note: Using `any` type to avoid TypeScript circularity issues with authAction type inference
 export const parseResumeTextDirect: any = authAction({
   args: {
     text: z.string()
   },
+  returns: parsedResumeSchema,
   handler: async (ctx, args) => {
     // Call the text parser
     return await ctx.runAction(internal.ai.textParser.parseResumeText, {

@@ -23,7 +23,8 @@ export function isZodSchema(value: unknown): value is z.ZodTypeAny {
  */
 export function getTypeName(schema: unknown): string | null {
   if (!isZodSchema(schema)) return null;
-  return schema._def?.typeName || null;
+  const def = (schema as any)._def;
+  return def?.typeName || null;
 }
 
 /**
@@ -211,21 +212,24 @@ export function getEnumValues(schema: z.ZodTypeAny): string[] | null {
     const typeName = getTypeName(schema);
 
     if (typeName === 'ZodEnum') {
-      const values = (schema as z.ZodEnum<any>)._def?.values;
+      const def = (schema as any)._def;
+      const values = def?.values;
       if (Array.isArray(values)) {
         return values;
       }
     }
 
     if (typeName === 'ZodNativeEnum') {
-      const enumObj = (schema as z.ZodNativeEnum<any>)._def?.values;
+      const def = (schema as any)._def;
+      const enumObj = def?.values;
       if (enumObj && typeof enumObj === 'object') {
         return Object.values(enumObj).filter((v) => typeof v === 'string') as string[];
       }
     }
 
     if (typeName === 'ZodLiteral') {
-      const value = (schema as z.ZodLiteral<any>)._def?.value;
+      const def = (schema as any)._def;
+      const value = def?.value;
       if (value !== undefined) {
         return [String(value)];
       }

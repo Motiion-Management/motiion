@@ -23,7 +23,7 @@ const formValidator = z.object({
     })
     .refine(
       ({ fullNumber, countryCode }) => isValidNumber(fullNumber, countryCode),
-      ({ countryCode }) => ({ message: `Please provide a valid ${countryCode} phone number.` })
+      { message: 'Please provide a valid phone number.' }
     ),
 });
 

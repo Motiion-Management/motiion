@@ -113,6 +113,7 @@ export const removeMyProject = authMutation({
 
 // List my projects from the unified table via index
 export const getMyProjects = authQuery({
+  args: {},
   returns: z.array(Projects.zDoc),
   handler: async (ctx) => {
     if (!ctx.user) return []
@@ -203,6 +204,7 @@ export const getUserPublicProjectsByType = zq({
 
 // Get the 3 most recently added projects for the authenticated user
 export const getMyRecentProjects = authQuery({
+  args: {},
   returns: z.array(Projects.zDoc),
   handler: async (ctx) => {
     if (!ctx.user) return []

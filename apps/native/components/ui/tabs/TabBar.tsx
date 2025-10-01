@@ -20,8 +20,8 @@ const TAB_BAR_GAP = 24;
 // Minimal local type definitions matching react-native-collapsible-tab-view
 type TabName = string;
 type Props = {
-  focusedTab: Reanimated.SharedValue<TabName>;
-  indexDecimal: Reanimated.SharedValue<number>;
+  focusedTab: any; // Reanimated.SharedValue<TabName>
+  indexDecimal: any; // Reanimated.SharedValue<number>
   onTabPress: (name: TabName) => void;
   tabNames: TabName[];
 };

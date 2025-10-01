@@ -6,6 +6,7 @@ import type { RegisteredMutation } from 'convex/server'
 import type { DataModel } from './_generated/dataModel'
 
 export const generateUploadUrl = authMutation({
+  args: {},
   handler: async (ctx) => {
     return await ctx.storage.generateUploadUrl()
   }
