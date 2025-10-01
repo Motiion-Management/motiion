@@ -13,6 +13,7 @@ import type {
   FilterApi,
   FunctionReference,
 } from "convex/server";
+import type * as admin_runMigrations from "../admin/runMigrations.js";
 import type * as agencies from "../agencies.js";
 import type * as ai_documentProcessor from "../ai/documentProcessor.js";
 import type * as ai_fileMetadata from "../ai/fileMetadata.js";
@@ -29,6 +30,7 @@ import type * as featuredMembers from "../featuredMembers.js";
 import type * as files from "../files.js";
 import type * as http from "../http.js";
 import type * as migrations_autoMigrateAndCleanup from "../migrations/autoMigrateAndCleanup.js";
+import type * as migrations_migrateDates from "../migrations/migrateDates.js";
 import type * as onboarding from "../onboarding.js";
 import type * as onboardingConfig from "../onboardingConfig.js";
 import type * as profiles_common from "../profiles/common.js";
@@ -65,6 +67,7 @@ import type * as util from "../util.js";
  * ```
  */
 declare const fullApi: ApiFromModules<{
+  "admin/runMigrations": typeof admin_runMigrations;
   agencies: typeof agencies;
   "ai/documentProcessor": typeof ai_documentProcessor;
   "ai/fileMetadata": typeof ai_fileMetadata;
@@ -81,6 +84,7 @@ declare const fullApi: ApiFromModules<{
   files: typeof files;
   http: typeof http;
   "migrations/autoMigrateAndCleanup": typeof migrations_autoMigrateAndCleanup;
+  "migrations/migrateDates": typeof migrations_migrateDates;
   onboarding: typeof onboarding;
   onboardingConfig: typeof onboardingConfig;
   "profiles/common": typeof profiles_common;

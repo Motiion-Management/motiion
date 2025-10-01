@@ -283,6 +283,10 @@ export const ConvexDynamicForm = React.memo(
       const parseToDate = (v: any): Date | undefined => {
         if (!v) return undefined;
         if (v instanceof Date) return v;
+        if (typeof v === 'number') {
+          const d = new Date(v);
+          return isNaN(d.getTime()) ? undefined : d;
+        }
         if (typeof v === 'string') {
           // Support 'yyyy-MM-dd' by constructing a local Date
           const m = v.match(/^(\d{4})-(\d{2})-(\d{2})$/);

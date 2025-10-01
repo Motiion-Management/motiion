@@ -13,6 +13,8 @@ import {
   isRequired,
   getDescription,
   ValidationRules,
+  unwrapAll,
+  hasDatetimeCheck,
 } from './zodSafeAccess';
 
 /**
@@ -66,16 +68,17 @@ export function getZodType(schema: z.ZodTypeAny): string {
     return 'unknown';
   }
 
-  const typeName = getTypeName(schema) || 'unknown';
+  const base = unwrapAll(schema);
+  const typeName = getTypeName(base) || 'unknown';
 
   // Handle branded types (like zid)
   if (typeName === 'ZodBranded') {
-    const convexIdInfo = detectConvexId(schema);
+    const convexIdInfo = detectConvexId(base);
     if (convexIdInfo.isConvexId) {
       return `convexId:${convexIdInfo.tableName || 'unknown'}`;
     }
     // Fall back to inner type for other branded types
-    const innerType = (schema as any)?._def?.type;
+    const innerType = (base as any)?._def?.type;
     if (isZodSchema(innerType)) {
       return getZodType(innerType);
     }
@@ -83,7 +86,7 @@ export function getZodType(schema: z.ZodTypeAny): string {
 
   // Handle optional/nullable types
   if (typeName === 'ZodOptional' || typeName === 'ZodNullable' || typeName === 'ZodDefault') {
-    const unwrapped = unwrapOptional(schema);
+    const unwrapped = unwrapOptional(base);
     if (unwrapped !== schema) {
       return getZodType(unwrapped);
     }
@@ -92,7 +95,7 @@ export function getZodType(schema: z.ZodTypeAny): string {
   // Handle union types
   if (typeName === 'ZodUnion') {
     try {
-      const options = (schema as z.ZodUnion<any>)._def?.options;
+      const options = (base as z.ZodUnion<any>)._def?.options;
       if (Array.isArray(options)) {
         // Check if one of the options is a Convex ID
         for (const option of options) {
@@ -116,7 +119,7 @@ export function getZodType(schema: z.ZodTypeAny): string {
   // Handle effects (refinements, transforms)
   if (typeName === 'ZodEffects') {
     try {
-      const innerSchema = (schema as any)._def?.schema;
+      const innerSchema = (base as any)._def?.schema;
       if (isZodSchema(innerSchema)) {
         return getZodType(innerSchema);
       }
@@ -199,7 +202,7 @@ export function mapZodTypeToFieldType(schema: z.ZodTypeAny): FormFieldType {
         return 'email';
       }
       // Check for date string patterns
-      if (hasRegexCheck(schema, '\\d{4}-\\d{2}-\\d{2}')) {
+      if (hasRegexCheck(schema, '\\d{4}-\\d{2}-\\d{2}') || hasDatetimeCheck(schema)) {
         return 'date';
       }
       return 'text';

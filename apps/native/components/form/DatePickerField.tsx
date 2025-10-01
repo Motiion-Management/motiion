@@ -41,6 +41,10 @@ export const DatePickerField = ({
   const parseToDate = (value?: unknown): Date | undefined => {
     if (!value) return undefined;
     if (value instanceof Date) return value;
+    if (typeof value === 'number') {
+      const d = new Date(value);
+      return isNaN(d.getTime()) ? undefined : d;
+    }
     if (typeof value === 'string') {
       const ymd = value.match(/^(\d{4})-(\d{2})-(\d{2})$/);
       if (ymd) {

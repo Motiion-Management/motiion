@@ -9,9 +9,14 @@ import {
   internalMutation,
   internalAction
 } from './_generated/server'
-import { customCtx, customQuery, customMutation, NoOp } from 'convex-helpers/server/customFunctions'
+import { customCtx } from 'convex-helpers/server/customFunctions'
 import { ConvexError } from 'convex/values'
-import { zStrictQuery, zStrictMutation, zStrictAction, zid } from '@packages/zodvex'
+import {
+  zStrictQuery,
+  zStrictMutation,
+  zStrictAction,
+  zid
+} from '@packages/zodvex'
 // Avoid depending on internal API function names here to reduce coupling
 import { Id, Doc } from './_generated/dataModel'
 import { internal } from './_generated/api'
@@ -20,28 +25,29 @@ import { internal } from './_generated/api'
 export { zid }
 
 // Plain zodvex wrappers with our app's specific DataModel (strict typing)
-export const zq = zStrictQuery(query, customCtx(async (_ctx: QueryCtx) => ({})))
-export const zm = zStrictMutation(mutation, customCtx(async (_ctx: MutationCtx) => ({})))
-export const za = zStrictAction(action, customCtx(async (_ctx: ActionCtx) => ({})))
-export const ziq = zStrictQuery(internalQuery, customCtx(async (_ctx: QueryCtx) => ({})))
-export const zim = zStrictMutation(internalMutation, customCtx(async (_ctx: MutationCtx) => ({})))
-export const zia = zStrictAction(internalAction, customCtx(async (_ctx: ActionCtx) => ({})))
-
-// Plain auth wrappers for use with crud() and other convex-helpers functions
-export const plainAuthQuery = customQuery(
+export const zq = zStrictQuery(
   query,
-  customCtx(async (ctx) => {
-    const user = await getUserOrThrow(ctx)
-    return { user }
-  })
+  customCtx(async (_ctx: QueryCtx) => ({}))
 )
-
-export const plainAuthMutation = customMutation(
+export const zm = zStrictMutation(
   mutation,
-  customCtx(async (ctx) => {
-    const user = await getUserOrThrow(ctx)
-    return { user }
-  })
+  customCtx(async (_ctx: MutationCtx) => ({}))
+)
+export const za = zStrictAction(
+  action,
+  customCtx(async (_ctx: ActionCtx) => ({}))
+)
+export const ziq = zStrictQuery(
+  internalQuery,
+  customCtx(async (_ctx: QueryCtx) => ({}))
+)
+export const zim = zStrictMutation(
+  internalMutation,
+  customCtx(async (_ctx: MutationCtx) => ({}))
+)
+export const zia = zStrictAction(
+  internalAction,
+  customCtx(async (_ctx: ActionCtx) => ({}))
 )
 
 // Auth-wrapped zodvex mutation
