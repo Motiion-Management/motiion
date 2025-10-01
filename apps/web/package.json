@@ -16,8 +16,8 @@
     "@xyflow/react": "^12.3.1",
     "convex": "^1.27.0",
     "next": "14.2.31",
-    "react": "19.0.0",
-    "react-dom": "19.0.0"
+    "react": "19.1.0",
+    "react-dom": "19.1.0"
   },
   "devDependencies": {
     "@types/node": "^24.0.15",

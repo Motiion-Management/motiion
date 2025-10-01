@@ -17,6 +17,8 @@ export interface OnboardingFlows {
   guest: OnboardingStep[]
 }
 
+export const CURRENT_ONBOARDING_VERSION = 'v2'
+
 // Group definitions for organizing steps
 export const ONBOARDING_GROUPS = {
   profile: {
@@ -87,6 +89,7 @@ export const ONBOARDING_GROUP_FLOWS = {
   ] as readonly OnboardingGroupKey[],
   choreographer: [
     'profile',
+    'attributes',
     'work-details',
     'experiences',
     'review'
@@ -423,7 +426,8 @@ export function isStepComplete(step: string, user: any): boolean {
 // Helper to get completion status for entire flow
 export function getFlowCompletionStatus(
   user: any,
-  profileType: ProfileType
+  profileType: ProfileType,
+  version: string = CURRENT_ONBOARDING_VERSION
 ): {
   completedSteps: string[]
   incompleteSteps: string[]

@@ -99,12 +99,19 @@ export function useOnboardingGroupFlow(): UseOnboardingGroupFlowReturn {
 
   // Extract current path info
   const { currentGroup, currentStepId } = useMemo(() => {
-    if (segments.length >= 3 && segments[1] === 'onboarding') {
+    // Handle both old and new expo-router segment formats
+    const isOnboardingRoute = segments.some(segment => segment === 'onboarding');
+    const onboardingIndex = segments.findIndex(segment => segment === 'onboarding');
+
+    if (isOnboardingRoute && onboardingIndex >= 0) {
       // Handle dynamic routes - when segments contain brackets, use search params
+      const groupSegmentRaw = segments[onboardingIndex + 1];
+      const stepSegmentRaw = segments[onboardingIndex + 2];
+
       const groupSegment =
-        segments[2] === '[group]' ? (searchParams.group as GroupKey) : (segments[2] as GroupKey);
+        groupSegmentRaw === '[group]' ? (searchParams.group as GroupKey) : (groupSegmentRaw as GroupKey | undefined);
       const stepSegment =
-        segments[3] === '[step]' ? searchParams.step || 'index' : segments[3] || 'index';
+        stepSegmentRaw === '[step]' ? searchParams.step || 'index' : stepSegmentRaw || 'index';
 
       // For groups using dynamic routes, the step segment IS the step ID
       if (
@@ -113,7 +120,7 @@ export function useOnboardingGroupFlow(): UseOnboardingGroupFlowReturn {
           groupSegment === 'profile' ||
           groupSegment === 'experiences') &&
         stepSegment !== 'index' &&
-        segments[2] === '[group]'
+        groupSegmentRaw === '[group]'
       ) {
         return {
           currentGroup: groupSegment,
@@ -141,8 +148,8 @@ export function useOnboardingGroupFlow(): UseOnboardingGroupFlowReturn {
       };
 
       return {
-        currentGroup: groupSegment,
-        currentStepId: stepMap[stepSegment] || stepSegment,
+        currentGroup: groupSegment || null,
+        currentStepId: groupSegment ? stepMap[stepSegment] || stepSegment : null,
       };
     }
     return { currentGroup: null, currentStepId: null };

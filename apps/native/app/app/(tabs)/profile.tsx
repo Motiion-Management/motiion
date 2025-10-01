@@ -3,12 +3,8 @@ import { View, ScrollView } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { BackgroundGradientView } from '~/components/ui/background-gradient-view';
-import {
-  HomeHeader,
-  RecentlyAddedSection,
-  BookedOutDatesSection,
-  QuickActionsSection,
-} from '~/components/home';
+import { HomeHeader } from '~/components/home';
+import { Text } from '~/components/ui/text';
 
 export default function HomeScreen() {
   const handleSettingsPress = () => {
@@ -24,26 +20,6 @@ export default function HomeScreen() {
   const handleProfilePress = () => {
     // TODO: Navigate to profile
     console.log('Profile pressed');
-  };
-
-  const handleAddExperiencePress = () => {
-    // TODO: Navigate to add experience
-    console.log('Add experience pressed');
-  };
-
-  const handleEditAvailabilityPress = () => {
-    // TODO: Navigate to edit availability
-    console.log('Edit availability pressed');
-  };
-
-  const handleSearchTalentPress = () => {
-    // TODO: Navigate to talent search
-    console.log('Search talent pressed');
-  };
-
-  const handleManageContentPress = () => {
-    // TODO: Navigate to content management
-    console.log('Manage content pressed');
   };
 
   return (
@@ -62,20 +38,7 @@ export default function HomeScreen() {
           showsVerticalScrollIndicator={false}
           contentContainerStyle={{ paddingTop: 24, paddingBottom: 32 }}>
           {/* Recently Added Section */}
-          <View className="mb-6">
-            <RecentlyAddedSection onAddPress={handleAddExperiencePress} />
-          </View>
-
-          {/* Quick Actions */}
-          <View className="mb-6">
-            <QuickActionsSection
-              onSearchPress={handleSearchTalentPress}
-              onManageContentPress={handleManageContentPress}
-            />
-          </View>
-
-          {/* Booked Out Dates */}
-          <BookedOutDatesSection onEditPress={handleEditAvailabilityPress} />
+          <Text>Profile Screen</Text>
         </ScrollView>
       </SafeAreaView>
     </BackgroundGradientView>

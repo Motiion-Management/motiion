@@ -13,7 +13,8 @@ export default function AppRouter() {
 
   // Check if we're already on an onboarding screen
   const isOnOnboardingScreen = useMemo(() => {
-    return segments.length >= 2 && segments[1] === 'onboarding';
+    // Check for onboarding in any position in segments array
+    return segments.some((segment) => segment === 'onboarding');
   }, [segments]);
 
   // Debug logging removed for cleaner output
