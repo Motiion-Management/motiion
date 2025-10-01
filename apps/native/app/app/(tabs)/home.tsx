@@ -1,80 +1,87 @@
-import * as React from 'react';
-import { View, ScrollView } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import * as React from 'react'
+import { View, ScrollView } from 'react-native'
+import { SafeAreaView } from 'react-native-safe-area-context'
 
-import { BackgroundGradientView } from '~/components/ui/background-gradient-view';
+import { BackgroundGradientView } from '~/components/ui/background-gradient-view'
 import {
   HomeHeader,
-  RecentlyAddedSection,
-  BookedOutDatesSection,
-  QuickActionsSection,
-} from '~/components/home';
+  HeroCarousel,
+  TeachingThisWeekSection,
+  InSessionSection,
+  ScheduleModal,
+  useScheduleModal,
+} from '~/components/home'
+import {
+  heroCarouselItems,
+  choreographers,
+  sessions,
+  classesScheduleItems,
+  sessionsScheduleItems,
+  scheduleModalDays,
+} from '~/data/homeStubData'
 
 export default function HomeScreen() {
-  const handleSettingsPress = () => {
-    // TODO: Navigate to settings
-    console.log('Settings pressed');
-  };
-
-  const handleNotificationsPress = () => {
-    // TODO: Navigate to notifications
-    console.log('Notifications pressed');
-  };
-
-  const handleProfilePress = () => {
-    // TODO: Navigate to profile
-    console.log('Profile pressed');
-  };
-
-  const handleAddExperiencePress = () => {
-    // TODO: Navigate to add experience
-    console.log('Add experience pressed');
-  };
-
-  const handleEditAvailabilityPress = () => {
-    // TODO: Navigate to edit availability
-    console.log('Edit availability pressed');
-  };
-
-  const handleSearchTalentPress = () => {
-    // TODO: Navigate to talent search
-    console.log('Search talent pressed');
-  };
-
-  const handleManageContentPress = () => {
-    // TODO: Navigate to content management
-    console.log('Manage content pressed');
-  };
+  const classesModal = useScheduleModal()
+  const sessionsModal = useScheduleModal()
 
   return (
     <BackgroundGradientView>
       <SafeAreaView className="flex-1">
         {/* Header */}
-        <HomeHeader
-          onSettingsPress={handleSettingsPress}
-          onNotificationsPress={handleNotificationsPress}
-          onProfilePress={handleProfilePress}
-        />
+        <HomeHeader />
 
         {/* Scrollable content */}
         <ScrollView
-          className="flex-1 px-4"
+          className="flex-1"
           showsVerticalScrollIndicator={false}
           contentContainerStyle={{ paddingTop: 24, paddingBottom: 32 }}>
-          {/* Recently Added Section */}
-          <View className="mb-6">
-            <RecentlyAddedSection onAddPress={handleAddExperiencePress} />
+          {/* Hero Carousel */}
+          <View className="mb-8 px-4">
+            <HeroCarousel items={heroCarouselItems} />
           </View>
 
-          {/* Quick Actions */}
-          <View className="mb-6">
-            <QuickActionsSection
-              onSearchPress={handleSearchTalentPress}
-              onManageContentPress={handleManageContentPress}
+          {/* Divider */}
+          <View className="mb-12 h-px bg-border-low" />
+
+          {/* Teaching This Week Section */}
+          <View className="mb-12">
+            <TeachingThisWeekSection
+              items={choreographers}
+              onViewAllPress={classesModal.open}
             />
           </View>
+
+          {/* Divider */}
+          <View className="mb-12 h-px bg-border-low" />
+
+          {/* In Session Section */}
+          <View className="mb-12">
+            <InSessionSection items={sessions} onViewAllPress={sessionsModal.open} />
+          </View>
+
+          {/* Divider */}
+          <View className="h-px bg-border-low" />
         </ScrollView>
       </SafeAreaView>
+
+      {/* Modals */}
+      <ScheduleModal
+        isOpen={classesModal.isOpen}
+        onClose={classesModal.close}
+        title="Classes"
+        dateRange="AUG 19 - AUG 25"
+        days={scheduleModalDays}
+        items={classesScheduleItems}
+      />
+
+      <ScheduleModal
+        isOpen={sessionsModal.isOpen}
+        onClose={sessionsModal.close}
+        title="Sessions"
+        dateRange="AUG 19 - AUG 25"
+        days={scheduleModalDays}
+        items={sessionsScheduleItems}
+      />
     </BackgroundGradientView>
-  );
+  )
 }
