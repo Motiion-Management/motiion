@@ -1,4 +1,4 @@
 [submodule "packages/zodvex"]
 	path = packages/zodvex
-	url = https://github.com/panzacoder/zodvex.git
+	url = git@github.com:panzacoder/zodvex.git
 	branch = fix/more-type-problems
