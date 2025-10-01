@@ -5,7 +5,8 @@
       "env": {
         "EXPO_USE_FAST_RESOLVER": "true"
       },
-      "channel": "monorepo"
+      "channel": "monorepo",
+      "prebuildCommand": "cd ../.. && git submodule update --init --recursive"
     },
     "development": {
       "env": {
