@@ -3,7 +3,7 @@ import { authMutation, authQuery, zq } from '../util'
 import { z } from 'zod'
 import { zid } from '@packages/zodvex'
 import { UserDoc, resume as resumeObj } from '../schemas/users'
-import type { Id } from '../_generated/dataModel'
+import type { Id, Doc } from '../_generated/dataModel'
 import { zFileUploadObjectArray } from '../schemas/base'
 import {
   PROJECT_TITLE_MAP as EXPERIENCE_TITLE_MAP,
@@ -101,7 +101,8 @@ export const getMyExperienceCounts = authQuery({
     }
 
     const exp: any = resume?.projects
-    const experiences = exp ? await getAll(ctx.db, exp) : []
+    // TODO: Type correctly when getAll returns proper types
+    const experiences = exp ? (await getAll(ctx.db, exp)) as Doc<'projects'>[] : []
 
     return EXPERIENCE_TYPES.map((type) => ({
       count: experiences.filter((e) => e?.type === type).length,

@@ -79,7 +79,6 @@ export const parseResumeDocument: any = authAction({
   handler: async (ctx, args) => {
     // Call the new unified document processor
     return await ctx.runAction(
-      // @ts-expect-error - Type instantiation is excessively deep
       internal.ai.documentProcessor.parseResumeDocument,
       {
         storageId: args.storageId,

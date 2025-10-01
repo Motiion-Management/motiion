@@ -3,16 +3,14 @@ import { ConvexError } from 'convex/values'
 // Define a Zod equivalent for args typing here.
 import { z } from 'zod'
 import { filter } from 'convex-helpers/server/filter'
-import { authMutation, authQuery, notEmpty, zq, zm, ziq, zim, zid } from '../util'
+import { authMutation, authQuery, notEmpty, zq, ziq, zim, zid } from '../util'
 
 import { getAll } from 'convex-helpers/server/relationships'
 import { UserDoc, Users, zUsers } from '../schemas/users'
 import { zPaginated } from '@packages/zodvex'
-import { attributesPlainObject } from '../schemas/attributes'
 import { NEW_USER_DEFAULTS, formatFullName } from './helpers'
 import { AgencyDoc } from '../agencies'
-
-const zUserDoc = Users.zDoc
+import type { Doc } from '../_generated/dataModel'
 
 // Public read
 export const read = zq({
@@ -77,9 +75,8 @@ async function computeDerived(
     agency = await ctx.db.get(user.representation.agencyId)
   }
   const fullName = formatFullName(user.firstName, user.lastName)
-  const searchPattern = `${fullName} ${user.displayName || ''} ${
-    user.location?.city || ''
-  } ${user.location?.state || ''} ${agency?.name || ''}`.trim()
+  const searchPattern = `${fullName} ${user.displayName || ''} ${user.location?.city || ''
+    } ${user.location?.state || ''} ${agency?.name || ''}`.trim()
   return { fullName, searchPattern }
 }
 
@@ -131,39 +128,29 @@ export const getMyUser = authQuery({
       }
 
       if (profile) {
+        // TODO: Handle dancer vs choreographer profile merging in dedicated task
+        // For now, cast to DancerDoc to access all fields
+        const dancerProfile = profile as Doc<'dancers'>
+
         // Merge profile data back into user for backward compatibility
         // Profile data takes precedence over user data
         const mergedUser: any = {
           ...ctx.user,
           // Profile fields that might differ
-          headshots: profile.headshots || ctx.user.headshots,
-          attributes: profile.attributes || ctx.user.attributes,
-          sizing: profile.sizing || ctx.user.sizing,
-          resume: profile.resume || ctx.user.resume,
-          links: profile.links || ctx.user.links,
-          representation: profile.representation || ctx.user.representation,
+          headshots: dancerProfile.headshots || ctx.user.headshots,
+          attributes: dancerProfile.attributes || ctx.user.attributes,
+          sizing: dancerProfile.sizing || ctx.user.sizing,
+          resume: dancerProfile.resume || ctx.user.resume,
+          links: dancerProfile.links || ctx.user.links,
+          representation: dancerProfile.representation || ctx.user.representation,
           representationStatus:
-            profile.representationStatus || ctx.user.representationStatus,
+            dancerProfile.representationStatus || ctx.user.representationStatus,
           profileTipDismissed:
-            profile.profileTipDismissed || ctx.user.profileTipDismissed,
-          // Dancer-specific
-          ...(ctx.user.activeProfileType === 'dancer'
-            ? {
-                sagAftraId: profile.sagAftraId || ctx.user.sagAftraId,
-                training: profile.training || ctx.user.training,
-                workLocation: profile.workLocation || ctx.user.workLocation,
-                location: profile.location || ctx.user.location
-              }
-            : {}),
-          // Choreographer-specific
-          ...(ctx.user.activeProfileType === 'choreographer'
-            ? {
-                companyName: profile.companyName || ctx.user.companyName,
-                workLocation: profile.workLocation || ctx.user.workLocation,
-                location: profile.location || ctx.user.location,
-                databaseUse: profile.databaseUse || ctx.user.databaseUse
-              }
-            : {})
+            dancerProfile.profileTipDismissed || ctx.user.profileTipDismissed,
+          // Dancer-specific fields
+          sagAftraId: dancerProfile.sagAftraId || ctx.user.sagAftraId,
+          training: dancerProfile.training || ctx.user.training,
+          location: dancerProfile.location || ctx.user.location
         }
 
         return mergedUser
@@ -375,9 +362,7 @@ export const removeFavoriteUser = authMutation({
   handler: async (ctx, { userId }) => {
     const existing = ctx.user.favoriteUsers || []
     await ctx.db.patch(ctx.user._id, {
-      favoriteUsers: existing.filter(
-        (id: import('./_generated/dataModel').Id<'users'>) => id !== userId
-      )
+      favoriteUsers: existing.filter((id) => id !== userId)
     })
   }
 })

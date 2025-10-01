@@ -50,7 +50,6 @@ export const parseResumeDocument = zInternalAction(
 
       // Get file metadata using system query
       const metadata: { contentType?: string } | null = await ctx.runQuery(
-        // @ts-expect-error - Type instantiation is excessively deep
         internal.ai.fileMetadata.getFileMetadata,
         {
           storageId: args.storageId

@@ -2,6 +2,7 @@ import { authMutation, authQuery, notEmpty, zq, zid } from './util'
 import { Training, trainingInput, zTrainingInput, zTrainingFormDoc, training } from './schemas/training'
 import { getAll } from 'convex-helpers/server/relationships'
 import { z } from 'zod'
+import type { Doc } from './_generated/dataModel'
 
 const zTrainingDoc = Training.zDoc
 
@@ -91,8 +92,10 @@ export const addMyTraining = authMutation({
 
     // Update training list in profile or user
     if (profile) {
-      const profileTraining: any = Array.isArray(profile.training) ? profile.training : []
-      await ctx.db.patch(profile._id as any, {
+      // TODO: Handle choreographer profiles in dedicated task
+      const dancerProfile = profile as Doc<'dancers'>
+      const profileTraining: any = Array.isArray(dancerProfile.training) ? dancerProfile.training : []
+      await ctx.db.patch(dancerProfile._id, {
         training: [...profileTraining, trainingId]
       })
     } else {
@@ -123,8 +126,10 @@ export const removeMyTraining = authMutation({
 
     // Remove from training list in profile or user
     if (profile) {
-      const profileTraining: any = Array.isArray(profile.training) ? profile.training : []
-      await ctx.db.patch(profile._id as any, {
+      // TODO: Handle choreographer profiles in dedicated task
+      const dancerProfile = profile as Doc<'dancers'>
+      const profileTraining: any = Array.isArray(dancerProfile.training) ? dancerProfile.training : []
+      await ctx.db.patch(dancerProfile._id, {
         training: profileTraining.filter(
           (id: import('./_generated/dataModel').Id<'training'>) => id !== args.trainingId
         )
@@ -159,8 +164,12 @@ export const getMyTraining = authQuery({
         profile = await ctx.db.get(ctx.user.activeChoreographerId)
       }
 
-      if (profile?.training) {
-        trainingIds = profile.training as any
+      if (profile) {
+        // TODO: Handle choreographer profiles in dedicated task
+        const dancerProfile = profile as Doc<'dancers'>
+        if (dancerProfile.training) {
+          trainingIds = dancerProfile.training as any
+        }
       }
     }
 
@@ -191,8 +200,12 @@ export const getMyTrainingByType = authQuery({
         profile = await ctx.db.get(ctx.user.activeChoreographerId)
       }
 
-      if (profile?.training) {
-        trainingIds = profile.training as any
+      if (profile) {
+        // TODO: Handle choreographer profiles in dedicated task
+        const dancerProfile = profile as Doc<'dancers'>
+        if (dancerProfile.training) {
+          trainingIds = dancerProfile.training as any
+        }
       }
     }
 
