@@ -54,7 +54,10 @@
       "Bash(curl:*)",
       "Bash(bun run:*)",
       "mcp__codex__codex",
-      "Bash(bun test:*)"
+      "Bash(bun test:*)",
+      "Bash(pnpm --filter zodvex build)",
+      "Bash(node -e \"const pkg = require(''../../zodvex/package.json''); console.log(''Types path:'', pkg.types); console.log(''Main path:'', pkg.main)\")",
+      "Bash(pnpm --filter @packages/backend type-check)"
     ]
   },
   "enableAllProjectMcpServers": true
