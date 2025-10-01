@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { registryHelpers } from '@packages/zodvex';
+import { registryHelpers } from 'zodvex';
 
 /**
  * Safe utility functions for accessing Zod schema properties
