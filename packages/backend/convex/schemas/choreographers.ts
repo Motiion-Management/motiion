@@ -1,5 +1,5 @@
-import { zid } from '@packages/zodvex'
-import { zodTable } from '@packages/zodvex'
+import { zid } from 'zodvex'
+import { zodTable } from 'zodvex'
 import { z } from 'zod'
 import { Doc } from '../_generated/dataModel'
 import { zFileUploadObjectArray, zLocation } from './base'

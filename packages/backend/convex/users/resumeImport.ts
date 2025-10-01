@@ -3,7 +3,7 @@ import { internal } from '../_generated/api'
 import { ConvexError, v } from 'convex/values'
 import { Id } from '../_generated/dataModel'
 import { z } from 'zod'
-import { zid } from '@packages/zodvex'
+import { zid } from 'zodvex'
 import { getActiveProfileTarget } from './profileHelpers'
 
 // Schema definitions must come first for type inference

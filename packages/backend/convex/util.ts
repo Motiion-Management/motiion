@@ -16,7 +16,7 @@ import {
   zStrictMutation,
   zStrictAction,
   zid
-} from '@packages/zodvex'
+} from 'zodvex'
 // Avoid depending on internal API function names here to reduce coupling
 import { Id, Doc } from './_generated/dataModel'
 import { internal } from './_generated/api'

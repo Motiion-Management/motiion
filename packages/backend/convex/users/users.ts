@@ -7,7 +7,7 @@ import { authMutation, authQuery, notEmpty, zq, ziq, zim, zid } from '../util'
 
 import { getAll } from 'convex-helpers/server/relationships'
 import { UserDoc, Users, zUsers } from '../schemas/users'
-import { zPaginated } from '@packages/zodvex'
+import { zPaginated } from 'zodvex'
 import { NEW_USER_DEFAULTS, formatFullName } from './helpers'
 import { AgencyDoc } from '../agencies'
 import type { Doc } from '../_generated/dataModel'

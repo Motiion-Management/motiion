@@ -1,6 +1,6 @@
 import { authMutation } from '../util'
 import { z } from 'zod'
-import { zid } from '@packages/zodvex'
+import { zid } from 'zodvex'
 import { getActiveProfileTarget } from './profileHelpers'
 
 export const addMyRepresentation = authMutation({

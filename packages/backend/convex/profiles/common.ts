@@ -1,7 +1,7 @@
 import { query } from '../_generated/server'
 import { ConvexError } from 'convex/values'
 import { z } from 'zod'
-import { zid } from '@packages/zodvex'
+import { zid } from 'zodvex'
 import { authQuery, authMutation, zq } from '../util'
 import { Id } from '../_generated/dataModel'
 

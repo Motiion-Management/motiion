@@ -1,5 +1,5 @@
 import { internalAction, internalMutation } from '../_generated/server'
-import { zInternalAction, zInternalMutation } from '@packages/zodvex'
+import { zInternalAction, zInternalMutation } from 'zodvex'
 import { z } from 'zod'
 import { internal } from '../_generated/api'
 

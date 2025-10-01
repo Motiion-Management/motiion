@@ -1,7 +1,7 @@
 import { QueryCtx, query } from '../_generated/server'
 import { authMutation, authQuery, zq } from '../util'
 import { z } from 'zod'
-import { zid } from '@packages/zodvex'
+import { zid } from 'zodvex'
 import { UserDoc, resume as resumeObj } from '../schemas/users'
 import type { Id, Doc } from '../_generated/dataModel'
 import { zFileUploadObjectArray } from '../schemas/base'

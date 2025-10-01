@@ -1,5 +1,5 @@
 import { action } from '../_generated/server'
-import { zAction } from '@packages/zodvex'
+import { zAction } from 'zodvex'
 import { internal } from '../_generated/api'
 
 // One-off action to trigger internal date migration.

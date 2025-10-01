@@ -2,7 +2,7 @@ import type { Id } from '../_generated/dataModel'
 import { query } from '../_generated/server'
 import { zq } from '../util'
 import { z } from 'zod'
-import { zid } from '@packages/zodvex'
+import { zid } from 'zodvex'
 
 /**
  * Optimized query that returns headshot metadata immediately

@@ -1,5 +1,5 @@
-import { zid } from '@packages/zodvex'
-import { zodTable, zodToConvex } from '@packages/zodvex'
+import { zid } from 'zodvex'
+import { zodTable, zodToConvex } from 'zodvex'
 import { z } from 'zod'
 import { zFileUploadObjectArray, zLocation } from './base'
 import { attributesPlainObject } from './attributes'

@@ -3,7 +3,7 @@ import { authMutation, authQuery, zq } from '../util'
 import { ConvexError } from 'convex/values'
 import { Id } from '../_generated/dataModel'
 import { z } from 'zod'
-import { zid } from '@packages/zodvex'
+import { zid } from 'zodvex'
 import { zFileUploadObjectArray } from '../schemas/base'
 
 export const getMyHeadshots = authQuery({

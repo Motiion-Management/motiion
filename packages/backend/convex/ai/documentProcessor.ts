@@ -4,9 +4,9 @@ import { internalAction } from '../_generated/server'
 import { internal } from '../_generated/api'
 import OpenAI from 'openai'
 import { ConvexError } from 'convex/values'
-import { zInternalAction } from '@packages/zodvex'
+import { zInternalAction } from 'zodvex'
 import { z } from 'zod'
-import { zid } from '@packages/zodvex'
+import { zid } from 'zodvex'
 import {
   resumeSchema,
   resumeAISchema,

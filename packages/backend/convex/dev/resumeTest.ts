@@ -1,8 +1,8 @@
 import { action, mutation } from '../_generated/server'
 import { internal } from '../_generated/api'
-import { zAction, zMutation } from '@packages/zodvex'
+import { zAction, zMutation } from 'zodvex'
 import { z } from 'zod'
-import { zid } from '@packages/zodvex'
+import { zid } from 'zodvex'
 
 // Define schemas for resume parsing
 const experienceSchema = z.object({

@@ -1,5 +1,5 @@
 import { internalMutation } from '../_generated/server'
-import { zInternalMutation } from '@packages/zodvex'
+import { zInternalMutation } from 'zodvex'
 
 function parseDateToTimestamp(value: any): number | undefined {
   if (value == null) return undefined

@@ -1,7 +1,7 @@
 import { authMutation, authQuery, notEmpty, zq } from '../util'
 import { query } from '../_generated/server'
 import { z } from 'zod'
-import { zid } from '@packages/zodvex'
+import { zid } from 'zodvex'
 import { Projects } from '../schemas/projects'
 
 // Create a new project for the authenticated user

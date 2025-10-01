@@ -1,10 +1,10 @@
 import { query, mutation, internalMutation } from './_generated/server'
 import { ConvexError } from 'convex/values'
 import { z } from 'zod'
-import { zid } from '@packages/zodvex'
+import { zid } from 'zodvex'
 import { authMutation, authQuery, zim, zq, zm } from './util'
 import { Choreographers, zCreateChoreographerInput, zChoreographers, ChoreographerDoc } from './schemas/choreographers'
-import { zodDoc, zodDocOrNull } from '@packages/zodvex'
+import { zodDoc, zodDocOrNull } from 'zodvex'
 
 const zChoreographerDoc = zodDoc('choreographers', zChoreographers)
 const zChoreographerDocOrNull = zodDocOrNull('choreographers', zChoreographers)

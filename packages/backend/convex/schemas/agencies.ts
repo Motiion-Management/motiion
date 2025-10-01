@@ -1,4 +1,4 @@
-import { zodTable, zid } from '@packages/zodvex'
+import { zodTable, zid } from 'zodvex'
 import { z } from 'zod'
 import { zLocation } from './base'
 
