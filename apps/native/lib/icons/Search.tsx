@@ -1,4 +1,5 @@
-import { Search } from 'lucide-react-native';
+import { Icon, type IconProps } from './Icon'
 
-import { iconWithClassName } from './iconWithClassName';
-export default iconWithClassName(Search);
+export default function Search(props: Omit<IconProps, 'name'>) {
+  return <Icon name="search" {...props} />
+}

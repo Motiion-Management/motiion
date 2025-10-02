@@ -1,4 +1,5 @@
-import { ChevronUp } from 'lucide-react-native';
+import { Icon, type IconProps } from './Icon'
 
-import { iconWithClassName } from './iconWithClassName';
-export default iconWithClassName(ChevronUp);
+export default function ChevronUp(props: Omit<IconProps, 'name'>) {
+  return <Icon name="chevron-up" {...props} />
+}

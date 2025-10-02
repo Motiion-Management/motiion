@@ -1,4 +1,5 @@
-import { Bell } from 'lucide-react-native';
+import { Icon, type IconProps } from './Icon'
 
-import { iconWithClassName } from './iconWithClassName';
-export default iconWithClassName(Bell);
+export default function Bell(props: Omit<IconProps, 'name'>) {
+  return <Icon name="bell" {...props} />
+}

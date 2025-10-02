@@ -1,12 +1,12 @@
-import { NativeTabs, Icon, Label } from 'expo-router/unstable-native-tabs';
-import { isLiquidGlassAvailable } from 'expo-glass-effect';
+import { NativeTabs, Icon, Label } from 'expo-router/unstable-native-tabs'
+import { isLiquidGlassAvailable } from 'expo-glass-effect'
 
-import { TabList, Tabs, TabSlot, TabTrigger, TabTriggerSlotProps } from 'expo-router/ui';
-import { Platform, Pressable, View } from 'react-native';
-import { Icon as RoninIcon } from '@roninoss/icons';
-import { SafeAreaView } from 'react-native-safe-area-context';
-import React from 'react';
-import { cn } from '~/lib/cn';
+import { TabList, Tabs, TabSlot, TabTrigger, TabTriggerSlotProps } from 'expo-router/ui'
+import { Platform, Pressable, View } from 'react-native'
+import { Icon as MaterialIcon } from '@roninoss/icons'
+import { SafeAreaView } from 'react-native-safe-area-context'
+import React from 'react'
+import { cn } from '~/lib/cn'
 
 interface CustomTabButtonProps extends React.PropsWithChildren, TabTriggerSlotProps {
   route: string;
@@ -40,20 +40,20 @@ const CustomTabTrigger = ({ route: route, ...rest }: CustomTabButtonProps) => {
 };
 
 const HomeButton = ({ isActive }: { isActive: boolean }) => {
-  return <RoninIcon name="home" size={28} color={isActive ? '#ffffff' : '##8B8B8B'} />;
-};
+  return <MaterialIcon name="home" size={28} color={isActive ? '#ffffff' : '#8B8B8B'} />
+}
 
 const DiscoverButton = ({ isActive }: { isActive: boolean }) => {
-  return <RoninIcon name="magnify" size={28} color={isActive ? '#ffffff' : '##8B8B8B'} />;
-};
+  return <MaterialIcon name="magnify" size={28} color={isActive ? '#ffffff' : '#8B8B8B'} />
+}
 
 const ActivityButton = ({ isActive }: { isActive: boolean }) => {
-  return <RoninIcon name="note-outline" size={28} color={isActive ? '#ffffff' : '##8B8B8B'} />;
-};
+  return <MaterialIcon name="note-outline" size={28} color={isActive ? '#ffffff' : '#8B8B8B'} />
+}
 
 const ProfileButton = ({ isActive }: { isActive: boolean }) => {
-  return <RoninIcon name="person" size={28} color={isActive ? '#ffffff' : '##8B8B8B'} />;
-};
+  return <MaterialIcon name="person" size={28} color={isActive ? '#ffffff' : '#8B8B8B'} />
+}
 
 const TabNavigation = () => {
   return (

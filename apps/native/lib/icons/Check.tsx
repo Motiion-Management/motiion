@@ -1,4 +1,5 @@
-import { Check } from 'lucide-react-native';
+import { Icon, type IconProps } from './Icon'
 
-import { iconWithClassName } from './iconWithClassName';
-export default iconWithClassName(Check);
+export default function Check(props: Omit<IconProps, 'name'>) {
+  return <Icon name="check" {...props} />
+}

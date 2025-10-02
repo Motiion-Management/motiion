@@ -1,4 +1,5 @@
-import { MoreVertical } from 'lucide-react-native';
+import { Icon, type IconProps } from './Icon'
 
-import { iconWithClassName } from './iconWithClassName';
-export default iconWithClassName(MoreVertical);
+export default function MoreVertical(props: Omit<IconProps, 'name'>) {
+  return <Icon name="more-vertical" {...props} />
+}

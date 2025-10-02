@@ -1,4 +1,5 @@
-import { XCircle } from 'lucide-react-native';
+import { Icon, type IconProps } from './Icon'
 
-import { iconWithClassName } from './iconWithClassName';
-export default iconWithClassName(XCircle);
+export default function XCircle(props: Omit<IconProps, 'name'>) {
+  return <Icon name="x-circle" {...props} />
+}
