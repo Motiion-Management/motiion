@@ -22,6 +22,14 @@ export default function AppLayout() {
               animation: 'slide_from_bottom',
             }}
           />
+          <Stack.Screen
+            name="notifications"
+            options={{
+              // presentation: 'modal',
+              headerShown: false,
+              animation: 'default',
+            }}
+          />
         </Stack>
         {/* Dev-only floating tools for onboarding iteration */}
         {/* <DevOnboardingTools /> */}
