@@ -6,5 +6,5 @@
       "fix/zodvex": true
     }
   },
-  "buildCommand": "git submodule update --init --recursive && turbo build"
+  "buildCommand": "turbo build"
 }
