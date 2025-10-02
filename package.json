@@ -34,5 +34,10 @@
   "workspaces": [
     "apps/*",
     "packages/*"
-  ]
+  ],
+  "pnpm": {
+    "overrides": {
+      "zodvex": "workspace:*"
+    }
+  }
 }
