@@ -75,17 +75,18 @@ async function computeDerived(
     agency = await ctx.db.get(user.representation.agencyId)
   }
   const fullName = formatFullName(user.firstName, user.lastName)
-  const searchPattern = `${fullName} ${user.displayName || ''} ${user.location?.city || ''
-    } ${user.location?.state || ''} ${agency?.name || ''}`.trim()
+  const searchPattern = `${fullName} ${user.displayName || ''} ${
+    user.location?.city || ''
+  } ${user.location?.state || ''} ${agency?.name || ''}`.trim()
   return { fullName, searchPattern }
 }
 
 // Return value schemas
-const zUserDocOrNull = Users.zDoc.nullable()
+// const zUserDocOrNull = Users.zDoc.nullable()
 
 export const getMyUser = authQuery({
   args: {},
-  returns: zUserDocOrNull,
+  // returns: zUserDocOrNull,
   handler: async (ctx) => {
     console.log('🔍 CONVEX_GET_USER: Query called', {
       userId: ctx.user?._id,
@@ -134,7 +135,7 @@ export const getMyUser = authQuery({
 
         // Merge profile data back into user for backward compatibility
         // Profile data takes precedence over user data
-        const mergedUser: any = {
+        const mergedUser = {
           ...ctx.user,
           // Profile fields that might differ
           headshots: dancerProfile.headshots || ctx.user.headshots,
@@ -142,7 +143,8 @@ export const getMyUser = authQuery({
           sizing: dancerProfile.sizing || ctx.user.sizing,
           resume: dancerProfile.resume || ctx.user.resume,
           links: dancerProfile.links || ctx.user.links,
-          representation: dancerProfile.representation || ctx.user.representation,
+          representation:
+            dancerProfile.representation || ctx.user.representation,
           representationStatus:
             dancerProfile.representationStatus || ctx.user.representationStatus,
           profileTipDismissed:
