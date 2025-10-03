@@ -9,14 +9,18 @@ import {
   internalMutation,
   internalAction
 } from './_generated/server'
-import { customCtx } from 'convex-helpers/server/customFunctions'
 import { ConvexError } from 'convex/values'
 import {
-  zStrictQuery,
-  zStrictMutation,
-  zStrictAction,
+  zQueryBuilder,
+  zMutationBuilder,
+  zActionBuilder,
+  zCustomQueryBuilder,
+  zCustomMutationBuilder,
+  zCustomActionBuilder,
+  customCtx,
   zid
 } from 'zodvex'
+import * as chs from 'convex-helpers/server/customFunctions'
 // Avoid depending on internal API function names here to reduce coupling
 import { Id, Doc } from './_generated/dataModel'
 import { internal } from './_generated/api'
@@ -24,42 +28,17 @@ import { internal } from './_generated/api'
 // Re-export zodvex helpers
 export { zid }
 
-// Plain zodvex wrappers with our app's specific DataModel (strict typing)
-export const zq = zStrictQuery(
-  query,
-  customCtx(async (_ctx: QueryCtx) => ({}))
-)
-export const zm = zStrictMutation(
-  mutation,
-  customCtx(async (_ctx: MutationCtx) => ({}))
-)
-export const za = zStrictAction(
-  action,
-  customCtx(async (_ctx: ActionCtx) => ({}))
-)
-export const ziq = zStrictQuery(
-  internalQuery,
-  customCtx(async (_ctx: QueryCtx) => ({}))
-)
-export const zim = zStrictMutation(
-  internalMutation,
-  customCtx(async (_ctx: MutationCtx) => ({}))
-)
-export const zia = zStrictAction(
-  internalAction,
-  customCtx(async (_ctx: ActionCtx) => ({}))
-)
+// Plain zodvex wrappers with our app's specific DataModel (type-safe by default)
+// Using simplified builder API for plain wrappers
+export const zq = zQueryBuilder(query)
+export const zm = zMutationBuilder(mutation)
+export const za = zActionBuilder(action)
+export const ziq = zQueryBuilder(internalQuery)
+export const zim = zMutationBuilder(internalMutation)
+export const zia = zActionBuilder(internalAction)
 
-// Auth-wrapped zodvex mutation
-export const zAuthMutation = zStrictMutation(
-  mutation,
-  customCtx(async (ctx: MutationCtx) => {
-    const user = await getUserOrThrow(ctx)
-    return { user }
-  })
-)
-
-export const authQuery = zStrictQuery(
+// Auth-wrapped builders using custom builder + customCtx pattern
+export const authQuery = zCustomQueryBuilder(
   query,
   customCtx(async (ctx: QueryCtx) => {
     try {
@@ -70,7 +49,15 @@ export const authQuery = zStrictQuery(
   })
 )
 
-export const authAction = zStrictAction(
+export const authMutation = zCustomMutationBuilder(
+  mutation,
+  customCtx(async (ctx: MutationCtx) => ({ user: await getUserOrThrow(ctx) }))
+)
+
+// Deprecated - use authMutation instead
+export const zAuthMutation = authMutation
+
+export const authAction = zCustomActionBuilder(
   action,
   customCtx(
     async (
@@ -110,12 +97,7 @@ export const authAction = zStrictAction(
   )
 )
 
-export const authMutation = zStrictMutation(
-  mutation,
-  customCtx(async (ctx: MutationCtx) => ({ user: await getUserOrThrow(ctx) }))
-)
-
-export const adminAuthAction = zStrictAction(
+export const adminAuthAction = zCustomActionBuilder(
   action,
   customCtx(
     async (
@@ -156,7 +138,7 @@ export const adminAuthAction = zStrictAction(
   )
 )
 
-export const adminAuthMutation = zStrictMutation(
+export const adminAuthMutation = zCustomMutationBuilder(
   mutation,
   customCtx(async (ctx: MutationCtx) => {
     const user = await getUserOrThrow(ctx)
@@ -197,12 +179,12 @@ export const getUser = async (ctx: QueryCtx | MutationCtx | ActionCtx) => {
 type RecursivelyReplaceNullWithUndefined<T> = T extends null
   ? undefined
   : T extends Date
-  ? T
-  : {
-    [K in keyof T]: T[K] extends (infer U)[]
-    ? RecursivelyReplaceNullWithUndefined<U>[]
-    : RecursivelyReplaceNullWithUndefined<T[K]>
-  }
+    ? T
+    : {
+        [K in keyof T]: T[K] extends (infer U)[]
+          ? RecursivelyReplaceNullWithUndefined<U>[]
+          : RecursivelyReplaceNullWithUndefined<T[K]>
+      }
 
 export function nullsToUndefined<T>(
   obj: T
