@@ -50,11 +50,11 @@ const schema = defineSchema(
 
     // agency
     agencies: Agencies.table.searchIndex('search_name', { searchField: 'name' })
+  },
+  {
+    // ONLY ENABLE WHEN DOING SCHEMA MIGRATION
+    schemaValidation: false
   }
-  // {
-  //   // ONLY ENABLE WHEN DOING SCHEMA MIGRATION
-  //   schemaValidation: false
-  // }
 )
 
 export default schema
