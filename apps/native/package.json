@@ -121,7 +121,7 @@
     "sonner-native": "^0.21.0",
     "tailwind-merge": "^3.3.1",
     "zod": "^4.1.8",
-    "zodvex": "github:panzacoder/zodvex#fix/more-type-problems"
+    "zodvex": "^0.2.1"
   },
   "dependenciesMeta": {
     "react": {

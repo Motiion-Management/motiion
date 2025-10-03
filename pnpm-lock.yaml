@@ -321,8 +321,8 @@ importers:
         specifier: ^4.1.8
         version: 4.1.8
       zodvex:
-        specifier: github:panzacoder/zodvex#fix/more-type-problems
-        version: https://codeload.github.com/panzacoder/zodvex/tar.gz/8f6075dd8f3ce3640cd532bf73a1ac4cc0290436(convex-helpers@0.1.101-alpha.1(convex@1.27.0(@clerk/clerk-react@5.43.1(react-dom@19.1.0(react@19.1.0))(react@19.1.0))(react@19.1.0))(react@19.1.0)(typescript@5.9.3)(zod@4.1.8))(convex@1.27.0(@clerk/clerk-react@5.43.1(react-dom@19.1.0(react@19.1.0))(react@19.1.0))(react@19.1.0))(zod@4.1.8)
+        specifier: ^0.2.1
+        version: 0.2.1(convex-helpers@0.1.101-alpha.1(convex@1.27.0(@clerk/clerk-react@5.43.1(react-dom@19.1.0(react@19.1.0))(react@19.1.0))(react@19.1.0))(react@19.1.0)(typescript@5.9.3)(zod@4.1.8))(convex@1.27.0(@clerk/clerk-react@5.43.1(react-dom@19.1.0(react@19.1.0))(react@19.1.0))(react@19.1.0))(zod@4.1.8)
     devDependencies:
       '@babel/core':
         specifier: ^7.28.0
@@ -449,8 +449,8 @@ importers:
         specifier: ^4.1.8
         version: 4.1.8
       zodvex:
-        specifier: github:panzacoder/zodvex#fix/more-type-problems
-        version: https://codeload.github.com/panzacoder/zodvex/tar.gz/8f6075dd8f3ce3640cd532bf73a1ac4cc0290436(convex-helpers@0.1.101-alpha.1(convex@1.27.0(@clerk/clerk-react@5.43.1(react-dom@19.1.0(react@19.1.0))(react@19.1.0))(react@19.1.0))(react@19.1.0)(typescript@5.9.3)(zod@4.1.8))(convex@1.27.0(@clerk/clerk-react@5.43.1(react-dom@19.1.0(react@19.1.0))(react@19.1.0))(react@19.1.0))(zod@4.1.8)
+        specifier: ^0.2.1
+        version: 0.2.1(convex-helpers@0.1.101-alpha.1(convex@1.27.0(@clerk/clerk-react@5.43.1(react-dom@19.1.0(react@19.1.0))(react@19.1.0))(react@19.1.0))(react@19.1.0)(typescript@5.9.3)(zod@4.1.8))(convex@1.27.0(@clerk/clerk-react@5.43.1(react-dom@19.1.0(react@19.1.0))(react@19.1.0))(react@19.1.0))(zod@4.1.8)
 
   packages/codemods: {}
 
@@ -9147,9 +9147,8 @@ packages:
   zod@4.1.8:
     resolution: {integrity: sha512-5R1P+WwQqmmMIEACyzSvo4JXHY5WiAFHRMg+zBZKgKS+Q1viRa0C1hmUKtHltoIFKtIdki3pRxkmpP74jnNYHQ==}
 
-  zodvex@https://codeload.github.com/panzacoder/zodvex/tar.gz/8f6075dd8f3ce3640cd532bf73a1ac4cc0290436:
-    resolution: {tarball: https://codeload.github.com/panzacoder/zodvex/tar.gz/8f6075dd8f3ce3640cd532bf73a1ac4cc0290436}
-    version: 0.1.1
+  zodvex@0.2.1:
+    resolution: {integrity: sha512-8DRsL8rXVoSesle+aSFJD/6TbmMDpsC+5uaAhqm72By8cxg6co9FLfLHz/iLmn+9haJBTkWIgfUf9s250k0Obg==}
     engines: {bun: '>=1.0.0', node: '>=20'}
     peerDependencies:
       convex: 1.27.0
@@ -19916,7 +19915,7 @@ snapshots:
 
   zod@4.1.8: {}
 
-  zodvex@https://codeload.github.com/panzacoder/zodvex/tar.gz/8f6075dd8f3ce3640cd532bf73a1ac4cc0290436(convex-helpers@0.1.101-alpha.1(convex@1.27.0(@clerk/clerk-react@5.43.1(react-dom@19.1.0(react@19.1.0))(react@19.1.0))(react@19.1.0))(react@19.1.0)(typescript@5.9.3)(zod@4.1.8))(convex@1.27.0(@clerk/clerk-react@5.43.1(react-dom@19.1.0(react@19.1.0))(react@19.1.0))(react@19.1.0))(zod@4.1.8):
+  zodvex@0.2.1(convex-helpers@0.1.101-alpha.1(convex@1.27.0(@clerk/clerk-react@5.43.1(react-dom@19.1.0(react@19.1.0))(react@19.1.0))(react@19.1.0))(react@19.1.0)(typescript@5.9.3)(zod@4.1.8))(convex@1.27.0(@clerk/clerk-react@5.43.1(react-dom@19.1.0(react@19.1.0))(react@19.1.0))(react@19.1.0))(zod@4.1.8):
     dependencies:
       convex: 1.27.0(@clerk/clerk-react@5.43.1(react-dom@19.1.0(react@19.1.0))(react@19.1.0))(react@19.1.0)
       convex-helpers: 0.1.101-alpha.1(convex@1.27.0(@clerk/clerk-react@5.43.1(react-dom@19.1.0(react@19.1.0))(react@19.1.0))(react@19.1.0))(react@19.1.0)(typescript@5.9.3)(zod@4.1.8)

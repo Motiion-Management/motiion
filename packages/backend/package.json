@@ -11,7 +11,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "zodvex": "github:panzacoder/zodvex#fix/more-type-problems",
+    "zodvex": "^0.2.1",
     "@ai-sdk/openai": "^1.0.10",
     "@clerk/backend": "^2.5.0",
     "ai": "^4.0.37",
