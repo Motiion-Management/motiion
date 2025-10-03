@@ -6,10 +6,7 @@ import { ConvexDynamicForm } from '~/components/form/ConvexDynamicForm';
 import { Button } from '~/components/ui/button';
 import { Text } from '~/components/ui/text';
 import { type Id } from '@packages/backend/convex/_generated/dataModel';
-import {
-  type TrainingFormDoc,
-  zTrainingFormDoc,
-} from '@packages/backend/convex/schemas/training';
+import { type TrainingFormDoc, zTrainingFormDoc } from '@packages/backend/convex/schemas/training';
 import { TRAINING_TYPES } from '@packages/backend/convex/schemas/training';
 import {
   trainingMetadata,

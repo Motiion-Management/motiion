@@ -1,16 +1,16 @@
-import React from 'react'
-import { View, TouchableOpacity, Image } from 'react-native'
-import { Text } from '~/components/ui/text'
-import ChevronRight from '~/lib/icons/ChevronRight'
+import React from 'react';
+import { View, TouchableOpacity, Image } from 'react-native';
+import { Text } from '~/components/ui/text';
+import ChevronRight from '~/lib/icons/ChevronRight';
 
 export interface NotificationItemProps {
-  id: string
-  name: string
-  message: string
-  timeAgo: string
-  avatarUrl?: any
-  isRead: boolean
-  onPress?: () => void
+  id: string;
+  name: string;
+  message: string;
+  timeAgo: string;
+  avatarUrl?: any;
+  isRead: boolean;
+  onPress?: () => void;
 }
 
 export function NotificationItem({
@@ -21,9 +21,9 @@ export function NotificationItem({
   isRead,
   onPress,
 }: NotificationItemProps) {
-  const bgClass = isRead ? 'bg-[rgba(21,25,28,0.8)]' : 'bg-surface-accent'
-  const messageColorClass = isRead ? 'text-text-low' : 'text-accent'
-  const nameVariant = isRead ? 'body' : 'header5'
+  const bgClass = isRead ? 'bg-[rgba(21,25,28,0.8)]' : 'bg-surface-accent';
+  const messageColorClass = isRead ? 'text-text-low' : 'text-accent';
+  const nameVariant = isRead ? 'body' : 'header5';
 
   return (
     <>
@@ -71,5 +71,5 @@ export function NotificationItem({
       {/* Divider */}
       <View className="h-px bg-border-tint" />
     </>
-  )
+  );
 }

@@ -1,5 +1,5 @@
-import { Icon, type IconProps } from './Icon'
+import { Icon, type IconProps } from './Icon';
 
 export default function Bell(props: Omit<IconProps, 'name'>) {
-  return <Icon name="bell" {...props} />
+  return <Icon name="bell" {...props} />;
 }

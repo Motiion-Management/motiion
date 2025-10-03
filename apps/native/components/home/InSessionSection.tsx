@@ -1,21 +1,21 @@
-import React from 'react'
-import { View, FlatList, TouchableOpacity, Image } from 'react-native'
-import { Text } from '~/components/ui/text'
-import Calendar from '~/lib/icons/Calendar'
+import React from 'react';
+import { View, FlatList, TouchableOpacity, Image } from 'react-native';
+import { Text } from '~/components/ui/text';
+import Calendar from '~/lib/icons/Calendar';
 
 export interface SessionItem {
-  id: string
-  name: string
-  imageUrl: any
+  id: string;
+  name: string;
+  imageUrl: any;
   date: {
-    day: string
-    month: string
-  }
+    day: string;
+    month: string;
+  };
 }
 
 interface InSessionSectionProps {
-  items?: SessionItem[]
-  onViewAllPress?: () => void
+  items?: SessionItem[];
+  onViewAllPress?: () => void;
 }
 
 export function InSessionSection({ items = [], onViewAllPress }: InSessionSectionProps) {
@@ -39,7 +39,7 @@ export function InSessionSection({ items = [], onViewAllPress }: InSessionSectio
         {item.name}
       </Text>
     </View>
-  )
+  );
 
   return (
     <View>
@@ -53,9 +53,7 @@ export function InSessionSection({ items = [], onViewAllPress }: InSessionSectio
             Studio time to assist creation & move.
           </Text>
         </View>
-        <TouchableOpacity
-          onPress={onViewAllPress}
-          className="h-7 w-7 items-center justify-center">
+        <TouchableOpacity onPress={onViewAllPress} className="h-7 w-7 items-center justify-center">
           <Calendar className="h-7 w-7 text-white" />
         </TouchableOpacity>
       </View>
@@ -70,5 +68,5 @@ export function InSessionSection({ items = [], onViewAllPress }: InSessionSectio
         keyExtractor={(item) => item.id}
       />
     </View>
-  )
+  );
 }

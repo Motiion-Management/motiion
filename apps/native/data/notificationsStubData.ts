@@ -1,13 +1,13 @@
-import type { NotificationItemProps } from '~/components/notifications/NotificationItem'
+import type { NotificationItemProps } from '~/components/notifications/NotificationItem';
 
 // Placeholder images - using existing home images
-const mediaCover = require('~/assets/images/home/media-cover.png')
-const databaseCover = require('~/assets/images/home/database-cover.png')
+const mediaCover = require('~/assets/images/home/media-cover.png');
+const databaseCover = require('~/assets/images/home/database-cover.png');
 
-export type NotificationType = 'general' | 'request'
+export type NotificationType = 'general' | 'request';
 
 export interface NotificationData extends Omit<NotificationItemProps, 'onPress'> {
-  type: NotificationType
+  type: NotificationType;
 }
 
 export const notificationsData: NotificationData[] = [
@@ -129,13 +129,13 @@ export const notificationsData: NotificationData[] = [
     isRead: true,
     type: 'request',
   },
-]
+];
 
 export const getNotificationsByType = (type: NotificationType) => {
-  return notificationsData.filter((n) => n.type === type)
-}
+  return notificationsData.filter((n) => n.type === type);
+};
 
 export const getUnreadCount = (type?: NotificationType) => {
-  const notifications = type ? getNotificationsByType(type) : notificationsData
-  return notifications.filter((n) => !n.isRead).length
-}
+  const notifications = type ? getNotificationsByType(type) : notificationsData;
+  return notifications.filter((n) => !n.isRead).length;
+};

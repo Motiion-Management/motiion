@@ -1,5 +1,5 @@
-import { Icon, type IconProps } from './Icon'
+import { Icon, type IconProps } from './Icon';
 
 export default function Filter(props: Omit<IconProps, 'name'>) {
-  return <Icon name="filter" {...props} />
+  return <Icon name="filter" {...props} />;
 }

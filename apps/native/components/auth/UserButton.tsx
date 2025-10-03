@@ -1,40 +1,40 @@
-import { useClerk } from '@clerk/clerk-expo'
-import { useQuery } from 'convex/react'
-import { Pressable } from 'react-native'
+import { useClerk } from '@clerk/clerk-expo';
+import { useQuery } from 'convex/react';
+import { Pressable } from 'react-native';
 
-import { api } from '@packages/backend/convex/_generated/api'
-import { Avatar, AvatarFallback, AvatarImage } from '~/components/ui/avatar'
+import { api } from '@packages/backend/convex/_generated/api';
+import { Avatar, AvatarFallback, AvatarImage } from '~/components/ui/avatar';
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
-} from '~/components/ui/dropdown-menu'
-import { Text } from '~/components/ui/text'
+} from '~/components/ui/dropdown-menu';
+import { Text } from '~/components/ui/text';
 
 export function UserButton() {
-  const { signOut } = useClerk()
-  const user = useQuery(api.users.users.getMyUser)
-  const headshotUrl = useQuery(api.dancers.getMyDancerHeadshotUrl, {})
+  const { signOut } = useClerk();
+  const user = useQuery(api.users.users.getMyUser);
+  const headshotUrl = useQuery(api.dancers.getMyDancerHeadshotUrl, {});
 
   const getInitials = () => {
-    if (!user) return '?'
+    if (!user) return '?';
     if (user.firstName && user.lastName) {
-      return `${user.firstName[0]}${user.lastName[0]}`.toUpperCase()
+      return `${user.firstName[0]}${user.lastName[0]}`.toUpperCase();
     }
-    const name = user.displayName || user.fullName
+    const name = user.displayName || user.fullName;
     if (name) {
-      const parts = name.split(' ')
+      const parts = name.split(' ');
       if (parts.length > 1) {
-        return `${parts[0][0]}${parts[parts.length - 1][0]}`.toUpperCase()
+        return `${parts[0][0]}${parts[parts.length - 1][0]}`.toUpperCase();
       }
-      return name[0].toUpperCase()
+      return name[0].toUpperCase();
     }
     if (user.email) {
-      return user.email[0].toUpperCase()
+      return user.email[0].toUpperCase();
     }
-    return '?'
-  }
+    return '?';
+  };
 
   return (
     <DropdownMenu>
@@ -54,5 +54,5 @@ export function UserButton() {
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
-  )
+  );
 }

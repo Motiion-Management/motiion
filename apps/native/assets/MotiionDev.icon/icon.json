@@ -1,49 +1,41 @@
 {
-  "fill" : {
-    "solid" : "display-p3:0.10334,0.10334,0.10334,1.00000"
+  "fill": {
+    "solid": "display-p3:0.10334,0.10334,0.10334,1.00000"
   },
-  "groups" : [
+  "groups": [
     {
-      "layers" : [
+      "layers": [
         {
-          "image-name" : "DEV.png",
-          "name" : "DEV",
-          "position" : {
-            "scale" : 1.4,
-            "translation-in-points" : [
-              9.6484375,
-              -167.203125
-            ]
+          "image-name": "DEV.png",
+          "name": "DEV",
+          "position": {
+            "scale": 1.4,
+            "translation-in-points": [9.6484375, -167.203125]
           }
         },
         {
-          "glass" : true,
-          "hidden" : false,
-          "image-name" : "Logo 2.svg",
-          "name" : "Logo 2",
-          "position" : {
-            "scale" : 13,
-            "translation-in-points" : [
-              0.0006554781911063401,
-              132.6640625
-            ]
+          "glass": true,
+          "hidden": false,
+          "image-name": "Logo 2.svg",
+          "name": "Logo 2",
+          "position": {
+            "scale": 13,
+            "translation-in-points": [0.0006554781911063401, 132.6640625]
           }
         }
       ],
-      "shadow" : {
-        "kind" : "neutral",
-        "opacity" : 0.5
+      "shadow": {
+        "kind": "neutral",
+        "opacity": 0.5
       },
-      "translucency" : {
-        "enabled" : true,
-        "value" : 0.5
+      "translucency": {
+        "enabled": true,
+        "value": 0.5
       }
     }
   ],
-  "supported-platforms" : {
-    "circles" : [
-      "watchOS"
-    ],
-    "squares" : "shared"
+  "supported-platforms": {
+    "circles": ["watchOS"],
+    "squares": "shared"
   }
 }

@@ -1,32 +1,32 @@
-import React, { useState } from 'react'
-import { View, ScrollView, TouchableOpacity, Image } from 'react-native'
-import { Sheet, useSheetState } from '~/components/ui/sheet'
-import { Text } from '~/components/ui/text'
+import React, { useState } from 'react';
+import { View, ScrollView, TouchableOpacity, Image } from 'react-native';
+import { Sheet, useSheetState } from '~/components/ui/sheet';
+import { Text } from '~/components/ui/text';
 
 export interface ScheduleItem {
-  id: string
-  name: string
-  imageUrl: any
-  type: string
-  typeColor: 'accent' | 'green' | 'orange'
-  location: string
-  time: string
-  date: string
+  id: string;
+  name: string;
+  imageUrl: any;
+  type: string;
+  typeColor: 'accent' | 'green' | 'orange';
+  location: string;
+  time: string;
+  date: string;
 }
 
 interface DayOption {
-  label: string
-  value: string
-  dayNumber: string
+  label: string;
+  value: string;
+  dayNumber: string;
 }
 
 interface ScheduleModalProps {
-  isOpen: boolean
-  onClose: () => void
-  title: string
-  dateRange: string
-  days: DayOption[]
-  items: ScheduleItem[]
+  isOpen: boolean;
+  onClose: () => void;
+  title: string;
+  dateRange: string;
+  days: DayOption[];
+  items: ScheduleItem[];
 }
 
 export function ScheduleModal({
@@ -37,28 +37,28 @@ export function ScheduleModal({
   days,
   items,
 }: ScheduleModalProps) {
-  const [selectedDay, setSelectedDay] = useState(days[0]?.value || '')
+  const [selectedDay, setSelectedDay] = useState(days[0]?.value || '');
 
-  const filteredItems = items.filter((item) => item.date === selectedDay)
+  const filteredItems = items.filter((item) => item.date === selectedDay);
 
   const getTypeColorClass = (color: string) => {
     switch (color) {
       case 'accent':
-        return 'text-accent'
+        return 'text-accent';
       case 'green':
-        return 'text-green-500'
+        return 'text-green-500';
       case 'orange':
-        return 'text-orange-500'
+        return 'text-orange-500';
       default:
-        return 'text-accent'
+        return 'text-accent';
     }
-  }
+  };
 
   return (
     <Sheet
       isOpened={isOpen}
       onIsOpenedChange={(open) => {
-        if (!open) onClose()
+        if (!open) onClose();
       }}
       label={title}>
       <View className="px-4 pb-8">
@@ -135,10 +135,10 @@ export function ScheduleModal({
         </ScrollView>
       </View>
     </Sheet>
-  )
+  );
 }
 
 export function useScheduleModal() {
-  const sheetState = useSheetState()
-  return sheetState
+  const sheetState = useSheetState();
+  return sheetState;
 }

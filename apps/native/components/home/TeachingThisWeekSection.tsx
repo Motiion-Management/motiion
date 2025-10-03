@@ -1,21 +1,21 @@
-import React from 'react'
-import { View, FlatList, TouchableOpacity, Image } from 'react-native'
-import { Text } from '~/components/ui/text'
-import Calendar from '~/lib/icons/Calendar'
+import React from 'react';
+import { View, FlatList, TouchableOpacity, Image } from 'react-native';
+import { Text } from '~/components/ui/text';
+import Calendar from '~/lib/icons/Calendar';
 
 export interface ChoreographerItem {
-  id: string
-  name: string
-  imageUrl: any
+  id: string;
+  name: string;
+  imageUrl: any;
   date: {
-    day: string
-    month: string
-  }
+    day: string;
+    month: string;
+  };
 }
 
 interface TeachingThisWeekSectionProps {
-  items?: ChoreographerItem[]
-  onViewAllPress?: () => void
+  items?: ChoreographerItem[];
+  onViewAllPress?: () => void;
 }
 
 export function TeachingThisWeekSection({
@@ -42,7 +42,7 @@ export function TeachingThisWeekSection({
         {item.name}
       </Text>
     </View>
-  )
+  );
 
   return (
     <View>
@@ -56,9 +56,7 @@ export function TeachingThisWeekSection({
             Choreographers you don't want to miss.
           </Text>
         </View>
-        <TouchableOpacity
-          onPress={onViewAllPress}
-          className="h-7 w-7 items-center justify-center">
+        <TouchableOpacity onPress={onViewAllPress} className="h-7 w-7 items-center justify-center">
           <Calendar className="h-7 w-7 text-white" />
         </TouchableOpacity>
       </View>
@@ -73,5 +71,5 @@ export function TeachingThisWeekSection({
         keyExtractor={(item) => item.id}
       />
     </View>
-  )
+  );
 }

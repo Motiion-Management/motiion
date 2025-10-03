@@ -1,26 +1,26 @@
-import React, { useState } from 'react'
-import { View, FlatList } from 'react-native'
-import { SafeAreaView } from 'react-native-safe-area-context'
-import { BackgroundGradientView } from '~/components/ui/background-gradient-view'
+import React, { useState } from 'react';
+import { FlatList } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import { BackgroundGradientView } from '~/components/ui/background-gradient-view';
 import {
   NotificationsHeader,
   NotificationFilters,
   NotificationItem,
   type NotificationTab,
-} from '~/components/notifications'
-import { getNotificationsByType, getUnreadCount } from '~/data/notificationsStubData'
+} from '~/components/notifications';
+import { getNotificationsByType, getUnreadCount } from '~/data/notificationsStubData';
 
 export default function NotificationsScreen() {
-  const [activeTab, setActiveTab] = useState<NotificationTab>('general')
+  const [activeTab, setActiveTab] = useState<NotificationTab>('general');
 
-  const notifications = getNotificationsByType(activeTab)
-  const generalCount = getUnreadCount('general')
-  const requestsCount = getUnreadCount('request')
+  const notifications = getNotificationsByType(activeTab);
+  const generalCount = getUnreadCount('general');
+  const requestsCount = getUnreadCount('request');
 
   const handleNotificationPress = (id: string) => {
     // TODO: Navigate to notification detail
-    console.log('Notification pressed:', id)
-  }
+    console.log('Notification pressed:', id);
+  };
 
   return (
     <BackgroundGradientView>
@@ -48,5 +48,5 @@ export default function NotificationsScreen() {
         />
       </SafeAreaView>
     </BackgroundGradientView>
-  )
+  );
 }
