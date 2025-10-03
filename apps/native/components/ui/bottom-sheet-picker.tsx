@@ -78,7 +78,7 @@ export function BottomSheetPicker<T = any>({
           onBlur={onBlur}
           errorMessage={errorMessage}
           helperTextProps={helpText ? { message: helpText } : undefined}
-          rightView={<ChevronDown className="pointer-events-none color-icon-default" size={20} />}
+          rightView={<ChevronDown className="pointer-events-none text-icon-default" size={20} />}
         />
       </Pressable>
 

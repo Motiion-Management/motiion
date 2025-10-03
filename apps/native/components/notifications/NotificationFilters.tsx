@@ -23,8 +23,8 @@ export function NotificationFilters({
     <View className="flex-row items-center gap-2 px-4 py-4">
       {/* Filter button */}
       <TouchableOpacity className="h-8 flex-row items-center gap-1 rounded-full bg-surface-tint px-4 py-1.5">
-        <Filter className="h-4 w-4 color-white" />
-        <ChevronDown className="h-4 w-4 color-white" />
+        <Filter className="h-4 w-4 text-white" />
+        <ChevronDown className="h-4 w-4 text-white" />
       </TouchableOpacity>
 
       {/* General tab */}

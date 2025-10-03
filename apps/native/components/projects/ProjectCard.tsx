@@ -78,9 +78,9 @@ export function ProjectCard({
         </View>
         <View className="ml-3">
           {variant === 'completed' ? (
-            <Check className="h-5 w-5 color-icon-accent" />
+            <Check className="h-5 w-5 text-icon-accent" />
           ) : (
-            <Plus className="h-5 w-5 color-icon-low" />
+            <Plus className="h-5 w-5 text-icon-low" />
           )}
         </View>
       </TouchableOpacity>

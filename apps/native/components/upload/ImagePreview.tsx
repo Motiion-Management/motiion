@@ -28,7 +28,7 @@ export function ImagePreview({ imageUrl, onRemove, className }: ImagePreviewProp
       {/* Remove button integrated with sortables gesture system */}
       <View className="absolute -right-2 -top-2 rounded-full bg-red-500 p-1 shadow-sm">
         <Sortable.Touchable onTap={onRemove}>
-          <XIcon size={12} className="color-white" />
+          <XIcon size={12} className="text-white" />
         </Sortable.Touchable>
       </View>
     </View>

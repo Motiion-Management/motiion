@@ -48,7 +48,7 @@ export function HomeHeader({ onNotificationsPress }: HomeHeaderProps) {
         {/* Notifications */}
         <Link href="/app/notifications" asChild>
           <TouchableOpacity className="h-10 w-10 items-center justify-center rounded-full bg-surface-tint shadow-sm">
-            <Bell className="h-6 w-6 color-white" />
+            <Bell className="h-6 w-6 text-white" />
           </TouchableOpacity>
         </Link>
       </View>

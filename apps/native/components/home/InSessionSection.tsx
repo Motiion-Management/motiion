@@ -56,7 +56,7 @@ export function InSessionSection({ items = [], onViewAllPress }: InSessionSectio
         <TouchableOpacity
           onPress={onViewAllPress}
           className="h-7 w-7 items-center justify-center">
-          <Calendar className="h-7 w-7 color-white" />
+          <Calendar className="h-7 w-7 text-white" />
         </TouchableOpacity>
       </View>
 

@@ -13,7 +13,7 @@ export const InputLabel = ({ children, error }: InputLabelProps) => {
       <Text variant="labelXs" className="ml-6 uppercase text-text-low">
         {children}
       </Text>
-      {error && <CircleAlert className="color-text-error" size={12} strokeWidth={2} />}
+      {error && <CircleAlert className="text-text-error" size={12} strokeWidth={2} />}
     </View>
   );
 };

@@ -43,7 +43,7 @@ export const ResumeCard = React.forwardRef<ViewRef, ResumeCardProps>(
 
           {/* Three dots menu */}
           <View className="h-6 w-6 items-center justify-center">
-            <MoreVertical className="h-4 w-4 color-text-low" />
+            <MoreVertical className="h-4 w-4 text-text-low" />
           </View>
         </View>
 

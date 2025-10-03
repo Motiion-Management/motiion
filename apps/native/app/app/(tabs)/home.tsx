@@ -1,8 +1,8 @@
-import * as React from 'react'
-import { View, ScrollView } from 'react-native'
-import { SafeAreaView } from 'react-native-safe-area-context'
+import * as React from 'react';
+import { View, ScrollView } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
-import { BackgroundGradientView } from '~/components/ui/background-gradient-view'
+import { BackgroundGradientView } from '~/components/ui/background-gradient-view';
 import {
   HomeHeader,
   HeroCarousel,
@@ -10,7 +10,7 @@ import {
   InSessionSection,
   ScheduleModal,
   useScheduleModal,
-} from '~/components/home'
+} from '~/components/home';
 import {
   heroCarouselItems,
   choreographers,
@@ -18,11 +18,11 @@ import {
   classesScheduleItems,
   sessionsScheduleItems,
   scheduleModalDays,
-} from '~/data/homeStubData'
+} from '~/data/homeStubData';
 
 export default function HomeScreen() {
-  const classesModal = useScheduleModal()
-  const sessionsModal = useScheduleModal()
+  const classesModal = useScheduleModal();
+  const sessionsModal = useScheduleModal();
 
   return (
     <BackgroundGradientView>
@@ -36,7 +36,7 @@ export default function HomeScreen() {
           showsVerticalScrollIndicator={false}
           contentContainerStyle={{ paddingTop: 24, paddingBottom: 32 }}>
           {/* Hero Carousel */}
-          <View className="mb-8 px-4">
+          <View className="mb-8">
             <HeroCarousel items={heroCarouselItems} />
           </View>
 
@@ -45,10 +45,7 @@ export default function HomeScreen() {
 
           {/* Teaching This Week Section */}
           <View className="mb-12">
-            <TeachingThisWeekSection
-              items={choreographers}
-              onViewAllPress={classesModal.open}
-            />
+            <TeachingThisWeekSection items={choreographers} onViewAllPress={classesModal.open} />
           </View>
 
           {/* Divider */}
@@ -83,5 +80,5 @@ export default function HomeScreen() {
         items={sessionsScheduleItems}
       />
     </BackgroundGradientView>
-  )
+  );
 }

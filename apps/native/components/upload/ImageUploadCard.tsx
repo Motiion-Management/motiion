@@ -38,7 +38,7 @@ export function ImageUploadCard({
       <View className="items-center justify-center">
         <IconComponent
           size={24}
-          className={isActive ? 'color-icon-default' : 'color-icon-disabled'}
+          className={isActive ? 'text-icon-default' : 'text-icon-disabled'}
         />
       </View>
     </Pressable>

@@ -1,6 +1,17 @@
 import { Icon as RoninIcon, type IconProps as RoninIconProps } from '@roninoss/icons'
+import { cssInterop } from 'nativewind'
 import { Platform } from 'react-native'
 import type { ComponentPropsWithoutRef } from 'react'
+
+// Register RoninIcon with cssInterop to map className color utilities to color prop
+cssInterop(RoninIcon, {
+  className: {
+    target: 'style',
+    nativeStyleToProp: {
+      color: true
+    }
+  }
+})
 
 export type IconName =
   | 'bell'

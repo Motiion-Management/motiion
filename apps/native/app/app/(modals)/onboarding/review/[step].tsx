@@ -68,7 +68,7 @@ export default function ReviewEditModal() {
         <SafeAreaView edges={['top', 'left', 'right']}>
           <View className="absolute right-2 top-2 z-10">
             <Button size="icon" variant="plain" onPress={() => router.back()}>
-              <X size={24} className="color-icon-default" />
+              <X size={24} className="text-icon-default" />
             </Button>
           </View>
         </SafeAreaView>

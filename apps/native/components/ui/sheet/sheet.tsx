@@ -148,7 +148,7 @@ const SheetContent = forwardRef<SheetRef, SheetProps>(
                 {label}
               </Text>
               <Pressable onPress={handleClose} className="p-2 pr-0">
-                <X className="h-6 w-6 color-icon-default" />
+                <X className="h-6 w-6 text-icon-default" />
               </Pressable>
             </View>
             {children}
