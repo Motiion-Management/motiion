@@ -60,7 +60,8 @@
       "Bash(pnpm --filter @packages/backend type-check)",
       "Bash(pnpm --filter native-app type-check)",
       "Bash(pnpm clean:*)",
-      "Bash(pnpm install:*)"
+      "Bash(pnpm install:*)",
+      "WebFetch(domain:pnpm.io)"
     ]
   },
   "enableAllProjectMcpServers": true
