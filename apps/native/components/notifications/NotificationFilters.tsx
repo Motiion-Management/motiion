@@ -4,7 +4,7 @@ import { Text } from '~/components/ui/text'
 import Filter from '~/lib/icons/Filter'
 import ChevronDown from '~/lib/icons/ChevronDown'
 
-export type NotificationTab = 'general' | 'requests'
+export type NotificationTab = 'general' | 'request'
 
 export interface NotificationFiltersProps {
   activeTab: NotificationTab
@@ -48,14 +48,14 @@ export function NotificationFilters({
 
       {/* Requests tab */}
       <TouchableOpacity
-        onPress={() => onTabChange('requests')}
+        onPress={() => onTabChange('request')}
         className={`h-8 flex-row items-center gap-2 rounded-full px-4 py-1.5 ${
-          activeTab === 'requests' ? 'bg-[rgba(0,122,110,0.7)]' : 'bg-surface-tint'
+          activeTab === 'request' ? 'bg-[rgba(0,122,110,0.7)]' : 'bg-surface-tint'
         }`}>
-        {activeTab === 'requests' && (
+        {activeTab === 'request' && (
           <View className="h-2 w-2 rounded-full bg-accent" />
         )}
-        <Text variant="bodySm" className={activeTab === 'requests' ? 'text-white' : 'text-[#acacac]'}>
+        <Text variant="bodySm" className={activeTab === 'request' ? 'text-white' : 'text-[#acacac]'}>
           Requests
         </Text>
         {requestsCount > 0 && (

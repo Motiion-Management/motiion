@@ -15,7 +15,7 @@ import { Text } from '~/components/ui/text'
 export function UserButton() {
   const { signOut } = useClerk()
   const user = useQuery(api.users.users.getMyUser)
-  const headshotUrl = useQuery(api.dancers.getMyDancerHeadshotUrl)
+  const headshotUrl = useQuery(api.dancers.getMyDancerHeadshotUrl, {})
 
   const getInitials = () => {
     if (!user) return '?'
