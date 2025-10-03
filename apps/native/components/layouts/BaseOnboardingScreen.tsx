@@ -105,7 +105,7 @@ export const BaseOnboardingScreen = ({
                       setTimeout(() => setIsNavigating(false), 300);
                     }}
                     disabled={onboardingFlow.isLoading}>
-                    <ChevronLeft size={24} className="color-icon-accent" />
+                    <ChevronLeft size={24} className="text-icon-accent" />
                   </Button>
                 )}
                 {/* Continue Button */}
@@ -134,7 +134,7 @@ export const BaseOnboardingScreen = ({
                   {isNavigating ? (
                     <ActivityIndicator size="small" color="#fff" />
                   ) : (
-                    <ChevronRight size={24} className="color-icon-accent" />
+                    <ChevronRight size={24} className="text-icon-accent" />
                   )}
                 </Button>
               </>

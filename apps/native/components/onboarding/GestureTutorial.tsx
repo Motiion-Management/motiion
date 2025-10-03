@@ -76,7 +76,7 @@ export function GestureTutorial({
         <View className="flex-row items-center gap-4">
           {(direction === 'left' || direction === 'both') && (
             <Animated.View style={leftIconStyle}>
-              <ChevronLeft size={20} className="color-icon-low" />
+              <ChevronLeft size={20} className="text-icon-low" />
             </Animated.View>
           )}
 
@@ -86,7 +86,7 @@ export function GestureTutorial({
 
           {(direction === 'right' || direction === 'both') && (
             <Animated.View style={rightIconStyle}>
-              <ChevronRight size={20} className="color-icon-low" />
+              <ChevronRight size={20} className="text-icon-low" />
             </Animated.View>
           )}
         </View>

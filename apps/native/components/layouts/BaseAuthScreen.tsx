@@ -93,7 +93,7 @@ export const BaseAuthScreen = ({
                     }
                     primaryAction?.onPress();
                   }}>
-                  <ChevronRight size={24} className="color-icon-accent" />
+                  <ChevronRight size={24} className="text-icon-accent" />
                 </Button>
               </>
             )}

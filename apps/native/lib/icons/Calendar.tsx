@@ -1,4 +1,5 @@
-import { Calendar } from 'lucide-react-native';
+import { Icon, type IconProps } from './Icon';
 
-import { iconWithClassName } from './iconWithClassName';
-export default iconWithClassName(Calendar);
+export default function Calendar(props: Omit<IconProps, 'name'>) {
+  return <Icon name="calendar" {...props} />;
+}

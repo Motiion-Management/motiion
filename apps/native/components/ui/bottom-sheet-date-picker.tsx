@@ -84,7 +84,7 @@ export function BottomSheetDatePicker({
           placeholder={placeholder}
           value={displayValue}
           errorMessage={errorMessage}
-          rightView={<Calendar size={20} className="color-icon-default" />}
+          rightView={<Calendar size={20} className="text-icon-default" />}
         />
       </Pressable>
 

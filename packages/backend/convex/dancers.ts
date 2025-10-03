@@ -1,6 +1,6 @@
 import { ConvexError } from 'convex/values'
 import { zid } from 'zodvex'
-import { zq, zm, zim, zAuthMutation } from './util'
+import { zq, zm, zim, zAuthMutation, authQuery } from './util'
 import { z } from 'zod'
 import { Dancers, zCreateDancerInput, zDancers } from './schemas/dancers'
 import { zodDoc } from 'zodvex'
@@ -20,6 +20,34 @@ export const get = zq({
   handler: async (ctx, { id }) => {
     const dancer = await ctx.db.get(id)
     return dancer
+  }
+})
+
+// Get the current user's active dancer headshot URL
+export const getMyDancerHeadshotUrl = authQuery({
+  returns: z.union([z.string(), z.null()]),
+  handler: async (ctx) => {
+    if (!ctx.user || !ctx.user.activeDancerId) {
+      return null
+    }
+
+    const dancer = await ctx.db.get(ctx.user.activeDancerId)
+    if (!dancer || !dancer.headshots || dancer.headshots.length === 0) {
+      return null
+    }
+
+    // Get the first headshot's storage URL
+    const firstHeadshot = dancer.headshots[0]
+    if (!firstHeadshot || !firstHeadshot.storageId) {
+      return null
+    }
+
+    try {
+      const url = await ctx.storage.getUrl(firstHeadshot.storageId)
+      return url
+    } catch {
+      return null
+    }
   }
 })
 

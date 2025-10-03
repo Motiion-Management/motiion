@@ -50,7 +50,7 @@ export default function CreateAccountLayout() {
                   // Navigate back to the root with a dismiss animation
                   router.dismissAll();
                 }}>
-                <X size={24} className="color-icon-default" strokeWidth={1.5} />
+                <X size={24} className="text-icon-default" strokeWidth={1.5} />
               </Button>
             </View>
           </SafeAreaView>

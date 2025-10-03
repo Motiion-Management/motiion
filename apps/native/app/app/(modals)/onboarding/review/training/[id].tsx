@@ -13,7 +13,7 @@ export default function TrainingEditModalScreen() {
     <View className="flex-1 bg-surface-default pt-6">
       <View className="absolute right-2 top-2 z-10">
         <Button size="icon" variant="plain" onPress={() => router.back()}>
-          <X size={24} className="color-icon-default" />
+          <X size={24} className="text-icon-default" />
         </Button>
       </View>
 

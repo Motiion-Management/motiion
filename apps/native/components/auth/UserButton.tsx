@@ -3,7 +3,7 @@ import { useQuery } from 'convex/react';
 import { Pressable } from 'react-native';
 
 import { api } from '@packages/backend/convex/_generated/api';
-import { Avatar, AvatarFallback } from '~/components/ui/avatar';
+import { Avatar, AvatarFallback, AvatarImage } from '~/components/ui/avatar';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -15,6 +15,7 @@ import { Text } from '~/components/ui/text';
 export function UserButton() {
   const { signOut } = useClerk();
   const user = useQuery(api.users.users.getMyUser);
+  const headshotUrl = useQuery(api.dancers.getMyDancerHeadshotUrl, {});
 
   const getInitials = () => {
     if (!user) return '?';
@@ -39,7 +40,8 @@ export function UserButton() {
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
         <Pressable>
-          <Avatar alt={user?.displayName || user?.email || 'User avatar'} className="h-8 w-8">
+          <Avatar alt={user?.displayName || user?.email || 'User avatar'} className="h-10 w-10">
+            {headshotUrl && <AvatarImage source={{ uri: headshotUrl }} />}
             <AvatarFallback>
               <Text className="text-sm font-medium text-text-default">{getInitials()}</Text>
             </AvatarFallback>

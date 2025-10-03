@@ -1,4 +1,5 @@
-import { Settings } from 'lucide-react-native';
+import { Icon, type IconProps } from './Icon';
 
-import { iconWithClassName } from './iconWithClassName';
-export default iconWithClassName(Settings);
+export default function Settings(props: Omit<IconProps, 'name'>) {
+  return <Icon name="settings" {...props} />;
+}

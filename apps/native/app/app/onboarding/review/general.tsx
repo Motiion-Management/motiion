@@ -42,7 +42,7 @@ function ProfileField({ label, value, onEdit, isArray = false }: ProfileFieldPro
           {displayValue}
         </Text>
       </View>
-      {onEdit && <ChevronRight className="color-icon-default" />}
+      {onEdit && <ChevronRight className="text-icon-default" />}
     </Pressable>
   );
 }
@@ -194,7 +194,7 @@ export default function GeneralReviewScreen() {
                     )}
                   </View>
                 </View>
-                <ChevronRight className="color-icon-default" />
+                <ChevronRight className="text-icon-default" />
               </Pressable>
               <ProfileField
                 label="Sizing"
@@ -223,7 +223,7 @@ export default function GeneralReviewScreen() {
                     />
                   </View>
                 </View>
-                <ChevronRight className="color-icon-default" />
+                <ChevronRight className="text-icon-default" />
               </Pressable>
               <ProfileField
                 label="Agency"

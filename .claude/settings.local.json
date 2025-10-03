@@ -61,7 +61,8 @@
       "Bash(pnpm --filter native-app type-check)",
       "Bash(pnpm clean:*)",
       "Bash(pnpm install:*)",
-      "WebFetch(domain:pnpm.io)"
+      "WebFetch(domain:pnpm.io)",
+      "mcp__figma-dev-mode-mcp-server__get_screenshot"
     ]
   },
   "enableAllProjectMcpServers": true

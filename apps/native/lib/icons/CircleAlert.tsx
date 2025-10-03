@@ -1,4 +1,5 @@
-import { CircleAlert } from 'lucide-react-native';
+import { Icon, type IconProps } from './Icon';
 
-import { iconWithClassName } from './iconWithClassName';
-export default iconWithClassName(CircleAlert);
+export default function CircleAlert(props: Omit<IconProps, 'name'>) {
+  return <Icon name="circle-alert" {...props} />;
+}

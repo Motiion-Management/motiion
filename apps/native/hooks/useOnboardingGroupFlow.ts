@@ -100,8 +100,8 @@ export function useOnboardingGroupFlow(): UseOnboardingGroupFlowReturn {
   // Extract current path info
   const { currentGroup, currentStepId } = useMemo(() => {
     // Handle both old and new expo-router segment formats
-    const isOnboardingRoute = segments.some(segment => segment === 'onboarding');
-    const onboardingIndex = segments.findIndex(segment => segment === 'onboarding');
+    const isOnboardingRoute = segments.some((segment) => segment === 'onboarding');
+    const onboardingIndex = segments.findIndex((segment) => segment === 'onboarding');
 
     if (isOnboardingRoute && onboardingIndex >= 0) {
       // Handle dynamic routes - when segments contain brackets, use search params
@@ -109,7 +109,9 @@ export function useOnboardingGroupFlow(): UseOnboardingGroupFlowReturn {
       const stepSegmentRaw = segments[onboardingIndex + 2];
 
       const groupSegment =
-        groupSegmentRaw === '[group]' ? (searchParams.group as GroupKey) : (groupSegmentRaw as GroupKey | undefined);
+        groupSegmentRaw === '[group]'
+          ? (searchParams.group as GroupKey)
+          : (groupSegmentRaw as GroupKey | undefined);
       const stepSegment =
         stepSegmentRaw === '[step]' ? searchParams.step || 'index' : stepSegmentRaw || 'index';
 
@@ -239,7 +241,7 @@ export function useOnboardingGroupFlow(): UseOnboardingGroupFlowReturn {
     // Find current step's actual index in ALL steps (not filtered)
     const allSteps = groupConfig.steps as unknown as string[];
     const currentActualIndex = allSteps.indexOf(currentStepId);
-    
+
     if (currentActualIndex === -1) {
       console.warn(`Current step ${currentStepId} not found in group ${currentGroup}`);
       return;
@@ -273,7 +275,7 @@ export function useOnboardingGroupFlow(): UseOnboardingGroupFlowReturn {
     // Find current step's actual index in ALL steps (not filtered)
     const allSteps = groupConfig.steps as unknown as string[];
     const currentActualIndex = allSteps.indexOf(currentStepId);
-    
+
     if (currentActualIndex === -1) {
       console.warn(`Current step ${currentStepId} not found in group ${currentGroup}`);
       return;

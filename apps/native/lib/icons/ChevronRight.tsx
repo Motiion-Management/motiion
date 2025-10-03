@@ -1,4 +1,5 @@
-import { ChevronRight } from 'lucide-react-native';
+import { Icon, type IconProps } from './Icon';
 
-import { iconWithClassName } from './iconWithClassName';
-export default iconWithClassName(ChevronRight);
+export default function ChevronRight(props: Omit<IconProps, 'name'>) {
+  return <Icon name="chevron-right" {...props} />;
+}
