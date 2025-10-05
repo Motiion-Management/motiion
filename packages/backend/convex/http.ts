@@ -49,16 +49,19 @@ http.route({
         // const customerId = await ctx.runAction(internal.stripe.createCustomer)
         // await ctx.runAction(internal.stripe.startTrial, { customerId })
         case 'user.updated':
-          await ctx.runMutation(internal.users.users.updateOrCreateUserByTokenId, {
-            data: {
-              tokenId: event.data.id,
-              email: event.data.email_addresses[0]?.email_address,
-              firstName: event.data.first_name || undefined,
-              lastName: event.data.last_name || undefined,
-              phone: event.data.phone_numbers[0]?.phone_number
-            },
-            eventType: event.type
-          })
+          await ctx.runMutation(
+            internal.users.users.updateOrCreateUserByTokenId,
+            {
+              data: {
+                tokenId: event.data.id,
+                email: event.data.email_addresses[0]?.email_address,
+                firstName: event.data.first_name || undefined,
+                lastName: event.data.last_name || undefined,
+                phone: event.data.phone_numbers[0]?.phone_number
+              },
+              eventType: event.type
+            }
+          )
 
           break
 

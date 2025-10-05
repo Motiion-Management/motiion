@@ -16,15 +16,17 @@ const experienceSchema = z.object({
   productionCompany: z.string().optional(),
   tourArtist: z.string().optional(),
   venue: z.string().optional(),
-  subtype: z.enum([
-    'festival',
-    'tour',
-    'concert',
-    'corporate',
-    'award-show',
-    'theater',
-    'other'
-  ]).optional(),
+  subtype: z
+    .enum([
+      'festival',
+      'tour',
+      'concert',
+      'corporate',
+      'award-show',
+      'theater',
+      'other'
+    ])
+    .optional(),
   mainTalent: z.array(z.string()).optional(),
   choreographers: z.array(z.string()).optional(),
   associateChoreographers: z.array(z.string()).optional(),
@@ -64,7 +66,7 @@ export const generateUploadUrlDev = zm({
   handler: async (ctx): Promise<string> => {
     return await ctx.storage.generateUploadUrl()
   },
-  returns: z.string(),
+  returns: z.string()
 })
 
 // Dev-only: parse a resume document by storage id without touching user data
@@ -79,5 +81,5 @@ export const parseResumeDocumentDev = za({
       }
     )
   },
-  returns: parsedResumeSchema,
+  returns: parsedResumeSchema
 })

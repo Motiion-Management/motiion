@@ -34,7 +34,10 @@ export const getMyActiveProfile = authQuery({
       }
     }
 
-    if (ctx.user.activeProfileType === 'choreographer' && ctx.user.activeChoreographerId) {
+    if (
+      ctx.user.activeProfileType === 'choreographer' &&
+      ctx.user.activeChoreographerId
+    ) {
       const choreoProfile = await ctx.db.get(ctx.user.activeChoreographerId)
       if (choreoProfile) {
         return {

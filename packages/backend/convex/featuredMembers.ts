@@ -63,7 +63,9 @@ export const getFeaturedChoreographers = zq({
     }
     return Promise.all(
       users.filter(notEmpty).map(async (user) => {
-        const headshots: any = Array.isArray(user.headshots) ? user.headshots.filter(notEmpty) : []
+        const headshots: any = Array.isArray(user.headshots)
+          ? user.headshots.filter(notEmpty)
+          : []
         return {
           userId: user._id,
           label: user.displayName || user.fullName || '',
@@ -87,7 +89,9 @@ export const getFeaturedTalent = zq({
     }
     return Promise.all(
       users.filter(notEmpty).map(async (user) => {
-        const headshots: any = Array.isArray(user.headshots) ? user.headshots.filter(notEmpty) : []
+        const headshots: any = Array.isArray(user.headshots)
+          ? user.headshots.filter(notEmpty)
+          : []
         return {
           userId: user._id,
           label: user.displayName || user.fullName || '',

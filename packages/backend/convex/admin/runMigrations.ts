@@ -11,5 +11,5 @@ export const runMigrateDates: any = za({
   handler: async (ctx) => {
     // Cast to any to avoid type-cycle inference issues from generated API
     return await ctx.runMutation((internal as any).migrations.migrateDates, {})
-  },
+  }
 })

@@ -96,7 +96,11 @@ function NativeTabsLayout() {
         <Label hidden />
       </NativeTabs.Trigger>
       <NativeTabs.Trigger name="discover">
-        <NativeTabIcon sf="magnifyingglass" drawable="custom_search_drawable" selectedColor="white" />
+        <NativeTabIcon
+          sf="magnifyingglass"
+          drawable="custom_search_drawable"
+          selectedColor="white"
+        />
         <Label hidden />
       </NativeTabs.Trigger>
       <NativeTabs.Trigger name="activity">

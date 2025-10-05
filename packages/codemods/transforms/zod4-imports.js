@@ -35,4 +35,3 @@ function transform(_filePath, source) {
 module.exports = transform
 module.exports.default = transform
 module.exports.transform = transform
-

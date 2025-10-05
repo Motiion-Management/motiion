@@ -21,10 +21,16 @@ export async function augmentResume(
   const { resume } = user
 
   const uploads = await Promise.all(
-    (resume.uploads || []).map(async (resumeUpload: { storageId: Id<'_storage'>; title?: string; uploadDate: string }) => ({
-      url: await ctx.storage.getUrl(resumeUpload.storageId),
-      ...resumeUpload
-    }))
+    (resume.uploads || []).map(
+      async (resumeUpload: {
+        storageId: Id<'_storage'>
+        title?: string
+        uploadDate: string
+      }) => ({
+        url: await ctx.storage.getUrl(resumeUpload.storageId),
+        ...resumeUpload
+      })
+    )
   )
 
   const publicExperiences = await Promise.all(
@@ -62,12 +68,18 @@ export const getMyResume = authQuery({
     // PROFILE-FIRST: Get resume from active profile if it exists
     let userWithResume = ctx.user
 
-    if (ctx.user.activeProfileType && (ctx.user.activeDancerId || ctx.user.activeChoreographerId)) {
+    if (
+      ctx.user.activeProfileType &&
+      (ctx.user.activeDancerId || ctx.user.activeChoreographerId)
+    ) {
       let profile = null
 
       if (ctx.user.activeProfileType === 'dancer' && ctx.user.activeDancerId) {
         profile = await ctx.db.get(ctx.user.activeDancerId)
-      } else if (ctx.user.activeProfileType === 'choreographer' && ctx.user.activeChoreographerId) {
+      } else if (
+        ctx.user.activeProfileType === 'choreographer' &&
+        ctx.user.activeChoreographerId
+      ) {
         profile = await ctx.db.get(ctx.user.activeChoreographerId)
       }
 
@@ -86,12 +98,18 @@ export const getMyExperienceCounts = authQuery({
     // PROFILE-FIRST: Get resume from active profile if it exists
     let resume = ctx.user?.resume
 
-    if (ctx.user?.activeProfileType && (ctx.user?.activeDancerId || ctx.user?.activeChoreographerId)) {
+    if (
+      ctx.user?.activeProfileType &&
+      (ctx.user?.activeDancerId || ctx.user?.activeChoreographerId)
+    ) {
       let profile = null
 
       if (ctx.user.activeProfileType === 'dancer' && ctx.user.activeDancerId) {
         profile = await ctx.db.get(ctx.user.activeDancerId)
-      } else if (ctx.user.activeProfileType === 'choreographer' && ctx.user.activeChoreographerId) {
+      } else if (
+        ctx.user.activeProfileType === 'choreographer' &&
+        ctx.user.activeChoreographerId
+      ) {
         profile = await ctx.db.get(ctx.user.activeChoreographerId)
       }
 
@@ -102,7 +120,9 @@ export const getMyExperienceCounts = authQuery({
 
     const exp: any = resume?.projects
     // TODO: Type correctly when getAll returns proper types
-    const experiences = exp ? (await getAll(ctx.db, exp)) as Doc<'projects'>[] : []
+    const experiences = exp
+      ? ((await getAll(ctx.db, exp)) as Doc<'projects'>[])
+      : []
 
     return EXPERIENCE_TYPES.map((type) => ({
       count: experiences.filter((e) => e?.type === type).length,

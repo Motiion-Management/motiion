@@ -24,7 +24,7 @@ export const migrateDates = zim({
   handler: async (ctx) => {
     const result = {
       projects: { scanned: 0, patched: 0 },
-      events: { scanned: 0, patched: 0 },
+      events: { scanned: 0, patched: 0 }
     }
 
     // Migrate projects.startDate/endDate
@@ -34,8 +34,10 @@ export const migrateDates = zim({
       const patch: any = {}
       const sd = parseDateToTimestamp((p as any).startDate)
       const ed = parseDateToTimestamp((p as any).endDate)
-      if (sd !== undefined && typeof (p as any).startDate !== 'number') patch.startDate = sd
-      if (ed !== undefined && typeof (p as any).endDate !== 'number') patch.endDate = ed
+      if (sd !== undefined && typeof (p as any).startDate !== 'number')
+        patch.startDate = sd
+      if (ed !== undefined && typeof (p as any).endDate !== 'number')
+        patch.endDate = ed
       if (Object.keys(patch).length > 0) {
         await ctx.db.patch(p._id, patch)
         result.projects.patched++
@@ -46,7 +48,7 @@ export const migrateDates = zim({
     // When we are ready to migrate events, adjust schema to z.date() and re-enable the logic below.
 
     return result
-  },
+  }
 })
 
 // Public action wrapper lives in admin/runMigrations.ts to avoid type cycles

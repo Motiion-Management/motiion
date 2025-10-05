@@ -31,8 +31,7 @@ export const parseResumeDocument = zia({
     storageId: zid('_storage'),
     retryCount: z.number().optional()
   },
-  handler:
-  async (ctx, args): Promise<ParsedResumeData> => {
+  handler: async (ctx, args): Promise<ParsedResumeData> => {
     const retryCount = args.retryCount || 0
     const maxRetries = 2
 
@@ -92,7 +91,7 @@ export const parseResumeDocument = zia({
       )
     }
   },
-  returns: resumeSchema,
+  returns: resumeSchema
 })
 
 // Helper function to determine if file is a Word document

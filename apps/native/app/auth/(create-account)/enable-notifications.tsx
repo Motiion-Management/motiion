@@ -39,10 +39,9 @@ export default function EnableNotificationsScreen() {
 
       while (Date.now() - startTime < maxWaitMs) {
         try {
-          const exists = await convex.query(
-            api.users.users.userExistsByTokenId,
-            { tokenId: user.id }
-          );
+          const exists = await convex.query(api.users.users.userExistsByTokenId, {
+            tokenId: user.id,
+          });
 
           if (exists) {
             const elapsed = Date.now() - startTime;
@@ -119,7 +118,10 @@ export default function EnableNotificationsScreen() {
       }
     } catch (permissionError: any) {
       // Non-fatal: log and continue
-      console.warn('⚠️ Error during notification setup:', permissionError.message || permissionError);
+      console.warn(
+        '⚠️ Error during notification setup:',
+        permissionError.message || permissionError
+      );
     }
 
     // Wait for user to exist in Convex (usually instant if user read the screen)
@@ -159,7 +161,7 @@ export default function EnableNotificationsScreen() {
       canProgress={!isProcessing}
       bottomActionSlot={
         <View className="flex-1 gap-4">
-          {error && <Text className="text-sm text-text-error text-center">{error}</Text>}
+          {error && <Text className="text-center text-sm text-text-error">{error}</Text>}
           <Button size="lg" onPress={onEnable} disabled={isProcessing}>
             <Text className="">Enable Notifications</Text>
           </Button>

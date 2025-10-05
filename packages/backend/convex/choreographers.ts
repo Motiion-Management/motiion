@@ -3,7 +3,12 @@ import { ConvexError } from 'convex/values'
 import { z } from 'zod'
 import { zid } from 'zodvex'
 import { authMutation, authQuery, zim, zq, zm } from './util'
-import { Choreographers, zCreateChoreographerInput, zChoreographers, ChoreographerDoc } from './schemas/choreographers'
+import {
+  Choreographers,
+  zCreateChoreographerInput,
+  zChoreographers,
+  ChoreographerDoc
+} from './schemas/choreographers'
 import { zodDoc, zodDocOrNull } from 'zodvex'
 
 const zChoreographerDoc = zodDoc('choreographers', zChoreographers)
@@ -16,7 +21,10 @@ export const getMyChoreographerProfile = authQuery({
     if (!ctx.user) return null
 
     // Use discriminate value from users table for efficient lookup
-    if (ctx.user.activeProfileType === 'choreographer' && ctx.user.activeChoreographerId) {
+    if (
+      ctx.user.activeProfileType === 'choreographer' &&
+      ctx.user.activeChoreographerId
+    ) {
       return await ctx.db.get(ctx.user.activeChoreographerId)
     }
 

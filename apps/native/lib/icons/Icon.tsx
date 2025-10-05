@@ -38,5 +38,7 @@ export interface IconProps {
 
 export function Icon({ name, size = 24, tintColor, className, strokeWidth, ...props }: IconProps) {
   const SymbolViewAny = SymbolView as any;
-  return <SymbolViewAny name={name} size={size} tintColor={tintColor} className={className} {...props} />;
+  return (
+    <SymbolViewAny name={name} size={size} tintColor={tintColor} className={className} {...props} />
+  );
 }

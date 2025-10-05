@@ -15,7 +15,10 @@ const fileMetadataSchema = z.object({
 // Query to get file metadata from the _storage system table
 export const getFileMetadata = ziq({
   args: { storageId: zid('_storage') },
-  handler: async (ctx, args): Promise<{
+  handler: async (
+    ctx,
+    args
+  ): Promise<{
     _id: Id<'_storage'>
     _creationTime: number
     contentType?: string
@@ -24,5 +27,5 @@ export const getFileMetadata = ziq({
   } | null> => {
     return await ctx.db.system.get(args.storageId)
   },
-  returns: z.union([fileMetadataSchema, z.null()]),
+  returns: z.union([fileMetadataSchema, z.null()])
 })

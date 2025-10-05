@@ -33,7 +33,12 @@ export const getMyHeadshotsMetadata = zq({
     }
 
     // Return headshot metadata without URLs, including position (defaulting to index)
-    type Headshot = { storageId: Id<'_storage'>; title?: string; uploadDate: string; position?: number }
+    type Headshot = {
+      storageId: Id<'_storage'>
+      title?: string
+      uploadDate: string
+      position?: number
+    }
     return user.headshots.map((headshot: Headshot, index: number) => ({
       id: `headshot-${index}`,
       storageId: headshot.storageId,
@@ -68,11 +73,11 @@ export const getHeadshotUrl = zq({
 export const getHeadshotUrls = zq({
   args: { storageIds: z.array(zid('_storage')) },
   returns: z.array(
-      z.object({
-        storageId: zid('_storage'),
-        url: z.union([z.string(), z.null()])
-      })
-    ),
+    z.object({
+      storageId: zid('_storage'),
+      url: z.union([z.string(), z.null()])
+    })
+  ),
   handler: async (ctx, { storageIds }) => {
     const urls = await Promise.all(
       storageIds.map(async (storageId) => {

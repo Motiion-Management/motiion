@@ -26,8 +26,7 @@ export const parseResumeText = zia({
     text: z.string(),
     retryCount: z.number().optional()
   },
-  handler:
-  async (ctx, args): Promise<ParsedResumeData> => {
+  handler: async (ctx, args): Promise<ParsedResumeData> => {
     const retryCount = args.retryCount || 0
     const maxRetries = 2
 
@@ -83,5 +82,5 @@ export const parseResumeText = zia({
       )
     }
   },
-  returns: resumeSchema,
+  returns: resumeSchema
 })

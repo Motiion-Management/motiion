@@ -4,7 +4,8 @@
 // - Keeps other specifiers like `zid` importing from zodV4.
 // - If only zodToConvex(*) were imported, rewrites the module path entirely.
 
-const IMPORT_RX = /import\s+([^;]+?)\s+from\s+(["'])convex-helpers\/server\/zodV4\2/g
+const IMPORT_RX =
+  /import\s+([^;]+?)\s+from\s+(["'])convex-helpers\/server\/zodV4\2/g
 
 function splitSpecifiers(spec) {
   // Handles: { a, b as c } | a, { b } | * as ns | Default
@@ -32,7 +33,7 @@ function classify(specs) {
 }
 
 module.exports = function transform(_file, source) {
-  if (!source.includes("convex-helpers/server/zodV4")) return null
+  if (!source.includes('convex-helpers/server/zodV4')) return null
 
   let mutated = false
   const updates = []
@@ -66,4 +67,3 @@ module.exports = function transform(_file, source) {
   }
   return out
 }
-

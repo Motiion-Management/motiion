@@ -13,14 +13,20 @@ export const addMyProject = authMutation({
     let profileInfo = {}
     let profile = null
 
-    if (ctx.user.activeProfileType && (ctx.user.activeDancerId || ctx.user.activeChoreographerId)) {
+    if (
+      ctx.user.activeProfileType &&
+      (ctx.user.activeDancerId || ctx.user.activeChoreographerId)
+    ) {
       if (ctx.user.activeProfileType === 'dancer' && ctx.user.activeDancerId) {
         profile = await ctx.db.get(ctx.user.activeDancerId)
         profileInfo = {
           profileType: 'dancer' as const,
           profileId: ctx.user.activeDancerId
         }
-      } else if (ctx.user.activeProfileType === 'choreographer' && ctx.user.activeChoreographerId) {
+      } else if (
+        ctx.user.activeProfileType === 'choreographer' &&
+        ctx.user.activeChoreographerId
+      ) {
         profile = await ctx.db.get(ctx.user.activeChoreographerId)
         profileInfo = {
           profileType: 'choreographer' as const,
@@ -73,10 +79,16 @@ export const removeMyProject = authMutation({
 
     // Get profile if active
     let profile = null
-    if (ctx.user.activeProfileType && (ctx.user.activeDancerId || ctx.user.activeChoreographerId)) {
+    if (
+      ctx.user.activeProfileType &&
+      (ctx.user.activeDancerId || ctx.user.activeChoreographerId)
+    ) {
       if (ctx.user.activeProfileType === 'dancer' && ctx.user.activeDancerId) {
         profile = await ctx.db.get(ctx.user.activeDancerId)
-      } else if (ctx.user.activeProfileType === 'choreographer' && ctx.user.activeChoreographerId) {
+      } else if (
+        ctx.user.activeProfileType === 'choreographer' &&
+        ctx.user.activeChoreographerId
+      ) {
         profile = await ctx.db.get(ctx.user.activeChoreographerId)
       }
     }
@@ -88,7 +100,8 @@ export const removeMyProject = authMutation({
       const updatedResume = {
         ...resume,
         projects: projects.filter(
-          (id: import('../_generated/dataModel').Id<'projects'>) => id !== args.projectId
+          (id: import('../_generated/dataModel').Id<'projects'>) =>
+            id !== args.projectId
         )
       }
       await ctx.db.patch(profile._id as any, {
@@ -98,7 +111,8 @@ export const removeMyProject = authMutation({
       const updatedResume = {
         ...ctx.user.resume,
         projects: (ctx.user.resume?.projects || []).filter(
-          (id: import('../_generated/dataModel').Id<'projects'>) => id !== args.projectId
+          (id: import('../_generated/dataModel').Id<'projects'>) =>
+            id !== args.projectId
         )
       }
       await ctx.db.patch(ctx.user._id, {
@@ -131,12 +145,7 @@ export const getMyProjects = authQuery({
 
 export const getMyProjectsByType = authQuery({
   args: {
-    type: z.enum([
-      'tv-film',
-      'music-video',
-      'live-performance',
-      'commercial'
-    ])
+    type: z.enum(['tv-film', 'music-video', 'live-performance', 'commercial'])
   },
   returns: z.array(Projects.zDoc),
   handler: async (ctx, args) => {
@@ -178,12 +187,7 @@ export const getUserPublicProjects = zq({
 export const getUserPublicProjectsByType = zq({
   args: {
     userId: zid('users'),
-    type: z.enum([
-      'tv-film',
-      'music-video',
-      'live-performance',
-      'commercial'
-    ])
+    type: z.enum(['tv-film', 'music-video', 'live-performance', 'commercial'])
   },
   returns: z.array(Projects.zDoc),
   handler: async (ctx, args) => {

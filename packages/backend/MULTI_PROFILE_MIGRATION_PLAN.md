@@ -20,6 +20,7 @@ npx convex run migrations/autoMigrateAndCleanup:runMigration
 ```
 
 ### How It Works:
+
 1. **Auto-healing `getMyUser`**: Automatically merges profile data for backward compatibility
 2. **One-time migration script**: Migrates all existing users to profile tables
 3. **Dual-write protection**: Updates write to both locations during transition
@@ -30,11 +31,13 @@ npx convex run migrations/autoMigrateAndCleanup:runMigration
 ### Completed Work (Phase 0, 1 & Simplified 2):
 
 #### Phase 0: Schema Organization ✅
+
 - Renamed `validators/` folder to `schemas/` across entire codebase
 - Updated 47 files with new import paths
 - Fixed all TypeScript compilation issues
 
 #### Phase 1: Schema Foundation ✅
+
 - Created `schemas/dancers.ts` with complete dancer profile schema
 - Created `schemas/choreographers.ts` with choreographer-specific fields
 - Updated `schema.ts` with new tables and indexes:
@@ -49,6 +52,7 @@ npx convex run migrations/autoMigrateAndCleanup:runMigration
   - `switchProfile` - Switch between profile types
 
 #### Phase 2: Migration Infrastructure ✅
+
 - Created `migrations/createDancerProfiles.ts` with:
   - `getDancersToMigrate` - Query to find users needing migration
   - `migrateDancerUser` - Mutation to migrate individual users
@@ -70,6 +74,7 @@ npx convex run migrations/autoMigrateAndCleanup:runMigration
   - `testMigration` - Runs test migration with small batch
 
 ### Key Design Decisions Made:
+
 1. **Separate tables** for dancers and choreographers (not single profiles table)
    - Better performance at scale (10,000s dancers vs 100s choreographers)
    - Clean schema evolution for type-specific features
@@ -93,17 +98,20 @@ npx convex run migrations/autoMigrateAndCleanup:runMigration
 ### ✅ SIMPLIFIED Migration Approach (COMPLETE)
 
 **Pivoted to simpler approach due to small data size:**
+
 - Only 1 dev user, disposable prod users, 0 choreographers
 - Removed complex migration infrastructure
 - Implemented auto-migration approach instead
 
 **What was implemented:**
+
 - ✅ Modified `getMyUser` to auto-merge profile data for backward compatibility
 - ✅ Created simple `autoMigrateAndCleanup.ts` for one-time migration
 - ✅ Kept dual-write implementation for data consistency
 - ✅ Onboarding flow creates profiles in new tables
 
 **To run the migration:**
+
 ```bash
 # Run the one-time migration (dev environment)
 npx convex run migrations/autoMigrateAndCleanup:runMigration
@@ -114,7 +122,9 @@ npx convex run migrations/autoMigrateAndCleanup:runMigration
 ### Phase 3: Update Core Functions (Week 2)
 
 #### 3.1 Update User Query Functions
+
 **File: `users.ts`**
+
 - `getMyUser` modification:
   ```typescript
   // Fetch user data
@@ -123,14 +133,18 @@ npx convex run migrations/autoMigrateAndCleanup:runMigration
   ```
 
 #### 3.2 Update Onboarding Flow
+
 **File: `onboarding.ts`**
+
 - When user selects profileType:
   - Create profile in appropriate table (dancers/choreographers)
   - Set user's activeProfileType, activeDancerId/activeChoreographerId
   - Mark profile as isPrimary = true
 
 #### 3.3 Update Profile-Specific Functions
+
 These need to check both old (users table) and new (profile tables) locations:
+
 - `users/headshots.ts` - Check for profile first, fall back to user
 - `users/resume.ts` - Similar dual-location checking
 - `users/representation.ts` - Dual location support
@@ -140,7 +154,9 @@ These need to check both old (users table) and new (profile tables) locations:
 ### Phase 4: Frontend Integration (Week 2-3)
 
 #### 4.1 Create Profile Context
+
 **File: `apps/native/contexts/ProfileContext.tsx`**
+
 ```typescript
 // Context to manage active profile
 // Provides:
@@ -151,11 +167,13 @@ These need to check both old (users table) and new (profile tables) locations:
 ```
 
 #### 4.2 Update Existing Queries
+
 - Audit all `api.users.*` calls
 - Update to use profile-aware queries where needed
 - Add profile type to navigation state
 
 #### 4.3 Profile Switching UI
+
 - Add profile selector in settings
 - Show "Add Another Profile" after first profile complete
 - Update navigation to show profile-specific options
@@ -163,12 +181,15 @@ These need to check both old (users table) and new (profile tables) locations:
 ### Phase 5: Cleanup & Optimization (Week 3-4)
 
 #### 5.1 Data Verification
+
 - Run verification queries to ensure all data migrated correctly
 - Compare old vs new data for consistency
 - Fix any missing/incorrect migrations
 
 #### 5.2 Remove Old Fields (ONLY AFTER VERIFICATION)
+
 **File: `schemas/users.ts`**
+
 - Remove all profile-specific fields:
   - headshots, attributes, sizing, resume, links
   - sagAftraId, companyName, workLocation
@@ -176,11 +197,13 @@ These need to check both old (users table) and new (profile tables) locations:
   - Keep only account-level data
 
 #### 5.3 Remove Dual Write Code
+
 - Remove backward compatibility from all functions
 - Update all queries to only use new profile tables
 - Clean up migration functions
 
 #### 5.4 Performance Optimization
+
 - Add missing indexes based on query patterns
 - Optimize search patterns
 - Add caching for frequently accessed profiles
@@ -188,19 +211,23 @@ These need to check both old (users table) and new (profile tables) locations:
 ### Phase 6: Future Features Foundation
 
 #### 6.1 Enhanced Profile Features
+
 **Dancers:**
+
 - Availability calendar
 - Dance style specializations
 - Performance videos section
 - Audition history
 
 **Choreographers:**
+
 - Workshop scheduling
 - Rate cards
 - Verified badge system
 - Portfolio/notable works gallery
 
 #### 6.2 Multi-Profile Features
+
 - Quick profile switcher
 - Profile comparison view
 - Cross-profile data sharing (e.g., headshots)
@@ -211,12 +238,14 @@ These need to check both old (users table) and new (profile tables) locations:
 ## Migration Rollback Plan
 
 ### Checkpoints:
+
 1. **After Phase 2.1**: Verify migration creates valid profiles
 2. **After Phase 2.3**: Verify dual writes work correctly
 3. **After Phase 3**: Verify all functions work with new structure
 4. **Before Phase 5.2**: Final verification before removing old fields
 
 ### Rollback Strategy:
+
 - Phase 1-3: Can rollback by simply not using new tables
 - Phase 4: Feature flag to switch between old/new UI
 - Phase 5: Keep backup of old schema for emergency restore
@@ -226,6 +255,7 @@ These need to check both old (users table) and new (profile tables) locations:
 ## Testing Checklist
 
 ### Unit Tests Needed:
+
 - [ ] Profile creation for new users
 - [ ] Profile migration for existing users
 - [ ] Profile switching logic
@@ -233,12 +263,14 @@ These need to check both old (users table) and new (profile tables) locations:
 - [ ] Search pattern generation
 
 ### Integration Tests:
+
 - [ ] Onboarding flow with profile creation
 - [ ] Profile updates propagate correctly
 - [ ] Projects/training link to correct profile
 - [ ] Search works across profile types
 
 ### Manual Testing:
+
 - [ ] Create dancer profile
 - [ ] Create choreographer profile
 - [ ] Switch between profiles
@@ -250,12 +282,14 @@ These need to check both old (users table) and new (profile tables) locations:
 ## Success Metrics
 
 ### Technical:
+
 - Zero data loss during migration
 - Query performance improved by 30%+ for choreographer queries
 - No increase in user-facing latency
 - All TypeScript types properly defined
 
 ### Product:
+
 - Users can have multiple profiles
 - Profile switching works seamlessly
 - Profile-specific features enabled
@@ -286,12 +320,14 @@ These need to check both old (users table) and new (profile tables) locations:
 ## Important Notes:
 
 ### DO NOT:
+
 - Remove old fields until Phase 5
 - Skip the dual write period
 - Migrate all users at once
 - Update frontend before backend is stable
 
 ### DO:
+
 - Test each phase thoroughly
 - Keep old fields during migration
 - Use feature flags for safety
@@ -299,6 +335,7 @@ These need to check both old (users table) and new (profile tables) locations:
 - Document any issues found
 
 ### Current File Structure:
+
 ```
 convex/
 ├── schemas/

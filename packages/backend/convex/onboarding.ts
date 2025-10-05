@@ -35,7 +35,11 @@ export const completeOnboarding: RegisteredMutation<
     }
 
     // Create profile in new table if it doesn't exist
-    if (user.profileType && !user.activeDancerId && !user.activeChoreographerId) {
+    if (
+      user.profileType &&
+      !user.activeDancerId &&
+      !user.activeChoreographerId
+    ) {
       if (user.profileType === 'dancer') {
         // Check if profile already exists
         const existingProfile = await ctx.db
