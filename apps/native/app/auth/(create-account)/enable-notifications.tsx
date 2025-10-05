@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { View, Platform } from 'react-native';
 import { Image } from 'expo-image';
 import { router } from 'expo-router';
@@ -21,6 +21,7 @@ export default function EnableNotificationsScreen() {
   const [isProcessing, setIsProcessing] = useState(false);
   const [userReadyState, setUserReadyState] = useState<UserReadyState>('polling');
   const [error, setError] = useState<string | null>(null);
+  const userReadyStateRef = useRef<UserReadyState>('polling');
 
   const { user } = useUser();
   const convex = useConvex();
@@ -46,6 +47,7 @@ export default function EnableNotificationsScreen() {
           if (exists) {
             const elapsed = Date.now() - startTime;
             console.log(`✅ User ready after ${elapsed}ms`);
+            userReadyStateRef.current = 'ready';
             setUserReadyState('ready');
             return;
           }
@@ -57,6 +59,7 @@ export default function EnableNotificationsScreen() {
       }
 
       console.error('⏱️ User creation timeout after 5s');
+      userReadyStateRef.current = 'timeout';
       setUserReadyState('timeout');
     };
 
@@ -66,16 +69,16 @@ export default function EnableNotificationsScreen() {
   // Helper to wait for user to be ready
   async function waitForUserReady(): Promise<boolean> {
     // If already ready, return immediately
-    if (userReadyState === 'ready') return true;
-    if (userReadyState === 'timeout') return false;
+    if (userReadyStateRef.current === 'ready') return true;
+    if (userReadyStateRef.current === 'timeout') return false;
 
     // Wait for polling to complete
     return new Promise((resolve) => {
       const checkInterval = setInterval(() => {
-        if (userReadyState === 'ready') {
+        if (userReadyStateRef.current === 'ready') {
           clearInterval(checkInterval);
           resolve(true);
-        } else if (userReadyState === 'timeout') {
+        } else if (userReadyStateRef.current === 'timeout') {
           clearInterval(checkInterval);
           resolve(false);
         }

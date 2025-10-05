@@ -23,7 +23,7 @@ type FormSectionProps = ViewProps & {
     title: string;
     titleClassName?: string;
   };
-  materialIconProps?: IconProps<any>;
+  materialIconProps?: IconProps;
 };
 
 const FormSection = React.forwardRef<any, FormSectionProps>(
