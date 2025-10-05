@@ -151,7 +151,7 @@ function SelectItem({
       {...props}>
       <View className="native:left-3.5 native:pt-px absolute left-2 flex h-3.5 w-3.5 items-center justify-center">
         <SelectPrimitive.ItemIndicator>
-          <Check size={16} strokeWidth={3} className="text-popover-foreground" />
+          <Check size={16} weight="bold" className="text-popover-foreground" />
         </SelectPrimitive.ItemIndicator>
       </View>
       <SelectPrimitive.ItemText className="native:text-lg native:text-base text-sm text-popover-foreground web:group-focus:text-accent-foreground" />

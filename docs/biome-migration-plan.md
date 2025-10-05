@@ -9,6 +9,7 @@ This document outlines a pragmatic path to migrate the monorepo from ESLint/Pret
 - Sidesteps current ESLint parser/globby resolution issues.
 
 Trade-offs:
+
 - No ESLint plugin ecosystem (e.g., `eslint-config-next`, `react-hooks`).
 - No native Tailwind class sorting like `prettier-plugin-tailwindcss`.
 - Not a TypeScript type-checker (keep `tsc --noEmit`).
@@ -23,6 +24,7 @@ Trade-offs:
 ## Configuration
 
 Root `biome.json` (proposed):
+
 - Files: `"**/*.{js,jsx,ts,tsx,json,md}"`.
 - Ignore: `**/node_modules/**`, `**/.next/**`, `**/dist/**`, `**/build/**`, `**/.turbo/**`.
 - Formatter style to mirror current Prettier:
@@ -35,28 +37,31 @@ Root `biome.json` (proposed):
 ## Scripts
 
 Root `package.json` (proposed additions):
+
 - `"lint": "turbo run lint"` (keep Turbo orchestration)
 - `"format": "turbo run format"`
 - Add devDep: `"@biomejs/biome"`.
 
 Workspace scripts (proposed):
+
 - `"lint": "biome check ."`
 - `"lint:fix": "biome check --write ."`
 - `"format": "biome format --write ."`
 - Keep `"type-check": "tsc --noEmit"` where applicable.
 
 Special cases:
+
 - `apps/web` (Next.js): optionally add `"lint:next": "next lint"` to keep Next-specific rules.
 - Tailwind sorting: if desired, add separate Prettier step with `prettier-plugin-tailwindcss` (e.g., `pnpm run tailwind:sort`) or accept losing class sorting.
 
 ## Rollout Steps
 
-1) Add `@biomejs/biome` at root and create `biome.json`.
-2) Update scripts across workspaces to use Biome for lint/format.
-3) Keep `tsc --noEmit` type-check scripts.
-4) Run `pnpm lint` and relax rules or apply fixes until green.
-5) Optionally keep `next lint` in `apps/web` and Tailwind sorting step.
-6) Remove unused ESLint + Prettier configs once stable (can be done in a follow-up PR).
+1. Add `@biomejs/biome` at root and create `biome.json`.
+2. Update scripts across workspaces to use Biome for lint/format.
+3. Keep `tsc --noEmit` type-check scripts.
+4. Run `pnpm lint` and relax rules or apply fixes until green.
+5. Optionally keep `next lint` in `apps/web` and Tailwind sorting step.
+6. Remove unused ESLint + Prettier configs once stable (can be done in a follow-up PR).
 
 ## Open Questions
 
@@ -66,4 +71,3 @@ Special cases:
 ## Revert Path
 
 This migration is reversible by restoring ESLint/Prettier scripts/configs and removing Biome. Keeping the ESLint configs in git history or a separate branch makes reverting straightforward.
-

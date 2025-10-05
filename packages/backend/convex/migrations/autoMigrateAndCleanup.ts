@@ -1,7 +1,6 @@
-import { internalAction, internalMutation } from '../_generated/server'
-import { zInternalAction, zInternalMutation } from 'zodvex'
 import { z } from 'zod'
 import { internal } from '../_generated/api'
+import { zim, zia } from '../util'
 
 // Helper to verify data was copied correctly
 function verifyFieldsMatch(
@@ -10,15 +9,21 @@ function verifyFieldsMatch(
   fieldName: string
 ): boolean {
   // Both undefined/null is OK
-  if ((userValue === undefined || userValue === null) &&
-      (profileValue === undefined || profileValue === null)) {
+  if (
+    (userValue === undefined || userValue === null) &&
+    (profileValue === undefined || profileValue === null)
+  ) {
     return true
   }
 
   // If one is defined and the other isn't, that's a mismatch
-  if ((userValue === undefined || userValue === null) !==
-      (profileValue === undefined || profileValue === null)) {
-    console.warn(`⚠️ Field ${fieldName} mismatch: user has ${userValue}, profile has ${profileValue}`)
+  if (
+    (userValue === undefined || userValue === null) !==
+    (profileValue === undefined || profileValue === null)
+  ) {
+    console.warn(
+      `⚠️ Field ${fieldName} mismatch: user has ${userValue}, profile has ${profileValue}`
+    )
     return false
   }
 
@@ -27,7 +32,9 @@ function verifyFieldsMatch(
   const profileStr = JSON.stringify(profileValue)
 
   if (userStr !== profileStr) {
-    console.warn(`⚠️ Field ${fieldName} mismatch: user has ${userStr}, profile has ${profileStr}`)
+    console.warn(
+      `⚠️ Field ${fieldName} mismatch: user has ${userStr}, profile has ${profileStr}`
+    )
     return false
   }
 
@@ -35,10 +42,9 @@ function verifyFieldsMatch(
 }
 
 // Enhanced migration with verification and cleanup
-export const migrateAllUsers = zInternalMutation(
-  internalMutation,
-  {},
-  async (ctx) => {
+export const migrateAllUsers = zim({
+  args: {},
+  handler: async (ctx) => {
     const results = {
       migrated: [] as string[],
       alreadyMigrated: [] as string[],
@@ -51,9 +57,7 @@ export const migrateAllUsers = zInternalMutation(
     // Get ALL users with profileType
     const users = await ctx.db
       .query('users')
-      .filter((q) =>
-        q.neq(q.field('profileType'), undefined)
-      )
+      .filter((q) => q.neq(q.field('profileType'), undefined))
       .collect()
 
     console.log(`📊 Found ${users.length} users with profileType`)
@@ -68,7 +72,8 @@ export const migrateAllUsers = zInternalMutation(
 
       try {
         // Check if already migrated
-        const hasActiveProfile = user.activeDancerId || user.activeChoreographerId
+        const hasActiveProfile =
+          user.activeDancerId || user.activeChoreographerId
 
         if (hasActiveProfile) {
           results.alreadyMigrated.push(user._id)
@@ -90,13 +95,52 @@ export const migrateAllUsers = zInternalMutation(
 
             if (profile) {
               // Verify data matches
-              const fieldsToVerify = profileType === 'dancer'
-                ? ['headshots', 'representation', 'representationStatus', 'attributes', 'sizing', 'resume', 'links', 'sagAftraId', 'training', 'workLocation', 'location', 'profileTipDismissed', 'resumeImportedFields', 'resumeImportVersion', 'resumeImportedAt', 'searchPattern']
-                : ['headshots', 'representation', 'representationStatus', 'resume', 'links', 'companyName', 'workLocation', 'location', 'databaseUse', 'profileTipDismissed', 'resumeImportedFields', 'resumeImportVersion', 'resumeImportedAt', 'searchPattern']
+              const fieldsToVerify =
+                profileType === 'dancer'
+                  ? [
+                      'headshots',
+                      'representation',
+                      'representationStatus',
+                      'attributes',
+                      'sizing',
+                      'resume',
+                      'links',
+                      'sagAftraId',
+                      'training',
+                      'workLocation',
+                      'location',
+                      'profileTipDismissed',
+                      'resumeImportedFields',
+                      'resumeImportVersion',
+                      'resumeImportedAt',
+                      'searchPattern'
+                    ]
+                  : [
+                      'headshots',
+                      'representation',
+                      'representationStatus',
+                      'resume',
+                      'links',
+                      'companyName',
+                      'workLocation',
+                      'location',
+                      'databaseUse',
+                      'profileTipDismissed',
+                      'resumeImportedFields',
+                      'resumeImportVersion',
+                      'resumeImportedAt',
+                      'searchPattern'
+                    ]
 
               let allMatch = true
               for (const field of fieldsToVerify) {
-                if (!verifyFieldsMatch((user as any)[field], (profile as any)[field], field)) {
+                if (
+                  !verifyFieldsMatch(
+                    (user as any)[field],
+                    (profile as any)[field],
+                    field
+                  )
+                ) {
                   allMatch = false
                 }
               }
@@ -112,7 +156,9 @@ export const migrateAllUsers = zInternalMutation(
 
                 await ctx.db.patch(user._id, cleanupPatch)
                 results.cleaned.push(user._id)
-                console.log(`🧹 Cleaned up ${profileType} profile data for: ${user.email}`)
+                console.log(
+                  `🧹 Cleaned up ${profileType} profile data for: ${user.email}`
+                )
               } else {
                 console.error(`❌ Verification failed for user ${user._id}`)
                 results.errors.push({
@@ -167,10 +213,33 @@ export const migrateAllUsers = zInternalMutation(
             throw new Error('Profile creation failed')
           }
 
-          const dancerFields = ['headshots', 'representation', 'representationStatus', 'attributes', 'sizing', 'resume', 'links', 'sagAftraId', 'training', 'workLocation', 'location', 'profileTipDismissed', 'resumeImportedFields', 'resumeImportVersion', 'resumeImportedAt', 'searchPattern']
+          const dancerFields = [
+            'headshots',
+            'representation',
+            'representationStatus',
+            'attributes',
+            'sizing',
+            'resume',
+            'links',
+            'sagAftraId',
+            'training',
+            'workLocation',
+            'location',
+            'profileTipDismissed',
+            'resumeImportedFields',
+            'resumeImportVersion',
+            'resumeImportedAt',
+            'searchPattern'
+          ]
           let allMatch = true
           for (const field of dancerFields) {
-            if (!verifyFieldsMatch((user as any)[field], (profile as any)[field], field)) {
+            if (
+              !verifyFieldsMatch(
+                (user as any)[field],
+                (profile as any)[field],
+                field
+              )
+            ) {
               allMatch = false
             }
           }
@@ -190,8 +259,9 @@ export const migrateAllUsers = zInternalMutation(
           results.cleaned.push(user._id)
 
           results.migrated.push(user._id)
-          console.log(`✅ Migrated, verified, and cleaned dancer: ${user.email}`)
-
+          console.log(
+            `✅ Migrated, verified, and cleaned dancer: ${user.email}`
+          )
         } else if (user.profileType === 'choreographer') {
           // Create choreographer profile
           const choreoData: any = {
@@ -233,10 +303,31 @@ export const migrateAllUsers = zInternalMutation(
             throw new Error('Profile creation failed')
           }
 
-          const choreoFields = ['headshots', 'representation', 'representationStatus', 'resume', 'links', 'companyName', 'workLocation', 'location', 'databaseUse', 'profileTipDismissed', 'resumeImportedFields', 'resumeImportVersion', 'resumeImportedAt', 'searchPattern']
+          const choreoFields = [
+            'headshots',
+            'representation',
+            'representationStatus',
+            'resume',
+            'links',
+            'companyName',
+            'workLocation',
+            'location',
+            'databaseUse',
+            'profileTipDismissed',
+            'resumeImportedFields',
+            'resumeImportVersion',
+            'resumeImportedAt',
+            'searchPattern'
+          ]
           let allMatch = true
           for (const field of choreoFields) {
-            if (!verifyFieldsMatch((user as any)[field], (profile as any)[field], field)) {
+            if (
+              !verifyFieldsMatch(
+                (user as any)[field],
+                (profile as any)[field],
+                field
+              )
+            ) {
               allMatch = false
             }
           }
@@ -256,7 +347,9 @@ export const migrateAllUsers = zInternalMutation(
           results.cleaned.push(user._id)
 
           results.migrated.push(user._id)
-          console.log(`✅ Migrated, verified, and cleaned choreographer: ${user.email}`)
+          console.log(
+            `✅ Migrated, verified, and cleaned choreographer: ${user.email}`
+          )
         }
       } catch (error: any) {
         console.error(`❌ Failed to migrate user ${user._id}:`, error)
@@ -270,14 +363,13 @@ export const migrateAllUsers = zInternalMutation(
 
     return results
   },
-  { returns: z.any() }
-)
+  returns: z.any()
+})
 
 // Action wrapper to run the migration
-export const runMigration = zInternalAction(
-  internalAction,
-  {},
-  async (ctx): Promise<any> => {
+export const runMigration = zia({
+  args: {},
+  handler: async (ctx): Promise<any> => {
     console.log('🚀 Starting auto-migration with verification and cleanup...')
 
     const results: any = await ctx.runMutation(
@@ -299,6 +391,5 @@ export const runMigration = zInternalAction(
 
     return results
   },
-  { returns: z.any() }
-)
-
+  returns: z.any()
+})

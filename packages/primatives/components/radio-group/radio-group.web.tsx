@@ -58,7 +58,9 @@ const Item = React.forwardRef<ItemRef, ItemProps>(
       onValueChange(value)
     }
 
-    const Component = (asChild ? Slot.Pressable : Pressable) as React.ElementType
+    const Component = (
+      asChild ? Slot.Pressable : Pressable
+    ) as React.ElementType
     return (
       <RadioGroup.Item value={value} asChild>
         <Component ref={ref as any} onPress={onPress} {...props} />

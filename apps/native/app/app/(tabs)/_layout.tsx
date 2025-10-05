@@ -1,9 +1,9 @@
-import { NativeTabs, Icon, Label } from 'expo-router/unstable-native-tabs';
+import { NativeTabs, Icon as NativeTabIcon, Label } from 'expo-router/unstable-native-tabs';
 import { isLiquidGlassAvailable } from 'expo-glass-effect';
 
 import { TabList, Tabs, TabSlot, TabTrigger, TabTriggerSlotProps } from 'expo-router/ui';
 import { Platform, Pressable, View } from 'react-native';
-import { Icon as MaterialIcon } from '@roninoss/icons';
+import { Icon } from '~/lib/icons/Icon';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import React from 'react';
 import { cn } from '~/lib/cn';
@@ -40,19 +40,19 @@ const CustomTabTrigger = ({ route: route, ...rest }: CustomTabButtonProps) => {
 };
 
 const HomeButton = ({ isActive }: { isActive: boolean }) => {
-  return <MaterialIcon name="home" size={28} color={isActive ? '#ffffff' : '#8B8B8B'} />;
+  return <Icon name="house.fill" size={28} tintColor={isActive ? '#ffffff' : '#8B8B8B'} />;
 };
 
 const DiscoverButton = ({ isActive }: { isActive: boolean }) => {
-  return <MaterialIcon name="magnify" size={28} color={isActive ? '#ffffff' : '#8B8B8B'} />;
+  return <Icon name="magnifyingglass" size={28} tintColor={isActive ? '#ffffff' : '#8B8B8B'} />;
 };
 
 const ActivityButton = ({ isActive }: { isActive: boolean }) => {
-  return <MaterialIcon name="note-outline" size={28} color={isActive ? '#ffffff' : '#8B8B8B'} />;
+  return <Icon name="note" size={28} tintColor={isActive ? '#ffffff' : '#8B8B8B'} />;
 };
 
 const ProfileButton = ({ isActive }: { isActive: boolean }) => {
-  return <MaterialIcon name="person" size={28} color={isActive ? '#ffffff' : '#8B8B8B'} />;
+  return <Icon name="person.fill" size={28} tintColor={isActive ? '#ffffff' : '#8B8B8B'} />;
 };
 
 const TabNavigation = () => {
@@ -92,19 +92,23 @@ function NativeTabsLayout() {
   return (
     <NativeTabs iconColor="#8B8B8B" tintColor="white" disableTransparentOnScrollEdge>
       <NativeTabs.Trigger name="home">
-        <Icon sf="house.fill" drawable="custom_android_drawable" selectedColor="white" />
+        <NativeTabIcon sf="house.fill" drawable="custom_android_drawable" selectedColor="white" />
         <Label hidden />
       </NativeTabs.Trigger>
       <NativeTabs.Trigger name="discover">
-        <Icon sf="magnifyingglass" drawable="custom_search_drawable" selectedColor="white" />
+        <NativeTabIcon
+          sf="magnifyingglass"
+          drawable="custom_search_drawable"
+          selectedColor="white"
+        />
         <Label hidden />
       </NativeTabs.Trigger>
       <NativeTabs.Trigger name="activity">
-        <Icon sf="note" drawable="custom_notifications_drawable" selectedColor="white" />
+        <NativeTabIcon sf="note" drawable="custom_notifications_drawable" selectedColor="white" />
         <Label hidden />
       </NativeTabs.Trigger>
       <NativeTabs.Trigger name="profile">
-        <Icon
+        <NativeTabIcon
           sf="rectangle.stack.person.crop"
           drawable="custom_settings_drawable"
           selectedColor="white"

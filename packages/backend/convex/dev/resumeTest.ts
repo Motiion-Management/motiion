@@ -1,8 +1,7 @@
-import { action, mutation } from '../_generated/server'
 import { internal } from '../_generated/api'
-import { zAction, zMutation } from 'zodvex'
 import { z } from 'zod'
 import { zid } from 'zodvex'
+import { zm, za } from '../util'
 
 // Define schemas for resume parsing
 const experienceSchema = z.object({
@@ -17,15 +16,17 @@ const experienceSchema = z.object({
   productionCompany: z.string().optional(),
   tourArtist: z.string().optional(),
   venue: z.string().optional(),
-  subtype: z.enum([
-    'festival',
-    'tour',
-    'concert',
-    'corporate',
-    'award-show',
-    'theater',
-    'other'
-  ]).optional(),
+  subtype: z
+    .enum([
+      'festival',
+      'tour',
+      'concert',
+      'corporate',
+      'award-show',
+      'theater',
+      'other'
+    ])
+    .optional(),
   mainTalent: z.array(z.string()).optional(),
   choreographers: z.array(z.string()).optional(),
   associateChoreographers: z.array(z.string()).optional(),
@@ -60,20 +61,18 @@ type TrainingEntry = z.infer<typeof trainingSchema>
 type ParsedResume = z.infer<typeof parsedResumeSchema>
 
 // Dev-only: generate an upload URL without requiring auth
-export const generateUploadUrlDev = zMutation(
-  mutation,
-  {},
-  async (ctx): Promise<string> => {
+export const generateUploadUrlDev = zm({
+  args: {},
+  handler: async (ctx): Promise<string> => {
     return await ctx.storage.generateUploadUrl()
   },
-  { returns: z.string() }
-)
+  returns: z.string()
+})
 
 // Dev-only: parse a resume document by storage id without touching user data
-export const parseResumeDocumentDev = zAction(
-  action,
-  { storageId: zid('_storage') },
-  async (ctx, args): Promise<ParsedResume> => {
+export const parseResumeDocumentDev = za({
+  args: { storageId: zid('_storage') },
+  handler: async (ctx, args): Promise<ParsedResume> => {
     return await ctx.runAction(
       internal.ai.documentProcessor.parseResumeDocument,
       {
@@ -82,5 +81,5 @@ export const parseResumeDocumentDev = zAction(
       }
     )
   },
-  { returns: parsedResumeSchema }
-)
+  returns: parsedResumeSchema
+})

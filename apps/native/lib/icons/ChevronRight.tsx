@@ -1,5 +1,5 @@
 import { Icon, type IconProps } from './Icon';
 
 export default function ChevronRight(props: Omit<IconProps, 'name'>) {
-  return <Icon name="chevron-right" {...props} />;
+  return <Icon name="chevron.right" {...props} />;
 }

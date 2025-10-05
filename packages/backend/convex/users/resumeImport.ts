@@ -10,12 +10,7 @@ import { getActiveProfileTarget } from './profileHelpers'
 
 // Define the complex schema for parsed resume
 const experienceSchema = z.object({
-  type: z.enum([
-    'tv-film',
-    'music-video',
-    'live-performance',
-    'commercial'
-  ]),
+  type: z.enum(['tv-film', 'music-video', 'live-performance', 'commercial']),
   title: z.string().optional(),
   startDate: z.string().optional(),
   endDate: z.string().optional(),
@@ -26,15 +21,17 @@ const experienceSchema = z.object({
   productionCompany: z.string().optional(),
   tourArtist: z.string().optional(),
   venue: z.string().optional(),
-  subtype: z.enum([
-    'festival',
-    'tour',
-    'concert',
-    'corporate',
-    'award-show',
-    'theater',
-    'other'
-  ]).optional(),
+  subtype: z
+    .enum([
+      'festival',
+      'tour',
+      'concert',
+      'corporate',
+      'award-show',
+      'theater',
+      'other'
+    ])
+    .optional(),
   mainTalent: z.array(z.string()).optional(),
   choreographers: z.array(z.string()).optional(),
   associateChoreographers: z.array(z.string()).optional(),
@@ -114,7 +111,10 @@ export const applyParsedResumeData = authMutation({
     }
 
     try {
-      const { targetId, profile } = await getActiveProfileTarget(ctx.db, ctx.user)
+      const { targetId, profile } = await getActiveProfileTarget(
+        ctx.db,
+        ctx.user
+      )
 
       // Add profile info for projects/training
       let profileInfo = {}
@@ -168,15 +168,13 @@ export const applyParsedResumeData = authMutation({
         updates.resume = {
           ...currentResume,
           projects: [...(currentResume?.projects || []), ...experienceIds],
-          skills:
-            args.skills.length > 0 ? args.skills : currentResume?.skills,
+          skills: args.skills.length > 0 ? args.skills : currentResume?.skills,
           genres: args.genres.length > 0 ? args.genres : currentResume?.genres
         }
       } else if (args.skills.length > 0 || args.genres.length > 0) {
         updates.resume = {
           ...currentResume,
-          skills:
-            args.skills.length > 0 ? args.skills : currentResume?.skills,
+          skills: args.skills.length > 0 ? args.skills : currentResume?.skills,
           genres: args.genres.length > 0 ? args.genres : currentResume?.genres
         }
       }

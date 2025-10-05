@@ -20,6 +20,7 @@ const formValidator = z.object({
 
 export default function EmailScreen() {
   const { isLoaded, signUp } = useSignUp();
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const [signupError, setSignupError] = useState<string | null>(null);
 
   const form = useAppForm({
@@ -35,6 +36,7 @@ export default function EmailScreen() {
         return;
       }
 
+      setIsSubmitting(true);
       setSignupError(null);
 
       try {
@@ -49,11 +51,13 @@ export default function EmailScreen() {
         const errorMessage =
           error.errors?.[0]?.message || 'Failed to update email. Please try again.';
         setSignupError(errorMessage);
+      } finally {
+        setIsSubmitting(false);
       }
     },
   });
 
-  const isFormReady = useStore(form.store, (state) => state.canSubmit);
+  const isFormReady = useStore(form.store, (state) => state.canSubmit && !isSubmitting);
 
   if (!isLoaded) {
     return (

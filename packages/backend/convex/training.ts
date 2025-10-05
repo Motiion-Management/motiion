@@ -1,5 +1,11 @@
 import { authMutation, authQuery, notEmpty, zq, zid } from './util'
-import { Training, trainingInput, zTrainingInput, zTrainingFormDoc, training } from './schemas/training'
+import {
+  Training,
+  trainingInput,
+  zTrainingInput,
+  zTrainingFormDoc,
+  training
+} from './schemas/training'
 import { getAll } from 'convex-helpers/server/relationships'
 import { z } from 'zod'
 import type { Doc } from './_generated/dataModel'
@@ -55,14 +61,20 @@ export const addMyTraining = authMutation({
     let profileInfo = {}
     let profile = null
 
-    if (ctx.user.activeProfileType && (ctx.user.activeDancerId || ctx.user.activeChoreographerId)) {
+    if (
+      ctx.user.activeProfileType &&
+      (ctx.user.activeDancerId || ctx.user.activeChoreographerId)
+    ) {
       if (ctx.user.activeProfileType === 'dancer' && ctx.user.activeDancerId) {
         profile = await ctx.db.get(ctx.user.activeDancerId)
         profileInfo = {
           profileType: 'dancer' as const,
           profileId: ctx.user.activeDancerId
         }
-      } else if (ctx.user.activeProfileType === 'choreographer' && ctx.user.activeChoreographerId) {
+      } else if (
+        ctx.user.activeProfileType === 'choreographer' &&
+        ctx.user.activeChoreographerId
+      ) {
         profile = await ctx.db.get(ctx.user.activeChoreographerId)
         profileInfo = {
           profileType: 'choreographer' as const,
@@ -94,12 +106,16 @@ export const addMyTraining = authMutation({
     if (profile) {
       // TODO: Handle choreographer profiles in dedicated task
       const dancerProfile = profile as Doc<'dancers'>
-      const profileTraining: any = Array.isArray(dancerProfile.training) ? dancerProfile.training : []
+      const profileTraining: any = Array.isArray(dancerProfile.training)
+        ? dancerProfile.training
+        : []
       await ctx.db.patch(dancerProfile._id, {
         training: [...profileTraining, trainingId]
       })
     } else {
-      const userTraining: any = Array.isArray(ctx.user?.training) ? ctx.user.training : []
+      const userTraining: any = Array.isArray(ctx.user?.training)
+        ? ctx.user.training
+        : []
       await ctx.db.patch(ctx.user._id, {
         training: [...userTraining, trainingId]
       })
@@ -116,10 +132,16 @@ export const removeMyTraining = authMutation({
   handler: async (ctx, args) => {
     // Get profile if active
     let profile = null
-    if (ctx.user.activeProfileType && (ctx.user.activeDancerId || ctx.user.activeChoreographerId)) {
+    if (
+      ctx.user.activeProfileType &&
+      (ctx.user.activeDancerId || ctx.user.activeChoreographerId)
+    ) {
       if (ctx.user.activeProfileType === 'dancer' && ctx.user.activeDancerId) {
         profile = await ctx.db.get(ctx.user.activeDancerId)
-      } else if (ctx.user.activeProfileType === 'choreographer' && ctx.user.activeChoreographerId) {
+      } else if (
+        ctx.user.activeProfileType === 'choreographer' &&
+        ctx.user.activeChoreographerId
+      ) {
         profile = await ctx.db.get(ctx.user.activeChoreographerId)
       }
     }
@@ -128,17 +150,23 @@ export const removeMyTraining = authMutation({
     if (profile) {
       // TODO: Handle choreographer profiles in dedicated task
       const dancerProfile = profile as Doc<'dancers'>
-      const profileTraining: any = Array.isArray(dancerProfile.training) ? dancerProfile.training : []
+      const profileTraining: any = Array.isArray(dancerProfile.training)
+        ? dancerProfile.training
+        : []
       await ctx.db.patch(dancerProfile._id, {
         training: profileTraining.filter(
-          (id: import('./_generated/dataModel').Id<'training'>) => id !== args.trainingId
+          (id: import('./_generated/dataModel').Id<'training'>) =>
+            id !== args.trainingId
         )
       })
     } else {
-      const userTraining: any = Array.isArray(ctx.user.training) ? ctx.user.training : []
+      const userTraining: any = Array.isArray(ctx.user.training)
+        ? ctx.user.training
+        : []
       await ctx.db.patch(ctx.user._id, {
         training: userTraining.filter(
-          (id: import('./_generated/dataModel').Id<'training'>) => id !== args.trainingId
+          (id: import('./_generated/dataModel').Id<'training'>) =>
+            id !== args.trainingId
         )
       })
     }
@@ -156,12 +184,18 @@ export const getMyTraining = authQuery({
     // PROFILE-FIRST: Get training from profile if active
     let trainingIds = ctx.user?.training || []
 
-    if (ctx.user?.activeProfileType && (ctx.user?.activeDancerId || ctx.user?.activeChoreographerId)) {
+    if (
+      ctx.user?.activeProfileType &&
+      (ctx.user?.activeDancerId || ctx.user?.activeChoreographerId)
+    ) {
       let profile = null
 
       if (ctx.user.activeProfileType === 'dancer' && ctx.user.activeDancerId) {
         profile = await ctx.db.get(ctx.user.activeDancerId)
-      } else if (ctx.user.activeProfileType === 'choreographer' && ctx.user.activeChoreographerId) {
+      } else if (
+        ctx.user.activeProfileType === 'choreographer' &&
+        ctx.user.activeChoreographerId
+      ) {
         profile = await ctx.db.get(ctx.user.activeChoreographerId)
       }
 
@@ -179,8 +213,13 @@ export const getMyTraining = authQuery({
     const training = await getAll(ctx.db, trainingIds)
     return training
       .filter(notEmpty)
-      .sort((a, b) => ((a.orderIndex as number) || 0) - ((b.orderIndex as number) || 0))
-      .map(({ orderIndex, userId, profileType, profileId, ...rest }) => rest) as any
+      .sort(
+        (a, b) =>
+          ((a.orderIndex as number) || 0) - ((b.orderIndex as number) || 0)
+      )
+      .map(
+        ({ orderIndex, userId, profileType, profileId, ...rest }) => rest
+      ) as any
   }
 })
 
@@ -192,12 +231,18 @@ export const getMyTrainingByType = authQuery({
     // PROFILE-FIRST: Get training from profile if active
     let trainingIds = ctx.user?.training || []
 
-    if (ctx.user?.activeProfileType && (ctx.user?.activeDancerId || ctx.user?.activeChoreographerId)) {
+    if (
+      ctx.user?.activeProfileType &&
+      (ctx.user?.activeDancerId || ctx.user?.activeChoreographerId)
+    ) {
       let profile = null
 
       if (ctx.user.activeProfileType === 'dancer' && ctx.user.activeDancerId) {
         profile = await ctx.db.get(ctx.user.activeDancerId)
-      } else if (ctx.user.activeProfileType === 'choreographer' && ctx.user.activeChoreographerId) {
+      } else if (
+        ctx.user.activeProfileType === 'choreographer' &&
+        ctx.user.activeChoreographerId
+      ) {
         profile = await ctx.db.get(ctx.user.activeChoreographerId)
       }
 
@@ -216,8 +261,13 @@ export const getMyTrainingByType = authQuery({
     return training
       .filter(notEmpty)
       .filter((t) => t.type === args.type)
-      .sort((a, b) => ((a.orderIndex as number) || 0) - ((b.orderIndex as number) || 0))
-      .map(({ orderIndex, userId, profileType, profileId, ...rest }) => rest) as any
+      .sort(
+        (a, b) =>
+          ((a.orderIndex as number) || 0) - ((b.orderIndex as number) || 0)
+      )
+      .map(
+        ({ orderIndex, userId, profileType, profileId, ...rest }) => rest
+      ) as any
   }
 })
 
@@ -249,7 +299,10 @@ export const getUserPublicTraining = zq({
 
     return training
       .filter(notEmpty)
-      .sort((a, b) => ((a.orderIndex as number) || 0) - ((b.orderIndex as number) || 0))
+      .sort(
+        (a, b) =>
+          ((a.orderIndex as number) || 0) - ((b.orderIndex as number) || 0)
+      )
       .map(({ orderIndex, userId, ...rest }) => rest) as any
   }
 })

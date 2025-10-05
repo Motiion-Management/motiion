@@ -1,5 +1,4 @@
-import { internalMutation } from '../_generated/server'
-import { zInternalMutation } from 'zodvex'
+import { zim } from '../util'
 
 function parseDateToTimestamp(value: any): number | undefined {
   if (value == null) return undefined
@@ -20,13 +19,12 @@ function parseDateToTimestamp(value: any): number | undefined {
   return undefined
 }
 
-export const migrateDates = zInternalMutation(
-  internalMutation,
-  {},
-  async (ctx) => {
+export const migrateDates = zim({
+  args: {},
+  handler: async (ctx) => {
     const result = {
       projects: { scanned: 0, patched: 0 },
-      events: { scanned: 0, patched: 0 },
+      events: { scanned: 0, patched: 0 }
     }
 
     // Migrate projects.startDate/endDate
@@ -36,8 +34,10 @@ export const migrateDates = zInternalMutation(
       const patch: any = {}
       const sd = parseDateToTimestamp((p as any).startDate)
       const ed = parseDateToTimestamp((p as any).endDate)
-      if (sd !== undefined && typeof (p as any).startDate !== 'number') patch.startDate = sd
-      if (ed !== undefined && typeof (p as any).endDate !== 'number') patch.endDate = ed
+      if (sd !== undefined && typeof (p as any).startDate !== 'number')
+        patch.startDate = sd
+      if (ed !== undefined && typeof (p as any).endDate !== 'number')
+        patch.endDate = ed
       if (Object.keys(patch).length > 0) {
         await ctx.db.patch(p._id, patch)
         result.projects.patched++
@@ -49,6 +49,6 @@ export const migrateDates = zInternalMutation(
 
     return result
   }
-)
+})
 
 // Public action wrapper lives in admin/runMigrations.ts to avoid type cycles

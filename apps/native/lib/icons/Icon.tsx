@@ -1,86 +1,33 @@
-import { Icon as RoninIcon, type IconProps as RoninIconProps } from '@roninoss/icons';
+import { SymbolView, SymbolViewProps } from 'expo-symbols';
 import { cssInterop } from 'nativewind';
-import { Platform } from 'react-native';
-import type { ComponentPropsWithoutRef } from 'react';
 
-// Register RoninIcon with cssInterop to enable className support
-cssInterop(RoninIcon, {
+// Register SymbolView with cssInterop to enable className support
+// Maps className color utilities (e.g., text-icon-default) to tintColor prop
+cssInterop(SymbolView, {
   className: {
-    // @ts-expect-error - cssInterop types don't match RoninIcon's strict types, but it works at runtime
     target: 'style',
     nativeStyleToProp: {
-      color: true,
+      color: 'tintColor',
     },
   },
 });
 
-export type IconName =
-  | 'bell'
-  | 'calendar'
-  | 'check'
-  | 'chevron-down'
-  | 'chevron-left'
-  | 'chevron-right'
-  | 'chevron-up'
-  | 'circle-alert'
-  | 'filter'
-  | 'image'
-  | 'more-vertical'
-  | 'plus'
-  | 'search'
-  | 'settings'
-  | 'x'
-  | 'x-circle';
+export interface IconProps extends SymbolViewProps {}
 
-type IconMapping = {
-  sfSymbol: string;
-  material: string;
-};
+// TODO: ANDROID - Add fallback for Android support
+// When Android support is needed:
+// 1. Import MaterialIcons from '@expo/vector-icons/MaterialIcons'
+// 2. Configure cssInterop for MaterialIcons to map className → color prop:
+//    cssInterop(MaterialIcons, {
+//      className: {
+//        target: 'style',
+//        nativeStyleToProp: { color: true }
+//      }
+//    })
+// 3. Add Platform.OS check to render MaterialIcons on Android
+// 4. Create mapping from SF Symbol names to Material icon names
+//    (or accept different icon names per platform via props)
 
-const ICON_MAP: Record<IconName, IconMapping> = {
-  bell: { sfSymbol: 'bell', material: 'notifications' },
-  calendar: { sfSymbol: 'calendar', material: 'event' },
-  check: { sfSymbol: 'checkmark', material: 'check' },
-  'chevron-down': { sfSymbol: 'chevron.down', material: 'keyboard-arrow-down' },
-  'chevron-left': { sfSymbol: 'chevron.left', material: 'keyboard-arrow-left' },
-  'chevron-right': { sfSymbol: 'chevron.right', material: 'keyboard-arrow-right' },
-  'chevron-up': { sfSymbol: 'chevron.up', material: 'keyboard-arrow-up' },
-  'circle-alert': { sfSymbol: 'exclamationmark.circle', material: 'error' },
-  filter: { sfSymbol: 'line.horizontal.3.decrease.circle.fill', material: 'filter-list' },
-  image: { sfSymbol: 'photo', material: 'image' },
-  'more-vertical': { sfSymbol: 'ellipsis.vertical', material: 'more-vert' },
-  plus: { sfSymbol: 'plus', material: 'add' },
-  search: { sfSymbol: 'magnifyingglass', material: 'search' },
-  settings: { sfSymbol: 'gearshape', material: 'settings' },
-  x: { sfSymbol: 'xmark', material: 'close' },
-  'x-circle': { sfSymbol: 'xmark.circle', material: 'cancel' },
-};
-
-export interface IconProps
-  extends Omit<ComponentPropsWithoutRef<typeof RoninIcon>, 'name' | 'namingScheme'> {
-  name: IconName;
-  size?: number;
-  color?: string;
-  className?: string;
-  strokeWidth?: number; // Accept but ignore for backward compatibility with Lucide
-}
-
-export function Icon({ name, size = 24, color, className, strokeWidth }: IconProps) {
-  const mapping = ICON_MAP[name];
-
-  if (Platform.OS === 'ios') {
-    const RoninIconAny = RoninIcon as any;
-    return (
-      <RoninIconAny
-        namingScheme="sfSymbol"
-        name={mapping.sfSymbol}
-        size={size}
-        color={color}
-        className={className}
-      />
-    );
-  }
-
-  const RoninIconAny = RoninIcon as any;
-  return <RoninIconAny name={mapping.material} size={size} color={color} className={className} />;
+export function Icon({ size = 24, ...props }: IconProps) {
+  return <SymbolView size={size} {...props} />;
 }

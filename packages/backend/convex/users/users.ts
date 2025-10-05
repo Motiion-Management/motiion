@@ -3,7 +3,16 @@ import { ConvexError } from 'convex/values'
 // Define a Zod equivalent for args typing here.
 import { z } from 'zod'
 import { filter } from 'convex-helpers/server/filter'
-import { authMutation, authQuery, notEmpty, zq, ziq, zim, zid } from '../util'
+import {
+  authMutation,
+  authQuery,
+  notEmpty,
+  zq,
+  zm,
+  ziq,
+  zim,
+  zid
+} from '../util'
 
 import { getAll } from 'convex-helpers/server/relationships'
 import { UserDoc, Users, zUsers } from '../schemas/users'
@@ -285,6 +294,20 @@ export const updateOrCreateUserByTokenId = zim({
       eventType,
       timestamp: new Date().toISOString()
     })
+  }
+})
+
+// Public query: Check if user exists by Clerk tokenId
+// No authentication required - used during signup to wait for webhook
+export const userExistsByTokenId = zq({
+  args: { tokenId: z.string() },
+  returns: z.boolean(),
+  handler: async (ctx, { tokenId }) => {
+    const user = await ctx.db
+      .query('users')
+      .withIndex('tokenId', (q) => q.eq('tokenId', tokenId))
+      .unique()
+    return user !== null
   }
 })
 

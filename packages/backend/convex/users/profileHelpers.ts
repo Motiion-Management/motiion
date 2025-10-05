@@ -13,13 +13,19 @@ export async function getActiveProfileTarget(
   let targetId = user._id
   let profile = null
 
-  if (user.activeProfileType && (user.activeDancerId || user.activeChoreographerId)) {
+  if (
+    user.activeProfileType &&
+    (user.activeDancerId || user.activeChoreographerId)
+  ) {
     if (user.activeProfileType === 'dancer' && user.activeDancerId) {
       profile = await db.get(user.activeDancerId)
       if (profile) {
         targetId = user.activeDancerId
       }
-    } else if (user.activeProfileType === 'choreographer' && user.activeChoreographerId) {
+    } else if (
+      user.activeProfileType === 'choreographer' &&
+      user.activeChoreographerId
+    ) {
       profile = await db.get(user.activeChoreographerId)
       if (profile) {
         targetId = user.activeChoreographerId

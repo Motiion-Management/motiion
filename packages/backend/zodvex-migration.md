@@ -25,6 +25,7 @@ Per table (e.g., Agencies, Projects, Training):
    ```
 
 Notes:
+
 - The codec applies deep normalization so optionals become `v.optional(...)` and nullables become `v.union(T, v.null())` recursively.
 - Keep using `zid('table')` from `convex-helpers/server/zodV4` for ID fields inside Zod schemas.
 
@@ -33,36 +34,66 @@ Notes:
 For every Convex function, use zodvex’s typed wrappers to define args with Zod and parse them at runtime:
 
 - Queries:
+
   ```ts
   import { zQuery } from 'zodvex'
-  export const myQuery = zQuery(query, { id: z.string() }, async (ctx, { id }) => {
-    // ...
-  })
+  export const myQuery = zQuery(
+    query,
+    { id: z.string() },
+    async (ctx, { id }) => {
+      // ...
+    }
+  )
   ```
 
 - Mutations:
+
   ```ts
   import { zMutation } from 'zodvex'
-  export const myMutation = zMutation(mutation, z.object({ name: z.string() }), async (ctx, args) => {
-    // ...
-  })
+  export const myMutation = zMutation(
+    mutation,
+    z.object({ name: z.string() }),
+    async (ctx, args) => {
+      // ...
+    }
+  )
   ```
 
 - Internal functions:
+
   ```ts
   import { zInternalQuery, zInternalMutation } from 'zodvex'
-  export const myInternalQuery = zInternalQuery(internalQuery, { key: z.string() }, async (ctx, { key }) => { /* ... */ })
-  export const myInternalMutation = zInternalMutation(internalMutation, { key: z.string() }, async (ctx, { key }) => { /* ... */ })
+  export const myInternalQuery = zInternalQuery(
+    internalQuery,
+    { key: z.string() },
+    async (ctx, { key }) => {
+      /* ... */
+    }
+  )
+  export const myInternalMutation = zInternalMutation(
+    internalMutation,
+    { key: z.string() },
+    async (ctx, { key }) => {
+      /* ... */
+    }
+  )
   ```
 
 - Auth-aware functions (where ctx.user is required): keep using our `authQuery/authMutation` from `util.ts` as the builder passed to `zQuery/zMutation`, e.g.:
   ```ts
-  export const updateMyUser = zMutation(authMutation, zUsers.partial(), async (ctx, args) => { /* ... */ })
+  export const updateMyUser = zMutation(
+    authMutation,
+    zUsers.partial(),
+    async (ctx, args) => {
+      /* ... */
+    }
+  )
   ```
 
 ### Returns (optional enhancement)
 
 We can extend the wrappers to accept a Zod return schema, which would:
+
 - Add a Convex `returns` validator derived from Zod.
 - Parse outbound values with Zod before returning.
 
@@ -71,6 +102,7 @@ This is not required to adopt the wrappers, but recommended for critical endpoin
 ## 3) Notes for hand-off
 
 ### Migration steps (repeat across modules)
+
 - Convert all tables to codecs:
   - `const Codec = convexCodec(z.object(shape))`
   - `Table('name', Codec.toConvexSchema())`
@@ -80,6 +112,7 @@ This is not required to adopt the wrappers, but recommended for critical endpoin
 - Keep auth context via `authQuery/authMutation` and use them as the base builders for zodvex wrappers.
 
 ### Optional vs nullable
+
 - zodvex ensures:
   - `.optional()` → `v.optional(T)`
   - `.nullable()` → `v.union(T, v.null())`
@@ -87,6 +120,7 @@ This is not required to adopt the wrappers, but recommended for critical endpoin
 - Applies recursively to nested objects and arrays of objects.
 
 ### Avoid deep generic instantiation (TS2589)
+
 - Prefer zodvex wrappers and plain `ctx.db` calls within the same context.
 - If a route (e.g., http.ts) must call internal functions and triggers TS2589,
   use a small bridge module (see `convex/apiBridge.ts`) to keep call sites typed
@@ -95,8 +129,9 @@ This is not required to adopt the wrappers, but recommended for critical endpoin
   refs and switch back quickly if type-checking regresses.
 
 ### Sanity script (optional)
+
 - Add a script to walk generated table validators and flag any nested `union(
-  T, null)` under object fields that are not wrapped in `v.optional(...)`.
+T, null)` under object fields that are not wrapped in `v.optional(...)`.
 - Run once after migration to catch any missed optional fields.
 
 ## Checklist
@@ -112,14 +147,16 @@ This is not required to adopt the wrappers, but recommended for critical endpoin
 ## Examples (copy-paste)
 
 Table via codec:
+
 ```ts
-const agencies = { name: z.string(), listed: z.boolean().optional(), /* ... */ }
+const agencies = { name: z.string(), listed: z.boolean().optional() /* ... */ }
 export const zAgencies = z.object(agencies)
 export const AgenciesCodec = convexCodec(zAgencies)
 export const Agencies = Table('agencies', AgenciesCodec.toConvexSchema())
 ```
 
 Mutation via zodvex + auth:
+
 ```ts
 export const updateMyProfile = zMutation(
   authMutation,
@@ -131,6 +168,7 @@ export const updateMyProfile = zMutation(
 ```
 
 Internal query via zodvex:
+
 ```ts
 export const getByTokenId = zInternalQuery(
   internalQuery,
@@ -145,6 +183,7 @@ export const getByTokenId = zInternalQuery(
 ```
 
 Bridge toggle (apiBridge.ts):
+
 ```ts
 // Default: dynamic (safe)
 const internal: any = require('./_generated/api').internal

@@ -1,7 +1,6 @@
-import { internalAction } from '../_generated/server'
 import { internal } from '../_generated/api'
-import { zInternalAction } from 'zodvex'
 import { z } from 'zod'
+import { zia } from '../util'
 import OpenAI from 'openai'
 import { ConvexError } from 'convex/values'
 import {
@@ -22,13 +21,12 @@ import {
   createTextExtractionPrompt
 } from './shared'
 
-export const parseResumeText = zInternalAction(
-  internalAction,
-  {
+export const parseResumeText = zia({
+  args: {
     text: z.string(),
     retryCount: z.number().optional()
   },
-  async (ctx, args): Promise<ParsedResumeData> => {
+  handler: async (ctx, args): Promise<ParsedResumeData> => {
     const retryCount = args.retryCount || 0
     const maxRetries = 2
 
@@ -84,5 +82,5 @@ export const parseResumeText = zInternalAction(
       )
     }
   },
-  { returns: resumeSchema }
-)
+  returns: resumeSchema
+})

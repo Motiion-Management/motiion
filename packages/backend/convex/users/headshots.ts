@@ -21,12 +21,18 @@ export const getMyHeadshots = authQuery({
     // PROFILE-FIRST: Check active profile first, then fall back to user
     let headshots = ctx.user?.headshots || []
 
-    if (ctx.user?.activeProfileType && (ctx.user?.activeDancerId || ctx.user?.activeChoreographerId)) {
+    if (
+      ctx.user?.activeProfileType &&
+      (ctx.user?.activeDancerId || ctx.user?.activeChoreographerId)
+    ) {
       let profile = null
 
       if (ctx.user.activeProfileType === 'dancer' && ctx.user.activeDancerId) {
         profile = await ctx.db.get(ctx.user.activeDancerId)
-      } else if (ctx.user.activeProfileType === 'choreographer' && ctx.user.activeChoreographerId) {
+      } else if (
+        ctx.user.activeProfileType === 'choreographer' &&
+        ctx.user.activeChoreographerId
+      ) {
         profile = await ctx.db.get(ctx.user.activeChoreographerId)
       }
 
@@ -39,7 +45,12 @@ export const getMyHeadshots = authQuery({
       return []
     }
 
-    type Headshot = { storageId: Id<'_storage'>; title?: string; uploadDate: string; position?: number }
+    type Headshot = {
+      storageId: Id<'_storage'>
+      title?: string
+      uploadDate: string
+      position?: number
+    }
     return Promise.all(
       headshots.map(async (headshot: Headshot) => ({
         url: await ctx.storage.getUrl(headshot.storageId),
@@ -66,7 +77,12 @@ export const getHeadshots = zq({
       return []
     }
 
-    type Headshot = { storageId: Id<'_storage'>; title?: string; uploadDate: string; position?: number }
+    type Headshot = {
+      storageId: Id<'_storage'>
+      title?: string
+      uploadDate: string
+      position?: number
+    }
     return Promise.all(
       user.headshots.map(async (headshot: Headshot) => ({
         url: await ctx.storage.getUrl(headshot.storageId),
@@ -98,18 +114,28 @@ export const saveHeadshotIds = authMutation({
     let targetId: any = ctx.user._id
     let currentHeadshots: any = ctx.user.headshots || []
 
-    if (ctx.user.activeProfileType && (ctx.user.activeDancerId || ctx.user.activeChoreographerId)) {
+    if (
+      ctx.user.activeProfileType &&
+      (ctx.user.activeDancerId || ctx.user.activeChoreographerId)
+    ) {
       if (ctx.user.activeProfileType === 'dancer' && ctx.user.activeDancerId) {
         const profile = await ctx.db.get(ctx.user.activeDancerId)
         if (profile) {
           targetId = ctx.user.activeDancerId
-          currentHeadshots = Array.isArray(profile.headshots) ? profile.headshots : []
+          currentHeadshots = Array.isArray(profile.headshots)
+            ? profile.headshots
+            : []
         }
-      } else if (ctx.user.activeProfileType === 'choreographer' && ctx.user.activeChoreographerId) {
+      } else if (
+        ctx.user.activeProfileType === 'choreographer' &&
+        ctx.user.activeChoreographerId
+      ) {
         const profile = await ctx.db.get(ctx.user.activeChoreographerId)
         if (profile) {
           targetId = ctx.user.activeChoreographerId
-          currentHeadshots = Array.isArray(profile.headshots) ? profile.headshots : []
+          currentHeadshots = Array.isArray(profile.headshots)
+            ? profile.headshots
+            : []
         }
       }
     }
@@ -121,12 +147,20 @@ export const saveHeadshotIds = authMutation({
     }
 
     // Merge new headshots in front of existing, then cap at 5 and normalize positions
-    const merged = currentHeadshots.length > 0
-      ? [...args.headshots, ...currentHeadshots]
-      : args.headshots
+    const merged =
+      currentHeadshots.length > 0
+        ? [...args.headshots, ...currentHeadshots]
+        : args.headshots
     const limited = await ensureOnlyFive(ctx, merged)
-    type Headshot = { storageId: Id<'_storage'>; title?: string; uploadDate: string; position?: number }
-    const normalized = (limited as Headshot[]).map((h: Headshot, idx: number) => ({ ...h, position: idx }))
+    type Headshot = {
+      storageId: Id<'_storage'>
+      title?: string
+      uploadDate: string
+      position?: number
+    }
+    const normalized = (limited as Headshot[]).map(
+      (h: Headshot, idx: number) => ({ ...h, position: idx })
+    )
 
     // Update only the target (profile or user)
     await ctx.db.patch(targetId, {
@@ -148,27 +182,44 @@ export const removeHeadshot = authMutation({
     let targetId: any = ctx.user._id
     let currentHeadshots: any = ctx.user.headshots || []
 
-    if (ctx.user.activeProfileType && (ctx.user.activeDancerId || ctx.user.activeChoreographerId)) {
+    if (
+      ctx.user.activeProfileType &&
+      (ctx.user.activeDancerId || ctx.user.activeChoreographerId)
+    ) {
       if (ctx.user.activeProfileType === 'dancer' && ctx.user.activeDancerId) {
         const profile = await ctx.db.get(ctx.user.activeDancerId)
         if (profile) {
           targetId = ctx.user.activeDancerId
-          currentHeadshots = Array.isArray(profile.headshots) ? profile.headshots : []
+          currentHeadshots = Array.isArray(profile.headshots)
+            ? profile.headshots
+            : []
         }
-      } else if (ctx.user.activeProfileType === 'choreographer' && ctx.user.activeChoreographerId) {
+      } else if (
+        ctx.user.activeProfileType === 'choreographer' &&
+        ctx.user.activeChoreographerId
+      ) {
         const profile = await ctx.db.get(ctx.user.activeChoreographerId)
         if (profile) {
           targetId = ctx.user.activeChoreographerId
-          currentHeadshots = Array.isArray(profile.headshots) ? profile.headshots : []
+          currentHeadshots = Array.isArray(profile.headshots)
+            ? profile.headshots
+            : []
         }
       }
     }
 
-    type Headshot = { storageId: Id<'_storage'>; title?: string; uploadDate: string; position?: number }
+    type Headshot = {
+      storageId: Id<'_storage'>
+      title?: string
+      uploadDate: string
+      position?: number
+    }
     const filtered = currentHeadshots.filter(
       (h: Headshot) => h.storageId !== args.headshotId
     )
-    const normalized = (filtered as Headshot[]).map((h: Headshot, idx: number) => ({ ...h, position: idx }))
+    const normalized = (filtered as Headshot[]).map(
+      (h: Headshot, idx: number) => ({ ...h, position: idx })
+    )
 
     // Update only the target (profile or user)
     await ctx.db.patch(targetId, { headshots: normalized })
@@ -191,14 +242,20 @@ export const updateHeadshotPosition = authMutation({
     let targetId: any = ctx.user._id
     let current: any = ctx.user.headshots || []
 
-    if (ctx.user.activeProfileType && (ctx.user.activeDancerId || ctx.user.activeChoreographerId)) {
+    if (
+      ctx.user.activeProfileType &&
+      (ctx.user.activeDancerId || ctx.user.activeChoreographerId)
+    ) {
       if (ctx.user.activeProfileType === 'dancer' && ctx.user.activeDancerId) {
         const profile = await ctx.db.get(ctx.user.activeDancerId)
         if (profile) {
           targetId = ctx.user.activeDancerId
           current = Array.isArray(profile.headshots) ? profile.headshots : []
         }
-      } else if (ctx.user.activeProfileType === 'choreographer' && ctx.user.activeChoreographerId) {
+      } else if (
+        ctx.user.activeProfileType === 'choreographer' &&
+        ctx.user.activeChoreographerId
+      ) {
         const profile = await ctx.db.get(ctx.user.activeChoreographerId)
         if (profile) {
           targetId = ctx.user.activeChoreographerId
@@ -208,19 +265,36 @@ export const updateHeadshotPosition = authMutation({
     }
 
     // Map payload positions by storageId
-    const posMap = new Map(headshots.map((h: { storageId: Id<'_storage'>; position: number }) => [h.storageId, h.position]))
+    const posMap = new Map(
+      headshots.map((h: { storageId: Id<'_storage'>; position: number }) => [
+        h.storageId,
+        h.position
+      ])
+    )
 
-    type Headshot = { storageId: Id<'_storage'>; title?: string; uploadDate: string; position?: number }
+    type Headshot = {
+      storageId: Id<'_storage'>
+      title?: string
+      uploadDate: string
+      position?: number
+    }
     const inPayload = (current as Headshot[])
       .filter((h: Headshot) => posMap.has(h.storageId))
-      .sort((a: Headshot, b: Headshot) => posMap.get(a.storageId)! - posMap.get(b.storageId)!)
+      .sort(
+        (a: Headshot, b: Headshot) =>
+          posMap.get(a.storageId)! - posMap.get(b.storageId)!
+      )
 
-    const remaining = (current as Headshot[]).filter((h: Headshot) => !posMap.has(h.storageId))
+    const remaining = (current as Headshot[]).filter(
+      (h: Headshot) => !posMap.has(h.storageId)
+    )
 
-    const next = [...inPayload, ...remaining].map((h: Headshot, idx: number) => ({
-      ...h,
-      position: idx
-    }))
+    const next = [...inPayload, ...remaining].map(
+      (h: Headshot, idx: number) => ({
+        ...h,
+        position: idx
+      })
+    )
 
     // Update only the target (profile or user)
     await ctx.db.patch(targetId, { headshots: next })

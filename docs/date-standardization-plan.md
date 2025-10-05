@@ -13,6 +13,7 @@ This document captures the plan and current status for standardizing backend dat
   - `packages/backend/convex/schemas/events.ts:23`
 
 Frontend (native):
+
 - Date picker accepts Date objects and also gracefully parses legacy string/number values for display:
   - `apps/native/components/form/DatePickerField.tsx:27`
   - `apps/native/components/form/ConvexDynamicForm.tsx:287`
@@ -56,4 +57,3 @@ Note: Events migration is intentionally disabled in `migrateDates.ts` (commented
 ## Summary
 
 - Dates remain strings in backend schemas today. A safe migration path and action are in place but should not be invoked until we explicitly choose to standardize on `z.date()`.
-
