@@ -1,5 +1,5 @@
 import { useSignIn } from '@clerk/clerk-expo';
-import { Icon } from '@roninoss/icons';
+import { Icon } from '~/lib/icons/Icon';
 import { Stack, router, useLocalSearchParams, usePathname } from 'expo-router';
 import { useEffect, useRef } from 'react';
 import { View } from 'react-native';
@@ -90,7 +90,7 @@ const SCREEN_OPTIONS = {
               // Navigate back to the root with a dismiss animation
               router.dismissAll();
             }}>
-            <Icon name="close" size={24} color="currentColor" />
+            <Icon name="xmark" size={24} tintColor="currentColor" />
           </Button>
         </View>
       </SafeAreaView>

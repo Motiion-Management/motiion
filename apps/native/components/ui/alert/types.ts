@@ -1,4 +1,4 @@
-import type { IconProps, MaterialIconName } from '@roninoss/icons';
+import type { IconProps } from '~/lib/icons/Icon';
 import type { KeyboardType } from 'react-native';
 
 type AlertInputValue = { login: string; password: string } | string;
@@ -21,7 +21,7 @@ type AlertProps = {
   message?: string;
   prompt?: AlertPrompt;
   materialPortalHost?: string;
-  materialIcon?: IconProps<any> & { name: MaterialIconName };
+  materialIcon?: IconProps;
   materialWidth?: number;
   children?: React.ReactNode;
 };

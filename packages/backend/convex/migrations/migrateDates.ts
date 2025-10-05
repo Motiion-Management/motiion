@@ -1,5 +1,4 @@
-import { internalMutation } from '../_generated/server'
-import { zInternalMutation } from 'zodvex'
+import { zim } from '../util'
 
 function parseDateToTimestamp(value: any): number | undefined {
   if (value == null) return undefined
@@ -20,10 +19,9 @@ function parseDateToTimestamp(value: any): number | undefined {
   return undefined
 }
 
-export const migrateDates = zInternalMutation(
-  internalMutation,
-  {},
-  async (ctx) => {
+export const migrateDates = zim({
+  args: {},
+  handler: async (ctx) => {
     const result = {
       projects: { scanned: 0, patched: 0 },
       events: { scanned: 0, patched: 0 },
@@ -48,7 +46,7 @@ export const migrateDates = zInternalMutation(
     // When we are ready to migrate events, adjust schema to z.date() and re-enable the logic below.
 
     return result
-  }
-)
+  },
+})
 
 // Public action wrapper lives in admin/runMigrations.ts to avoid type cycles

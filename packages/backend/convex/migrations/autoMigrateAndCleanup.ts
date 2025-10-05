@@ -1,7 +1,6 @@
-import { internalAction, internalMutation } from '../_generated/server'
-import { zInternalAction, zInternalMutation } from 'zodvex'
 import { z } from 'zod'
 import { internal } from '../_generated/api'
+import { zim, zia } from '../util'
 
 // Helper to verify data was copied correctly
 function verifyFieldsMatch(
@@ -35,10 +34,9 @@ function verifyFieldsMatch(
 }
 
 // Enhanced migration with verification and cleanup
-export const migrateAllUsers = zInternalMutation(
-  internalMutation,
-  {},
-  async (ctx) => {
+export const migrateAllUsers = zim({
+  args: {},
+  handler: async (ctx) => {
     const results = {
       migrated: [] as string[],
       alreadyMigrated: [] as string[],
@@ -270,14 +268,13 @@ export const migrateAllUsers = zInternalMutation(
 
     return results
   },
-  { returns: z.any() }
-)
+  returns: z.any(),
+})
 
 // Action wrapper to run the migration
-export const runMigration = zInternalAction(
-  internalAction,
-  {},
-  async (ctx): Promise<any> => {
+export const runMigration = zia({
+  args: {},
+  handler: async (ctx): Promise<any> => {
     console.log('🚀 Starting auto-migration with verification and cleanup...')
 
     const results: any = await ctx.runMutation(
@@ -299,6 +296,6 @@ export const runMigration = zInternalAction(
 
     return results
   },
-  { returns: z.any() }
-)
+  returns: z.any(),
+})
 

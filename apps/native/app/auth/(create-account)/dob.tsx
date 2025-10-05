@@ -67,6 +67,7 @@ export default function DOBScreen() {
 
       try {
         // Update the sign up with the user's date of birth
+        // Update metadata with date of birth
         await signUp.update({
           unsafeMetadata: {
             ...signUp.unsafeMetadata,
@@ -74,33 +75,40 @@ export default function DOBScreen() {
           },
         });
 
-        const { status, createdSessionId, missingFields, unverifiedFields } = await signUp.reload();
-        // Complete the signup process
+        // The signup likely completed during phone verification
+        // Access the session directly from Clerk client instead of signUp object
+        const sessions = clerk.client?.sessions;
+        const activeSession = sessions?.find((s) => s.status === 'active') || sessions?.[0];
 
-        if (status === 'complete') {
-          console.log('🎯 USERNAME: Signup complete, activating session and continuing onboarding');
-          await clerk.setActive({ session: createdSessionId });
+        if (activeSession) {
+          console.log('🎯 Activating Clerk session');
+          await clerk.setActive({ session: activeSession.id });
+          console.log('✅ Session activated, continuing to notifications');
+
           router.push('/auth/(create-account)/enable-notifications');
-        } else if (status === 'missing_requirements') {
-          const issues = [];
-          if (missingFields.length > 0) {
-            issues.push(`Missing fields: ${missingFields.join(', ')}`);
-          }
-          if (unverifiedFields.length > 0) {
-            issues.push(`Unverified fields: ${unverifiedFields.join(', ')}`);
-          }
-
-          if (issues.length > 0) {
-            setSignupError(issues.join('. '));
-          } else {
-            setSignupError('Account setup incomplete. Please try again.');
-          }
         } else {
-          setSignupError(`Account creation incomplete. Please try again. Status: ${status}`);
+          // Fallback: try reload and check for session in signUp
+          await signUp.reload();
+          const { createdSessionId } = signUp;
+
+          if (createdSessionId) {
+            console.log('🎯 Activating session from signUp object');
+            await clerk.setActive({ session: createdSessionId });
+            console.log('✅ Session activated, continuing to notifications');
+
+            router.push('/auth/(create-account)/enable-notifications');
+          } else {
+            setSignupError(
+              'Unable to complete signup. Please try again or contact support.'
+            );
+          }
         }
       } catch (error: any) {
+        console.error('Signup error:', error);
         const errorMessage =
-          error.errors?.[0]?.message || 'Failed to create account. Please try again.';
+          error.errors?.[0]?.message ||
+          error.message ||
+          'Failed to create account. Please try again.';
         setSignupError(errorMessage);
       } finally {
         setIsCreatingAccount(false);
@@ -148,7 +156,7 @@ export default function DOBScreen() {
           {isCreatingAccount && (
             <View className="flex-row items-center gap-2">
               <ActivityIndicator size="small" />
-              <Text className="text-sm text-text-disabled">Creating your account...</Text>
+              <Text className="text-sm text-text-disabled">Completing signup...</Text>
             </View>
           )}
         </View>

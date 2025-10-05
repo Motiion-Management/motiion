@@ -1,6 +1,6 @@
 import * as AlertDialogPrimitive from '@rn-primitives/alert-dialog';
 import { useAugmentedRef } from '@rn-primitives/hooks';
-import { Icon } from '@roninoss/icons';
+import { Icon } from '~/lib/icons/Icon';
 import * as React from 'react';
 import { View } from 'react-native';
 import { useReanimatedKeyboardAnimation } from 'react-native-keyboard-controller';
@@ -109,7 +109,7 @@ const Alert = React.forwardRef<AlertRef, AlertProps>(
                   className="min-w-72 max-w-xl rounded-3xl bg-surface-default p-6 pt-7 shadow-xl">
                   {!!materialIcon && (
                     <View className="items-center pb-4">
-                      <Icon color={colors.foreground} size={27} {...materialIcon} />
+                      <Icon tintColor={colors.foreground} size={27} {...materialIcon} />
                     </View>
                   )}
                   {message ? (

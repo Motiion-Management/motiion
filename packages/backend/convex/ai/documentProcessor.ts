@@ -1,12 +1,11 @@
 'use node'
 
-import { internalAction } from '../_generated/server'
 import { internal } from '../_generated/api'
 import OpenAI from 'openai'
 import { ConvexError } from 'convex/values'
-import { zInternalAction } from 'zodvex'
 import { z } from 'zod'
 import { zid } from 'zodvex'
+import { zia } from '../util'
 import {
   resumeSchema,
   resumeAISchema,
@@ -27,12 +26,12 @@ import {
   createVisionExtractionPrompt
 } from './shared'
 
-export const parseResumeDocument = zInternalAction(
-  internalAction,
-  {
+export const parseResumeDocument = zia({
+  args: {
     storageId: zid('_storage'),
     retryCount: z.number().optional()
   },
+  handler:
   async (ctx, args): Promise<ParsedResumeData> => {
     const retryCount = args.retryCount || 0
     const maxRetries = 2
@@ -93,8 +92,8 @@ export const parseResumeDocument = zInternalAction(
       )
     }
   },
-  { returns: resumeSchema }
-)
+  returns: resumeSchema,
+})
 
 // Helper function to determine if file is a Word document
 function isWordDocument(contentType: string, fileName: string): boolean {

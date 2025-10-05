@@ -1,4 +1,4 @@
-import { Icon, type IconProps } from '@roninoss/icons';
+import { Icon, type IconProps } from '~/lib/icons/Icon';
 import * as React from 'react';
 import { Platform, View, ViewProps, ViewStyle } from 'react-native';
 
@@ -75,7 +75,7 @@ const FormSection = React.forwardRef<any, FormSectionProps>(
         )}
         {!!materialIconProps && (
           <View className="ios:hidden pt-0.5">
-            <Icon color={colors.grey} size={24} {...(materialIconProps as IconProps<any>)} />
+            <Icon tintColor={colors.grey} size={24} {...materialIconProps} />
           </View>
         )}
         <View className="flex-1">

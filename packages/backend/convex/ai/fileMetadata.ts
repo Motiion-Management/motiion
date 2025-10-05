@@ -1,8 +1,7 @@
-import { internalQuery } from '../_generated/server'
 import { Id } from '../_generated/dataModel'
-import { zInternalQuery } from 'zodvex'
 import { z } from 'zod'
 import { zid } from 'zodvex'
+import { ziq } from '../util'
 
 // Define the file metadata schema
 const fileMetadataSchema = z.object({
@@ -14,10 +13,9 @@ const fileMetadataSchema = z.object({
 })
 
 // Query to get file metadata from the _storage system table
-export const getFileMetadata = zInternalQuery(
-  internalQuery,
-  { storageId: zid('_storage') },
-  async (ctx, args): Promise<{
+export const getFileMetadata = ziq({
+  args: { storageId: zid('_storage') },
+  handler: async (ctx, args): Promise<{
     _id: Id<'_storage'>
     _creationTime: number
     contentType?: string
@@ -26,5 +24,5 @@ export const getFileMetadata = zInternalQuery(
   } | null> => {
     return await ctx.db.system.get(args.storageId)
   },
-  { returns: z.union([fileMetadataSchema, z.null()]) }
-)
+  returns: z.union([fileMetadataSchema, z.null()]),
+})
