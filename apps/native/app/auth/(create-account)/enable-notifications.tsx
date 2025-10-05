@@ -17,6 +17,10 @@ import { Button } from '~/components/ui/button';
 
 type UserReadyState = 'polling' | 'ready' | 'timeout';
 
+const USER_POLL_MAX_WAIT_MS = 5000;
+const USER_POLL_INTERVAL_MS = 200;
+const USER_POLL_CHECK_INTERVAL_MS = 100;
+
 export default function EnableNotificationsScreen() {
   const [isProcessing, setIsProcessing] = useState(false);
   const [userReadyState, setUserReadyState] = useState<UserReadyState>('polling');
@@ -32,13 +36,11 @@ export default function EnableNotificationsScreen() {
     if (!user?.id) return;
 
     const pollForUser = async () => {
-      const maxWaitMs = 5000;
-      const pollIntervalMs = 200;
       const startTime = Date.now();
 
       console.log('🔍 Polling for user existence in Convex...');
 
-      while (Date.now() - startTime < maxWaitMs) {
+      while (Date.now() - startTime < USER_POLL_MAX_WAIT_MS) {
         try {
           const exists = await convex.query(api.users.users.userExistsByTokenId, {
             tokenId: user.id,
@@ -55,7 +57,7 @@ export default function EnableNotificationsScreen() {
           console.warn('⚠️ Error checking user existence:', error);
         }
 
-        await new Promise((resolve) => setTimeout(resolve, pollIntervalMs));
+        await new Promise((resolve) => setTimeout(resolve, USER_POLL_INTERVAL_MS));
       }
 
       console.error('⏱️ User creation timeout after 5s');
@@ -82,7 +84,7 @@ export default function EnableNotificationsScreen() {
           clearInterval(checkInterval);
           resolve(false);
         }
-      }, 100);
+      }, USER_POLL_CHECK_INTERVAL_MS);
     });
   }
 
