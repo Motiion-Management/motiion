@@ -66,8 +66,7 @@ export default function DOBScreen() {
       setSignupError(null);
 
       try {
-        // Update the sign up with the user's date of birth
-        // Update metadata with date of birth
+        // Save date of birth to user metadata
         await signUp.update({
           unsafeMetadata: {
             ...signUp.unsafeMetadata,
@@ -75,32 +74,33 @@ export default function DOBScreen() {
           },
         });
 
-        // The signup likely completed during phone verification
-        // Access the session directly from Clerk client instead of signUp object
+        // Session was created during phone verification
+        // Try to access it from two sources (both are valid Clerk patterns):
+        // 1. Clerk client sessions (faster, session may already be there)
+        // 2. SignUp object after reload (official documented pattern)
+
         const sessions = clerk.client?.sessions;
         const activeSession = sessions?.find((s) => s.status === 'active') || sessions?.[0];
 
         if (activeSession) {
-          console.log('🎯 Activating Clerk session');
+          console.log('🎯 Activating session from clerk.client');
           await clerk.setActive({ session: activeSession.id });
           console.log('✅ Session activated, continuing to notifications');
 
           router.push('/auth/(create-account)/enable-notifications');
         } else {
-          // Fallback: try reload and check for session in signUp
+          // Fallback: Refresh SignUp object and get createdSessionId
           await signUp.reload();
           const { createdSessionId } = signUp;
 
           if (createdSessionId) {
-            console.log('🎯 Activating session from signUp object');
+            console.log('🎯 Activating session from signUp.createdSessionId');
             await clerk.setActive({ session: createdSessionId });
             console.log('✅ Session activated, continuing to notifications');
 
             router.push('/auth/(create-account)/enable-notifications');
           } else {
-            setSignupError(
-              'Unable to complete signup. Please try again or contact support.'
-            );
+            setSignupError('Unable to complete signup. Please try again or contact support.');
           }
         }
       } catch (error: any) {
