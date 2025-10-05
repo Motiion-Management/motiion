@@ -50,12 +50,9 @@ export type ProfileType = 'dancer' | 'choreographer' | 'guest'
 export const users = {
   // meta
   tokenId: z.string(),
-  type: z.literal('member'),
+  type: z.literal('member'), // for future use
   isAdmin: z.boolean(),
-  searchPattern: z.string().optional(),
-  pointsEarned: z.number(),
-  profileType: z.enum(['dancer', 'choreographer', 'guest']).optional(),
-  favoriteUsers: z.array(zid('users')).optional(),
+
   pushTokens: z
     .array(
       z.object({
@@ -65,6 +62,14 @@ export const users = {
       })
     )
     .optional(),
+
+  // to be removed
+  profileType: z.enum(['dancer', 'choreographer', 'guest']).optional(),
+
+  // to be moved to dancer/choreographer profiles
+  searchPattern: z.string().optional(),
+  pointsEarned: z.number(),
+  favoriteUsers: z.array(zid('users')).optional(), // should be favoriteDancers and favoriteChoreographers
 
   // New onboarding tracking
   onboardingCompleted: z.boolean().optional(),

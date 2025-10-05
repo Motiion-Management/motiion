@@ -53,7 +53,7 @@ const schema = defineSchema(
   },
   {
     // ONLY ENABLE WHEN DOING SCHEMA MIGRATION
-    schemaValidation: false
+    schemaValidation: true
   }
 )
 
