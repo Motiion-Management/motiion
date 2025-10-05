@@ -63,34 +63,38 @@ export const users = {
     )
     .optional(),
 
-  // to be removed
+  // DEPRECATED: Will be removed after migration to dancers/choreographers
   profileType: z.enum(['dancer', 'choreographer', 'guest']).optional(),
 
-  // to be moved to dancer/choreographer profiles
+  // DEPRECATED: Moved to profiles
   searchPattern: z.string().optional(),
-  pointsEarned: z.number(),
-  favoriteUsers: z.array(zid('users')).optional(), // should be favoriteDancers and favoriteChoreographers
 
-  // New onboarding tracking
+  // DEPRECATED: Converted to favoriteDancers/favoriteChoreographers on profiles
+  favoriteUsers: z.array(zid('users')).optional(),
+
+  // DEPRECATED: Moved to profiles (onboarding is per-profile)
   onboardingCompleted: z.boolean().optional(),
-  onboardingCompletedAt: z.string().optional(), // ISO date string
+  onboardingCompletedAt: z.string().optional(),
   onboardingVersion: z.string().optional(),
-
-  // Navigation position tracking (separate from data completion)
   currentOnboardingStep: z.string().optional(),
   currentOnboardingStepIndex: z.number().optional(),
 
-  // Legacy compatibility field (remove when web app is updated)
+  // DEPRECATED: Legacy compatibility field, remove after migration
   onboardingStep: z.string().optional(),
 
   // user info
   email: z.string(),
   firstName: z.string().optional(),
   lastName: z.string().optional(),
+
+  // DEPRECATED: Moved to dancer/choreographer profiles
   displayName: z.string().optional(),
+
   fullName: z.string().optional(),
   phone: z.string().optional(),
   dateOfBirth: z.string().optional(),
+
+  // DEPRECATED: Moved to profiles
   location: zLocation.optional(),
 
   // DEPRECATED: These fields are being migrated to dancers/choreographers tables
