@@ -1,7 +1,5 @@
-import { SymbolView } from 'expo-symbols';
+import { SymbolView, SymbolViewProps } from 'expo-symbols';
 import { cssInterop } from 'nativewind';
-import type { ComponentPropsWithoutRef } from 'react';
-import type { ColorValue } from 'react-native';
 
 // Register SymbolView with cssInterop to enable className support
 // Maps className color utilities (e.g., text-icon-default) to tintColor prop
@@ -14,13 +12,7 @@ cssInterop(SymbolView, {
   },
 });
 
-export interface IconProps {
-  name: string; // Accept any SF Symbol name (e.g., 'bell', 'checkmark', 'chevron.down')
-  size?: number;
-  tintColor?: ColorValue;
-  className?: string;
-  strokeWidth?: number; // Accept but ignore for backward compatibility
-}
+export interface IconProps extends SymbolViewProps {}
 
 // TODO: ANDROID - Add fallback for Android support
 // When Android support is needed:
@@ -36,9 +28,6 @@ export interface IconProps {
 // 4. Create mapping from SF Symbol names to Material icon names
 //    (or accept different icon names per platform via props)
 
-export function Icon({ name, size = 24, tintColor, className, strokeWidth, ...props }: IconProps) {
-  const SymbolViewAny = SymbolView as any;
-  return (
-    <SymbolViewAny name={name} size={size} tintColor={tintColor} className={className} {...props} />
-  );
+export function Icon({ size = 24, ...props }: IconProps) {
+  return <SymbolView size={size} {...props} />;
 }
