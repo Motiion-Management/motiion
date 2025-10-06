@@ -41,12 +41,28 @@ export const completeOnboarding: RegisteredMutation<
       !user.activeChoreographerId
     ) {
       await createProfileFromUserData(ctx, user)
+      // Reload user to get the newly created active profile ID
+      const updatedUser = await ctx.db.get(user._id)
+      if (!updatedUser) {
+        throw new ConvexError('Failed to reload user after profile creation')
+      }
+      user._id = updatedUser._id
+      user.activeDancerId = updatedUser.activeDancerId
+      user.activeChoreographerId = updatedUser.activeChoreographerId
     }
 
-    // Mark onboarding as completed (non-blocking; individual screens own validation)
-    await ctx.db.patch(user._id, {
+    // Get active profile ID
+    const activeProfileId =
+      user.activeDancerId || user.activeChoreographerId
+    if (!activeProfileId) {
+      throw new ConvexError('No active profile found')
+    }
+
+    // Mark onboarding as completed on the profile (non-blocking; individual screens own validation)
+    await ctx.db.patch(activeProfileId, {
       onboardingCompleted: true,
-      onboardingCompletedAt: new Date().toISOString()
+      onboardingCompletedAt: new Date().toISOString(),
+      onboardingVersion: CURRENT_ONBOARDING_VERSION
     })
 
     return { success: true }
@@ -74,8 +90,15 @@ export const resetOnboarding: RegisteredMutation<
       throw new ConvexError('User not found')
     }
 
-    // Reset onboarding status (useful for testing or major onboarding changes)
-    await ctx.db.patch(user._id, {
+    // Get active profile ID
+    const activeProfileId =
+      user.activeDancerId || user.activeChoreographerId
+    if (!activeProfileId) {
+      throw new ConvexError('No active profile found')
+    }
+
+    // Reset onboarding status on profile (useful for testing or major onboarding changes)
+    await ctx.db.patch(activeProfileId, {
       onboardingCompleted: false,
       onboardingCompletedAt: undefined,
       onboardingVersion: undefined,
@@ -110,6 +133,13 @@ export const setOnboardingStep = zm({
       throw new ConvexError('User not found')
     }
 
+    // Get active profile ID
+    const activeProfileId =
+      user.activeDancerId || user.activeChoreographerId
+    if (!activeProfileId) {
+      throw new ConvexError('No active profile found')
+    }
+
     const profileType = (user.profileType || 'dancer') as ProfileType
     const flow = getOnboardingFlowConfig(profileType)
     const stepIndex = flow.findIndex((s) => s.step === step)
@@ -118,7 +148,7 @@ export const setOnboardingStep = zm({
       throw new ConvexError(`Invalid step: ${step}`)
     }
 
-    await ctx.db.patch(user._id, {
+    await ctx.db.patch(activeProfileId, {
       currentOnboardingStep: step,
       currentOnboardingStepIndex: stepIndex
     })
@@ -149,12 +179,25 @@ export const getOnboardingRedirect = query({
       return { shouldRedirect: false, redirectPath: '/app' }
     }
 
-    // If onboarding completed, never redirect to onboarding
-    if (user.onboardingCompleted) {
+    // Get active profile for onboarding status (with fallback to user for backward compatibility)
+    let profile = null
+    const activeProfileId =
+      user.activeDancerId || user.activeChoreographerId
+    if (activeProfileId) {
+      profile = await ctx.db.get(activeProfileId)
+    }
+
+    // Check onboarding completion (profile first, fallback to user)
+    const onboardingCompleted = profile?.onboardingCompleted || user.onboardingCompleted
+    if (onboardingCompleted) {
       return { shouldRedirect: false, redirectPath: '/app' }
     }
 
-    const step = (user.currentOnboardingStep as STEP) || 'profile-type'
+    // Get current step (profile first, fallback to user)
+    const step =
+      (profile?.currentOnboardingStep as STEP) ||
+      (user.currentOnboardingStep as STEP) ||
+      'profile-type'
     const redirectPath = STEP_ROUTES[step]
     return { shouldRedirect: true, redirectPath }
   }
@@ -200,15 +243,23 @@ export const updateOnboardingStatus = mutation({
 
     const status = getFlowCompletionStatus(user, profileType, profile)
 
-    // Update user's current step if it's different
+    // Update profile's current step if it's different
     let wasUpdated = false
     const newStep = status.nextIncompleteStep || 'review'
 
-    if (user.currentOnboardingStep !== newStep) {
+    // Get active profile ID
+    const activeProfileId =
+      user.activeDancerId || user.activeChoreographerId
+    if (!activeProfileId) {
+      throw new ConvexError('No active profile found')
+    }
+
+    const currentStep = profile?.currentOnboardingStep || user.currentOnboardingStep
+    if (currentStep !== newStep) {
       const flow = getOnboardingFlowConfig(profileType)
       const stepIndex = flow.findIndex((s) => s.step === newStep)
 
-      await ctx.db.patch(user._id, {
+      await ctx.db.patch(activeProfileId, {
         currentOnboardingStep: newStep,
         currentOnboardingStepIndex: stepIndex
       })

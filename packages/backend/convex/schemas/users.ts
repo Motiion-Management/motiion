@@ -69,6 +69,9 @@ export const users = {
   // DEPRECATED: Moved to profiles
   searchPattern: z.string().optional(),
 
+  // DEPRECATED: Not in designs, will be removed
+  pointsEarned: z.number().optional(),
+
   // DEPRECATED: Converted to favoriteDancers/favoriteChoreographers on profiles
   favoriteUsers: z.array(zid('users')).optional(),
 

@@ -31,6 +31,8 @@ import type * as files from "../files.js";
 import type * as http from "../http.js";
 import type * as migrations_autoMigrateAndCleanup from "../migrations/autoMigrateAndCleanup.js";
 import type * as migrations_migrateDates from "../migrations/migrateDates.js";
+import type * as migrations_migrateUsersToDancers from "../migrations/migrateUsersToDancers.js";
+import type * as migrations_populateProfileIds from "../migrations/populateProfileIds.js";
 import type * as onboarding from "../onboarding.js";
 import type * as onboardingConfig from "../onboardingConfig.js";
 import type * as profiles_common from "../profiles/common.js";
@@ -85,6 +87,8 @@ declare const fullApi: ApiFromModules<{
   http: typeof http;
   "migrations/autoMigrateAndCleanup": typeof migrations_autoMigrateAndCleanup;
   "migrations/migrateDates": typeof migrations_migrateDates;
+  "migrations/migrateUsersToDancers": typeof migrations_migrateUsersToDancers;
+  "migrations/populateProfileIds": typeof migrations_populateProfileIds;
   onboarding: typeof onboarding;
   onboardingConfig: typeof onboardingConfig;
   "profiles/common": typeof profiles_common;

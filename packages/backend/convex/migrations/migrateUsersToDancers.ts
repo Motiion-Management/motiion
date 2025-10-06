@@ -1,0 +1,227 @@
+import { internalMutation } from '../_generated/server'
+import { internal } from '../_generated/api'
+import { v } from 'convex/values'
+import type { Id } from '../_generated/dataModel'
+
+/**
+ * Phase 3: Migration Functions (Don't Run Yet)
+ *
+ * These functions migrate profile data from users table to dancers table.
+ * They also REMOVE data from the original user fields to prevent duplicate sources of truth.
+ */
+
+export const migrateUserToDancerProfile = internalMutation({
+  args: { userId: v.id('users') },
+  returns: v.object({
+    success: v.boolean(),
+    profileId: v.union(v.id('dancers'), v.null()),
+    message: v.string()
+  }),
+  handler: async (ctx, { userId }) => {
+    const user = await ctx.db.get(userId as Id<'users'>)
+    if (!user) {
+      return { success: false, profileId: null, message: 'User not found' }
+    }
+
+    // Skip if already migrated
+    if (user.activeDancerId) {
+      return {
+        success: true,
+        profileId: user.activeDancerId,
+        message: 'Already migrated'
+      }
+    }
+
+    // Check if profile already exists
+    const existing = await ctx.db
+      .query('dancers')
+      .withIndex('by_userId', (q) => q.eq('userId', userId))
+      .first()
+
+    if (existing) {
+      // Update user reference
+      await ctx.db.patch(userId, {
+        activeProfileType: 'dancer',
+        activeDancerId: existing._id
+      })
+      return {
+        success: true,
+        profileId: existing._id,
+        message: 'Profile existed, linked to user'
+      }
+    }
+
+    // Create dancer profile with all user data
+    const profileId = await ctx.db.insert('dancers', {
+      userId,
+      isPrimary: true,
+      createdAt: new Date().toISOString(),
+
+      // Identity
+      displayName: user.displayName,
+
+      // Onboarding state
+      onboardingCompleted: user.onboardingCompleted || false,
+      onboardingCompletedAt: user.onboardingCompletedAt,
+      onboardingVersion: user.onboardingVersion,
+      currentOnboardingStep: user.currentOnboardingStep,
+      currentOnboardingStepIndex: user.currentOnboardingStepIndex,
+
+      // Profile data
+      headshots: user.headshots,
+      attributes: user.attributes,
+      sizing: user.sizing,
+      location: user.location,
+      representation: user.representation,
+      representationStatus: user.representationStatus,
+      links: user.links,
+      sagAftraId: user.sagAftraId,
+      workLocation: user.workLocation,
+      training: user.training,
+      searchPattern: user.searchPattern || '',
+
+      // Resume flattened
+      projects: user.resume?.projects,
+      skills: user.resume?.skills,
+      genres: user.resume?.genres,
+      resumeUploads: user.resume?.uploads,
+
+      // Import tracking
+      resumeImportedFields: user.resumeImportedFields,
+      resumeImportVersion: user.resumeImportVersion,
+      resumeImportedAt: user.resumeImportedAt,
+
+      // Favorites (converted - will populate separately)
+      favoriteDancers: [],
+      favoriteChoreographers: [],
+
+      profileCompleteness: 0,
+      profileTipDismissed: user.profileTipDismissed
+    })
+
+    // Update user with profile reference
+    await ctx.db.patch(userId, {
+      activeProfileType: 'dancer',
+      activeDancerId: profileId
+    })
+
+    // REMOVE DATA FROM USER (critical!)
+    await ctx.db.patch(userId, {
+      profileType: undefined,
+      displayName: undefined,
+      location: undefined,
+      searchPattern: undefined,
+      onboardingCompleted: undefined,
+      onboardingCompletedAt: undefined,
+      onboardingVersion: undefined,
+      currentOnboardingStep: undefined,
+      currentOnboardingStepIndex: undefined,
+      // Don't remove favoriteUsers yet (need to convert first)
+      headshots: undefined,
+      attributes: undefined,
+      sizing: undefined,
+      representation: undefined,
+      representationStatus: undefined,
+      links: undefined,
+      sagAftraId: undefined,
+      workLocation: undefined,
+      training: undefined,
+      resume: undefined,
+      resumeImportedFields: undefined,
+      resumeImportVersion: undefined,
+      resumeImportedAt: undefined,
+      profileTipDismissed: undefined,
+      onboardingStep: undefined // Legacy field
+    })
+
+    return {
+      success: true,
+      profileId,
+      message: 'Profile created and data migrated'
+    }
+  }
+})
+
+export const migrateFavorites = internalMutation({
+  args: { userId: v.id('users') },
+  returns: v.object({ success: v.boolean(), converted: v.number() }),
+  handler: async (ctx, { userId }) => {
+    const user = await ctx.db.get(userId as Id<'users'>)
+    if (!user || !user.activeDancerId) {
+      return { success: false, converted: 0 }
+    }
+
+    const favoriteUsers = user.favoriteUsers || []
+    const favoriteDancers: Id<'dancers'>[] = []
+    const favoriteChoreographers: Id<'choreographers'>[] = []
+
+    for (const favUserId of favoriteUsers) {
+      const favUser = await ctx.db.get(favUserId as Id<'users'>)
+      if (!favUser) continue // Skip deleted users
+
+      if (favUser.activeDancerId) {
+        favoriteDancers.push(favUser.activeDancerId)
+      }
+      if (favUser.activeChoreographerId) {
+        favoriteChoreographers.push(favUser.activeChoreographerId)
+      }
+    }
+
+    // Update dancer profile with converted favorites
+    await ctx.db.patch(user.activeDancerId, {
+      favoriteDancers,
+      favoriteChoreographers
+    })
+
+    // Remove from user
+    await ctx.db.patch(userId, {
+      favoriteUsers: undefined
+    })
+
+    return {
+      success: true,
+      converted: favoriteDancers.length + favoriteChoreographers.length
+    }
+  }
+})
+
+export const migrateAllUsers = internalMutation({
+  args: {},
+  returns: v.object({
+    total: v.number(),
+    migrated: v.number(),
+    errors: v.number()
+  }),
+  handler: async (ctx) => {
+    const users = await ctx.db.query('users').collect()
+    let migrated = 0
+    let errors = 0
+
+    for (const user of users) {
+      try {
+        const result = await ctx.runMutation(
+          internal.migrations.migrateUsersToDancers.migrateUserToDancerProfile,
+          { userId: user._id }
+        )
+        if (result.success) migrated++
+      } catch (error) {
+        console.error('Migration error for user', user._id, error)
+        errors++
+      }
+    }
+
+    // Convert favorites after all profiles created
+    for (const user of users) {
+      try {
+        await ctx.runMutation(
+          internal.migrations.migrateUsersToDancers.migrateFavorites,
+          { userId: user._id }
+        )
+      } catch (error) {
+        console.error('Favorites migration error', user._id, error)
+      }
+    }
+
+    return { total: users.length, migrated, errors }
+  }
+})

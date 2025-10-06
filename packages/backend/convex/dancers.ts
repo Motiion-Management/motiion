@@ -65,14 +65,18 @@ export const createDancerProfile = zAuthMutation({
     // If this is their first profile, mark as primary
     const isPrimary = !existing
 
-    // Create the dancer profile
+    // Create the dancer profile with initial onboarding state
     const insertData: any = {
       ...input,
       userId: ctx.user._id,
       isPrimary,
       createdAt: new Date().toISOString(),
       profileCompleteness: 0,
-      searchPattern: generateSearchPattern(input)
+      searchPattern: generateSearchPattern(input),
+      // Initialize onboarding state
+      onboardingCompleted: false,
+      currentOnboardingStep: 'headshots',
+      currentOnboardingStepIndex: 1
     }
     const profileId = await ctx.db.insert('dancers', insertData)
 
@@ -284,22 +288,16 @@ export const calculateDancerCompleteness = zAuthMutation({
       score += weights.headshots
     if (profile.attributes) score += weights.attributes
     if (profile.sizing) score += weights.sizing
-    if (
-      profile.resume &&
-      typeof profile.resume === 'object' &&
-      'projects' in profile.resume &&
-      Array.isArray(profile.resume.projects) &&
-      profile.resume.projects.length > 0
-    )
+
+    // Use flattened resume fields (with fallback to nested resume for backward compatibility)
+    const projects = profile.projects || profile.resume?.projects
+    if (projects && Array.isArray(projects) && projects.length > 0)
       score += weights.resume
-    if (
-      profile.resume &&
-      typeof profile.resume === 'object' &&
-      'skills' in profile.resume &&
-      Array.isArray(profile.resume.skills) &&
-      profile.resume.skills.length > 0
-    )
+
+    const skills = profile.skills || profile.resume?.skills
+    if (skills && Array.isArray(skills) && skills.length > 0)
       score += weights.skills
+
     if (
       profile.training &&
       Array.isArray(profile.training) &&
@@ -319,6 +317,102 @@ export const calculateDancerCompleteness = zAuthMutation({
   }
 })
 
+// Add a dancer to favorites
+export const addFavoriteDancer = zAuthMutation({
+  args: { dancerId: zid('dancers') },
+  returns: z.null(),
+  handler: async (ctx, { dancerId }) => {
+    if (!ctx.user.activeDancerId) {
+      throw new ConvexError('No active dancer profile found')
+    }
+
+    const profile = await ctx.db.get(ctx.user.activeDancerId)
+    if (!profile || profile.userId !== ctx.user._id) {
+      throw new ConvexError('Profile not found or access denied')
+    }
+
+    const existing = profile.favoriteDancers || []
+    if (existing.includes(dancerId)) {
+      return null // Already favorited
+    }
+
+    await ctx.db.patch(ctx.user.activeDancerId, {
+      favoriteDancers: [...existing, dancerId]
+    })
+    return null
+  }
+})
+
+// Remove a dancer from favorites
+export const removeFavoriteDancer = zAuthMutation({
+  args: { dancerId: zid('dancers') },
+  returns: z.null(),
+  handler: async (ctx, { dancerId }) => {
+    if (!ctx.user.activeDancerId) {
+      throw new ConvexError('No active dancer profile found')
+    }
+
+    const profile = await ctx.db.get(ctx.user.activeDancerId)
+    if (!profile || profile.userId !== ctx.user._id) {
+      throw new ConvexError('Profile not found or access denied')
+    }
+
+    const existing = profile.favoriteDancers || []
+    await ctx.db.patch(ctx.user.activeDancerId, {
+      favoriteDancers: existing.filter((id) => id !== dancerId)
+    })
+    return null
+  }
+})
+
+// Add a choreographer to favorites
+export const addFavoriteChoreographer = zAuthMutation({
+  args: { choreographerId: zid('choreographers') },
+  returns: z.null(),
+  handler: async (ctx, { choreographerId }) => {
+    if (!ctx.user.activeDancerId) {
+      throw new ConvexError('No active dancer profile found')
+    }
+
+    const profile = await ctx.db.get(ctx.user.activeDancerId)
+    if (!profile || profile.userId !== ctx.user._id) {
+      throw new ConvexError('Profile not found or access denied')
+    }
+
+    const existing = profile.favoriteChoreographers || []
+    if (existing.includes(choreographerId)) {
+      return null // Already favorited
+    }
+
+    await ctx.db.patch(ctx.user.activeDancerId, {
+      favoriteChoreographers: [...existing, choreographerId]
+    })
+    return null
+  }
+})
+
+// Remove a choreographer from favorites
+export const removeFavoriteChoreographer = zAuthMutation({
+  args: { choreographerId: zid('choreographers') },
+  returns: z.null(),
+  handler: async (ctx, { choreographerId }) => {
+    if (!ctx.user.activeDancerId) {
+      throw new ConvexError('No active dancer profile found')
+    }
+
+    const profile = await ctx.db.get(ctx.user.activeDancerId)
+    if (!profile || profile.userId !== ctx.user._id) {
+      throw new ConvexError('Profile not found or access denied')
+    }
+
+    const existing = profile.favoriteChoreographers || []
+    await ctx.db.patch(ctx.user.activeDancerId, {
+      favoriteChoreographers: existing.filter((id) => id !== choreographerId)
+    })
+    return null
+  }
+})
+
 // Helper function to generate search pattern
 function generateSearchPattern(data: any): string {
   const parts = []
@@ -328,9 +422,12 @@ function generateSearchPattern(data: any): string {
   if (data.attributes?.gender) parts.push(data.attributes.gender)
   if (data.attributes?.hairColor) parts.push(data.attributes.hairColor)
 
-  // Add skills
-  if (data.resume?.skills) parts.push(...data.resume.skills)
-  if (data.resume?.genres) parts.push(...data.resume.genres)
+  // Add skills (use flattened fields with fallback to nested resume)
+  const skills = data.skills || data.resume?.skills
+  if (skills) parts.push(...skills)
+
+  const genres = data.genres || data.resume?.genres
+  if (genres) parts.push(...genres)
 
   // Add location
   if (data.location?.city) parts.push(data.location.city)

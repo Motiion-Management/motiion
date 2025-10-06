@@ -434,13 +434,15 @@ export const STEP_VALIDATORS: Record<string, StepValidator> = {
   },
 
   projects: (user, profile) => {
-    const resume = profile?.resume || user.resume
-    return !!(resume?.projects && resume.projects.length > 0)
+    // Use flattened fields with fallback to nested resume
+    const projects = profile?.projects || user.resume?.projects
+    return !!(projects && projects.length > 0)
   },
 
   skills: (user, profile) => {
-    const resume = profile?.resume || user.resume
-    return !!(resume?.skills && resume.skills.length > 0)
+    // Use flattened fields with fallback to nested resume
+    const skills = profile?.skills || user.resume?.skills
+    return !!(skills && skills.length > 0)
   },
 
   union: (user, profile) => true, // Optional step, always considered complete
