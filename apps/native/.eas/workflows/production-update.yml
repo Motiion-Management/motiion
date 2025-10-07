@@ -8,4 +8,4 @@ jobs:
     type: update
     params:
       platform: ios
-      channel: production
+      branch: production

@@ -10,4 +10,4 @@ jobs:
     type: update
     params:
       platform: ios
-      channel: development
+      branch: development
