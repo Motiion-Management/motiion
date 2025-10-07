@@ -42,15 +42,18 @@ export function MultiImageUploadOptimized({ onImageCountChange }: MultiImageUplo
 
   // Convex mutations and queries
   const generateUploadUrl = useMutation(api.files.generateUploadUrl);
-  const saveHeadshotIds = useMutation(api.users.headshots.saveHeadshotIds);
-  const removeHeadshot = useMutation(api.users.headshots.removeHeadshot);
-  const updateHeadshotPosition = useMutation(api.users.headshots.updateHeadshotPosition);
+  const updateMyDancerProfile = useMutation(api.dancers.updateMyDancerProfile);
 
-  // Use optimized query that doesn't block on URL generation
-  const headshotsMetadata = useQuery(api.users.headshotsOptimized.getMyHeadshotsMetadata);
+  // Get headshots from profile
+  const profile = useQuery(api.dancers.getMyDancerProfile, {});
+  const headshotsMetadata = profile?.headshots ?? [];
+
+  // Get URLs for all headshots
   const getHeadshotUrls = useQuery(
-    api.users.headshotsOptimized.getHeadshotUrls,
-    headshotsMetadata ? { storageIds: headshotsMetadata.map((h: any) => h.storageId) } : 'skip'
+    api.files.getUrls,
+    headshotsMetadata.length > 0
+      ? { storageIds: headshotsMetadata.map((h: any) => h.storageId) }
+      : 'skip'
   );
 
   // Update local state when metadata or URLs change
@@ -169,8 +172,11 @@ export function MultiImageUploadOptimized({ onImageCountChange }: MultiImageUplo
           setUploadState({ isUploading: true, progress, error: null });
         }
 
-        // Save all headshots at once
-        await saveHeadshotIds({ headshots });
+        // Save all headshots at once by appending to existing headshots
+        const currentHeadshots = profile?.headshots ?? [];
+        await updateMyDancerProfile({
+          headshots: [...currentHeadshots, ...headshots]
+        });
 
         setUploadState({ isUploading: false, progress: 100, error: null });
 
@@ -183,7 +189,7 @@ export function MultiImageUploadOptimized({ onImageCountChange }: MultiImageUplo
         setUploadState({ isUploading: false, progress: 0, error: errorMessage });
       }
     },
-    [generateUploadUrl, saveHeadshotIds, headshotsWithUrls.length, onImageCountChange]
+    [generateUploadUrl, updateMyDancerProfile, profile, headshotsWithUrls.length, onImageCountChange]
   );
 
   const handleImageUpload = useCallback(async () => {
@@ -218,7 +224,9 @@ export function MultiImageUploadOptimized({ onImageCountChange }: MultiImageUplo
   const handleRemoveImage = useCallback(
     async (storageId: string) => {
       try {
-        await removeHeadshot({ headshotId: storageId as any });
+        const currentHeadshots = profile?.headshots ?? [];
+        const updatedHeadshots = currentHeadshots.filter((h: any) => h.storageId !== storageId);
+        await updateMyDancerProfile({ headshots: updatedHeadshots });
         if (onImageCountChange) {
           onImageCountChange(Math.max(0, headshotsWithUrls.length - 1));
         }
@@ -226,7 +234,7 @@ export function MultiImageUploadOptimized({ onImageCountChange }: MultiImageUplo
         console.error('Failed to remove image:', error);
       }
     },
-    [removeHeadshot, headshotsWithUrls.length, onImageCountChange]
+    [updateMyDancerProfile, profile, headshotsWithUrls.length, onImageCountChange]
   );
 
   // Derive first 3 headshots for this UI and remaining slots
@@ -269,12 +277,18 @@ export function MultiImageUploadOptimized({ onImageCountChange }: MultiImageUplo
       });
 
       // Persist; rollback on failure
-      updateHeadshotPosition({
-        headshots: nextHeadshots.map((h, idx) => ({
-          storageId: h.storageId as any,
-          position: idx,
+      const currentHeadshots = profile?.headshots ?? [];
+      const tail = currentHeadshots.slice(3);
+      const reorderedHeadshots = [
+        ...nextHeadshots.map((h, idx) => ({
+          storageId: h.storageId,
+          uploadDate: h.uploadDate || new Date().toISOString(),
+          title: h.title,
+          position: idx
         })),
-      }).catch(() => {
+        ...tail
+      ];
+      updateMyDancerProfile({ headshots: reorderedHeadshots as any }).catch(() => {
         setHeadshotsWithUrls((current) => {
           const tail = current.slice(3);
           const updatedFirst = prev.map((item, idx) => ({ ...item, position: idx }));
@@ -283,7 +297,7 @@ export function MultiImageUploadOptimized({ onImageCountChange }: MultiImageUplo
         Alert.alert('Reorder failed', 'Your order change could not be saved.');
       });
     },
-    [sortableHeadshots, remainingSlots, updateHeadshotPosition]
+    [sortableHeadshots, remainingSlots, updateMyDancerProfile, profile]
   );
 
   // Show skeleton while initial metadata is loading

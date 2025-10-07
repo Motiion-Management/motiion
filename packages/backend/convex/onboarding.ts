@@ -123,7 +123,7 @@ export const setOnboardingStep = zm({
       throw new ConvexError('No active profile found')
     }
 
-    const profileType = (user.profileType || 'dancer') as ProfileType
+    const profileType = (user.activeProfileType || 'dancer') as ProfileType
     const flow = getOnboardingFlowConfig(profileType)
     const stepIndex = flow.findIndex((s) => s.step === step)
 
@@ -170,16 +170,15 @@ export const getOnboardingRedirect = query({
       profile = await ctx.db.get(activeProfileId)
     }
 
-    // Check onboarding completion (profile first, fallback to user)
-    const onboardingCompleted = profile?.onboardingCompleted || user.onboardingCompleted
+    // Check onboarding completion from profile
+    const onboardingCompleted = profile?.onboardingCompleted
     if (onboardingCompleted) {
       return { shouldRedirect: false, redirectPath: '/app' }
     }
 
-    // Get current step (profile first, fallback to user)
+    // Get current step from profile
     const step =
       (profile?.currentOnboardingStep as STEP) ||
-      (user.currentOnboardingStep as STEP) ||
       'profile-type'
     const redirectPath = STEP_ROUTES[step]
     return { shouldRedirect: true, redirectPath }
@@ -211,7 +210,7 @@ export const updateOnboardingStatus = mutation({
       throw new ConvexError('User not found')
     }
 
-    const profileType = (user.profileType || 'dancer') as ProfileType
+    const profileType = (user.activeProfileType || 'dancer') as ProfileType
 
     // Get active profile for validation
     let profile = null
@@ -237,7 +236,7 @@ export const updateOnboardingStatus = mutation({
       throw new ConvexError('No active profile found')
     }
 
-    const currentStep = profile?.currentOnboardingStep || user.currentOnboardingStep
+    const currentStep = profile?.currentOnboardingStep
     if (currentStep !== newStep) {
       const flow = getOnboardingFlowConfig(profileType)
       const stepIndex = flow.findIndex((s) => s.step === newStep)
@@ -284,7 +283,7 @@ export const getOnboardingStatus = query({
       throw new ConvexError('User not found')
     }
 
-    const profileType = (user.profileType || 'dancer') as ProfileType
+    const profileType = (user.activeProfileType || 'dancer') as ProfileType
 
     // Get active profile for validation
     let profile = null

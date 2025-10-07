@@ -25,7 +25,6 @@ export default function ReviewEditModal() {
   const patchDancerAttributes = useMutation(api.dancers.patchDancerAttributes);
   const updateMyDancerProfile = useMutation(api.dancers.updateMyDancerProfile);
   const updateMyChoreographerProfile = useMutation(api.choreographers.updateMyChoreographerProfile);
-  const addMyRepresentation = useMutation(api.users.representation.addMyRepresentation);
 
   const [canSubmit, setCanSubmit] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -49,7 +48,6 @@ export default function ReviewEditModal() {
           patchDancerAttributes,
           updateMyDancerProfile,
           updateMyChoreographerProfile,
-          addMyRepresentation,
           // Note: createDancerProfile and createChoreographerProfile are not needed in edit modal
           // since profiles are created during initial onboarding flow
           createDancerProfile: undefined as any,

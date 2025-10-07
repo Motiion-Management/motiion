@@ -7,41 +7,41 @@ function isDancerProfile(profile: OnboardingData['profile']): profile is DancerD
 }
 
 export function selectDisplayName(data: OnboardingData) {
-  return data.profile?.displayName || data.user?.displayName || data.user?.fullName || '';
+  return data.profile?.displayName || data.user?.fullName || '';
 }
 
 export function selectHeight(data: OnboardingData) {
-  // Attributes are dancer-specific, so check profile first
+  // Attributes are dancer-specific
   const profileAttrs = isDancerProfile(data.profile) ? data.profile.attributes : undefined;
-  return profileAttrs?.height || data.user?.attributes?.height || { feet: 5, inches: 6 };
+  return profileAttrs?.height || { feet: 5, inches: 6 };
 }
 
 export function selectEthnicity(data: OnboardingData) {
   const profileAttrs = isDancerProfile(data.profile) ? data.profile.attributes : undefined;
-  return profileAttrs?.ethnicity || data.user?.attributes?.ethnicity || [];
+  return profileAttrs?.ethnicity || [];
 }
 
 export function selectHairColor(data: OnboardingData) {
   const profileAttrs = isDancerProfile(data.profile) ? data.profile.attributes : undefined;
-  return profileAttrs?.hairColor || data.user?.attributes?.hairColor || undefined;
+  return profileAttrs?.hairColor || undefined;
 }
 
 export function selectEyeColor(data: OnboardingData) {
   const profileAttrs = isDancerProfile(data.profile) ? data.profile.attributes : undefined;
-  return profileAttrs?.eyeColor || data.user?.attributes?.eyeColor || undefined;
+  return profileAttrs?.eyeColor || undefined;
 }
 
 export function selectGender(data: OnboardingData) {
   const profileAttrs = isDancerProfile(data.profile) ? data.profile.attributes : undefined;
-  return profileAttrs?.gender || data.user?.attributes?.gender || undefined;
+  return profileAttrs?.gender || undefined;
 }
 
 export function selectProfileType(data: OnboardingData) {
-  return { profileType: (data.user?.profileType as any) || undefined } as any;
+  return { profileType: (data.user?.activeProfileType as any) || undefined } as any;
 }
 
 export function selectPrimaryPlaceKitLocation(data: OnboardingData) {
-  const location = data.profile?.location || data.user?.location;
+  const location = data.profile?.location;
   return location
     ? {
         city: location.city || '',
@@ -54,8 +54,7 @@ export function selectPrimaryPlaceKitLocation(data: OnboardingData) {
 
 export function selectWorkLocations(data: OnboardingData) {
   // workLocation is dancer-specific
-  const profileWorkLocation = isDancerProfile(data.profile) ? data.profile.workLocation : undefined;
-  const workLocation = profileWorkLocation || data.user?.workLocation;
+  const workLocation = isDancerProfile(data.profile) ? data.profile.workLocation : undefined;
   return (
     workLocation?.map((s: string) => {
       const [city, state] = s.split(', ');
@@ -66,29 +65,25 @@ export function selectWorkLocations(data: OnboardingData) {
 
 export function selectSkills(data: OnboardingData) {
   return {
-    skills: data.profile?.skills || data.user?.resume?.skills || [],
-    genres: data.profile?.genres || data.user?.resume?.genres || [],
+    skills: data.profile?.skills || [],
+    genres: data.profile?.genres || [],
   };
 }
 
 export function selectRepresentationStatus(data: OnboardingData) {
   return {
-    representationStatus:
-      (data.profile?.representationStatus as any) ||
-      (data.user?.representationStatus as any) ||
-      undefined,
+    representationStatus: (data.profile?.representationStatus as any) || undefined,
   };
 }
 
 export function selectAgencyId(data: OnboardingData) {
   return {
-    agencyId:
-      data.profile?.representation?.agencyId || data.user?.representation?.agencyId || '',
+    agencyId: data.profile?.representation?.agencyId || '',
   };
 }
 
 export function selectSagAftraId(data: OnboardingData) {
   // SAG-AFTRA is dancer-specific
   const profileSagAftraId = isDancerProfile(data.profile) ? data.profile.sagAftraId : undefined;
-  return { sagAftraId: profileSagAftraId || data.user?.sagAftraId || '' };
+  return { sagAftraId: profileSagAftraId || '' };
 }

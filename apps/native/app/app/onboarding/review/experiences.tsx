@@ -35,7 +35,7 @@ function ProjectItem({ title, type, onEdit }: ProjectItemProps) {
 }
 
 export default function ExperiencesReviewScreen() {
-  const experiences = useQuery(api.users.projects.getMyProjects) || [];
+  const experiences = useQuery(api.projects.getMyProjects) || [];
   const training = useQuery(api.training.getMyTraining) || [];
   const [activeTab, setActiveTab] = useState<'projects' | 'training'>('projects');
 

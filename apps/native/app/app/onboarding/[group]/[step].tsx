@@ -23,7 +23,6 @@ export default function DynamicOnboardingStep() {
   const patchDancerAttributes = useMutation(api.dancers.patchDancerAttributes);
   const updateMyDancerProfile = useMutation(api.dancers.updateMyDancerProfile);
   const updateMyChoreographerProfile = useMutation(api.choreographers.updateMyChoreographerProfile);
-  const addMyRepresentation = useMutation(api.users.representation.addMyRepresentation);
   const createDancerProfile = useMutation(api.dancers.createDancerProfile);
   const createChoreographerProfile = useMutation(api.choreographers.createChoreographerProfile);
 
@@ -52,7 +51,6 @@ export default function DynamicOnboardingStep() {
         patchDancerAttributes,
         updateMyDancerProfile,
         updateMyChoreographerProfile,
-        addMyRepresentation,
         createDancerProfile,
         createChoreographerProfile,
       });
@@ -70,7 +68,6 @@ export default function DynamicOnboardingStep() {
           patchDancerAttributes,
           updateMyDancerProfile,
           updateMyChoreographerProfile,
-          addMyRepresentation,
           createDancerProfile,
           createChoreographerProfile,
         })

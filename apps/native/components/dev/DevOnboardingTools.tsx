@@ -6,7 +6,6 @@ import { useOnboardingGroupFlow } from '~/hooks/useOnboardingGroupFlow';
 import {
   ONBOARDING_GROUPS,
   ONBOARDING_GROUP_FLOWS,
-  STEP_ROUTES,
   type ProfileType,
 } from '@packages/backend/convex/onboardingConfig';
 import { useMutation } from 'convex/react';
@@ -41,7 +40,7 @@ export function DevOnboardingTools() {
   const [parsedData, setParsedData] = useState<ParsedResumeData>(null);
   const generateUploadUrlDev = useMutation(api.dev.resumeTest.generateUploadUrlDev);
   const parseResumeDocumentDev = useAction(api.dev.resumeTest.parseResumeDocumentDev);
-  const activeProfileType: ProfileType = (user?.profileType as ProfileType) || 'dancer';
+  const activeProfileType: ProfileType = (user?.activeProfileType as ProfileType) || 'dancer';
   const activeGroups = useMemo(
     () => ONBOARDING_GROUP_FLOWS[activeProfileType],
     [activeProfileType]
@@ -61,7 +60,7 @@ export function DevOnboardingTools() {
   return (
     <View
       pointerEvents="box-none"
-      style={{ position: 'absolute', bottom: 20, right: 16, left: 16, zIndex: 1000 }}>
+      style={{ position: 'absolute', top: 70, left: 60, zIndex: 1000 }}>
       <Sheet
         isOpened={sheetState.isOpen}
         label="Motiion Dev Tools"

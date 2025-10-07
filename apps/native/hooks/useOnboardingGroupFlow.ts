@@ -72,7 +72,7 @@ export function useOnboardingGroupFlow(): UseOnboardingGroupFlowReturn {
   // Simple skip logic
   const shouldSkipStep = useCallback(
     (stepId: string): boolean => {
-      const profileType = user?.profileType as ProfileType | undefined;
+      const profileType = user?.activeProfileType as ProfileType | undefined;
 
       // Skip agency if not represented
       if (stepId === 'agency' && representationStatus !== 'represented') {
@@ -94,7 +94,7 @@ export function useOnboardingGroupFlow(): UseOnboardingGroupFlowReturn {
 
       return false;
     },
-    [representationStatus, user?.profileType]
+    [representationStatus, user?.activeProfileType]
   );
 
   // Extract current path info
@@ -159,11 +159,11 @@ export function useOnboardingGroupFlow(): UseOnboardingGroupFlowReturn {
 
   // Determine active flow based on profile type
   const activeFlow = useMemo(() => {
-    const profileType = user?.profileType as ProfileType | undefined;
+    const profileType = user?.activeProfileType as ProfileType | undefined;
     return profileType && ONBOARDING_GROUP_FLOWS[profileType]
       ? ONBOARDING_GROUP_FLOWS[profileType]
       : ONBOARDING_GROUP_FLOWS.dancer; // Default to dancer flow
-  }, [user?.profileType]);
+  }, [user?.activeProfileType]);
 
   // Calculate current positions
   const currentGroupIndex = useMemo(() => {
@@ -192,8 +192,8 @@ export function useOnboardingGroupFlow(): UseOnboardingGroupFlowReturn {
 
       // For now, return mock progress
       // In real implementation, this would check user data for completion
-      if (groupKey === 'profile') return user?.profileType ? 100 : 50;
-      if (groupKey === 'attributes') return user?.displayName ? 60 : 0;
+      if (groupKey === 'profile') return user?.activeProfileType ? 100 : 50;
+      if (groupKey === 'attributes') return user?.fullName ? 60 : 0;
       return 0;
     },
     [user]

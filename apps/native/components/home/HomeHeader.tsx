@@ -1,9 +1,11 @@
 import React from 'react';
 import { View, TouchableOpacity } from 'react-native';
 import { Link } from 'expo-router';
+import { useQuery } from 'convex/react';
 
 import { Text } from '~/components/ui/text';
 import { useUser } from '~/hooks/useUser';
+import { api } from '@packages/backend/convex/_generated/api';
 import Bell from '~/lib/icons/Bell';
 import { UserButton } from '../auth/UserButton';
 
@@ -15,9 +17,10 @@ interface HomeHeaderProps {
 
 export function HomeHeader({ onNotificationsPress }: HomeHeaderProps) {
   const { user } = useUser();
+  const profile = useQuery(api.dancers.getMyDancerProfile, {});
 
-  const profileType = user?.profileType || 'dancer';
-  const displayName = user?.displayName || user?.fullName || 'User';
+  const profileType = user?.activeProfileType || 'dancer';
+  const displayName = profile?.displayName || user?.fullName || 'User';
 
   const profileTypeLabel = profileType.charAt(0).toUpperCase() + profileType.slice(1);
   const dancerProfileId = user?.activeDancerId;

@@ -85,9 +85,9 @@ export default function GeneralReviewScreen() {
 
   // Headshot previews derived from profile.headshots with progressive URL loading
   const headshotStorageIds = useMemo(() => {
-    const list: any[] = (data.profile?.headshots || data.user?.headshots || []) as any[];
+    const list: any[] = (data.profile?.headshots || []) as any[];
     return list.map((h) => (typeof h === 'string' ? h : h?.storageId)).filter(Boolean) as string[];
-  }, [data.profile?.headshots, data.user?.headshots]);
+  }, [data.profile?.headshots]);
 
   function HeadshotThumb({ storageId }: { storageId: any }) {
     const { url } = useProgressiveImage(storageId);
@@ -132,10 +132,9 @@ export default function GeneralReviewScreen() {
 
   if (isLoading) return null;
 
-  // Get sizing from profile or user (dancer-specific field)
+  // Get sizing from profile (dancer-specific field)
   const sizing =
-    (data.profile && 'sizing' in data.profile ? data.profile.sizing : undefined) ||
-    data.user?.sizing;
+    (data.profile && 'sizing' in data.profile ? data.profile.sizing : undefined);
 
   return (
     <BaseOnboardingScreen

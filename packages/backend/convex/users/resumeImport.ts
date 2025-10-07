@@ -156,9 +156,9 @@ export const applyParsedResumeData = authMutation({
         trainingIds.push(trainingId)
       }
 
-      // Get current data from profile or user
-      const currentResume = profile?.resume || ctx.user.resume
-      const currentTraining = profile?.training || ctx.user.training
+      // Get current data from profile (migration complete - no user fallback)
+      const currentResume = profile?.resume
+      const currentTraining = profile?.training
 
       // Build updates object
       const updates: any = {}
