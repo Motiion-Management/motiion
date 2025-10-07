@@ -23,6 +23,63 @@ export const get = zq({
   }
 })
 
+// Get full dancer profile with all related data for profile screen
+export const getDancerProfileWithDetails = zq({
+  args: { dancerId: zid('dancers') },
+  returns: z.object({
+    dancer: Dancers.zDoc,
+    headshotUrls: z.array(z.string()),
+    recentProjects: z.array(z.any()),
+    allProjects: z.array(z.any()),
+    training: z.array(z.any()),
+    isOwnProfile: z.boolean()
+  }).nullable(),
+  handler: async (ctx, { dancerId }) => {
+    const dancer = await ctx.db.get(dancerId)
+    if (!dancer) return null
+
+    // Get authenticated user for ownership check
+    const identity = await ctx.auth.getUserIdentity()
+    const isOwnProfile = identity ? dancer.userId === identity.subject : false
+
+    // Resolve headshot URLs
+    const headshotUrls: Array<string> = []
+    if (dancer.headshots && Array.isArray(dancer.headshots)) {
+      for (const headshot of dancer.headshots) {
+        if (headshot.storageId) {
+          const url = await ctx.storage.getUrl(headshot.storageId)
+          if (url) headshotUrls.push(url)
+        }
+      }
+    }
+
+    // Get all projects for this profile
+    const allProjects = await ctx.db
+      .query('projects')
+      .withIndex('by_profileId', (q) => q.eq('profileId', dancerId))
+      .order('desc')
+      .collect()
+
+    // Get recent projects (top 2)
+    const recentProjects = allProjects.slice(0, 2)
+
+    // Get training records
+    const training = await ctx.db
+      .query('training')
+      .withIndex('by_profileId', (q) => q.eq('profileId', dancerId))
+      .collect()
+
+    return {
+      dancer,
+      headshotUrls,
+      recentProjects,
+      allProjects,
+      training,
+      isOwnProfile
+    }
+  }
+})
+
 // Get the active dancer profile for the authenticated user
 export const getMyDancerProfile = authQuery({
   args: {},
