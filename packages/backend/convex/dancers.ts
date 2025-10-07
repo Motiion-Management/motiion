@@ -23,6 +23,21 @@ export const get = zq({
   }
 })
 
+// Get the active dancer profile for the authenticated user
+export const getMyDancerProfile = authQuery({
+  returns: Dancers.zDoc.nullable(),
+  handler: async (ctx) => {
+    if (!ctx.user) return null
+
+    // Use discriminate value from users table for efficient lookup
+    if (ctx.user.activeProfileType === 'dancer' && ctx.user.activeDancerId) {
+      return await ctx.db.get(ctx.user.activeDancerId)
+    }
+
+    return null
+  }
+})
+
 // Get the current user's active dancer headshot URL
 export const getMyDancerHeadshotUrl = authQuery({
   returns: z.union([z.string(), z.null()]),

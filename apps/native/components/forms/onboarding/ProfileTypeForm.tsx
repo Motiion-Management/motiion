@@ -26,7 +26,8 @@ export const ProfileTypeForm = forwardRef<
   OnboardingFormProps<ProfileTypeFormData>
 >(({ initialData, onComplete, onCancel, mode = 'fullscreen', onValidationChange }, ref) => {
   const user = useQuery(api.users.users.getMyUser);
-  const updateUser = useMutation(api.users.users.updateMyUser);
+  const createDancerProfile = useMutation(api.dancers.createDancerProfile);
+  const createChoreographerProfile = useMutation(api.choreographers.createChoreographerProfile);
 
   const form = useAppForm({
     defaultValues: {
@@ -39,16 +40,22 @@ export const ProfileTypeForm = forwardRef<
       if (!value.profileType) return;
 
       try {
-        // Update the profile type
-        await updateUser({
-          profileType: value.profileType,
-        });
+        // Create the appropriate profile
+        if (value.profileType === 'dancer') {
+          await createDancerProfile({
+            displayName: user?.fullName,
+          });
+        } else {
+          await createChoreographerProfile({
+            displayName: user?.fullName,
+          });
+        }
 
         await onComplete({
           profileType: value.profileType,
         });
       } catch (error) {
-        console.error('Error updating profile type:', error);
+        console.error('Error creating profile:', error);
         throw error;
       }
     },

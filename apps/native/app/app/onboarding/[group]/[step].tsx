@@ -22,8 +22,11 @@ export default function DynamicOnboardingStep() {
   const updateMyUser = useMutation(api.users.users.updateMyUser);
   const patchDancerAttributes = useMutation(api.dancers.patchDancerAttributes);
   const updateMyDancerProfile = useMutation(api.dancers.updateMyDancerProfile);
+  const updateMyChoreographerProfile = useMutation(api.choreographers.updateMyChoreographerProfile);
   const updateMyResume = useMutation(api.users.resume.updateMyResume);
   const addMyRepresentation = useMutation(api.users.representation.addMyRepresentation);
+  const createDancerProfile = useMutation(api.dancers.createDancerProfile);
+  const createChoreographerProfile = useMutation(api.choreographers.createChoreographerProfile);
 
   const formRef = useRef<FormHandle>(null);
   const [canSubmit, setCanSubmit] = useState(false);
@@ -42,19 +45,37 @@ export default function DynamicOnboardingStep() {
       flow.setRepresentationStatus(values.representationStatus);
     }
 
-    // Navigate instantly (no await!)
+    // For profile-type step, save MUST complete before navigation
+    if (step === 'profile-type' && stepDef?.save) {
+      await stepDef.save(values, {
+        data,
+        updateMyUser,
+        patchDancerAttributes,
+        updateMyDancerProfile,
+        updateMyChoreographerProfile,
+        updateMyResume,
+        addMyRepresentation,
+        createDancerProfile,
+        createChoreographerProfile,
+      });
+    }
+
+    // Navigate after critical saves complete
     flow.navigateToNextStep();
 
-    // Save to DB in background (fire-and-forget)
-    if (stepDef?.save) {
+    // Other steps can save in background (fire-and-forget)
+    if (step !== 'profile-type' && stepDef?.save) {
       stepDef
         .save(values, {
           data,
           updateMyUser,
           patchDancerAttributes,
           updateMyDancerProfile,
+          updateMyChoreographerProfile,
           updateMyResume,
           addMyRepresentation,
+          createDancerProfile,
+          createChoreographerProfile,
         })
         .catch((error) => {
           console.error(`Failed to save ${step} data:`, error);

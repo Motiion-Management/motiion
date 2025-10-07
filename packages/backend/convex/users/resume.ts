@@ -14,14 +14,18 @@ import { getActiveProfileTarget } from './profileHelpers'
 
 export async function augmentResume(
   ctx: QueryCtx,
-  user: UserDoc,
+  user: any,
   filterPublic: boolean = false
 ) {
-  if (!user?.resume) return
-  const { resume } = user
+  // Use flattened fields with fallback to nested resume for backward compatibility
+  const projects = (user as any).projects || user?.resume?.projects
+  const skills = (user as any).skills || user?.resume?.skills
+  const resumeUploads = (user as any).resumeUploads || user?.resume?.uploads
+
+  if (!projects && !skills && !resumeUploads) return
 
   const uploads = await Promise.all(
-    (resume.uploads || []).map(
+    (resumeUploads || []).map(
       async (resumeUpload: {
         storageId: Id<'_storage'>
         title?: string
@@ -34,7 +38,7 @@ export async function augmentResume(
   )
 
   const publicExperiences = await Promise.all(
-    (resume.projects || []).map(async (projectId: Id<'projects'>) => {
+    (projects || []).map(async (projectId: Id<'projects'>) => {
       const project = await ctx.db.get(projectId)
       if (!project || (filterPublic && project.private)) return
       return project
@@ -46,7 +50,7 @@ export async function augmentResume(
   )
 
   return {
-    skills: resume.skills,
+    skills,
     experiences,
     uploads
   }
@@ -66,7 +70,7 @@ export const getMyResume = authQuery({
     if (!ctx.user) return
 
     // PROFILE-FIRST: Get resume from active profile if it exists
-    let userWithResume = ctx.user
+    let dataSource = ctx.user
 
     if (
       ctx.user.activeProfileType &&
@@ -83,20 +87,20 @@ export const getMyResume = authQuery({
         profile = await ctx.db.get(ctx.user.activeChoreographerId)
       }
 
-      if (profile?.resume) {
-        // Create a user object with profile's resume for augmentResume
-        userWithResume = { ...ctx.user, resume: profile.resume as any }
+      if (profile) {
+        // Use profile as data source (has flattened fields + fallback to nested resume)
+        dataSource = profile as any
       }
     }
 
-    return await augmentResume(ctx as any, userWithResume)
+    return await augmentResume(ctx as any, dataSource)
   }
 })
 
 export const getMyExperienceCounts = authQuery({
   handler: async (ctx) => {
-    // PROFILE-FIRST: Get resume from active profile if it exists
-    let resume = ctx.user?.resume
+    // PROFILE-FIRST: Get projects from active profile if it exists
+    let projects = ctx.user?.resume?.projects
 
     if (
       ctx.user?.activeProfileType &&
@@ -113,12 +117,13 @@ export const getMyExperienceCounts = authQuery({
         profile = await ctx.db.get(ctx.user.activeChoreographerId)
       }
 
-      if (profile?.resume) {
-        resume = profile.resume as any
+      if (profile) {
+        // Use flattened field with fallback to nested resume
+        projects = (profile as any).projects || (profile as any).resume?.projects
       }
     }
 
-    const exp: any = resume?.projects
+    const exp: any = projects
     // TODO: Type correctly when getAll returns proper types
     const experiences = exp
       ? ((await getAll(ctx.db, exp)) as Doc<'projects'>[])
@@ -156,20 +161,18 @@ export const saveResumeUploadIds = authMutation({
     if (!ctx.user) return
 
     const { targetId, profile } = await getActiveProfileTarget(ctx.db, ctx.user)
-    const currentResume = profile?.resume || ctx.user.resume
+
+    // Use flattened field with fallback to nested resume for backward compatibility
+    const currentUploads = profile?.resumeUploads || profile?.resume?.uploads || ctx.user.resume?.uploads || []
 
     const resumeUploads = [
       ...args.resumeUploads,
-      ...(currentResume?.uploads || [])
+      ...currentUploads
     ]
 
-    const updatedResume = {
-      ...currentResume,
-      uploads: resumeUploads
-    }
-
+    // Write to flattened field
     await ctx.db.patch(targetId, {
-      resume: updatedResume
+      resumeUploads
     })
   }
 })
@@ -184,16 +187,17 @@ export const removeResumeUpload = authMutation({
     await ctx.storage.delete(args.resumeUploadId)
 
     const { targetId, profile } = await getActiveProfileTarget(ctx.db, ctx.user)
-    const currentResume = profile?.resume || ctx.user.resume
 
-    const uploads = (currentResume?.uploads || []).filter(
+    // Use flattened field with fallback to nested resume for backward compatibility
+    const currentUploads = profile?.resumeUploads || profile?.resume?.uploads || ctx.user.resume?.uploads || []
+
+    const uploads = currentUploads.filter(
       (h: { storageId: Id<'_storage'> }) => h.storageId !== args.resumeUploadId
     )
 
-    const updatedResume = { ...currentResume, uploads }
-
+    // Write to flattened field
     await ctx.db.patch(targetId, {
-      resume: updatedResume
+      resumeUploads: uploads
     })
   }
 })
@@ -207,18 +211,13 @@ export const updateMyResume = authMutation({
   handler: async (ctx, args) => {
     if (!ctx.user) return
 
-    const { targetId, profile } = await getActiveProfileTarget(ctx.db, ctx.user)
-    const currentResume = profile?.resume || ctx.user.resume
+    const { targetId } = await getActiveProfileTarget(ctx.db, ctx.user)
 
-    const updatedResume = {
-      ...currentResume,
+    // Write to flattened fields (no longer writing to nested resume object)
+    await ctx.db.patch(targetId, {
       projects: args.projects,
       skills: args.skills,
       genres: args.genres
-    }
-
-    await ctx.db.patch(targetId, {
-      resume: updatedResume
     })
   }
 })

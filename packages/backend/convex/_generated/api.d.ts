@@ -24,6 +24,8 @@ import type * as ai_utils from "../ai/utils.js";
 import type * as choreographers from "../choreographers.js";
 import type * as clerk from "../clerk.js";
 import type * as dancers from "../dancers.js";
+import type * as debug_checkAllDancers from "../debug/checkAllDancers.js";
+import type * as debug_checkTesterUser from "../debug/checkTesterUser.js";
 import type * as dev_resumeTest from "../dev/resumeTest.js";
 import type * as events from "../events.js";
 import type * as featuredMembers from "../featuredMembers.js";
@@ -80,6 +82,8 @@ declare const fullApi: ApiFromModules<{
   choreographers: typeof choreographers;
   clerk: typeof clerk;
   dancers: typeof dancers;
+  "debug/checkAllDancers": typeof debug_checkAllDancers;
+  "debug/checkTesterUser": typeof debug_checkTesterUser;
   "dev/resumeTest": typeof dev_resumeTest;
   events: typeof events;
   featuredMembers: typeof featuredMembers;

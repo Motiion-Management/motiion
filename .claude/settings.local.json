@@ -64,7 +64,8 @@
       "WebFetch(domain:pnpm.io)",
       "mcp__figma-dev-mode-mcp-server__get_screenshot",
       "WebSearch",
-      "Bash(gh pr view:*)"
+      "Bash(gh pr view:*)",
+      "Bash(pgrep:*)"
     ]
   },
   "enableAllProjectMcpServers": true
