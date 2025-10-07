@@ -26,16 +26,20 @@ export const get = zq({
 // Get full dancer profile with all related data for profile screen
 export const getDancerProfileWithDetails = zq({
   args: { dancerId: zid('dancers') },
-  returns: z.object({
-    dancer: Dancers.zDoc,
-    headshotUrls: z.array(z.string()),
-    recentProjects: z.array(z.any()),
-    allProjects: z.array(z.any()),
-    training: z.array(z.any()),
-    isOwnProfile: z.boolean()
-  }).nullable(),
+  returns: z
+    .object({
+      dancer: Dancers.zDoc,
+      headshotUrls: z.array(z.string()),
+      recentProjects: z.array(z.any()),
+      allProjects: z.array(z.any()),
+      training: z.array(z.any()),
+      isOwnProfile: z.boolean()
+    })
+    .nullable(),
   handler: async (ctx, { dancerId }) => {
+    console.log('dancer id', dancerId)
     const dancer = await ctx.db.get(dancerId)
+    console.log(dancer)
     if (!dancer) return null
 
     // Get authenticated user for ownership check

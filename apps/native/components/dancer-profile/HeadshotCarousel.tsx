@@ -1,94 +1,159 @@
-import React, { useState } from 'react'
-import { View, Image, Dimensions, TouchableOpacity } from 'react-native'
-import Carousel from 'react-native-reanimated-carousel'
+import React, { useState } from 'react';
+import { View, Image, Dimensions, TouchableOpacity } from 'react-native';
+import Carousel from 'react-native-reanimated-carousel';
 import Animated, {
   useAnimatedStyle,
   useSharedValue,
-  withSpring
-} from 'react-native-reanimated'
-import { Text } from '~/components/ui/text'
-import { Icon } from '~/lib/icons/Icon'
+  withSpring,
+  withDelay,
+  interpolate,
+  Extrapolate,
+  useDerivedValue,
+  type SharedValue,
+} from 'react-native-reanimated';
+import { Text } from '~/components/ui/text';
+import { Icon } from '~/lib/icons/Icon';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import { Button } from '../ui/button';
 
-const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get('window')
+const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get('window');
 
 interface HeadshotCarouselProps {
-  headshotUrls: Array<string>
-  initialIndex?: number
-  onClose: () => void
+  headshotUrls: Array<string>;
+  initialIndex?: number;
+  animatedIndex?: SharedValue<number>;
+  onClose: () => void;
+  onPress?: () => void;
 }
 
 export function HeadshotCarousel({
   headshotUrls,
   initialIndex = 0,
-  onClose
+  animatedIndex,
+  onClose,
+  onPress,
 }: HeadshotCarouselProps) {
-  const [currentIndex, setCurrentIndex] = useState(initialIndex)
-  const closeButtonOpacity = useSharedValue(1)
+  const [currentIndex, setCurrentIndex] = useState(initialIndex);
 
-  const closeButtonStyle = useAnimatedStyle(() => ({
-    opacity: closeButtonOpacity.value
-  }))
+  // Derive the animated height value
+  const animatedHeight = useDerivedValue(() => {
+    if (!animatedIndex) {
+      return SCREEN_HEIGHT * 0.7;
+    }
 
-  if (headshotUrls.length === 0) return null
+    // Interpolate height: -1 (closed) = full screen, 0 (open) = 70%
+    return interpolate(
+      animatedIndex.value,
+      [-1, 0],
+      [SCREEN_HEIGHT, SCREEN_HEIGHT * 0.7],
+      Extrapolate.CLAMP
+    );
+  }, [animatedIndex]);
 
-  return (
-    <View className="flex-1 bg-black">
-      {/* Header with title */}
-      <View className="absolute left-0 right-0 top-0 z-10 pt-16">
-        <View className="items-center">
-          <Text variant="header4" className="text-white">
-            Headshots
-          </Text>
-        </View>
-      </View>
+  // Container style uses the derived height
+  const containerStyle = useAnimatedStyle(() => {
+    return { height: animatedHeight.value };
+  }, [animatedHeight]);
 
+  const titleStyle = useAnimatedStyle(() => {
+    if (!animatedIndex) return { opacity: 0 };
+
+    // Fade in title when sheet closes (index goes from 0 to -1)
+    const opacity = interpolate(animatedIndex.value, [-1, 0], [1, 0], Extrapolate.CLAMP);
+
+    return { opacity };
+  }, [animatedIndex]);
+
+  const controlsStyle = useAnimatedStyle(() => {
+    if (!animatedIndex) return { opacity: 0, transform: [{ translateY: 50 }] };
+
+    // Fade in and slide up controls when sheet closes
+    const opacity = interpolate(animatedIndex.value, [-1, 0], [1, 0], Extrapolate.CLAMP);
+
+    const translateY = interpolate(animatedIndex.value, [-1, 0], [0, 50], Extrapolate.CLAMP);
+
+    return { opacity, transform: [{ translateY }] };
+  }, [animatedIndex]);
+
+  if (headshotUrls.length === 0) return null;
+
+  const content = (
+    <Animated.View style={[{ width: SCREEN_WIDTH }, containerStyle]}>
       {/* Carousel */}
-      <View className="flex-1 items-center justify-center">
-        <Carousel
-          width={SCREEN_WIDTH}
-          height={SCREEN_HEIGHT * 0.7}
-          data={headshotUrls}
-          defaultIndex={initialIndex}
-          onSnapToItem={setCurrentIndex}
-          renderItem={({ item }) => (
-            <View className="flex-1 items-center justify-center px-4">
-              <Image
-                source={{ uri: item }}
-                style={{ width: SCREEN_WIDTH - 32, height: SCREEN_HEIGHT * 0.7 }}
-                resizeMode="contain"
-              />
-            </View>
-          )}
-        />
-      </View>
+      <Carousel
+        width={SCREEN_WIDTH}
+        height={SCREEN_HEIGHT}
+        data={headshotUrls}
+        defaultIndex={initialIndex}
+        onSnapToItem={setCurrentIndex}
+        renderItem={({ item }) => {
+          // Create animated style for each image
+          const imageStyle = useAnimatedStyle(() => ({
+            width: SCREEN_WIDTH,
+            height: animatedHeight.value,
+          }));
 
-      {/* Bottom controls */}
-      <View className="absolute bottom-0 left-0 right-0 pb-16">
-        <View className="items-center gap-4">
-          {/* Stepper indicator */}
-          {headshotUrls.length > 1 && (
-            <View className="flex-row gap-2">
-              {headshotUrls.map((_, index) => (
-                <View
-                  key={index}
-                  className={`h-2 w-2 rounded-full ${
-                    index === currentIndex ? 'bg-white' : 'bg-white/30'
-                  }`}
-                />
-              ))}
+          return (
+            <View style={{ flex: 1 }}>
+              <Animated.Image source={{ uri: item }} style={imageStyle} resizeMode="cover" />
             </View>
-          )}
+          );
+        }}
+      />
 
+      {/* Title - fades in when sheet closes */}
+      <Animated.View
+        style={[titleStyle]}
+        className="absolute left-0 right-0 top-0 items-center pt-16"
+        pointerEvents="none">
+        <Text variant="header5">Headshots</Text>
+      </Animated.View>
+
+      {/* Bottom controls - slides up when sheet closes */}
+      <SafeAreaView
+        className="absolute bottom-0 left-0 right-0"
+        edges={['bottom']}
+        pointerEvents="box-none">
+        <Animated.View
+          style={[controlsStyle]}
+          className="flex-row items-center px-4 pb-4"
+          pointerEvents="box-none">
           {/* Close button */}
-          <Animated.View style={closeButtonStyle}>
-            <TouchableOpacity
-              onPress={onClose}
-              className="h-12 w-12 items-center justify-center rounded-full bg-surface-default">
-              <Icon name="arrow.up.to.line" size={24} className="text-icon-default" />
-            </TouchableOpacity>
-          </Animated.View>
-        </View>
-      </View>
-    </View>
-  )
+          <Button variant="utility-dark" size="icon" onPress={onClose}>
+            <Icon name="arrow.up.to.line" size={24} className="text-icon-default" />
+          </Button>
+
+          {/* Stepper indicator */}
+          <View className="flex-1 items-center">
+            {headshotUrls.length > 1 && (
+              <View className="flex-row gap-2">
+                {headshotUrls.map((_, index) => (
+                  <View
+                    key={index}
+                    className={`h-2 w-2 rounded-full ${
+                      index === currentIndex ? 'bg-white' : 'bg-white/30'
+                    }`}
+                  />
+                ))}
+              </View>
+            )}
+          </View>
+
+          {/* Spacer for symmetry */}
+          <View style={{ width: 48 }} />
+        </Animated.View>
+      </SafeAreaView>
+    </Animated.View>
+  );
+
+  // Wrap in TouchableOpacity for tap to expand (when sheet is open)
+  // if (onPress) {
+  //   return (
+  //     <TouchableOpacity activeOpacity={1} onPress={onPress} style={{ flex: 1 }}>
+  //       {content}
+  //     </TouchableOpacity>
+  //   );
+  // }
+
+  return content;
 }

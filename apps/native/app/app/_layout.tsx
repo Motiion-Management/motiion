@@ -11,7 +11,6 @@ export default function AppLayout() {
         <Stack
           screenOptions={{
             headerShown: false,
-            animation: 'fade',
             contentStyle: { backgroundColor: 'transparent' },
           }}>
           <Stack.Screen
@@ -30,9 +29,25 @@ export default function AppLayout() {
               animation: 'default',
             }}
           />
+          <Stack.Screen
+            name="dancers"
+            options={{
+              // presentation: 'modal',
+              headerShown: false,
+              animation: 'default',
+            }}
+          />
+          <Stack.Screen
+            name="(tabs)"
+            options={{
+              // presentation: 'modal',
+              headerShown: false,
+              animation: 'fade',
+            }}
+          />
         </Stack>
         {/* Dev-only floating tools for onboarding iteration */}
-        <DevOnboardingTools />
+        {/* <DevOnboardingTools /> */}
       </BackgroundGradientView>
     </SharedUserProvider>
   );
