@@ -5,21 +5,17 @@ const APP_VARIANT_CONFIGS = {
     name: 'Motiion Dev',
     scheme: 'motiion-dev',
     bundleIdentifier: 'io.motiion.dev',
-    icon: './assets/icon-dev.png',
-    adaptiveIcon: './src/assets/store/adaptive-icon-dev.png',
   },
 
   production: {
     name: 'Motiion',
     scheme: 'motiion',
     bundleIdentifier: 'io.motiion.motiion',
-    icon: './assets/icon.png',
   },
 } as const;
 
 const getAppVariantConfig = (variant: keyof typeof APP_VARIANT_CONFIGS | string) => {
   switch (variant) {
-    case 'dev':
     case 'development':
       return APP_VARIANT_CONFIGS.development;
     case 'production':
@@ -29,22 +25,19 @@ const getAppVariantConfig = (variant: keyof typeof APP_VARIANT_CONFIGS | string)
 };
 
 export default ({ config }: ConfigContext) => {
-  const { name, scheme, icon, bundleIdentifier } = getAppVariantConfig(
-    process.env.APP_VARIANT || 'production'
-  );
+  const appVariant = process.env.APP_VARIANT || 'production';
+  const { name, scheme, bundleIdentifier } = getAppVariantConfig(appVariant);
+
+  const icon = `./assets/brand/${appVariant}.icon`;
 
   return {
     ...config,
     name,
-    icon,
     scheme,
     ios: {
       ...config.ios,
+      icon,
       bundleIdentifier,
-    },
-    android: {
-      ...config.android,
-      package: bundleIdentifier,
     },
   } as ExpoConfig;
 };
