@@ -1,0 +1,13 @@
+name: Development Update
+on:
+  push:
+    branches:
+      - 'chore/**'
+      - 'feat/**'
+      - 'fix/**'
+jobs:
+  update_ios:
+    type: update
+    params:
+      platform: ios
+      channel: development

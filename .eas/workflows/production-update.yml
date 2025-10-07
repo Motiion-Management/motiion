@@ -1,0 +1,11 @@
+name: Production Update
+on:
+  push:
+    branches:
+      - main
+jobs:
+  update_ios:
+    type: update
+    params:
+      platform: ios
+      channel: production
