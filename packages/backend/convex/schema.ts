@@ -14,11 +14,7 @@ const schema = defineSchema(
     featuredMembers: FeaturedMembers.table,
 
     // user accounts
-    users: Users.table
-      .index('tokenId', ['tokenId'])
-      .searchIndex('search_user', {
-        searchField: 'searchPattern'
-      }),
+    users: Users.table.index('tokenId', ['tokenId']),
 
     // profile tables
     dancers: Dancers.table

@@ -79,14 +79,9 @@ async function computeDerived(
   ctx: { db: { get: (id: any) => Promise<any> } },
   user: Partial<UserDoc>
 ): Promise<{ fullName: string; searchPattern: string }> {
-  let agency: AgencyDoc | null = null
-  if (user.representation?.agencyId) {
-    agency = await ctx.db.get(user.representation.agencyId)
-  }
+  // This function is deprecated - searchPattern should come from profiles now
   const fullName = formatFullName(user.firstName, user.lastName)
-  const searchPattern = `${fullName} ${user.displayName || ''} ${
-    user.location?.city || ''
-  } ${user.location?.state || ''} ${agency?.name || ''}`.trim()
+  const searchPattern = fullName.trim()
   return { fullName, searchPattern }
 }
 
@@ -105,69 +100,8 @@ export const getMyUser = authQuery({
 
     if (!ctx.user) return null
 
-    // AUTO-MIGRATE: If user has profileType but no active profile, migrate them
-    if (
-      ctx.user.profileType &&
-      !ctx.user.activeDancerId &&
-      !ctx.user.activeChoreographerId
-    ) {
-      console.log('🔄 AUTO-MIGRATION: User needs profile migration', {
-        userId: ctx.user._id,
-        profileType: ctx.user.profileType
-      })
-
-      // This is a query, so we can't mutate directly
-      // Return user as-is but log for monitoring
-      // The autoMigrateAndCleanup script will handle the actual migration
-    }
-
-    // If user has an active profile, merge the profile data for backward compatibility
-    if (
-      ctx.user.activeProfileType &&
-      (ctx.user.activeDancerId || ctx.user.activeChoreographerId)
-    ) {
-      let profile = null
-
-      if (ctx.user.activeProfileType === 'dancer' && ctx.user.activeDancerId) {
-        profile = await ctx.db.get(ctx.user.activeDancerId)
-      } else if (
-        ctx.user.activeProfileType === 'choreographer' &&
-        ctx.user.activeChoreographerId
-      ) {
-        profile = await ctx.db.get(ctx.user.activeChoreographerId)
-      }
-
-      if (profile) {
-        // TODO: Handle dancer vs choreographer profile merging in dedicated task
-        // For now, cast to DancerDoc to access all fields
-        const dancerProfile = profile as Doc<'dancers'>
-
-        // Merge profile data back into user for backward compatibility
-        // Profile data takes precedence over user data
-        const mergedUser = {
-          ...ctx.user,
-          // Profile fields that might differ
-          headshots: dancerProfile.headshots || ctx.user.headshots,
-          attributes: dancerProfile.attributes || ctx.user.attributes,
-          sizing: dancerProfile.sizing || ctx.user.sizing,
-          resume: dancerProfile.resume || ctx.user.resume,
-          links: dancerProfile.links || ctx.user.links,
-          representation:
-            dancerProfile.representation || ctx.user.representation,
-          representationStatus:
-            dancerProfile.representationStatus || ctx.user.representationStatus,
-          profileTipDismissed:
-            dancerProfile.profileTipDismissed || ctx.user.profileTipDismissed,
-          // Dancer-specific fields
-          sagAftraId: dancerProfile.sagAftraId || ctx.user.sagAftraId,
-          training: dancerProfile.training || ctx.user.training,
-          location: dancerProfile.location || ctx.user.location
-        }
-
-        return mergedUser
-      }
-    }
-
+    // Migration complete - all users should have active profiles now
+    // Profile data is accessed separately via profile queries
     return ctx.user
   }
 })
@@ -184,63 +118,20 @@ export const updateMyUser = authMutation({
     // Account-level fields only
     firstName: z.string().optional(),
     lastName: z.string().optional(),
-    displayName: z.string().optional(),
     email: z.string().optional(),
     phone: z.string().optional(),
-    dateOfBirth: z.string().optional(),
-
-    // Onboarding state fields
-    profileType: z.enum(['dancer', 'choreographer', 'guest']).optional(),
-    onboardingCompleted: z.boolean().optional(),
-    onboardingCompletedAt: z.string().optional(),
-    onboardingVersion: z.string().optional(),
-    currentOnboardingStep: z.string().optional(),
-    currentOnboardingStepIndex: z.number().optional(),
-
-    // DEPRECATED: These profile fields should NOT be updated here
-    // They are kept for backward compatibility during migration only
-    // Use profile-specific mutations instead:
-    // - patchDancerAttributes for attributes
-    // - updateMyDancerProfile for headshots, sizing, resume, etc.
-    location: z
-      .object({
-        city: z.string(),
-        state: z.string(),
-        country: z.string(),
-        name: z.string().optional(),
-        zipCode: z.string().optional(),
-        address: z.string().optional()
-      })
-      .optional(),
-    workLocation: z.array(z.string()).optional(),
-    representationStatus: z
-      .enum(['represented', 'seeking', 'independent'])
-      .optional(),
-    sagAftraId: z.string().optional(),
-    databaseUse: z.string().optional(),
-    companyName: z.string().optional()
+    dateOfBirth: z.string().optional()
   }),
   returns: z.null(),
   handler: async (ctx, args) => {
     // Compute derived fields for account-level data
     const nextUser = {
       firstName: args.firstName ?? ctx.user.firstName,
-      lastName: args.lastName ?? ctx.user.lastName,
-      displayName: args.displayName ?? ctx.user.displayName
+      lastName: args.lastName ?? ctx.user.lastName
     }
     const derived = await computeDerived(ctx, nextUser)
 
-    // WARNING: Profile fields in args will be written to users table for backward compatibility
-    // In the future, these should be rejected or automatically routed to profile mutations
     await ctx.db.patch(ctx.user._id, { ...args, ...derived })
-
-    // TODO: In a future migration, automatically sync profile fields to active profile:
-    // if (ctx.user.activeDancerId || ctx.user.activeChoreographerId) {
-    //   const profileFields = extractProfileFields(args)
-    //   if (Object.keys(profileFields).length > 0) {
-    //     await syncToActiveProfile(ctx, profileFields)
-    //   }
-    // }
 
     return null
   }
@@ -364,52 +255,21 @@ export const deleteUserByTokenId = zim({
   }
 })
 
+// DEPRECATED: User search removed - use dancers.searchDancers() or choreographers.searchChoreographers() instead
 export const search = zq({
   args: { query: z.string() },
   handler: async (ctx, { query }) => {
-    const results = await ctx.db
-      .query('users')
-      .withSearchIndex('search_user', (q) => q.search('searchPattern', query))
-      .take(10)
-
-    const fullResults = await Promise.all(
-      results.map(async (result: any) => {
-        let headshot
-        let representationName
-        if (result.representation?.agencyId) {
-          const representation = (await ctx.db.get(
-            result.representation.agencyId
-          )) as AgencyDoc | null
-          representationName = representation?.shortName || representation?.name
-        }
-
-        if (result.headshots?.[0]) {
-          headshot = {
-            url: await ctx.storage.getUrl(result.headshots[0].storageId),
-            ...result.headshots[0]
-          }
-        }
-
-        return {
-          ...result,
-          representationName,
-          headshot
-        }
-      })
-    )
-
-    return fullResults
+    // Migration complete: Search moved to profile-specific functions
+    // Use dancers.searchDancers() or choreographers.searchChoreographers()
+    return []
   }
 })
 
+// DEPRECATED: updateDerivedPatterns removed - searchPattern now managed per-profile
 export const updateDerivedPatterns = zim({
   args: {},
   handler: async (ctx) => {
-    const users = await ctx.db.query('users').take(1000)
-    for (const user of users) {
-      const derived = await computeDerived(ctx, user)
-      await ctx.db.patch(user._id, derived)
-    }
+    // No-op: searchPattern is now managed in dancer/choreographer profiles
   }
 })
 
@@ -556,6 +416,8 @@ export const getFavoriteUsersForCarousel = authQuery({
   }
 })
 
+// DEPRECATED: Use dancers.searchDancers() or choreographers.searchChoreographers() instead
+// This function queried user fields that have been migrated to profile tables
 export const paginateProfiles = zq({
   args: {
     paginationOpts: z.object({
@@ -575,27 +437,11 @@ export const paginateProfiles = zq({
     continueCursor: z.string()
   }),
   handler: async (ctx, args) => {
-    const results = await (
-      filter(
-        ctx.db.query('users') as any,
-        async (user: any) => user.onboardingCompleted === true
-      ) as any
-    ).paginate(args.paginationOpts)
-
+    // Return empty results - this function is deprecated after profile migration
     return {
-      ...results,
-      page: await Promise.all(
-        results.page.map(async (user: UserDoc) => {
-          const headshots = user.headshots?.filter(notEmpty) || []
-          return {
-            userId: user._id,
-            label: user.displayName || user.fullName || '',
-            headshotUrl: headshots[0]
-              ? (await ctx.storage.getUrl(headshots[0].storageId)) || ''
-              : ''
-          }
-        })
-      )
+      page: [],
+      isDone: true,
+      continueCursor: ''
     }
   }
 })

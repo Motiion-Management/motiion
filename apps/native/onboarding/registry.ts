@@ -66,7 +66,6 @@ export interface SaveContext {
   patchDancerAttributes: (args: any) => Promise<any>;
   updateMyDancerProfile: (args: any) => Promise<any>;
   updateMyChoreographerProfile: (args: any) => Promise<any>;
-  addMyRepresentation: (args: any) => Promise<any>;
   createDancerProfile: (args: any) => Promise<any>;
   createChoreographerProfile: (args: any) => Promise<any>;
 }
@@ -117,9 +116,9 @@ export const STEP_REGISTRY = {
     getInitialValues: (data: OnboardingData) => ({ displayName: selectDisplayName(data) }),
     save: async (values: any, ctx) => {
       // Write to active profile based on profileType
-      if (ctx.data.user?.profileType === 'dancer') {
+      if (ctx.data.user?.activeProfileType === 'dancer') {
         await ctx.updateMyDancerProfile({ displayName: values.displayName.trim() });
-      } else if (ctx.data.user?.profileType === 'choreographer') {
+      } else if (ctx.data.user?.activeProfileType === 'choreographer') {
         await ctx.updateMyChoreographerProfile({ displayName: values.displayName.trim() });
       }
     },
@@ -200,9 +199,9 @@ export const STEP_REGISTRY = {
         country: 'United States',
       };
       // Write to active profile based on profileType
-      if (ctx.data.user?.profileType === 'dancer') {
+      if (ctx.data.user?.activeProfileType === 'dancer') {
         await ctx.updateMyDancerProfile({ location });
-      } else if (ctx.data.user?.profileType === 'choreographer') {
+      } else if (ctx.data.user?.activeProfileType === 'choreographer') {
         await ctx.updateMyChoreographerProfile({ location });
       }
     },
@@ -221,9 +220,9 @@ export const STEP_REGISTRY = {
         .filter(Boolean)
         .map((loc: any) => `${loc.city}, ${loc.state}`);
       // Write to active profile based on profileType
-      if (ctx.data.user?.profileType === 'dancer') {
+      if (ctx.data.user?.activeProfileType === 'dancer') {
         await ctx.updateMyDancerProfile({ workLocation });
-      } else if (ctx.data.user?.profileType === 'choreographer') {
+      } else if (ctx.data.user?.activeProfileType === 'choreographer') {
         await ctx.updateMyChoreographerProfile({ workLocation });
       }
     },
@@ -260,12 +259,12 @@ export const STEP_REGISTRY = {
     getInitialValues: (data: OnboardingData) => selectSkills(data),
     save: async (values: any, ctx) => {
       // Write flattened skills and genres to active profile
-      if (ctx.data.user?.profileType === 'dancer') {
+      if (ctx.data.user?.activeProfileType === 'dancer') {
         await ctx.updateMyDancerProfile({
           skills: values.skills,
           genres: values.genres,
         });
-      } else if (ctx.data.user?.profileType === 'choreographer') {
+      } else if (ctx.data.user?.activeProfileType === 'choreographer') {
         await ctx.updateMyChoreographerProfile({
           skills: values.skills,
           genres: values.genres,
@@ -294,9 +293,9 @@ export const STEP_REGISTRY = {
     getInitialValues: (data: OnboardingData) => selectRepresentationStatus(data),
     save: async (values: any, ctx) => {
       // Write to active profile based on profileType
-      if (ctx.data.user?.profileType === 'dancer') {
+      if (ctx.data.user?.activeProfileType === 'dancer') {
         await ctx.updateMyDancerProfile({ representationStatus: values.representationStatus });
-      } else if (ctx.data.user?.profileType === 'choreographer') {
+      } else if (ctx.data.user?.activeProfileType === 'choreographer') {
         await ctx.updateMyChoreographerProfile({ representationStatus: values.representationStatus });
       }
     },
@@ -311,7 +310,16 @@ export const STEP_REGISTRY = {
     getInitialValues: (data: OnboardingData) => selectAgencyId(data),
     save: async (values: any, ctx) => {
       if (values.agencyId) {
-        await ctx.addMyRepresentation({ agencyId: values.agencyId as any });
+        // Update representation on the active profile
+        if (ctx.data.user?.activeProfileType === 'dancer') {
+          await ctx.updateMyDancerProfile({
+            representation: { agencyId: values.agencyId as any }
+          });
+        } else if (ctx.data.user?.activeProfileType === 'choreographer') {
+          await ctx.updateMyChoreographerProfile({
+            representation: { agencyId: values.agencyId as any }
+          });
+        }
       }
     },
   },
@@ -325,7 +333,7 @@ export const STEP_REGISTRY = {
     getInitialValues: (data: OnboardingData) => selectSagAftraId(data),
     save: async (values: any, ctx) => {
       // SAG-AFTRA is dancer-specific
-      if (ctx.data.user?.profileType === 'dancer') {
+      if (ctx.data.user?.activeProfileType === 'dancer') {
         await ctx.updateMyDancerProfile({ sagAftraId: values.sagAftraId || undefined });
       }
     },
@@ -349,10 +357,12 @@ export const STEP_REGISTRY = {
     helpText: undefined,
     Component: DatabaseUseForm as unknown as ComponentType<FormProps<any>>,
     schema: databaseUseSchema,
-    getInitialValues: (data: OnboardingData) => ({ databaseUse: data.user?.databaseUse }),
+    getInitialValues: (data: OnboardingData) => ({
+      databaseUse: (data.profile as any)?.databaseUse || ''
+    }),
     save: async (values: any, ctx) => {
       // Database use is choreographer-specific
-      if (ctx.data.user?.profileType === 'choreographer') {
+      if (ctx.data.user?.activeProfileType === 'choreographer') {
         await ctx.updateMyChoreographerProfile({ databaseUse: values.databaseUse });
       }
     },
@@ -364,10 +374,12 @@ export const STEP_REGISTRY = {
     helpText: undefined,
     Component: CompanyForm as unknown as ComponentType<FormProps<any>>,
     schema: companySchema,
-    getInitialValues: (data: OnboardingData) => ({ companyName: data.user?.companyName }),
+    getInitialValues: (data: OnboardingData) => ({
+      companyName: (data.profile as any)?.companyName || ''
+    }),
     save: async (values: any, ctx) => {
       // Company name is choreographer-specific
-      if (ctx.data.user?.profileType === 'choreographer') {
+      if (ctx.data.user?.activeProfileType === 'choreographer') {
         await ctx.updateMyChoreographerProfile({ companyName: values.companyName });
       }
     },

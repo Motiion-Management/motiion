@@ -102,7 +102,7 @@ export const addMyTraining = authMutation({
     }
     const trainingId = await ctx.db.insert('training', insertData)
 
-    // Update training list in profile or user
+    // Update training list in profile
     if (profile) {
       // TODO: Handle choreographer profiles in dedicated task
       const dancerProfile = profile as Doc<'dancers'>
@@ -111,13 +111,6 @@ export const addMyTraining = authMutation({
         : []
       await ctx.db.patch(dancerProfile._id, {
         training: [...profileTraining, trainingId]
-      })
-    } else {
-      const userTraining: any = Array.isArray(ctx.user?.training)
-        ? ctx.user.training
-        : []
-      await ctx.db.patch(ctx.user._id, {
-        training: [...userTraining, trainingId]
       })
     }
 
@@ -159,16 +152,6 @@ export const removeMyTraining = authMutation({
             id !== args.trainingId
         )
       })
-    } else {
-      const userTraining: any = Array.isArray(ctx.user.training)
-        ? ctx.user.training
-        : []
-      await ctx.db.patch(ctx.user._id, {
-        training: userTraining.filter(
-          (id: import('./_generated/dataModel').Id<'training'>) =>
-            id !== args.trainingId
-        )
-      })
     }
 
     await ctx.db.delete(args.trainingId)
@@ -181,8 +164,8 @@ export const getMyTraining = authQuery({
   args: {},
   returns: z.array(zTrainingFormDoc),
   handler: async (ctx) => {
-    // PROFILE-FIRST: Get training from profile if active
-    let trainingIds = ctx.user?.training || []
+    // Get training from profile
+    let trainingIds: any[] = []
 
     if (
       ctx.user?.activeProfileType &&
@@ -210,7 +193,7 @@ export const getMyTraining = authQuery({
 
     if (!Array.isArray(trainingIds) || trainingIds.length === 0) return []
 
-    const training = await getAll(ctx.db, trainingIds)
+    const training = (await getAll(ctx.db, trainingIds)) as Doc<'training'>[]
     return training
       .filter(notEmpty)
       .sort(
@@ -228,8 +211,8 @@ export const getMyTrainingByType = authQuery({
   args: { type: zTrainingInput.shape.type },
   returns: z.array(zTrainingFormDoc),
   handler: async (ctx, args) => {
-    // PROFILE-FIRST: Get training from profile if active
-    let trainingIds = ctx.user?.training || []
+    // Get training from profile
+    let trainingIds: any[] = []
 
     if (
       ctx.user?.activeProfileType &&
@@ -257,7 +240,7 @@ export const getMyTrainingByType = authQuery({
 
     if (!Array.isArray(trainingIds) || trainingIds.length === 0) return []
 
-    const training = await getAll(ctx.db, trainingIds)
+    const training = (await getAll(ctx.db, trainingIds)) as Doc<'training'>[]
     return training
       .filter(notEmpty)
       .filter((t) => t.type === args.type)
@@ -291,11 +274,11 @@ export const getUserPublicTraining = zq({
   args: { userId: zid('users') },
   returns: z.array(zTrainingFormDoc),
   handler: async (ctx, args) => {
-    const user = await ctx.db.get(args.userId)
-    if (!user?.training) return []
-
-    const trainingIds: any = user.training
-    const training = await getAll(ctx.db as any, trainingIds)
+    // Training is now stored in profiles, query by userId
+    const training = await ctx.db
+      .query('training')
+      .withIndex('by_userId', (q) => q.eq('userId', args.userId))
+      .collect()
 
     return training
       .filter(notEmpty)
@@ -303,6 +286,6 @@ export const getUserPublicTraining = zq({
         (a, b) =>
           ((a.orderIndex as number) || 0) - ((b.orderIndex as number) || 0)
       )
-      .map(({ orderIndex, userId, ...rest }) => rest) as any
+      .map(({ orderIndex, userId, profileType, profileId, ...rest }) => rest) as any
   }
 })

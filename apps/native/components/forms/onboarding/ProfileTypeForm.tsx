@@ -31,7 +31,7 @@ export const ProfileTypeForm = forwardRef<
 
   const form = useAppForm({
     defaultValues: {
-      profileType: initialData?.profileType || user?.profileType,
+      profileType: initialData?.profileType || user?.activeProfileType,
     } as ProfileTypeSchema,
     validators: {
       onChange: profileTypeValidator,

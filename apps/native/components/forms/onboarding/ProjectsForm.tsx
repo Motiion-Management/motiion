@@ -13,7 +13,7 @@ interface ProjectsFormValues {
 
 export const ProjectsForm = forwardRef<FormHandle, FormProps<ProjectsFormValues>>(
   ({ onSubmit, onValidChange }, ref) => {
-    const experiences = useQuery(api.users.projects.getMyProjects, {});
+    const experiences = useQuery(api.projects.getMyProjects, {});
 
     const slots = useMemo(() => {
       const docs = experiences || [];

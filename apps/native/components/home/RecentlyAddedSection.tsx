@@ -11,7 +11,7 @@ interface RecentlyAddedSectionProps {
 }
 
 export function RecentlyAddedSection({ onAddPress, onItemPress }: RecentlyAddedSectionProps) {
-  const recentExperiences = useQuery(api.users.projects.getMyRecentProjects);
+  const recentExperiences = useQuery(api.projects.getMyRecentProjects);
 
   const items: ResumeCardItem[] = React.useMemo(() => {
     if (!recentExperiences) return [];

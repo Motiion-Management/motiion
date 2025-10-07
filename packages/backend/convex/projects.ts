@@ -1,9 +1,10 @@
-import { zq, authMutation, zid } from './util'
+import { zq, authMutation, authQuery, zid } from './util'
 import { z } from 'zod'
 import { Doc } from './_generated/dataModel'
+import { ConvexError } from 'convex/values'
 
 // Import schema from schemas folder
-import { Projects, projects } from './schemas/projects'
+import { Projects, projects, ProjectFormDoc, zProjectsDoc } from './schemas/projects'
 
 const zProjectDoc = Projects.zDoc
 
@@ -44,5 +45,77 @@ export const destroy = authMutation({
   handler: async (ctx, { id }) => {
     await ctx.db.delete(id)
     return null
+  }
+})
+
+// Get all projects for current user's active profile
+export const getMyProjects = authQuery({
+  args: {},
+  returns: z.array(zProjectsDoc),
+  handler: async (ctx) => {
+    if (!ctx.user) return []
+
+    const projects = await ctx.db
+      .query('projects')
+      .withIndex('userId', (q) => q.eq('userId', ctx.user._id))
+      .collect()
+
+    return projects.map(({ userId, profileType, profileId, ...rest }) => rest) as any
+  }
+})
+
+// Get recent projects for current user (last 5)
+export const getMyRecentProjects = authQuery({
+  args: {},
+  returns: z.array(zProjectsDoc),
+  handler: async (ctx) => {
+    if (!ctx.user) return []
+
+    const projects = await ctx.db
+      .query('projects')
+      .withIndex('userId', (q) => q.eq('userId', ctx.user._id))
+      .order('desc')
+      .take(5)
+
+    return projects.map(({ userId, profileType, profileId, ...rest }) => rest) as any
+  }
+})
+
+// Add project with automatic profile info
+export const addMyProject = authMutation({
+  args: z.object(projects).partial().extend({
+    title: z.string(),
+    projectType: z.string()
+  }),
+  returns: zid('projects'),
+  handler: async (ctx, args) => {
+    // Get profile info
+    let profileInfo: any = {}
+
+    if (
+      ctx.user.activeProfileType &&
+      (ctx.user.activeDancerId || ctx.user.activeChoreographerId)
+    ) {
+      if (ctx.user.activeProfileType === 'dancer' && ctx.user.activeDancerId) {
+        profileInfo = {
+          profileType: 'dancer' as const,
+          profileId: ctx.user.activeDancerId
+        }
+      } else if (
+        ctx.user.activeProfileType === 'choreographer' &&
+        ctx.user.activeChoreographerId
+      ) {
+        profileInfo = {
+          profileType: 'choreographer' as const,
+          profileId: ctx.user.activeChoreographerId
+        }
+      }
+    }
+
+    return await ctx.db.insert('projects', {
+      ...args,
+      userId: ctx.user._id,
+      ...profileInfo
+    } as any)
   }
 })

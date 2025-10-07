@@ -5,19 +5,19 @@ import { useState, useCallback, useEffect } from 'react';
 import { HeightValue } from '~/components/ui/height-picker';
 
 export function useHeightForm() {
-  const user = useQuery(api.users.users.getMyUser);
+  const profile = useQuery(api.dancers.getMyDancerProfile, {});
   const patchDancerAttributes = useMutation(api.dancers.patchDancerAttributes);
 
   const [height, setHeight] = useState<HeightValue>({ feet: 5, inches: 6 });
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  // Load existing height from user profile
+  // Load existing height from profile
   useEffect(() => {
-    if (user?.attributes?.height) {
-      setHeight(user.attributes.height);
+    if (profile?.attributes?.height) {
+      setHeight(profile.attributes.height);
     }
-  }, [user?.attributes?.height]);
+  }, [profile?.attributes?.height]);
 
   const handleHeightChange = useCallback((newHeight: HeightValue) => {
     setHeight(newHeight);

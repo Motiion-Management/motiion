@@ -15,6 +15,7 @@ import { Text } from '~/components/ui/text';
 export function UserButton() {
   const { signOut } = useClerk();
   const user = useQuery(api.users.users.getMyUser);
+  const profile = useQuery(api.dancers.getMyDancerProfile, {});
   const headshotUrl = useQuery(api.dancers.getMyDancerHeadshotUrl, {});
 
   const getInitials = () => {
@@ -22,7 +23,7 @@ export function UserButton() {
     if (user.firstName && user.lastName) {
       return `${user.firstName[0]}${user.lastName[0]}`.toUpperCase();
     }
-    const name = user.displayName || user.fullName;
+    const name = profile?.displayName || user.fullName;
     if (name) {
       const parts = name.split(' ');
       if (parts.length > 1) {
@@ -40,7 +41,7 @@ export function UserButton() {
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
         <Pressable>
-          <Avatar alt={user?.displayName || user?.email || 'User avatar'} className="h-10 w-10">
+          <Avatar alt={profile?.displayName || user?.email || 'User avatar'} className="h-10 w-10">
             {headshotUrl && <AvatarImage source={{ uri: headshotUrl }} />}
             <AvatarFallback>
               <Text className="text-sm font-medium text-text-default">{getInitials()}</Text>

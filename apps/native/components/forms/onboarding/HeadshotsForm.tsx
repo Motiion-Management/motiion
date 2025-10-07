@@ -12,7 +12,8 @@ export interface HeadshotsValues {
 
 export const HeadshotsForm = forwardRef<FormHandle, FormProps<HeadshotsValues>>(
   function HeadshotsForm({ onSubmit, onValidChange }, ref) {
-    const existingHeadshots = useQuery(api.users.headshots.getMyHeadshots);
+    const profile = useQuery(api.dancers.getMyDancerProfile, {});
+    const existingHeadshots = profile?.headshots ?? [];
     const hasImages = (existingHeadshots?.length ?? 0) > 0;
 
     useImperativeHandle(ref, () => ({

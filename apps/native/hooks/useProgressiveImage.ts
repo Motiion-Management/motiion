@@ -10,7 +10,7 @@ import { Id } from '@packages/backend/convex/_generated/dataModel';
 export function useProgressiveImage(storageId: Id<'_storage'> | undefined) {
   const [imageUrl, setImageUrl] = useState<string | null>(null);
   const url = useQuery(
-    api.users.headshotsOptimized.getHeadshotUrl,
+    api.files.getUrl,
     storageId ? { storageId } : 'skip'
   );
 

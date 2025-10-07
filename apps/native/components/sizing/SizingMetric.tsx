@@ -15,13 +15,13 @@ interface SizingMetricProps {
 }
 
 export function SizingMetric({ metric, className }: SizingMetricProps) {
-  const user = useQuery(api.users.users.getMyUser);
+  const profile = useQuery(api.dancers.getMyDancerProfile, {});
   const { isOpen, open, close } = useSheetState();
 
-  // Get current value from user data
+  // Get current value from profile data
   const currentValue =
-    user?.sizing?.[metric.section]?.[
-      metric.field as keyof (typeof user.sizing)[typeof metric.section]
+    profile?.sizing?.[metric.section]?.[
+      metric.field as keyof (typeof profile.sizing)[typeof metric.section]
     ];
 
   const handleCardPress = () => {

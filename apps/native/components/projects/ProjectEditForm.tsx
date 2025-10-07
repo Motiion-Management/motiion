@@ -58,7 +58,7 @@ export const ProjectEditForm = forwardRef<ProjectEditFormHandle, ProjectEditForm
     const insets = useSafeAreaInsets();
 
     // Allow fetching existing doc by id if not provided
-    const myProjects = useQuery(api.users.projects.getMyProjects, {});
+    const myProjects = useQuery(api.projects.getMyProjects, {});
     const projectFromQuery = useMemo<ProjectFormDoc | undefined>(() => {
       const id = project?._id ?? projectIdProp;
       if (!id || !Array.isArray(myProjects)) return undefined;
@@ -98,7 +98,7 @@ export const ProjectEditForm = forwardRef<ProjectEditFormHandle, ProjectEditForm
       })
       .passthrough();
 
-    const addMyProject = useMutation(api.users.projects.addMyProject);
+    const addMyProject = useMutation(api.projects.addMyProject);
     const updateProject = useMutation(api.projects.update);
     const destroyProject = useMutation(api.projects.destroy);
 
