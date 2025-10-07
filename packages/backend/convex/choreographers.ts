@@ -84,10 +84,145 @@ export const createChoreographerProfile = authMutation({
 })
 
 // Update choreographer profile
-export const updateChoreographerProfile = zm({
-  args: {},
-  handler: async (ctx, args) => {
-    // TODO: Implement update logic
+export const updateChoreographerProfile = authMutation({
+  args: {
+    profileId: zid('choreographers'),
+    updates: zChoreographers.partial()
+  },
+  returns: z.object({ success: z.boolean() }),
+  handler: async (ctx, { profileId, updates }) => {
+    // Verify ownership
+    const profile = await ctx.db.get(profileId)
+    if (!profile || profile.userId !== ctx.user._id) {
+      throw new ConvexError('Profile not found or access denied')
+    }
+
+    // Update the profile
+    const patchData: any = {
+      ...updates,
+      searchPattern: generateSearchPattern({ ...profile, ...updates })
+    }
+    await ctx.db.patch(profileId, patchData)
+
+    return { success: true }
+  }
+})
+
+// Set active choreographer profile
+export const setActiveChoreographerProfile = authMutation({
+  args: { profileId: zid('choreographers') },
+  returns: z.object({ success: z.boolean() }),
+  handler: async (ctx, { profileId }) => {
+    // Verify ownership
+    const profile = await ctx.db.get(profileId)
+    if (!profile || profile.userId !== ctx.user._id) {
+      throw new ConvexError('Profile not found or access denied')
+    }
+
+    // Update discriminate values on users table
+    await ctx.db.patch(ctx.user._id, {
+      activeProfileType: 'choreographer',
+      activeChoreographerId: profileId,
+      activeDancerId: undefined
+    } as any)
+
+    return { success: true }
+  }
+})
+
+// ============================================================================
+// ACTIVE PROFILE MUTATIONS (automatically target user's active choreographer profile)
+// ============================================================================
+
+// Update arbitrary fields on the active choreographer profile
+export const updateMyChoreographerProfile = authMutation({
+  args: zChoreographers.partial(),
+  returns: z.null(),
+  handler: async (ctx, updates) => {
+    if (!ctx.user.activeChoreographerId) {
+      throw new ConvexError('No active choreographer profile found')
+    }
+
+    const profile = await ctx.db.get(ctx.user.activeChoreographerId)
+    if (!profile || profile.userId !== ctx.user._id) {
+      throw new ConvexError('Profile not found or access denied')
+    }
+
+    const patchData: any = {
+      ...updates,
+      searchPattern: generateSearchPattern({ ...profile, ...updates })
+    }
+    await ctx.db.patch(ctx.user.activeChoreographerId, patchData)
+
+    return null
+  }
+})
+
+// Search choreographers (public)
+export const searchChoreographers = zq({
+  args: {
+    searchTerm: z.string(),
+    limit: z.number().optional().default(10)
+  },
+  handler: async (ctx, { searchTerm, limit }) => {
+    const results = await ctx.db
+      .query('choreographers')
+      .withSearchIndex('search_choreographer', (q) =>
+        q.search('searchPattern', searchTerm)
+      )
+      .take(limit)
+
+    return results
+  }
+})
+
+// Calculate choreographer profile completeness percentage
+export const calculateChoreographerCompleteness = authMutation({
+  args: { profileId: zid('choreographers') },
+  returns: z.object({ completeness: z.number() }),
+  handler: async (ctx, { profileId }) => {
+    const profile = await ctx.db.get(profileId)
+    if (!profile || profile.userId !== ctx.user._id) {
+      throw new ConvexError('Profile not found or access denied')
+    }
+
+    const weights = {
+      headshots: 20,
+      resume: 20,
+      companyName: 15,
+      databaseUse: 10,
+      location: 15,
+      links: 10,
+      representation: 10
+    }
+
+    let score = 0
+    if (
+      profile.headshots &&
+      Array.isArray(profile.headshots) &&
+      profile.headshots.length > 0
+    )
+      score += weights.headshots
+    if (
+      profile.resume &&
+      typeof profile.resume === 'object' &&
+      'projects' in profile.resume &&
+      Array.isArray(profile.resume.projects) &&
+      profile.resume.projects.length > 0
+    )
+      score += weights.resume
+    if (profile.companyName) score += weights.companyName
+    if (profile.databaseUse) score += weights.databaseUse
+    if (profile.location) score += weights.location
+    if (profile.links) score += weights.links
+    if (profile.representation) score += weights.representation
+
+    const completeness = Math.min(100, Math.round(score))
+
+    // Update the profile with the new completeness
+    await ctx.db.patch(profileId, { profileCompleteness: completeness })
+
+    return { completeness }
   }
 })
 

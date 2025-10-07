@@ -173,26 +173,56 @@ export const getMyUser = authQuery({
 })
 
 // Zod-validated mutation using convex-helpers + codecs
-// Use existing authMutation (from util.ts) to supply ctx.user
 // ACCOUNT-LEVEL ONLY: For profile data, use dancer/choreographer mutations
+//
+// IMPORTANT: Profile-specific fields (headshots, attributes, sizing, resume, etc.)
+// should be updated using:
+// - dancers.updateMyDancerProfile() for dancers
+// - choreographers.updateMyChoreographerProfile() for choreographers
 export const updateMyUser = authMutation({
   args: z.object({
+    // Account-level fields only
     firstName: z.string().optional(),
     lastName: z.string().optional(),
     displayName: z.string().optional(),
     email: z.string().optional(),
     phone: z.string().optional(),
     dateOfBirth: z.string().optional(),
+
+    // Onboarding state fields
     profileType: z.enum(['dancer', 'choreographer', 'guest']).optional(),
     onboardingCompleted: z.boolean().optional(),
     onboardingCompletedAt: z.string().optional(),
     onboardingVersion: z.string().optional(),
     currentOnboardingStep: z.string().optional(),
-    currentOnboardingStepIndex: z.number().optional()
+    currentOnboardingStepIndex: z.number().optional(),
+
+    // DEPRECATED: These profile fields should NOT be updated here
+    // They are kept for backward compatibility during migration only
+    // Use profile-specific mutations instead:
+    // - patchDancerAttributes for attributes
+    // - updateMyDancerProfile for headshots, sizing, resume, etc.
+    location: z
+      .object({
+        city: z.string(),
+        state: z.string(),
+        country: z.string(),
+        name: z.string().optional(),
+        zipCode: z.string().optional(),
+        address: z.string().optional()
+      })
+      .optional(),
+    workLocation: z.array(z.string()).optional(),
+    representationStatus: z
+      .enum(['represented', 'seeking', 'independent'])
+      .optional(),
+    sagAftraId: z.string().optional(),
+    databaseUse: z.string().optional(),
+    companyName: z.string().optional()
   }),
   returns: z.null(),
   handler: async (ctx, args) => {
-    // Only update account-level fields
+    // Compute derived fields for account-level data
     const nextUser = {
       firstName: args.firstName ?? ctx.user.firstName,
       lastName: args.lastName ?? ctx.user.lastName,
@@ -200,7 +230,18 @@ export const updateMyUser = authMutation({
     }
     const derived = await computeDerived(ctx, nextUser)
 
+    // WARNING: Profile fields in args will be written to users table for backward compatibility
+    // In the future, these should be rejected or automatically routed to profile mutations
     await ctx.db.patch(ctx.user._id, { ...args, ...derived })
+
+    // TODO: In a future migration, automatically sync profile fields to active profile:
+    // if (ctx.user.activeDancerId || ctx.user.activeChoreographerId) {
+    //   const profileFields = extractProfileFields(args)
+    //   if (Object.keys(profileFields).length > 0) {
+    //     await syncToActiveProfile(ctx, profileFields)
+    //   }
+    // }
+
     return null
   }
 })
@@ -372,26 +413,93 @@ export const updateDerivedPatterns = zim({
   }
 })
 
+// DEPRECATED: Use addFavoriteDancer / addFavoriteChoreographer from dancers.ts instead
+// This mutation converts userId to profileId for backward compatibility
 export const addFavoriteUser = authMutation({
   args: { userId: zid('users') },
   handler: async (ctx, { userId }) => {
-    const existing = ctx.user.favoriteUsers || []
-    await ctx.db.patch(ctx.user._id, {
-      favoriteUsers: existing.concat(userId)
-    })
+    if (!ctx.user.activeDancerId && !ctx.user.activeChoreographerId) {
+      throw new ConvexError('No active profile found')
+    }
+
+    // Get the favorite user to determine their profile type
+    const favoriteUser = await ctx.db.get(userId)
+    if (!favoriteUser) {
+      throw new ConvexError('User not found')
+    }
+
+    const myProfileId = ctx.user.activeDancerId || ctx.user.activeChoreographerId
+    if (!myProfileId) {
+      throw new ConvexError('No active profile')
+    }
+
+    const myProfile = await ctx.db.get(myProfileId)
+    if (!myProfile) {
+      throw new ConvexError('Profile not found')
+    }
+
+    // Add to appropriate favorites array based on favorite user's profile type
+    if (favoriteUser.activeDancerId) {
+      const existing = (myProfile as any).favoriteDancers || []
+      if (!existing.includes(favoriteUser.activeDancerId)) {
+        await ctx.db.patch(myProfileId, {
+          favoriteDancers: [...existing, favoriteUser.activeDancerId]
+        })
+      }
+    }
+    if (favoriteUser.activeChoreographerId) {
+      const existing = (myProfile as any).favoriteChoreographers || []
+      if (!existing.includes(favoriteUser.activeChoreographerId)) {
+        await ctx.db.patch(myProfileId, {
+          favoriteChoreographers: [...existing, favoriteUser.activeChoreographerId]
+        })
+      }
+    }
   }
 })
 
+// DEPRECATED: Use removeFavoriteDancer / removeFavoriteChoreographer from dancers.ts instead
 export const removeFavoriteUser = authMutation({
   args: { userId: zid('users') },
   handler: async (ctx, { userId }) => {
-    const existing = ctx.user.favoriteUsers || []
-    await ctx.db.patch(ctx.user._id, {
-      favoriteUsers: existing.filter((id) => id !== userId)
-    })
+    if (!ctx.user.activeDancerId && !ctx.user.activeChoreographerId) {
+      throw new ConvexError('No active profile found')
+    }
+
+    // Get the favorite user to determine their profile type
+    const favoriteUser = await ctx.db.get(userId)
+    if (!favoriteUser) {
+      throw new ConvexError('User not found')
+    }
+
+    const myProfileId = ctx.user.activeDancerId || ctx.user.activeChoreographerId
+    if (!myProfileId) {
+      throw new ConvexError('No active profile')
+    }
+
+    const myProfile = await ctx.db.get(myProfileId)
+    if (!myProfile) {
+      throw new ConvexError('Profile not found')
+    }
+
+    // Remove from appropriate favorites arrays
+    if (favoriteUser.activeDancerId) {
+      const existing = (myProfile as any).favoriteDancers || []
+      await ctx.db.patch(myProfileId, {
+        favoriteDancers: existing.filter((id: any) => id !== favoriteUser.activeDancerId)
+      })
+    }
+    if (favoriteUser.activeChoreographerId) {
+      const existing = (myProfile as any).favoriteChoreographers || []
+      await ctx.db.patch(myProfileId, {
+        favoriteChoreographers: existing.filter((id: any) => id !== favoriteUser.activeChoreographerId)
+      })
+    }
   }
 })
 
+// Get favorites from user's active profile (dancer or choreographer)
+// Returns users associated with favorite dancer and choreographer profiles
 export const getFavoriteUsersForCarousel = authQuery({
   args: {},
   returns: z
@@ -404,7 +512,31 @@ export const getFavoriteUsersForCarousel = authQuery({
     )
     .optional(),
   handler: async (ctx) => {
-    const users = await getAll(ctx.db, ctx.user?.favoriteUsers || [])
+    // Get favorites from active profile
+    let favoriteUserIds: any[] = []
+
+    if (ctx.user?.activeDancerId || ctx.user?.activeChoreographerId) {
+      const profileId = ctx.user.activeDancerId || ctx.user.activeChoreographerId
+      if (profileId) {
+        const profile = await ctx.db.get(profileId)
+        if (profile) {
+          // Collect all favorite profile IDs (both dancers and choreographers)
+          const favoriteDancers = (profile as any).favoriteDancers || []
+          const favoriteChoreographers = (profile as any).favoriteChoreographers || []
+
+          // Get the user IDs for these profiles
+          const allProfileIds = [...favoriteDancers, ...favoriteChoreographers]
+          for (const profileId of allProfileIds) {
+            const prof = await ctx.db.get(profileId)
+            if (prof && (prof as any).userId) {
+              favoriteUserIds.push((prof as any).userId)
+            }
+          }
+        }
+      }
+    }
+
+    const users = await getAll(ctx.db, favoriteUserIds)
 
     if (users.length === 0) {
       return
@@ -472,7 +604,29 @@ export const isFavoriteUser = authQuery({
   args: { userId: zid('users') },
   returns: z.boolean(),
   handler: async (ctx, { userId }) => {
-    return !!(ctx.user && (ctx.user.favoriteUsers || []).includes(userId))
+    if (!ctx.user) return false
+
+    // Check favorites from active profile
+    const profileId = ctx.user.activeDancerId || ctx.user.activeChoreographerId
+    if (!profileId) return false
+
+    const profile = await ctx.db.get(profileId)
+    if (!profile) return false
+
+    // Get all favorite profile IDs
+    const favoriteDancers = (profile as any).favoriteDancers || []
+    const favoriteChoreographers = (profile as any).favoriteChoreographers || []
+    const allFavoriteProfileIds = [...favoriteDancers, ...favoriteChoreographers]
+
+    // Check if any favorite profile belongs to this user
+    for (const favProfileId of allFavoriteProfileIds) {
+      const favProfile = await ctx.db.get(favProfileId)
+      if (favProfile && (favProfile as any).userId === userId) {
+        return true
+      }
+    }
+
+    return false
   }
 })
 

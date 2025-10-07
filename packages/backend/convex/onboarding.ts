@@ -34,98 +34,18 @@ export const completeOnboarding: RegisteredMutation<
       throw new ConvexError('User not found')
     }
 
-    // Create profile in new table if it doesn't exist
-    if (
-      user.profileType &&
-      !user.activeDancerId &&
-      !user.activeChoreographerId
-    ) {
-      if (user.profileType === 'dancer') {
-        // Check if profile already exists
-        const existingProfile = await ctx.db
-          .query('dancers')
-          .withIndex('by_userId', (q) => q.eq('userId', user._id))
-          .first()
-
-        if (!existingProfile) {
-          // Create dancer profile with user's data
-          const profileId = await ctx.db.insert('dancers', {
-            userId: user._id,
-            isPrimary: true,
-            createdAt: new Date().toISOString(),
-            headshots: user.headshots,
-            representation: user.representation,
-            representationStatus: user.representationStatus,
-            attributes: user.attributes,
-            sizing: user.sizing,
-            resume: user.resume,
-            links: user.links,
-            sagAftraId: user.sagAftraId,
-            training: user.training,
-            workLocation: user.workLocation,
-            location: user.location,
-            profileCompleteness: 0,
-            profileTipDismissed: user.profileTipDismissed,
-            resumeImportedFields: user.resumeImportedFields,
-            resumeImportVersion: user.resumeImportVersion,
-            resumeImportedAt: user.resumeImportedAt,
-            searchPattern: user.searchPattern || ''
-          })
-
-          // Update user with profile references
-          const patchData: any = {
-            activeProfileType: 'dancer',
-            activeDancerId: profileId
-          }
-          await ctx.db.patch(user._id, patchData)
-        }
-      } else if (user.profileType === 'choreographer') {
-        // Check if profile already exists
-        const existingProfile = await ctx.db
-          .query('choreographers')
-          .withIndex('by_userId', (q) => q.eq('userId', user._id))
-          .first()
-
-        if (!existingProfile) {
-          // Create choreographer profile with user's data
-          const insertData: any = {
-            userId: user._id,
-            isPrimary: true,
-            createdAt: new Date().toISOString(),
-            headshots: user.headshots,
-            representation: user.representation,
-            representationStatus: user.representationStatus,
-            resume: user.resume,
-            links: user.links,
-            companyName: user.companyName,
-            workLocation: user.workLocation,
-            location: user.location,
-            databaseUse: user.databaseUse,
-            verified: false,
-            featured: false,
-            profileCompleteness: 0,
-            profileTipDismissed: user.profileTipDismissed,
-            resumeImportedFields: user.resumeImportedFields,
-            resumeImportVersion: user.resumeImportVersion,
-            resumeImportedAt: user.resumeImportedAt,
-            searchPattern: user.searchPattern || ''
-          }
-          const profileId = await ctx.db.insert('choreographers', insertData)
-
-          // Update user with profile references
-          const patchData: any = {
-            activeProfileType: 'choreographer',
-            activeChoreographerId: profileId
-          }
-          await ctx.db.patch(user._id, patchData)
-        }
-      }
+    // Get active profile ID
+    const activeProfileId =
+      user.activeDancerId || user.activeChoreographerId
+    if (!activeProfileId) {
+      throw new ConvexError('No active profile found')
     }
 
-    // Mark onboarding as completed (non-blocking; individual screens own validation)
-    await ctx.db.patch(user._id, {
+    // Mark onboarding as completed on the profile (non-blocking; individual screens own validation)
+    await ctx.db.patch(activeProfileId, {
       onboardingCompleted: true,
-      onboardingCompletedAt: new Date().toISOString()
+      onboardingCompletedAt: new Date().toISOString(),
+      onboardingVersion: CURRENT_ONBOARDING_VERSION
     })
 
     return { success: true }
@@ -153,8 +73,15 @@ export const resetOnboarding: RegisteredMutation<
       throw new ConvexError('User not found')
     }
 
-    // Reset onboarding status (useful for testing or major onboarding changes)
-    await ctx.db.patch(user._id, {
+    // Get active profile ID
+    const activeProfileId =
+      user.activeDancerId || user.activeChoreographerId
+    if (!activeProfileId) {
+      throw new ConvexError('No active profile found')
+    }
+
+    // Reset onboarding status on profile (useful for testing or major onboarding changes)
+    await ctx.db.patch(activeProfileId, {
       onboardingCompleted: false,
       onboardingCompletedAt: undefined,
       onboardingVersion: undefined,
@@ -189,6 +116,13 @@ export const setOnboardingStep = zm({
       throw new ConvexError('User not found')
     }
 
+    // Get active profile ID
+    const activeProfileId =
+      user.activeDancerId || user.activeChoreographerId
+    if (!activeProfileId) {
+      throw new ConvexError('No active profile found')
+    }
+
     const profileType = (user.profileType || 'dancer') as ProfileType
     const flow = getOnboardingFlowConfig(profileType)
     const stepIndex = flow.findIndex((s) => s.step === step)
@@ -197,7 +131,7 @@ export const setOnboardingStep = zm({
       throw new ConvexError(`Invalid step: ${step}`)
     }
 
-    await ctx.db.patch(user._id, {
+    await ctx.db.patch(activeProfileId, {
       currentOnboardingStep: step,
       currentOnboardingStepIndex: stepIndex
     })
@@ -228,12 +162,25 @@ export const getOnboardingRedirect = query({
       return { shouldRedirect: false, redirectPath: '/app' }
     }
 
-    // If onboarding completed, never redirect to onboarding
-    if (user.onboardingCompleted) {
+    // Get active profile for onboarding status (with fallback to user for backward compatibility)
+    let profile = null
+    const activeProfileId =
+      user.activeDancerId || user.activeChoreographerId
+    if (activeProfileId) {
+      profile = await ctx.db.get(activeProfileId)
+    }
+
+    // Check onboarding completion (profile first, fallback to user)
+    const onboardingCompleted = profile?.onboardingCompleted || user.onboardingCompleted
+    if (onboardingCompleted) {
       return { shouldRedirect: false, redirectPath: '/app' }
     }
 
-    const step = (user.currentOnboardingStep as STEP) || 'profile-type'
+    // Get current step (profile first, fallback to user)
+    const step =
+      (profile?.currentOnboardingStep as STEP) ||
+      (user.currentOnboardingStep as STEP) ||
+      'profile-type'
     const redirectPath = STEP_ROUTES[step]
     return { shouldRedirect: true, redirectPath }
   }
@@ -265,17 +212,37 @@ export const updateOnboardingStatus = mutation({
     }
 
     const profileType = (user.profileType || 'dancer') as ProfileType
-    const status = getFlowCompletionStatus(user, profileType)
 
-    // Update user's current step if it's different
+    // Get active profile for validation
+    let profile = null
+    if (user.activeProfileType === 'dancer' && user.activeDancerId) {
+      profile = await ctx.db.get(user.activeDancerId)
+    } else if (
+      user.activeProfileType === 'choreographer' &&
+      user.activeChoreographerId
+    ) {
+      profile = await ctx.db.get(user.activeChoreographerId)
+    }
+
+    const status = getFlowCompletionStatus(user, profileType, profile)
+
+    // Update profile's current step if it's different
     let wasUpdated = false
     const newStep = status.nextIncompleteStep || 'review'
 
-    if (user.currentOnboardingStep !== newStep) {
+    // Get active profile ID
+    const activeProfileId =
+      user.activeDancerId || user.activeChoreographerId
+    if (!activeProfileId) {
+      throw new ConvexError('No active profile found')
+    }
+
+    const currentStep = profile?.currentOnboardingStep || user.currentOnboardingStep
+    if (currentStep !== newStep) {
       const flow = getOnboardingFlowConfig(profileType)
       const stepIndex = flow.findIndex((s) => s.step === newStep)
 
-      await ctx.db.patch(user._id, {
+      await ctx.db.patch(activeProfileId, {
         currentOnboardingStep: newStep,
         currentOnboardingStepIndex: stepIndex
       })
@@ -318,7 +285,19 @@ export const getOnboardingStatus = query({
     }
 
     const profileType = (user.profileType || 'dancer') as ProfileType
-    const status = getFlowCompletionStatus(user, profileType)
+
+    // Get active profile for validation
+    let profile = null
+    if (user.activeProfileType === 'dancer' && user.activeDancerId) {
+      profile = await ctx.db.get(user.activeDancerId)
+    } else if (
+      user.activeProfileType === 'choreographer' &&
+      user.activeChoreographerId
+    ) {
+      profile = await ctx.db.get(user.activeChoreographerId)
+    }
+
+    const status = getFlowCompletionStatus(user, profileType, profile)
 
     return {
       currentStep: status.nextIncompleteStep || 'review',
@@ -345,7 +324,18 @@ export const checkStepCompletion = query({
 
     if (!user) return false
 
-    return isStepComplete(step, user)
+    // Get active profile for validation
+    let profile = null
+    if (user.activeProfileType === 'dancer' && user.activeDancerId) {
+      profile = await ctx.db.get(user.activeDancerId)
+    } else if (
+      user.activeProfileType === 'choreographer' &&
+      user.activeChoreographerId
+    ) {
+      profile = await ctx.db.get(user.activeChoreographerId)
+    }
+
+    return isStepComplete(step, user, profile)
   }
 })
 
@@ -366,3 +356,7 @@ export const getOnboardingFlow = query({
     return getOnboardingFlowConfig(profileType as ProfileType)
   }
 })
+
+// ============================================================================
+// HELPER FUNCTIONS
+// ============================================================================

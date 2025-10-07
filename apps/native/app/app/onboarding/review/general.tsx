@@ -6,13 +6,26 @@ import { Image } from 'expo-image';
 
 import { Text } from '~/components/ui/text';
 import { Tabs } from '~/components/ui/tabs/tabs';
-import { useUser } from '~/hooks/useUser';
+import { useOnboardingData } from '~/hooks/useOnboardingData';
 import ChevronRight from '~/lib/icons/ChevronRight';
 import { BaseOnboardingScreen } from '~/components/layouts/BaseOnboardingScreen';
 import { Chips } from '~/components/ui/chips/chips';
 import { api } from '@packages/backend/convex/_generated/api';
 import { useQuery } from 'convex/react';
 import { useProgressiveImage } from '~/hooks/useProgressiveImage';
+import {
+  selectDisplayName,
+  selectHeight,
+  selectEthnicity,
+  selectHairColor,
+  selectEyeColor,
+  selectGender,
+  selectPrimaryPlaceKitLocation,
+  selectWorkLocations,
+  selectRepresentationStatus,
+  selectAgencyId,
+  selectSagAftraId,
+} from '~/onboarding/selectors';
 
 interface ProfileFieldProps {
   label: string;
@@ -48,9 +61,21 @@ function ProfileField({ label, value, onEdit, isArray = false }: ProfileFieldPro
 }
 
 export default function GeneralReviewScreen() {
-  const { user } = useUser();
+  const { data, isLoading } = useOnboardingData();
   const [activeTab, setActiveTab] = useState<'personal' | 'work'>('personal');
-  const agencyId = user?.representation?.agencyId as any | undefined;
+
+  // Use selectors to get profile-first data with user fallback
+  const displayName = selectDisplayName(data);
+  const height = selectHeight(data);
+  const ethnicity = selectEthnicity(data);
+  const hairColor = selectHairColor(data);
+  const eyeColor = selectEyeColor(data);
+  const gender = selectGender(data);
+  const primaryLocation = selectPrimaryPlaceKitLocation(data);
+  const workLocations = selectWorkLocations(data);
+  const agencyId = selectAgencyId(data)?.agencyId as any | undefined;
+  const sagAftraId = selectSagAftraId(data)?.sagAftraId;
+
   const agency = useQuery(api.agencies.getAgency, agencyId ? { id: agencyId } : 'skip');
 
   const tabs = [
@@ -58,11 +83,11 @@ export default function GeneralReviewScreen() {
     { key: 'work', label: 'Work' },
   ];
 
-  // Headshot previews derived from user.headshots with progressive URL loading
+  // Headshot previews derived from profile.headshots with progressive URL loading
   const headshotStorageIds = useMemo(() => {
-    const list: any[] = (user?.headshots as any[]) || [];
+    const list: any[] = (data.profile?.headshots || data.user?.headshots || []) as any[];
     return list.map((h) => (typeof h === 'string' ? h : h?.storageId)).filter(Boolean) as string[];
-  }, [user?.headshots]);
+  }, [data.profile?.headshots, data.user?.headshots]);
 
   function HeadshotThumb({ storageId }: { storageId: any }) {
     const { url } = useProgressiveImage(storageId);
@@ -105,6 +130,13 @@ export default function GeneralReviewScreen() {
     import('../../(modals)/onboarding/review/[step]').catch(() => {});
   }, []);
 
+  if (isLoading) return null;
+
+  // Get sizing from profile or user (dancer-specific field)
+  const sizing =
+    (data.profile && 'sizing' in data.profile ? data.profile.sizing : undefined) ||
+    data.user?.sizing;
+
   return (
     <BaseOnboardingScreen
       title="Review your profile"
@@ -130,37 +162,33 @@ export default function GeneralReviewScreen() {
             <View>
               <ProfileField
                 label="Display Name"
-                value={user?.displayName}
+                value={displayName}
                 onEdit={() => handleEditField('display-name')}
               />
               <ProfileField
                 label="Height"
-                value={
-                  user?.attributes?.height
-                    ? `${user.attributes.height.feet}'${user.attributes.height.inches}"`
-                    : undefined
-                }
+                value={height ? `${height.feet}'${height.inches}"` : undefined}
                 onEdit={() => handleEditField('height')}
               />
               <ProfileField
                 label="Ethnicity"
-                value={user?.attributes?.ethnicity}
+                value={ethnicity}
                 isArray={true}
                 onEdit={() => handleEditField('ethnicity')}
               />
               <ProfileField
                 label="Hair Color"
-                value={user?.attributes?.hairColor}
+                value={hairColor}
                 onEdit={() => handleEditField('hair-color')}
               />
               <ProfileField
                 label="Eye Color"
-                value={user?.attributes?.eyeColor}
+                value={eyeColor}
                 onEdit={() => handleEditField('eye-color')}
               />
               <ProfileField
                 label="Gender"
-                value={user?.attributes?.gender}
+                value={gender}
                 onEdit={() => handleEditField('gender')}
               />
             </View>
@@ -198,12 +226,14 @@ export default function GeneralReviewScreen() {
               </Pressable>
               <ProfileField
                 label="Sizing"
-                value={user?.sizing ? `Edit sizing info` : `Edit sizing info`}
+                value={sizing ? `Edit sizing info` : `Edit sizing info`}
                 onEdit={() => handleEditField('sizing')}
               />
               <ProfileField
                 label="Primary Location"
-                value={user?.location ? `${user.location.city}, ${user.location.state}` : undefined}
+                value={
+                  primaryLocation ? `${primaryLocation.city}, ${primaryLocation.state}` : undefined
+                }
                 onEdit={() => handleEditField('location')}
               />
               {/* Work Locations with city chips */}
@@ -217,9 +247,7 @@ export default function GeneralReviewScreen() {
                   <View>
                     <Chips
                       variant="filter"
-                      items={(user?.workLocation || [])
-                        .map((s) => s.split(',')[0].trim())
-                        .filter(Boolean)}
+                      items={workLocations.map((loc) => loc.city).filter(Boolean)}
                     />
                   </View>
                 </View>
@@ -232,7 +260,7 @@ export default function GeneralReviewScreen() {
               />
               <ProfileField
                 label="SAG-AFTRA"
-                value={user?.sagAftraId ? `Member ID: ${user.sagAftraId}` : 'Not a member'}
+                value={sagAftraId ? `Member ID: ${sagAftraId}` : 'Not a member'}
                 onEdit={() => handleEditField('union')}
               />
             </View>

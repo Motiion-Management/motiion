@@ -356,77 +356,129 @@ export function getTotalSteps(profileType: ProfileType): number {
   return getOnboardingFlow(profileType).length
 }
 
-// Step validator type
-export type StepValidator = (user: any) => boolean
+// Step validator type - now accepts both user and optional profile
+export type StepValidator = (user: any, profile?: any) => boolean
 
 // Validation matrix for each step
+// Validators check profile data first (if available), then fall back to user data for backward compatibility
 export const STEP_VALIDATORS: Record<string, StepValidator> = {
   'profile-type': (user) => !!user.profileType,
 
   'display-name': (user) => !!user.displayName,
 
-  height: (user) =>
-    !!(user.attributes?.height?.feet && user.attributes?.height?.inches),
+  height: (user, profile) => {
+    const attributes = profile?.attributes || user.attributes
+    return !!(attributes?.height?.feet && attributes?.height?.inches)
+  },
 
-  ethnicity: (user) =>
-    !!(user.attributes?.ethnicity && user.attributes.ethnicity.length > 0),
+  ethnicity: (user, profile) => {
+    const attributes = profile?.attributes || user.attributes
+    return !!(attributes?.ethnicity && attributes.ethnicity.length > 0)
+  },
 
-  'hair-color': (user) => !!user.attributes?.hairColor,
+  'hair-color': (user, profile) => {
+    const attributes = profile?.attributes || user.attributes
+    return !!attributes?.hairColor
+  },
 
-  'eye-color': (user) => !!user.attributes?.eyeColor,
+  'eye-color': (user, profile) => {
+    const attributes = profile?.attributes || user.attributes
+    return !!attributes?.eyeColor
+  },
 
-  gender: (user) => !!user.attributes?.gender,
+  gender: (user, profile) => {
+    const attributes = profile?.attributes || user.attributes
+    return !!attributes?.gender
+  },
 
-  headshots: (user) => !!(user.headshots && user.headshots.length > 0),
+  headshots: (user, profile) => {
+    const headshots = profile?.headshots || user.headshots
+    return !!(headshots && headshots.length > 0)
+  },
 
-  sizing: (user) => {
-    const sizing = user.sizing
+  sizing: (user, profile) => {
+    const sizing = profile?.sizing || user.sizing
     if (!sizing) return false
     // Check if at least some sizing data exists
     return !!(sizing.general || sizing.male || sizing.female)
   },
 
-  location: (user) => !!user.location,
-
-  'work-location': (user) =>
-    !!(user.workLocation && user.workLocation.length > 0),
-
-  representation: (user) => !!user.representationStatus,
-
-  agency: (user) => {
-    // Only required if representationStatus is 'represented'
-    if (user.representationStatus !== 'represented') return true
-    return !!user.representation?.agencyId
+  location: (user, profile) => {
+    const location = profile?.location || user.location
+    return !!location
   },
 
-  training: (user) => !!(user.training && user.training.length > 0),
+  'work-location': (user, profile) => {
+    const workLocation = profile?.workLocation || user.workLocation
+    return !!(workLocation && workLocation.length > 0)
+  },
 
-  projects: (user) =>
-    !!(user.resume?.projects && user.resume.projects.length > 0),
+  representation: (user, profile) => {
+    const representationStatus =
+      profile?.representationStatus || user.representationStatus
+    return !!representationStatus
+  },
 
-  skills: (user) => !!(user.resume?.skills && user.resume.skills.length > 0),
+  agency: (user, profile) => {
+    // Only required if representationStatus is 'represented'
+    const representationStatus =
+      profile?.representationStatus || user.representationStatus
+    if (representationStatus !== 'represented') return true
+    const representation = profile?.representation || user.representation
+    return !!representation?.agencyId
+  },
 
-  union: (user) => true, // Optional step, always considered complete
+  training: (user, profile) => {
+    const training = profile?.training || user.training
+    return !!(training && training.length > 0)
+  },
 
-  'database-use': (user) => !!user.databaseUse,
+  projects: (user, profile) => {
+    // Use flattened fields with fallback to nested resume
+    const projects = profile?.projects || user.resume?.projects
+    return !!(projects && projects.length > 0)
+  },
 
-  company: (user) => !!user.companyName,
+  skills: (user, profile) => {
+    // Use flattened fields with fallback to nested resume
+    const skills = profile?.skills || user.resume?.skills
+    return !!(skills && skills.length > 0)
+  },
 
-  resume: (user) => true, // Optional step
+  union: (user, profile) => true, // Optional step, always considered complete
 
-  review: (user) => true // Review step has no data requirements
+  'database-use': (user, profile) => {
+    // Choreographer-specific field
+    const databaseUse = profile?.databaseUse || user.databaseUse
+    return !!databaseUse
+  },
+
+  company: (user, profile) => {
+    // Choreographer-specific field
+    const companyName = profile?.companyName || user.companyName
+    return !!companyName
+  },
+
+  resume: (user, profile) => true, // Optional step
+
+  review: (user, profile) => true // Review step has no data requirements
 }
 
 // Helper to check if a step is complete
-export function isStepComplete(step: string, user: any): boolean {
+export function isStepComplete(
+  step: string,
+  user: any,
+  profile?: any
+): boolean {
   const validator = STEP_VALIDATORS[step]
-  return validator ? validator(user) : false
+  return validator ? validator(user, profile) : false
 }
 
 // Helper to get completion status for entire flow
 export function getFlowCompletionStatus(
   user: any,
   profileType: ProfileType,
+  profile?: any,
   version: string = CURRENT_ONBOARDING_VERSION
 ): {
   completedSteps: string[]
@@ -439,7 +491,7 @@ export function getFlowCompletionStatus(
   const incompleteSteps: string[] = []
 
   for (const step of flow) {
-    if (isStepComplete(step.step, user)) {
+    if (isStepComplete(step.step, user, profile)) {
       completedSteps.push(step.step)
     } else {
       incompleteSteps.push(step.step)

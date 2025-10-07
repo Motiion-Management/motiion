@@ -16,6 +16,20 @@ export const dancers = {
   isPrimary: z.boolean().default(true), // First profile created during onboarding
   createdAt: z.string(), // ISO date string
 
+  // Profile-level identity
+  displayName: z.string().optional(),
+
+  // Onboarding state (per profile)
+  onboardingCompleted: z.boolean().optional(),
+  onboardingCompletedAt: z.string().optional(),
+  onboardingVersion: z.string().optional(),
+  currentOnboardingStep: z.string().optional(),
+  currentOnboardingStepIndex: z.number().optional(),
+
+  // Favorites (profile-specific)
+  favoriteDancers: z.array(zid('dancers')).optional(),
+  favoriteChoreographers: z.array(zid('choreographers')).optional(),
+
   // Profile data (migrated from users table)
   headshots: zFileUploadObjectArray.optional(),
   representation: zRepresentation.optional(),
@@ -24,7 +38,14 @@ export const dancers = {
     .optional(),
   attributes: z.object(attributesPlainObject).optional(),
   sizing: z.object(sizingPlainObject).optional(),
-  resume: zResume.optional(),
+  resume: zResume.optional(), // Will be deprecated in Phase 2
+
+  // Flattened resume fields (replacing nested resume structure)
+  projects: z.array(zid('projects')).optional(),
+  skills: z.array(z.string()).optional(),
+  genres: z.array(z.string()).optional(),
+  resumeUploads: zFileUploadObjectArray.optional(),
+
   links: zLinks.optional(),
 
   // Dancer-specific fields

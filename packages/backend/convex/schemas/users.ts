@@ -50,12 +50,9 @@ export type ProfileType = 'dancer' | 'choreographer' | 'guest'
 export const users = {
   // meta
   tokenId: z.string(),
-  type: z.literal('member'),
+  type: z.literal('member'), // for future use
   isAdmin: z.boolean(),
-  searchPattern: z.string().optional(),
-  pointsEarned: z.number(),
-  profileType: z.enum(['dancer', 'choreographer', 'guest']).optional(),
-  favoriteUsers: z.array(zid('users')).optional(),
+
   pushTokens: z
     .array(
       z.object({
@@ -66,26 +63,38 @@ export const users = {
     )
     .optional(),
 
-  // New onboarding tracking
-  onboardingCompleted: z.boolean().optional(),
-  onboardingCompletedAt: z.string().optional(), // ISO date string
-  onboardingVersion: z.string().optional(),
+  // DEPRECATED: Will be removed after migration to dancers/choreographers
+  profileType: z.enum(['dancer', 'choreographer', 'guest']).optional(),
 
-  // Navigation position tracking (separate from data completion)
+  // DEPRECATED: Moved to profiles
+  searchPattern: z.string().optional(),
+
+  // DEPRECATED: Not in designs, will be removed
+  pointsEarned: z.number().optional(),
+
+  // DEPRECATED: Moved to profiles (onboarding is per-profile)
+  onboardingCompleted: z.boolean().optional(),
+  onboardingCompletedAt: z.string().optional(),
+  onboardingVersion: z.string().optional(),
   currentOnboardingStep: z.string().optional(),
   currentOnboardingStepIndex: z.number().optional(),
 
-  // Legacy compatibility field (remove when web app is updated)
+  // DEPRECATED: Legacy compatibility field, remove after migration
   onboardingStep: z.string().optional(),
 
   // user info
   email: z.string(),
   firstName: z.string().optional(),
   lastName: z.string().optional(),
+
+  // DEPRECATED: Moved to dancer/choreographer profiles
   displayName: z.string().optional(),
+
   fullName: z.string().optional(),
   phone: z.string().optional(),
   dateOfBirth: z.string().optional(),
+
+  // DEPRECATED: Moved to profiles
   location: zLocation.optional(),
 
   // DEPRECATED: These fields are being migrated to dancers/choreographers tables

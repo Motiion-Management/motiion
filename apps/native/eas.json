@@ -14,12 +14,6 @@
       "extends": "monorepo",
       "developmentClient": true,
       "distribution": "internal",
-      "android": {
-        "buildType": "apk"
-      },
-      "ios": {
-        "resourceClass": "m-medium"
-      },
       "environment": "development",
       "channel": "development"
     },
@@ -37,12 +31,6 @@
       "extends": "monorepo",
       "distribution": "store",
       "autoIncrement": true,
-      "android": {
-        "buildType": "app-bundle"
-      },
-      "ios": {
-        "resourceClass": "m-medium"
-      },
       "environment": "production",
       "channel": "production"
     }

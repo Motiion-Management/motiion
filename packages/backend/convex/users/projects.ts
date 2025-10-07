@@ -3,6 +3,8 @@ import { query } from '../_generated/server'
 import { z } from 'zod'
 import { zid } from 'zodvex'
 import { Projects } from '../schemas/projects'
+import { getAll } from 'convex-helpers/server/relationships'
+import type { Doc } from '../_generated/dataModel'
 
 // Create a new project for the authenticated user
 export const addMyProject = authMutation({
@@ -131,10 +133,36 @@ export const getMyProjects = authQuery({
   returns: z.array(Projects.zDoc),
   handler: async (ctx) => {
     if (!ctx.user) return []
-    const projs = await ctx.db
-      .query('projects')
-      .withIndex('userId', (q) => q.eq('userId', ctx.user._id))
-      .collect()
+
+    // PROFILE-FIRST: Get projects from profile if active
+    let projectIds = ctx.user?.resume?.projects || []
+
+    if (
+      ctx.user?.activeProfileType &&
+      (ctx.user?.activeDancerId || ctx.user?.activeChoreographerId)
+    ) {
+      let profile = null
+
+      if (ctx.user.activeProfileType === 'dancer' && ctx.user.activeDancerId) {
+        profile = await ctx.db.get(ctx.user.activeDancerId)
+      } else if (
+        ctx.user.activeProfileType === 'choreographer' &&
+        ctx.user.activeChoreographerId
+      ) {
+        profile = await ctx.db.get(ctx.user.activeChoreographerId)
+      }
+
+      if (profile) {
+        const profileResume: any = profile.resume || {}
+        if (profileResume.projects) {
+          projectIds = profileResume.projects as any
+        }
+      }
+    }
+
+    if (!Array.isArray(projectIds) || projectIds.length === 0) return []
+
+    const projs = await getAll(ctx.db, projectIds)
     return projs.filter(notEmpty).sort((a, b) => {
       const aDate = a.startDate ? new Date(a.startDate as any).getTime() : 0
       const bDate = b.startDate ? new Date(b.startDate as any).getTime() : 0
@@ -150,10 +178,36 @@ export const getMyProjectsByType = authQuery({
   returns: z.array(Projects.zDoc),
   handler: async (ctx, args) => {
     if (!ctx.user) return []
-    const projs = await ctx.db
-      .query('projects')
-      .withIndex('userId', (q) => q.eq('userId', ctx.user._id))
-      .collect()
+
+    // PROFILE-FIRST: Get projects from profile if active
+    let projectIds = ctx.user?.resume?.projects || []
+
+    if (
+      ctx.user?.activeProfileType &&
+      (ctx.user?.activeDancerId || ctx.user?.activeChoreographerId)
+    ) {
+      let profile = null
+
+      if (ctx.user.activeProfileType === 'dancer' && ctx.user.activeDancerId) {
+        profile = await ctx.db.get(ctx.user.activeDancerId)
+      } else if (
+        ctx.user.activeProfileType === 'choreographer' &&
+        ctx.user.activeChoreographerId
+      ) {
+        profile = await ctx.db.get(ctx.user.activeChoreographerId)
+      }
+
+      if (profile) {
+        const profileResume: any = profile.resume || {}
+        if (profileResume.projects) {
+          projectIds = profileResume.projects as any
+        }
+      }
+    }
+
+    if (!Array.isArray(projectIds) || projectIds.length === 0) return []
+
+    const projs = await getAll(ctx.db, projectIds)
     return projs
       .filter(notEmpty)
       .filter((p) => p.type === args.type)
@@ -212,11 +266,38 @@ export const getMyRecentProjects = authQuery({
   returns: z.array(Projects.zDoc),
   handler: async (ctx) => {
     if (!ctx.user) return []
-    const projs = await ctx.db
-      .query('projects')
-      .withIndex('userId', (q) => q.eq('userId', ctx.user._id))
-      .order('desc')
-      .take(3)
+
+    // PROFILE-FIRST: Get projects from profile if active
+    let projectIds = ctx.user?.resume?.projects || []
+
+    if (
+      ctx.user?.activeProfileType &&
+      (ctx.user?.activeDancerId || ctx.user?.activeChoreographerId)
+    ) {
+      let profile = null
+
+      if (ctx.user.activeProfileType === 'dancer' && ctx.user.activeDancerId) {
+        profile = await ctx.db.get(ctx.user.activeDancerId)
+      } else if (
+        ctx.user.activeProfileType === 'choreographer' &&
+        ctx.user.activeChoreographerId
+      ) {
+        profile = await ctx.db.get(ctx.user.activeChoreographerId)
+      }
+
+      if (profile) {
+        const profileResume: any = profile.resume || {}
+        if (profileResume.projects) {
+          projectIds = profileResume.projects as any
+        }
+      }
+    }
+
+    if (!Array.isArray(projectIds) || projectIds.length === 0) return []
+
+    // Get the 3 most recent project IDs (projects are already ordered in the array)
+    const recentProjectIds = projectIds.slice(-3).reverse()
+    const projs = await getAll(ctx.db, recentProjectIds)
     return projs.filter(notEmpty)
   }
 })

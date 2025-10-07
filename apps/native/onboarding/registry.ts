@@ -65,8 +65,10 @@ export interface SaveContext {
   updateMyUser: (args: any) => Promise<any>;
   patchDancerAttributes: (args: any) => Promise<any>;
   updateMyDancerProfile: (args: any) => Promise<any>;
-  updateMyResume: (args: any) => Promise<any>;
+  updateMyChoreographerProfile: (args: any) => Promise<any>;
   addMyRepresentation: (args: any) => Promise<any>;
+  createDancerProfile: (args: any) => Promise<any>;
+  createChoreographerProfile: (args: any) => Promise<any>;
 }
 
 export const STEP_REGISTRY = {
@@ -80,7 +82,17 @@ export const STEP_REGISTRY = {
     getInitialValues: (data: OnboardingData) => selectProfileType(data),
     save: async (values: any, ctx) => {
       if (!values?.profileType) return;
-      await ctx.updateMyUser({ profileType: values.profileType });
+
+      // Create the appropriate profile
+      if (values.profileType === 'dancer') {
+        await ctx.createDancerProfile({
+          displayName: ctx.data.user?.fullName,
+        });
+      } else if (values.profileType === 'choreographer') {
+        await ctx.createChoreographerProfile({
+          displayName: ctx.data.user?.fullName,
+        });
+      }
     },
   },
   resume: {
@@ -104,7 +116,12 @@ export const STEP_REGISTRY = {
     schema: displayNameSchema,
     getInitialValues: (data: OnboardingData) => ({ displayName: selectDisplayName(data) }),
     save: async (values: any, ctx) => {
-      await ctx.updateMyUser({ displayName: values.displayName.trim() });
+      // Write to active profile based on profileType
+      if (ctx.data.user?.profileType === 'dancer') {
+        await ctx.updateMyDancerProfile({ displayName: values.displayName.trim() });
+      } else if (ctx.data.user?.profileType === 'choreographer') {
+        await ctx.updateMyChoreographerProfile({ displayName: values.displayName.trim() });
+      }
     },
   },
   height: {
@@ -177,13 +194,17 @@ export const STEP_REGISTRY = {
     }),
     save: async (values: any, ctx) => {
       if (!values.primaryLocation) return;
-      await ctx.updateMyUser({
-        location: {
-          city: values.primaryLocation.city,
-          state: values.primaryLocation.state,
-          country: 'United States',
-        },
-      });
+      const location = {
+        city: values.primaryLocation.city,
+        state: values.primaryLocation.state,
+        country: 'United States',
+      };
+      // Write to active profile based on profileType
+      if (ctx.data.user?.profileType === 'dancer') {
+        await ctx.updateMyDancerProfile({ location });
+      } else if (ctx.data.user?.profileType === 'choreographer') {
+        await ctx.updateMyChoreographerProfile({ location });
+      }
     },
   },
   'work-location': {
@@ -196,10 +217,15 @@ export const STEP_REGISTRY = {
       locations: [selectPrimaryPlaceKitLocation(data), ...selectWorkLocations(data)],
     }),
     save: async (values: any, ctx) => {
-      const workLocations = (values.locations || [])
+      const workLocation = (values.locations || [])
         .filter(Boolean)
         .map((loc: any) => `${loc.city}, ${loc.state}`);
-      await ctx.updateMyUser({ workLocation: workLocations });
+      // Write to active profile based on profileType
+      if (ctx.data.user?.profileType === 'dancer') {
+        await ctx.updateMyDancerProfile({ workLocation });
+      } else if (ctx.data.user?.profileType === 'choreographer') {
+        await ctx.updateMyChoreographerProfile({ workLocation });
+      }
     },
   },
   headshots: {
@@ -233,10 +259,18 @@ export const STEP_REGISTRY = {
     schema: skillsSchema,
     getInitialValues: (data: OnboardingData) => selectSkills(data),
     save: async (values: any, ctx) => {
-      await ctx.updateMyResume({
-        ...values,
-        projects: ctx.data.user?.resume?.projects,
-      });
+      // Write flattened skills and genres to active profile
+      if (ctx.data.user?.profileType === 'dancer') {
+        await ctx.updateMyDancerProfile({
+          skills: values.skills,
+          genres: values.genres,
+        });
+      } else if (ctx.data.user?.profileType === 'choreographer') {
+        await ctx.updateMyChoreographerProfile({
+          skills: values.skills,
+          genres: values.genres,
+        });
+      }
     },
   },
   training: {
@@ -259,7 +293,12 @@ export const STEP_REGISTRY = {
     schema: representationSchema,
     getInitialValues: (data: OnboardingData) => selectRepresentationStatus(data),
     save: async (values: any, ctx) => {
-      await ctx.updateMyUser({ representationStatus: values.representationStatus });
+      // Write to active profile based on profileType
+      if (ctx.data.user?.profileType === 'dancer') {
+        await ctx.updateMyDancerProfile({ representationStatus: values.representationStatus });
+      } else if (ctx.data.user?.profileType === 'choreographer') {
+        await ctx.updateMyChoreographerProfile({ representationStatus: values.representationStatus });
+      }
     },
   },
   agency: {
@@ -285,7 +324,10 @@ export const STEP_REGISTRY = {
     schema: unionSchema,
     getInitialValues: (data: OnboardingData) => selectSagAftraId(data),
     save: async (values: any, ctx) => {
-      await ctx.updateMyUser({ sagAftraId: values.sagAftraId || undefined });
+      // SAG-AFTRA is dancer-specific
+      if (ctx.data.user?.profileType === 'dancer') {
+        await ctx.updateMyDancerProfile({ sagAftraId: values.sagAftraId || undefined });
+      }
     },
   },
   projects: {
@@ -309,7 +351,10 @@ export const STEP_REGISTRY = {
     schema: databaseUseSchema,
     getInitialValues: (data: OnboardingData) => ({ databaseUse: data.user?.databaseUse }),
     save: async (values: any, ctx) => {
-      await ctx.updateMyUser({ databaseUse: values.databaseUse });
+      // Database use is choreographer-specific
+      if (ctx.data.user?.profileType === 'choreographer') {
+        await ctx.updateMyChoreographerProfile({ databaseUse: values.databaseUse });
+      }
     },
   },
   company: {
@@ -321,7 +366,10 @@ export const STEP_REGISTRY = {
     schema: companySchema,
     getInitialValues: (data: OnboardingData) => ({ companyName: data.user?.companyName }),
     save: async (values: any, ctx) => {
-      await ctx.updateMyUser({ companyName: values.companyName });
+      // Company name is choreographer-specific
+      if (ctx.data.user?.profileType === 'choreographer') {
+        await ctx.updateMyChoreographerProfile({ companyName: values.companyName });
+      }
     },
   },
 } as const satisfies Record<string, StepDef<any>>;
