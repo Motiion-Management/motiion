@@ -72,9 +72,6 @@ export const users = {
   // DEPRECATED: Not in designs, will be removed
   pointsEarned: z.number().optional(),
 
-  // DEPRECATED: Converted to favoriteDancers/favoriteChoreographers on profiles
-  favoriteUsers: z.array(zid('users')).optional(),
-
   // DEPRECATED: Moved to profiles (onboarding is per-profile)
   onboardingCompleted: z.boolean().optional(),
   onboardingCompletedAt: z.string().optional(),

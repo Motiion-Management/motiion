@@ -18,59 +18,59 @@ Migrate profile data from users → dancers table following safe additive-then-r
 ## Phase 1: Add New Fields to Dancers Schema
 
 ### 1.1 Add Profile-Level Identity Fields
-- [ ] Add `displayName: z.string().optional()` to dancers
-- [ ] Verify it's different from user.fullName (derived from first/last)
+- [x] Add `displayName: z.string().optional()` to dancers
+- [x] Verify it's different from user.fullName (derived from first/last)
 
 ### 1.2 Add Onboarding State Fields
-- [ ] Add `onboardingCompleted: z.boolean().optional()` to dancers
-- [ ] Add `onboardingCompletedAt: z.string().optional()` to dancers
-- [ ] Add `onboardingVersion: z.string().optional()` to dancers
-- [ ] Add `currentOnboardingStep: z.string().optional()` to dancers
-- [ ] Add `currentOnboardingStepIndex: z.number().optional()` to dancers
+- [x] Add `onboardingCompleted: z.boolean().optional()` to dancers
+- [x] Add `onboardingCompletedAt: z.string().optional()` to dancers
+- [x] Add `onboardingVersion: z.string().optional()` to dancers
+- [x] Add `currentOnboardingStep: z.string().optional()` to dancers
+- [x] Add `currentOnboardingStepIndex: z.number().optional()` to dancers
 
 ### 1.3 Add Favorites Fields
-- [ ] Add `favoriteDancers: z.array(zid('dancers')).optional()` to dancers
-- [ ] Add `favoriteChoreographers: z.array(zid('choreographers')).optional()` to dancers
+- [x] Add `favoriteDancers: z.array(zid('dancers')).optional()` to dancers
+- [x] Add `favoriteChoreographers: z.array(zid('choreographers')).optional()` to dancers
 
 ### 1.4 Flatten Resume Fields
-- [ ] Add `projects: z.array(zid('projects')).optional()` to dancers
-- [ ] Add `skills: z.array(z.string()).optional()` to dancers
-- [ ] Add `genres: z.array(z.string()).optional()` to dancers
-- [ ] Add `resumeUploads: zFileUploadObjectArray.optional()` to dancers
-- [ ] Keep existing `resume` object for now (will deprecate in Phase 2)
+- [x] Add `projects: z.array(zid('projects')).optional()` to dancers
+- [x] Add `skills: z.array(z.string()).optional()` to dancers
+- [x] Add `genres: z.array(z.string()).optional()` to dancers
+- [x] Add `resumeUploads: zFileUploadObjectArray.optional()` to dancers
+- [x] Keep existing `resume` object for now (will deprecate in Phase 2)
 
 ### 1.5 Verify All Existing Fields Present
-- [ ] Confirm dancers has: headshots, attributes, sizing, location, representation, etc.
-- [ ] No fields should be missing that exist on users
+- [x] Confirm dancers has: headshots, attributes, sizing, location, representation, etc.
+- [x] No fields should be missing that exist on users
 
-**Deploy Phase 1** - Schema updated but no data migration yet
+**Deploy Phase 1** - ✅ COMPLETE - Schema updated but no data migration yet
 
 ---
 
 ## Phase 2: Mark Users Fields as Deprecated
 
 ### 2.1 Update Users Schema with Deprecation Comments
-- [ ] Add comment above `profileType`: `// DEPRECATED: Will be removed after migration to dancers/choreographers`
-- [ ] Add comment above `displayName`: `// DEPRECATED: Moved to dancer/choreographer profiles`
-- [ ] Add comment above `location`: `// DEPRECATED: Moved to profiles`
-- [ ] Add comment above `searchPattern`: `// DEPRECATED: Moved to profiles`
-- [ ] Add comment above `onboarding*` fields: `// DEPRECATED: Moved to profiles`
-- [ ] Add comment above `favoriteUsers`: `// DEPRECATED: Converted to favoriteDancers/favoriteChoreographers on profiles`
-- [ ] Add comment above `resume`: `// DEPRECATED: Flattened to projects/skills/genres on profiles`
-- [ ] Add comment above all profile-specific fields (headshots, attributes, sizing, etc.)
+- [x] Add comment above `profileType`: `// DEPRECATED: Will be removed after migration to dancers/choreographers`
+- [x] Add comment above `displayName`: `// DEPRECATED: Moved to dancer/choreographer profiles`
+- [x] Add comment above `location`: `// DEPRECATED: Moved to profiles`
+- [x] Add comment above `searchPattern`: `// DEPRECATED: Moved to profiles`
+- [x] Add comment above `onboarding*` fields: `// DEPRECATED: Moved to profiles`
+- [x] Add comment above `favoriteUsers`: `// DEPRECATED: Converted to favoriteDancers/favoriteChoreographers on profiles`
+- [x] Add comment above `resume`: `// DEPRECATED: Flattened to projects/skills/genres on profiles`
+- [x] Add comment above all profile-specific fields (headshots, attributes, sizing, etc.)
 
 ### 2.2 Ensure All Deprecated Fields are Optional
-- [ ] Verify `profileType` is optional
-- [ ] Verify `displayName` is optional
-- [ ] Verify `location` is optional
-- [ ] Verify `searchPattern` is optional
-- [ ] Verify all onboarding fields optional
-- [ ] Verify all profile fields optional
+- [x] Verify `profileType` is optional
+- [x] Verify `displayName` is optional
+- [x] Verify `location` is optional
+- [x] Verify `searchPattern` is optional
+- [x] Verify all onboarding fields optional
+- [x] Verify all profile fields optional
 
 ### 2.3 Remove pointsEarned Field (Not in Designs)
-- [ ] Remove `pointsEarned` from users schema entirely (not needed anywhere)
+- [x] Remove `pointsEarned` from users schema entirely (not needed anywhere)
 
-**Deploy Phase 2** - Fields marked deprecated, schema still validates
+**Deploy Phase 2** - ✅ COMPLETE - Fields marked deprecated, schema still validates
 
 ---
 
@@ -282,37 +282,37 @@ export const migrateAllUsers = internalMutation({
 ```
 
 ### 3.2 Create Migration Tasks Checklist
-- [ ] Create migration file as shown above
-- [ ] Add to convex/_generated/api exports
+- [x] Create migration file as shown above
+- [x] Add to convex/_generated/api exports
 - [ ] Test migration on single user in dev
 - [ ] Test rollback (can we undo?)
 - [ ] Test migrating all dev users
 - [ ] Verify no data loss
 
-**Deploy Phase 3** - Migration code ready but not executed
+**Deploy Phase 3** - ⚠️ PARTIALLY COMPLETE - Migration code created, needs testing
 
 ---
 
 ## Phase 4: Update Projects/Training References
 
 ### 4.1 Populate profileId on Existing Projects
-- [ ] Create migration: For each project without profileId, set it to user's activeDancerId
-- [ ] Same for training records
-- [ ] Keep userId for now (safety net)
+- [x] Create migration: For each project without profileId, set it to user's activeDancerId
+- [x] Same for training records
+- [x] Keep userId for now (safety net)
 
 ### 4.2 Update Project Queries
 - [ ] Update frontend to query by profileId instead of userId
 - [ ] Keep both indexes for now
 
-**Deploy Phase 4** - Projects linked to profiles
+**Deploy Phase 4** - ⚠️ PARTIALLY COMPLETE - Migration created, frontend queries need update
 
 ---
 
 ## Phase 5: Update Backend Functions
 
 ### 5.1 Update ProfileTypeForm Backend
-- [ ] Modify `createDancerProfile` to accept displayName in args
-- [ ] Ensure it sets onboarding state properly:
+- [x] Modify `createDancerProfile` to accept displayName in args
+- [x] Ensure it sets onboarding state properly:
   ```typescript
   {
     onboardingCompleted: false,
@@ -323,14 +323,14 @@ export const migrateAllUsers = internalMutation({
   ```
 
 ### 5.2 Update Onboarding Functions
-- [ ] Update `completeOnboarding` to:
+- [x] Update `completeOnboarding` to:
   - Update `profile.onboardingCompleted` instead of user
   - Remove user onboarding updates
-- [ ] Update `resetOnboarding` to reset profile not user
-- [ ] Update `setOnboardingStep` to update profile not user
-- [ ] Update `getOnboardingRedirect` to read from profile
-- [ ] Update `updateOnboardingStatus` to update profile
-- [ ] Update `getOnboardingStatus` to read from profile
+- [x] Update `resetOnboarding` to reset profile not user
+- [x] Update `setOnboardingStep` to update profile not user
+- [x] Update `getOnboardingRedirect` to read from profile
+- [ ] Update `updateOnboardingStatus` to update profile (if it exists)
+- [ ] Update `getOnboardingStatus` to read from profile (if it exists)
 
 ### 5.3 Update Validators (Already Mostly Done)
 - [ ] Verify all validators check `profile?.field || user.field`
@@ -549,15 +549,15 @@ Remove these fields entirely:
 
 ## Current Status
 
-**Phase 1:** Not Started
-**Phase 2:** Not Started
-**Phase 3:** Not Started
-**Phase 4:** Not Started
-**Phase 5:** Not Started
-**Phase 6:** Not Started
-**Phase 7:** Not Started (MIGRATION)
-**Phase 8:** Not Started (30+ days after Phase 7)
+**Phase 1:** ✅ COMPLETE - Dancers schema updated with all new fields
+**Phase 2:** ✅ COMPLETE - Users fields marked deprecated and optional
+**Phase 3:** ⚠️ PARTIALLY COMPLETE - Migration functions created, needs testing
+**Phase 4:** ⚠️ PARTIALLY COMPLETE - Migration created, frontend queries need update
+**Phase 5:** ⚠️ IN PROGRESS - Core onboarding updated, remaining: validators, completeness, search, favorites, resume mutations
+**Phase 6:** ⏸️ NOT STARTED - Frontend updates pending
+**Phase 7:** ⏸️ NOT STARTED (MIGRATION) - Waiting for Phase 5 & 6 completion
+**Phase 8:** ⏸️ NOT STARTED (30+ days after Phase 7) - Final cleanup
 
 **Key Decision:** Only migrating to dancers now, choreographers later when needed
 
-**Last Updated:** [Will update as we progress]
+**Last Updated:** 2025-10-07

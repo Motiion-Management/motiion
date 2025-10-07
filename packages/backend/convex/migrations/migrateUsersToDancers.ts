@@ -23,12 +23,41 @@ export const migrateUserToDancerProfile = internalMutation({
       return { success: false, profileId: null, message: 'User not found' }
     }
 
-    // Skip if already migrated
-    if (user.activeDancerId) {
+    // Check if user still has deprecated fields that need cleaning
+    const hasDeprecatedFields = !!(
+      user.profileType ||
+      user.displayName ||
+      user.location ||
+      user.searchPattern ||
+      user.onboardingCompleted !== undefined ||
+      user.onboardingCompletedAt ||
+      user.onboardingVersion ||
+      user.currentOnboardingStep ||
+      user.currentOnboardingStepIndex !== undefined ||
+      user.headshots ||
+      user.attributes ||
+      user.sizing ||
+      user.representation ||
+      user.representationStatus ||
+      user.links ||
+      user.sagAftraId ||
+      user.workLocation ||
+      user.training ||
+      user.resume ||
+      user.resumeImportedFields ||
+      user.resumeImportVersion ||
+      user.resumeImportedAt ||
+      user.profileTipDismissed !== undefined ||
+      user.onboardingStep ||
+      user.pointsEarned !== undefined
+    )
+
+    // Skip if already fully migrated (has activeDancerId and no deprecated fields)
+    if (user.activeDancerId && !hasDeprecatedFields) {
       return {
         success: true,
         profileId: user.activeDancerId,
-        message: 'Already migrated'
+        message: 'Already migrated and clean'
       }
     }
 
@@ -247,7 +276,6 @@ export const migrateUserToDancerProfile = internalMutation({
       onboardingVersion: undefined,
       currentOnboardingStep: undefined,
       currentOnboardingStepIndex: undefined,
-      // Don't remove favoriteUsers yet (need to convert first)
       headshots: undefined,
       attributes: undefined,
       sizing: undefined,
