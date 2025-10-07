@@ -2,7 +2,6 @@ import { defineSchema } from 'convex/server'
 import { Users } from './schemas/users'
 import { Dancers } from './schemas/dancers'
 import { Choreographers } from './schemas/choreographers'
-import { Events } from './schemas/events'
 import { FeaturedMembers } from './schemas/featuredMembers'
 import { Agencies } from './schemas/agencies'
 import { Projects } from './schemas/projects'
@@ -13,9 +12,6 @@ const schema = defineSchema(
   {
     // global
     featuredMembers: FeaturedMembers.table,
-    events: Events.table
-      .index('attendanceCode', ['attendanceCode'])
-      .index('startDate', ['startDate']),
 
     // user accounts
     users: Users.table

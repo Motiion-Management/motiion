@@ -39,15 +39,146 @@ export const migrateUserToDancerProfile = internalMutation({
       .first()
 
     if (existing) {
+      // Profile exists - merge any missing data from user to profile
+      const updates: any = {}
+
+      // Copy missing identity fields
+      if (!existing.displayName && user.displayName) {
+        updates.displayName = user.displayName
+      }
+
+      // Copy missing onboarding state
+      if (user.onboardingCompleted !== undefined && existing.onboardingCompleted === undefined) {
+        updates.onboardingCompleted = user.onboardingCompleted
+      }
+      if (user.onboardingCompletedAt && !existing.onboardingCompletedAt) {
+        updates.onboardingCompletedAt = user.onboardingCompletedAt
+      }
+      if (user.onboardingVersion && !existing.onboardingVersion) {
+        updates.onboardingVersion = user.onboardingVersion
+      }
+      if (user.currentOnboardingStep && !existing.currentOnboardingStep) {
+        updates.currentOnboardingStep = user.currentOnboardingStep
+      }
+      if (user.currentOnboardingStepIndex !== undefined && existing.currentOnboardingStepIndex === undefined) {
+        updates.currentOnboardingStepIndex = user.currentOnboardingStepIndex
+      }
+
+      // Copy missing flattened resume fields
+      if (user.resume?.projects && !existing.projects) {
+        updates.projects = user.resume.projects
+      }
+      if (user.resume?.skills && !existing.skills) {
+        updates.skills = user.resume.skills
+      }
+      if (user.resume?.genres && !existing.genres) {
+        updates.genres = user.resume.genres
+      }
+      if (user.resume?.uploads && !existing.resumeUploads) {
+        updates.resumeUploads = user.resume.uploads
+      }
+
+      // Copy missing profile data
+      if (user.headshots && !existing.headshots) {
+        updates.headshots = user.headshots
+      }
+      if (user.attributes && !existing.attributes) {
+        updates.attributes = user.attributes
+      }
+      if (user.sizing && !existing.sizing) {
+        updates.sizing = user.sizing
+      }
+      if (user.location && !existing.location) {
+        updates.location = user.location
+      }
+      if (user.representation && !existing.representation) {
+        updates.representation = user.representation
+      }
+      if (user.representationStatus && !existing.representationStatus) {
+        updates.representationStatus = user.representationStatus
+      }
+      if (user.links && !existing.links) {
+        updates.links = user.links
+      }
+      if (user.sagAftraId && !existing.sagAftraId) {
+        updates.sagAftraId = user.sagAftraId
+      }
+      if (user.workLocation && !existing.workLocation) {
+        updates.workLocation = user.workLocation
+      }
+      if (user.training && !existing.training) {
+        updates.training = user.training
+      }
+      if (user.searchPattern && !existing.searchPattern) {
+        updates.searchPattern = user.searchPattern
+      }
+
+      // Copy missing import tracking
+      if (user.resumeImportedFields && !existing.resumeImportedFields) {
+        updates.resumeImportedFields = user.resumeImportedFields
+      }
+      if (user.resumeImportVersion && !existing.resumeImportVersion) {
+        updates.resumeImportVersion = user.resumeImportVersion
+      }
+      if (user.resumeImportedAt && !existing.resumeImportedAt) {
+        updates.resumeImportedAt = user.resumeImportedAt
+      }
+      if (user.profileTipDismissed !== undefined && existing.profileTipDismissed === undefined) {
+        updates.profileTipDismissed = user.profileTipDismissed
+      }
+
+      // Initialize favorites if missing
+      if (!existing.favoriteDancers) {
+        updates.favoriteDancers = []
+      }
+      if (!existing.favoriteChoreographers) {
+        updates.favoriteChoreographers = []
+      }
+
+      // Update profile if there are changes
+      if (Object.keys(updates).length > 0) {
+        await ctx.db.patch(existing._id, updates)
+      }
+
       // Update user reference
       await ctx.db.patch(userId, {
         activeProfileType: 'dancer',
         activeDancerId: existing._id
       })
+
+      // CRITICAL: Clean up deprecated fields from user
+      await ctx.db.patch(userId, {
+        profileType: undefined,
+        displayName: undefined,
+        location: undefined,
+        searchPattern: undefined,
+        onboardingCompleted: undefined,
+        onboardingCompletedAt: undefined,
+        onboardingVersion: undefined,
+        currentOnboardingStep: undefined,
+        currentOnboardingStepIndex: undefined,
+        headshots: undefined,
+        attributes: undefined,
+        sizing: undefined,
+        representation: undefined,
+        representationStatus: undefined,
+        links: undefined,
+        sagAftraId: undefined,
+        workLocation: undefined,
+        training: undefined,
+        resume: undefined,
+        resumeImportedFields: undefined,
+        resumeImportVersion: undefined,
+        resumeImportedAt: undefined,
+        profileTipDismissed: undefined,
+        onboardingStep: undefined,
+        pointsEarned: undefined
+      })
+
       return {
         success: true,
         profileId: existing._id,
-        message: 'Profile existed, linked to user'
+        message: `Profile existed, merged ${Object.keys(updates).length} fields and cleaned user`
       }
     }
 
@@ -131,7 +262,8 @@ export const migrateUserToDancerProfile = internalMutation({
       resumeImportVersion: undefined,
       resumeImportedAt: undefined,
       profileTipDismissed: undefined,
-      onboardingStep: undefined // Legacy field
+      onboardingStep: undefined, // Legacy field
+      pointsEarned: undefined // Not in designs
     })
 
     return {
