@@ -114,7 +114,7 @@ export default function DancerScreen() {
               }}
             />
             <Pressable
-              className="h-[55vh]"
+              className="h-[45vh]"
               onPress={() => bottomSheetRef.current?.close()}></Pressable>
             {/* Project Carousel Section with gradient background */}
             <View className="relative h-[40vh] gap-8">
