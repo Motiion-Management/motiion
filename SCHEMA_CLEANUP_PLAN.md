@@ -329,18 +329,19 @@ export const migrateAllUsers = internalMutation({
 - [x] Update `resetOnboarding` to reset profile not user
 - [x] Update `setOnboardingStep` to update profile not user
 - [x] Update `getOnboardingRedirect` to read from profile
-- [ ] Update `updateOnboardingStatus` to update profile (if it exists)
-- [ ] Update `getOnboardingStatus` to read from profile (if it exists)
+- [x] Update `updateOnboardingStatus` to update profile
+- [x] Update `getOnboardingStatus` to read from profile
+- [x] Remove `createProfileFromUserData` dead code
 
 ### 5.3 Update Validators (Already Mostly Done)
-- [ ] Verify all validators check `profile?.field || user.field`
-- [ ] Specifically check `displayName` validator
-- [ ] Update validators to use flattened resume fields:
+- [x] Verify all validators check `profile?.field || user.field`
+- [x] Specifically check `displayName` validator
+- [x] Update validators to use flattened resume fields:
   - `profile?.projects || user.resume?.projects`
   - `profile?.skills || user.resume?.skills`
 
 ### 5.4 Update Completeness Calculation
-- [ ] Update `calculateDancerCompleteness` to check flattened fields:
+- [x] Update `calculateDancerCompleteness` to check flattened fields:
   ```typescript
   if (profile.projects && profile.projects.length > 0)
     score += weights.resume
@@ -349,65 +350,60 @@ export const migrateAllUsers = internalMutation({
   ```
 
 ### 5.5 Update Search Pattern Generation
-- [ ] Update to use flattened fields:
+- [x] Update to use flattened fields:
   ```typescript
   if (data.skills) parts.push(...data.skills)
   if (data.genres) parts.push(...data.genres)
   ```
 
 ### 5.6 Update Representation Mutations
-- [ ] Update `addMyRepresentation` to write to profile:
-  ```typescript
-  await ctx.db.patch(ctx.user.activeDancerId, {
-    representation: { agencyId }
-  })
-  ```
+- [x] Update `addMyRepresentation` to write to profile (uses `getActiveProfileTarget` helper)
 
 ### 5.7 Update Favorites Mutations
-- [ ] Update `addFavoriteUser` → `addFavoriteDancer`/`addFavoriteChoreographer`
-- [ ] Write to `profile.favoriteDancers` instead of `user.favoriteUsers`
-- [ ] Update `removeFavoriteUser` similarly
-- [ ] Update `getFavoriteUsersForCarousel` to read from profile
+- [x] Update `addFavoriteUser` → `addFavoriteDancer`/`addFavoriteChoreographer`
+- [x] Write to `profile.favoriteDancers` instead of `user.favoriteUsers`
+- [x] Update `removeFavoriteUser` → `removeFavoriteDancer`/`removeFavoriteChoreographer`
+- [x] All functions write to profile arrays
 
 ### 5.8 Update Resume Mutations
-- [ ] Update any mutations writing to `user.resume` to write flattened fields to profile
+- [x] No dedicated resume mutations exist - apps use `updateMyDancerProfile` directly with flattened fields
 
-**Deploy Phase 5** - Functions updated to use profile data
+**Deploy Phase 5** - ✅ COMPLETE - All functions updated to use profile data
 
 ---
 
 ## Phase 6: Update Frontend
 
 ### 6.1 Update ProfileTypeForm
-- [ ] Remove `updateMyUser({ profileType })` call
-- [ ] Add `createDancerProfile({ displayName: user?.fullName })` call
-- [ ] Handle creation errors gracefully
+- [x] Remove `updateMyUser({ profileType })` call
+- [x] Add `createDancerProfile({ displayName: user?.fullName })` call
+- [x] Handle creation errors gracefully
 
 ### 6.2 Update Onboarding Registry Save Functions
 All saves should target profile instead of user:
 
-- [ ] displayName → `updateMyDancerProfile({ displayName })`
-- [ ] location → `updateMyDancerProfile({ location })`
-- [ ] workLocation → `updateMyDancerProfile({ workLocation })`
-- [ ] headshots → `updateMyDancerProfile({ headshots })`
-- [ ] attributes → `patchDancerAttributes({ attributes })`
-- [ ] sizing → `updateDancerSizingField(...)`
-- [ ] skills/genres → `updateMyDancerProfile({ skills, genres })`
-- [ ] representation → `updateMyDancerProfile({ representationStatus })`
-- [ ] agency → `addMyRepresentation({ agencyId })`
-- [ ] union → `updateMyDancerProfile({ sagAftraId })`
-- [ ] resume uploads → `updateMyDancerProfile({ resumeUploads })`
+- [x] displayName → `updateMyDancerProfile({ displayName })`
+- [x] location → `updateMyDancerProfile({ location })`
+- [x] workLocation → `updateMyDancerProfile({ workLocation })`
+- [x] headshots → managed by upload component (writes to profile)
+- [x] attributes → `patchDancerAttributes({ attributes })`
+- [x] sizing → managed by sizing sections (write to profile)
+- [x] skills/genres → `updateMyDancerProfile({ skills, genres })`
+- [x] representation → `updateMyDancerProfile({ representationStatus })`
+- [x] agency → `addMyRepresentation({ agencyId })`
+- [x] union → `updateMyDancerProfile({ sagAftraId })`
+- [x] resume uploads → managed by resume form component
+- [x] Remove `updateMyResume` dead code from SaveContext and routes
 
 ### 6.3 Update Data Loading
-- [ ] Load active dancer profile in onboarding hook
-- [ ] Update selectors to read from profile instead of user
-- [ ] Remove user fallbacks (read from profile only)
+- [x] Load active dancer profile in onboarding hook (`useOnboardingData`)
+- [x] Update selectors to read from profile instead of user (with fallback)
+- [ ] Remove user fallbacks after migration (deferred to Phase 8)
 
 ### 6.4 Update Favorites UI
-- [ ] Update to call new favorites mutations
-- [ ] Read from profile.favoriteDancers instead of user.favoriteUsers
+- [x] Favorites UI not implemented yet (skip - backend ready for future use)
 
-**Deploy Phase 6** - Frontend using profile data
+**Deploy Phase 6** - ✅ COMPLETE - All frontend code using profile data
 
 ---
 
@@ -551,11 +547,11 @@ Remove these fields entirely:
 
 **Phase 1:** ✅ COMPLETE - Dancers schema updated with all new fields
 **Phase 2:** ✅ COMPLETE - Users fields marked deprecated and optional
-**Phase 3:** ⚠️ PARTIALLY COMPLETE - Migration functions created, needs testing
-**Phase 4:** ⚠️ PARTIALLY COMPLETE - Migration created, frontend queries need update
-**Phase 5:** ⚠️ IN PROGRESS - Core onboarding updated, remaining: validators, completeness, search, favorites, resume mutations
-**Phase 6:** ⏸️ NOT STARTED - Frontend updates pending
-**Phase 7:** ⏸️ NOT STARTED (MIGRATION) - Waiting for Phase 5 & 6 completion
+**Phase 3:** ✅ COMPLETE - Migration functions created and tested on dev user
+**Phase 4:** ✅ COMPLETE - Profile IDs populated on projects/training
+**Phase 5:** ✅ COMPLETE - All backend functions updated to use profile data
+**Phase 6:** ✅ COMPLETE - All frontend code using profile data
+**Phase 7:** 🚀 READY - Can run full migration now
 **Phase 8:** ⏸️ NOT STARTED (30+ days after Phase 7) - Final cleanup
 
 **Key Decision:** Only migrating to dancers now, choreographers later when needed
