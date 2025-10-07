@@ -31,6 +31,7 @@ import type * as featuredMembers from "../featuredMembers.js";
 import type * as files from "../files.js";
 import type * as http from "../http.js";
 import type * as migrations_autoMigrateAndCleanup from "../migrations/autoMigrateAndCleanup.js";
+import type * as migrations_generateTestUsers from "../migrations/generateTestUsers.js";
 import type * as migrations_migrateDates from "../migrations/migrateDates.js";
 import type * as migrations_migrateUsersToDancers from "../migrations/migrateUsersToDancers.js";
 import type * as migrations_populateProfileIds from "../migrations/populateProfileIds.js";
@@ -87,6 +88,7 @@ declare const fullApi: ApiFromModules<{
   files: typeof files;
   http: typeof http;
   "migrations/autoMigrateAndCleanup": typeof migrations_autoMigrateAndCleanup;
+  "migrations/generateTestUsers": typeof migrations_generateTestUsers;
   "migrations/migrateDates": typeof migrations_migrateDates;
   "migrations/migrateUsersToDancers": typeof migrations_migrateUsersToDancers;
   "migrations/populateProfileIds": typeof migrations_populateProfileIds;

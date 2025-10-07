@@ -498,8 +498,8 @@ export const removeFavoriteUser = authMutation({
   }
 })
 
-// DEPRECATED: This reads from old favoriteUsers field for backward compatibility
-// Consider creating separate queries for favorite dancers/choreographers
+// Get favorites from user's active profile (dancer or choreographer)
+// Returns users associated with favorite dancer and choreographer profiles
 export const getFavoriteUsersForCarousel = authQuery({
   args: {},
   returns: z
@@ -512,8 +512,8 @@ export const getFavoriteUsersForCarousel = authQuery({
     )
     .optional(),
   handler: async (ctx) => {
-    // PROFILE-FIRST: Get favorites from active profile if it exists
-    let favoriteUserIds: any[] = ctx.user?.favoriteUsers || []
+    // Get favorites from active profile
+    let favoriteUserIds: any[] = []
 
     if (ctx.user?.activeDancerId || ctx.user?.activeChoreographerId) {
       const profileId = ctx.user.activeDancerId || ctx.user.activeChoreographerId
@@ -604,7 +604,29 @@ export const isFavoriteUser = authQuery({
   args: { userId: zid('users') },
   returns: z.boolean(),
   handler: async (ctx, { userId }) => {
-    return !!(ctx.user && (ctx.user.favoriteUsers || []).includes(userId))
+    if (!ctx.user) return false
+
+    // Check favorites from active profile
+    const profileId = ctx.user.activeDancerId || ctx.user.activeChoreographerId
+    if (!profileId) return false
+
+    const profile = await ctx.db.get(profileId)
+    if (!profile) return false
+
+    // Get all favorite profile IDs
+    const favoriteDancers = (profile as any).favoriteDancers || []
+    const favoriteChoreographers = (profile as any).favoriteChoreographers || []
+    const allFavoriteProfileIds = [...favoriteDancers, ...favoriteChoreographers]
+
+    // Check if any favorite profile belongs to this user
+    for (const favProfileId of allFavoriteProfileIds) {
+      const favProfile = await ctx.db.get(favProfileId)
+      if (favProfile && (favProfile as any).userId === userId) {
+        return true
+      }
+    }
+
+    return false
   }
 })
 

@@ -66,7 +66,6 @@ export interface SaveContext {
   patchDancerAttributes: (args: any) => Promise<any>;
   updateMyDancerProfile: (args: any) => Promise<any>;
   updateMyChoreographerProfile: (args: any) => Promise<any>;
-  updateMyResume: (args: any) => Promise<any>;
   addMyRepresentation: (args: any) => Promise<any>;
   createDancerProfile: (args: any) => Promise<any>;
   createChoreographerProfile: (args: any) => Promise<any>;
@@ -260,16 +259,18 @@ export const STEP_REGISTRY = {
     schema: skillsSchema,
     getInitialValues: (data: OnboardingData) => selectSkills(data),
     save: async (values: any, ctx) => {
-      // updateMyResume expects flattened fields: projects, skills, genres
-      // Get existing projects from user's nested resume for backward compatibility
-      // (will be updated to read from profile in Phase 6.3)
-      const existingProjects = ctx.data.user?.resume?.projects;
-
-      await ctx.updateMyResume({
-        projects: existingProjects,
-        skills: values.skills,
-        genres: values.genres,
-      });
+      // Write flattened skills and genres to active profile
+      if (ctx.data.user?.profileType === 'dancer') {
+        await ctx.updateMyDancerProfile({
+          skills: values.skills,
+          genres: values.genres,
+        });
+      } else if (ctx.data.user?.profileType === 'choreographer') {
+        await ctx.updateMyChoreographerProfile({
+          skills: values.skills,
+          genres: values.genres,
+        });
+      }
     },
   },
   training: {

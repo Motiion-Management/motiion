@@ -40,7 +40,7 @@ export const ProfileTypeContractForm = forwardRef<FormHandle, FormProps<ProfileT
       <ValidationModeForm form={form}>
         <form.AppField
           name="profileType"
-          children={(field: any) => <field.RadioGroupField options={options} />}
+          children={(field) => <field.RadioGroupField options={options} />}
         />
       </ValidationModeForm>
     );

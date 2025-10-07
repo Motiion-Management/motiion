@@ -302,49 +302,6 @@ export const migrateUserToDancerProfile = internalMutation({
   }
 })
 
-export const migrateFavorites = internalMutation({
-  args: { userId: v.id('users') },
-  returns: v.object({ success: v.boolean(), converted: v.number() }),
-  handler: async (ctx, { userId }) => {
-    const user = await ctx.db.get(userId as Id<'users'>)
-    if (!user || !user.activeDancerId) {
-      return { success: false, converted: 0 }
-    }
-
-    const favoriteUsers = user.favoriteUsers || []
-    const favoriteDancers: Id<'dancers'>[] = []
-    const favoriteChoreographers: Id<'choreographers'>[] = []
-
-    for (const favUserId of favoriteUsers) {
-      const favUser = await ctx.db.get(favUserId as Id<'users'>)
-      if (!favUser) continue // Skip deleted users
-
-      if (favUser.activeDancerId) {
-        favoriteDancers.push(favUser.activeDancerId)
-      }
-      if (favUser.activeChoreographerId) {
-        favoriteChoreographers.push(favUser.activeChoreographerId)
-      }
-    }
-
-    // Update dancer profile with converted favorites
-    await ctx.db.patch(user.activeDancerId, {
-      favoriteDancers,
-      favoriteChoreographers
-    })
-
-    // Remove from user
-    await ctx.db.patch(userId, {
-      favoriteUsers: undefined
-    })
-
-    return {
-      success: true,
-      converted: favoriteDancers.length + favoriteChoreographers.length
-    }
-  }
-})
-
 export const migrateAllUsers = internalMutation({
   args: {},
   returns: v.object({
@@ -367,18 +324,6 @@ export const migrateAllUsers = internalMutation({
       } catch (error) {
         console.error('Migration error for user', user._id, error)
         errors++
-      }
-    }
-
-    // Convert favorites after all profiles created
-    for (const user of users) {
-      try {
-        await ctx.runMutation(
-          internal.migrations.migrateUsersToDancers.migrateFavorites,
-          { userId: user._id }
-        )
-      } catch (error) {
-        console.error('Favorites migration error', user._id, error)
       }
     }
 
