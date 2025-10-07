@@ -14,9 +14,6 @@
       "extends": "monorepo",
       "developmentClient": true,
       "distribution": "internal",
-      "ios": {
-        "resourceClass": "m-medium"
-      },
       "environment": "development",
       "channel": "development"
     },
@@ -34,9 +31,6 @@
       "extends": "monorepo",
       "distribution": "store",
       "autoIncrement": true,
-      "ios": {
-        "resourceClass": "m-medium"
-      },
       "environment": "production",
       "channel": "production"
     }
