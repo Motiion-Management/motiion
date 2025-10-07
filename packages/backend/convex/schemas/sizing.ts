@@ -465,6 +465,7 @@ export const sizingPlainObject = {
       glove: zGlove,
       hat: zHat
     })
+    .partial()
     .optional(),
 
   male: z
@@ -476,6 +477,7 @@ export const sizingPlainObject = {
       shirt: zShirt,
       shoes: zShoesMen
     })
+    .partial()
     .optional(),
 
   female: z
@@ -490,5 +492,6 @@ export const sizingPlainObject = {
       pants: zDressOrPant,
       shoes: zShoesWomen
     })
+    .partial()
     .optional()
 }
