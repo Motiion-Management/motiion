@@ -1,11 +1,17 @@
 import React, { useState, useRef, useMemo, useCallback } from 'react';
-import { View, TouchableOpacity, Pressable, Image } from 'react-native';
+import { View, TouchableOpacity, Pressable, Image, Dimensions } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useLocalSearchParams, router, Redirect, Link } from 'expo-router';
 import { useQuery } from 'convex/react';
 import BottomSheet, { BottomSheetScrollView, BottomSheetView } from '@gorhom/bottom-sheet';
-import { useSharedValue } from 'react-native-reanimated';
+import Animated, {
+  useSharedValue,
+  useAnimatedStyle,
+  interpolate,
+  Extrapolate,
+} from 'react-native-reanimated';
 import { LinearGradient } from 'expo-linear-gradient';
+import { BlurView } from 'expo-blur';
 import { api } from '@packages/backend/convex/_generated/api';
 import { type Id } from '@packages/backend/convex/_generated/dataModel';
 import { PictureCard } from '~/components/dancer-profile/PictureCard';
@@ -13,6 +19,7 @@ import { ProfileActionButtons } from '~/components/dancer-profile/ProfileActionB
 import { ProjectCarousel } from '~/components/dancer-profile/ProjectCarousel';
 import { HeadshotCarousel } from '~/components/dancer-profile/HeadshotCarousel';
 import { ProfileDetailsSheet } from '~/components/dancer-profile/ProfileDetailsSheet';
+import { ProfileAboutTab } from '~/components/dancer-profile/ProfileAboutTab';
 import { BackgroundGradientView } from '~/components/ui/background-gradient-view';
 import { Icon } from '~/lib/icons/Icon';
 import { Text } from '~/components/ui/text';
@@ -59,6 +66,9 @@ function TopBar({
     </SafeAreaView>
   );
 }
+const { height: SCREEN_HEIGHT } = Dimensions.get('window');
+const COLLAPSIBLE_HEIGHT = SCREEN_HEIGHT * 0.4;
+
 export default function DancerScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
   const bottomSheetRef = useRef<BottomSheet>(null);
@@ -69,6 +79,30 @@ export default function DancerScreen() {
   const setSheetToHeadshotsView = () => bottomSheetRef.current?.close();
   const setSheetToDefaultView = () => bottomSheetRef.current?.snapToIndex(0);
   const setSheetToExpandedView = () => bottomSheetRef.current?.snapToIndex(1);
+
+  // Animated styles for collapsible section
+  const collapsibleStyle = useAnimatedStyle(() => {
+    const opacity = interpolate(animatedIndex.value, [0, 1], [1, 0], Extrapolate.CLAMP);
+    const maxHeight = interpolate(
+      animatedIndex.value,
+      [0, 1],
+      [COLLAPSIBLE_HEIGHT, 0],
+      Extrapolate.CLAMP
+    );
+    return { opacity, maxHeight, overflow: 'hidden' };
+  });
+
+  // Animated styles for profile details content
+  const profileDetailsStyle = useAnimatedStyle(() => {
+    const opacity = interpolate(animatedIndex.value, [0, 1], [0, 1], Extrapolate.CLAMP);
+    return { opacity };
+  });
+
+  // Animated styles for blur background
+  const blurStyle = useAnimatedStyle(() => {
+    const opacity = interpolate(animatedIndex.value, [0, 1], [0, 1], Extrapolate.CLAMP);
+    return { opacity };
+  });
 
   // Fetch profile data
   const profileData = useQuery(
@@ -145,10 +179,8 @@ export default function DancerScreen() {
               }}
             />
 
-            {/* Project Carousel Section with gradient background */}
-            <View id="collapsible" className="h-[40vh] gap-8">
-              {/* Linear gradient background - transparent top to solid bottom */}
-
+            {/* Collapsible section - fades and collapses when reaching index 1 */}
+            <Animated.View style={collapsibleStyle} className="gap-8">
               {/* Content on top of gradient */}
               <View className="z-10 px-4">
                 <Text variant="header3">{dancer.displayName}</Text>
@@ -157,12 +189,31 @@ export default function DancerScreen() {
                 </Text>
               </View>
               <ProjectCarousel projects={recentProjects} />
-            </View>
+            </Animated.View>
+
+            {/* Profile Details - fades in when reaching index 1 */}
             <BottomSheetScrollView className="flex-1">
-              <ProjectCarousel projects={recentProjects} />
-              <ProjectCarousel projects={recentProjects} />
-              <ProjectCarousel projects={recentProjects} />
-              <ProjectCarousel projects={recentProjects} />
+              {/* Blur background */}
+              <Animated.View
+                className="bg-surface-high/50"
+                style={[
+                  blurStyle,
+                  {
+                    position: 'absolute',
+                    top: 0,
+                    left: 0,
+                    right: 0,
+                    bottom: 0,
+                    zIndex: 0,
+                  },
+                ]}>
+                <BlurView intensity={40} tint="dark" style={{ flex: 1 }} />
+              </Animated.View>
+
+              {/* About tab content */}
+              <Animated.View style={profileDetailsStyle} className="relative z-10">
+                <ProfileAboutTab dancer={dancer} recentProjects={recentProjects} />
+              </Animated.View>
             </BottomSheetScrollView>
           </BottomSheetView>
         </BottomSheet>
