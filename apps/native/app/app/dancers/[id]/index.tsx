@@ -14,7 +14,6 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { BlurView } from 'expo-blur';
 import { api } from '@packages/backend/convex/_generated/api';
 import { type Id } from '@packages/backend/convex/_generated/dataModel';
-import { PictureCard } from '~/components/dancer-profile/PictureCard';
 import { ProfileActionButtons } from '~/components/dancer-profile/ProfileActionButtons';
 import { ProjectCarousel } from '~/components/dancer-profile/ProjectCarousel';
 import { HeadshotCarousel } from '~/components/dancer-profile/HeadshotCarousel';
