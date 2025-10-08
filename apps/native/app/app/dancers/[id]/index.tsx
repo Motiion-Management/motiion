@@ -44,12 +44,12 @@ function TopBar({ onExpandIntent }: { onExpandIntent: () => void }) {
           paddingTop: 8,
         }}>
         {/* Close button (left) */}
-        <Button onPress={handleClose} variant="plain">
+        <Button onPress={handleClose} variant="tertiary">
           <Icon name="xmark" size={20} className="text-icon-default" />
         </Button>
 
         {/* Profile Details button (right) */}
-        <Button variant="plain" onPress={onExpandIntent}>
+        <Button variant="tertiary" onPress={onExpandIntent}>
           <Icon name="person.text.rectangle" size={28} className="text-icon-default" />
         </Button>
       </View>

@@ -12,9 +12,11 @@ const buttonVariants = cva('flex-row items-center justify-center gap-2', {
   variants: {
     variant: {
       primary: 'active:opacity-90 bg-button-surface-default',
-      outline: 'border border-border-default bg-button-surface-high active:bg-button-surface-high',
-      secondary: 'active:opacity-90 bg-button-surface-high',
+      secondary: 'border border-border-tint bg-button-surface-tint active:bg-button-surface-tint',
+      tertiary: 'ios:active:opacity-70',
       accent: 'active:opacity-90 bg-button-surface-accent',
+      // Deprecated variants - kept for backwards compatibility
+      outline: 'border border-border-tint bg-button-surface-high active:bg-button-surface-high',
       tonal: 'active:opacity-90 bg-button-surface-high',
       plain: 'ios:active:opacity-70',
       'utility-light': 'bg-button-surface-utility-light',
@@ -57,8 +59,10 @@ const buttonTextVariants = cva('font-semibold', {
     variant: {
       primary: 'text-text-high',
       secondary: 'text-text-default',
-      outline: 'text-text-default',
+      tertiary: 'text-text-default',
       accent: 'text-text-high',
+      // Deprecated variants
+      outline: 'text-text-default',
       tonal: 'text-text-default',
       plain: 'text-accent',
       'utility-light': 'text-text-utility-dark',
@@ -105,6 +109,20 @@ type AndroidOnlyButtonProps = {
   androidRootClassName?: string;
 };
 
+/**
+ * Button component with variants matching Figma design system.
+ *
+ * **Figma-aligned variants:**
+ * - `primary` - Dark background, white text (Primary button)
+ * - `secondary` - Tinted background with border (Secondary button)
+ * - `tertiary` - Text-only, no background (Tertiary button)
+ * - `accent` - Accent color background (FAB-Accent)
+ *
+ * **Deprecated variants (kept for backwards compatibility):**
+ * - `outline` - Use `secondary` instead
+ * - `plain` - Use `tertiary` instead
+ * - `tonal`, `utility-light`, `utility-dark`, `plain-utility-light` - Utility variants, not in Figma
+ */
 type ButtonProps = PressableProps & ButtonVariantProps & AndroidOnlyButtonProps;
 
 const Root = Platform.OS === 'android' ? View : Slot;
@@ -130,7 +148,8 @@ const Button = React.forwardRef<PressableRef, ButtonProps>(
           <Pressable
             className={cn(
               buttonVariants({ variant, size, className }),
-              props.disabled && 'bg-button-surface-disabled opacity-60'
+              props.disabled && 'bg-button-surface-disabled',
+              props.disabled && (variant === 'outline' || variant === 'secondary') && 'border-border-disabled'
             )}
             ref={ref}
             style={style}

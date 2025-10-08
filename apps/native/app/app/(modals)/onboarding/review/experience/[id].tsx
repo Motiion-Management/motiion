@@ -12,7 +12,7 @@ export default function ExperienceEditModalScreen() {
   return (
     <View className="flex-1 bg-surface-default pt-6">
       <View className="absolute right-2 top-2 z-10">
-        <Button size="icon" variant="plain" onPress={() => router.back()}>
+        <Button size="icon" variant="tertiary" onPress={() => router.back()}>
           <X size={24} className="text-icon-default" />
         </Button>
       </View>
