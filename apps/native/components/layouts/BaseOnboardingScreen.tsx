@@ -88,7 +88,7 @@ export const BaseOnboardingScreen = ({
               <>
                 <View className="flex-1 flex-row justify-start">
                   {secondaryAction && (
-                    <Button variant="plain" onPress={secondaryAction.onPress}>
+                    <Button variant="tertiary" onPress={secondaryAction.onPress}>
                       <Text className="text-sm text-text-default">{secondaryAction.text}</Text>
                     </Button>
                   )}
@@ -97,7 +97,7 @@ export const BaseOnboardingScreen = ({
                 {onboardingFlow.canNavigatePrevious && (
                   <Button
                     size="icon"
-                    variant="plain"
+                    variant="tertiary"
                     onPress={() => {
                       perfLog('button:previousPressed', { title });
                       setIsNavigating(true);

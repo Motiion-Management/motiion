@@ -39,12 +39,12 @@ function TopBar({ onCollapseIntent }: { onCollapseIntent: () => void }) {
           paddingTop: 8,
         }}>
         {/* Close button (left) */}
-        <Button onPress={handleClose} variant="plain">
+        <Button onPress={handleClose} variant="tertiary">
           <Icon name="xmark" size={20} className="text-icon-default" />
         </Button>
 
         {/* Profile Details button (right) */}
-        <Button variant="plain" onPress={onCollapseIntent}>
+        <Button variant="tertiary" onPress={onCollapseIntent}>
           <Icon name="person.text.rectangle.fill" size={28} className="text-icon-default" />
         </Button>
       </View>

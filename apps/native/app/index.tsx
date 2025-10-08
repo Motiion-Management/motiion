@@ -41,14 +41,14 @@ export default function RootScreen() {
             </Text>
           </View>
           <Link href="/auth/(create-account)" asChild>
-            <Button variant="utility-light" size={Platform.select({ ios: 'lg', default: 'md' })}>
+            <Button variant="primary" size={Platform.select({ ios: 'lg', default: 'md' })}>
               <Text>Create Account</Text>
             </Button>
           </Link>
 
           <Link href="/auth/(login)" asChild>
             <Button
-              variant="plain-utility-light"
+              variant="tertiary"
               size={Platform.select({ ios: 'lg', default: 'md' })}>
               <Text>Sign In</Text>
             </Button>

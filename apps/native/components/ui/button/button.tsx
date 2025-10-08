@@ -15,13 +15,6 @@ const buttonVariants = cva('flex-row items-center justify-center gap-2', {
       secondary: 'border border-border-tint bg-button-surface-tint active:bg-button-surface-tint',
       tertiary: 'ios:active:opacity-70',
       accent: 'active:opacity-90 bg-button-surface-accent',
-      // Deprecated variants - kept for backwards compatibility
-      outline: 'border border-border-tint bg-button-surface-high active:bg-button-surface-high',
-      tonal: 'active:opacity-90 bg-button-surface-high',
-      plain: 'ios:active:opacity-70',
-      'utility-light': 'bg-button-surface-utility-light',
-      'utility-dark': 'bg-button-surface-utility-dark',
-      'plain-utility-light': 'ios:active:opacity-70',
     },
     size: {
       none: '',
@@ -61,13 +54,6 @@ const buttonTextVariants = cva('font-semibold', {
       secondary: 'text-text-default',
       tertiary: 'text-text-default',
       accent: 'text-text-high',
-      // Deprecated variants
-      outline: 'text-text-default',
-      tonal: 'text-text-default',
-      plain: 'text-accent',
-      'utility-light': 'text-text-utility-dark',
-      'utility-dark': 'text-text-utility-light',
-      'plain-utility-light': 'text-text-utility-light',
     },
     size: {
       none: '',
@@ -87,7 +73,7 @@ const buttonTextVariants = cva('font-semibold', {
 // Android ripple colors that adapt to color scheme
 function getAndroidRipple(colorScheme: 'light' | 'dark', variant: ButtonVariant) {
   const baseColor = colorScheme === 'dark' ? '255, 255, 255' : '0, 0, 0';
-  const opacity = variant === 'outline' || variant === 'plain' || variant === 'tonal' ? 0.1 : 0.2;
+  const opacity = variant === 'secondary' || variant === 'tertiary' ? 0.1 : 0.2;
   return {
     color: `rgba(${baseColor}, ${opacity})`,
     borderless: false,
@@ -112,16 +98,16 @@ type AndroidOnlyButtonProps = {
 /**
  * Button component with variants matching Figma design system.
  *
- * **Figma-aligned variants:**
+ * **Variants:**
  * - `primary` - Dark background, white text (Primary button)
  * - `secondary` - Tinted background with border (Secondary button)
  * - `tertiary` - Text-only, no background (Tertiary button)
  * - `accent` - Accent color background (FAB-Accent)
  *
- * **Deprecated variants (kept for backwards compatibility):**
- * - `outline` - Use `secondary` instead
- * - `plain` - Use `tertiary` instead
- * - `tonal`, `utility-light`, `utility-dark`, `plain-utility-light` - Utility variants, not in Figma
+ * **Sizes:**
+ * - `sm`, `md`, `lg` - Standard button sizes
+ * - `icon` - Square icon button (FAB)
+ * - `iconInline` - Small inline icon button
  */
 type ButtonProps = PressableProps & ButtonVariantProps & AndroidOnlyButtonProps;
 
@@ -149,7 +135,7 @@ const Button = React.forwardRef<PressableRef, ButtonProps>(
             className={cn(
               buttonVariants({ variant, size, className }),
               props.disabled && 'bg-button-surface-disabled',
-              props.disabled && (variant === 'outline' || variant === 'secondary') && 'border-border-disabled'
+              props.disabled && variant === 'secondary' && 'border-border-disabled'
             )}
             ref={ref}
             style={style}

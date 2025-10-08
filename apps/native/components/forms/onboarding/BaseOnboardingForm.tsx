@@ -98,7 +98,7 @@ export const BaseOnboardingForm = forwardRef<OnboardingFormRef, BaseOnboardingFo
             style={{ paddingBottom: 0, paddingTop: mode === 'fullscreen' ? insets.top + 48 : 16 }}>
             {mode === 'sheet' && onCancel && (
               <View className="absolute right-4 top-4 z-10">
-                <Button size="icon" variant="plain" onPress={onCancel}>
+                <Button size="icon" variant="tertiary" onPress={onCancel}>
                   <X size={24} className="text-icon-default" />
                 </Button>
               </View>

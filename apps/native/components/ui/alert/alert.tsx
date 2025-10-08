@@ -207,7 +207,7 @@ const Alert = React.forwardRef<AlertRef, AlertProps>(
                             )}>
                             <AlertDialogPrimitive.Cancel asChild>
                               <Button
-                                variant="plain"
+                                variant="tertiary"
                                 onPress={() => {
                                   button.onPress?.(
                                     prompt?.type === 'login-password'
@@ -232,7 +232,7 @@ const Alert = React.forwardRef<AlertRef, AlertProps>(
                             )}>
                             <AlertDialogPrimitive.Action asChild>
                               <Button
-                                variant="tonal"
+                                variant="secondary"
                                 className="bg-text-error/10 dark:bg-text-error/25"
                                 onPress={() => {
                                   button.onPress?.(
@@ -255,7 +255,7 @@ const Alert = React.forwardRef<AlertRef, AlertProps>(
                           className={cn(buttons.length > 2 && index === 0 && 'flex-1 items-start')}>
                           <AlertDialogPrimitive.Action asChild>
                             <Button
-                              variant="plain"
+                              variant="tertiary"
                               onPress={() => {
                                 button.onPress?.(
                                   prompt?.type === 'login-password'

@@ -90,7 +90,7 @@ export function DevOnboardingTools() {
               <View className="mb-2 flex-row gap-2">
                 <Button
                   size="sm"
-                  variant="outline"
+                  variant="secondary"
                   onPress={async () => {
                     await resetOnboarding({});
                     onboarding.navigateToGroup('profile');
@@ -99,7 +99,7 @@ export function DevOnboardingTools() {
                 </Button>
                 <Button
                   size="sm"
-                  variant="outline"
+                  variant="secondary"
                   onPress={async () => {
                     await completeOnboarding({});
                   }}>
@@ -154,7 +154,7 @@ export function DevOnboardingTools() {
                 <Text>Go to Home</Text>
               </Button>
 
-              {/* <Button onPress={() => setActiveTab('resume')} variant="outline"> */}
+              {/* <Button onPress={() => setActiveTab('resume')} variant="secondary"> */}
               {/*   <Text>Open Resume Tester</Text> */}
               {/* </Button> */}
 
@@ -183,7 +183,7 @@ export function DevOnboardingTools() {
 
               <View className="flex gap-2">
                 <Button
-                  variant="outline"
+                  variant="secondary"
                   disabled={isProcessing}
                   onPress={async () => {
                     try {
@@ -224,7 +224,7 @@ export function DevOnboardingTools() {
                 </Button>
 
                 <Button
-                  variant="outline"
+                  variant="secondary"
                   disabled={isProcessing}
                   onPress={async () => {
                     try {
@@ -264,7 +264,7 @@ export function DevOnboardingTools() {
                 </Button>
 
                 <Button
-                  variant="outline"
+                  variant="secondary"
                   disabled={isProcessing}
                   onPress={async () => {
                     try {

@@ -121,7 +121,7 @@ export function HeadshotCarousel({
           className="flex-row items-center px-4 pb-4"
           pointerEvents="box-none">
           {/* Close button */}
-          <Button variant="utility-dark" size="icon" onPress={onClose}>
+          <Button variant="tertiary" size="icon" onPress={onClose}>
             <Icon name="arrow.up.to.line" size={24} className="text-icon-default" />
           </Button>
 
