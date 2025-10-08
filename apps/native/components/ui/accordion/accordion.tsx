@@ -37,7 +37,7 @@ const AccordionItem = React.forwardRef<AccordionPrimitive.ItemRef, AccordionPrim
       <Animated.View className="overflow-hidden" layout={LinearTransition.duration(200)}>
         <AccordionPrimitive.Item
           ref={ref}
-          className={cn('border-b border-border-default', className)}
+          className={cn('border-b border-border-tint px-4', className)}
           value={value}
           {...props}
         />
@@ -90,7 +90,7 @@ const AccordionContent = React.forwardRef<
 >(({ className, children, ...props }, ref) => {
   const { isExpanded } = AccordionPrimitive.useItemContext();
   return (
-    <TextClassContext.Provider value="native:text-lg">
+    <TextClassContext.Provider value="">
       <AccordionPrimitive.Content
         className={cn(
           'overflow-hidden text-sm web:transition-all',
