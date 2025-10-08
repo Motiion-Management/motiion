@@ -81,9 +81,9 @@ export function ProfileDetailsSheet({
   };
 
   return (
-    <SafeAreaView className="h-screen flex-1 rounded-t-3xl">
+    <SafeAreaView className="h-screen flex-1 gap-6 rounded-t-3xl">
       {/* Header */}
-      <View className="gap-2 px-4 pb-6 pt-4">
+      <View className="gap-2 px-4 pt-4">
         <TopBar onCollapseIntent={onCollapseIntent} />
         <View className="items-center">
           <Text variant="labelXs">{displayName}</Text>
