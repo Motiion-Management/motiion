@@ -10,22 +10,17 @@ import { type Doc } from '@packages/backend/convex/_generated/dataModel';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Button } from '../ui/button';
 import { Icon } from '~/lib/icons/Icon';
-import { router, useLocalSearchParams } from 'expo-router';
+import { router } from 'expo-router';
 
 interface ProfileDetailsSheetProps {
   dancer: Doc<'dancers'>;
   recentProjects: Array<any>;
   allProjects: Array<any>;
   training: Array<any>;
+  onCollapseIntent: () => void;
 }
 
-function TopBar({
-  onExpandIntent,
-  onCollapseIntent,
-}: {
-  onExpandIntent: () => void;
-  onCollapseIntent: () => void;
-}) {
+function TopBar({ onCollapseIntent }: { onCollapseIntent: () => void }) {
   const handleClose = () => {
     if (router.canGoBack()) {
       router.back();
@@ -35,9 +30,7 @@ function TopBar({
     }
   };
   return (
-    <SafeAreaView
-      edges={['top', 'left', 'right']}
-      style={{ position: 'absolute', top: 0, left: 0, right: 0 }}>
+    <View style={{ position: 'absolute', top: 0, left: 0, right: 0 }}>
       <View
         style={{
           flexDirection: 'row',
@@ -51,11 +44,11 @@ function TopBar({
         </Button>
 
         {/* Profile Details button (right) */}
-        <Button variant="plain" onPress={onExpandIntent}>
-          <Icon name="person.text.rectangle" size={28} className="text-icon-default" />
+        <Button variant="plain" onPress={onCollapseIntent}>
+          <Icon name="person.text.rectangle.fill" size={28} className="text-icon-default" />
         </Button>
       </View>
-    </SafeAreaView>
+    </View>
   );
 }
 
@@ -64,6 +57,7 @@ export function ProfileDetailsSheet({
   recentProjects,
   allProjects,
   training,
+  onCollapseIntent,
 }: ProfileDetailsSheetProps) {
   const displayName = dancer.displayName || 'Dancer';
 
@@ -90,18 +84,23 @@ export function ProfileDetailsSheet({
     <SafeAreaView className="h-screen flex-1 rounded-t-3xl">
       {/* Header */}
       <View className="gap-2 px-4 pt-4">
-        <Text variant="header3" className="font-semibold">
-          {displayName}
-        </Text>
-        <Text variant="body" className="text-text-low">
-          Dancer
-        </Text>
+        <TopBar onCollapseIntent={onCollapseIntent} />
+        <View className="items-center">
+          <Text variant="labelXs">{displayName}</Text>
+          <Text variant="header5">Dancer</Text>
+        </View>
         <TypecastDetails dancer={dancer} />
       </View>
 
       {/* Tabs */}
       <View className="mt-4 flex-1">
-        <TabView routes={tabs} renderScene={renderScene} initialKey="about" />
+        <TabView
+          routes={tabs}
+          renderScene={renderScene}
+          initialKey="about"
+          tabStyle="pill"
+          tabContainerClassName="px-4"
+        />
       </View>
     </SafeAreaView>
   );

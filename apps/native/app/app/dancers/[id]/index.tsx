@@ -24,13 +24,7 @@ import { Icon } from '~/lib/icons/Icon';
 import { Text } from '~/components/ui/text';
 import { Button } from '~/components/ui/button';
 
-function TopBar({
-  onExpandIntent,
-  onCollapseIntent,
-}: {
-  onExpandIntent: () => void;
-  onCollapseIntent: () => void;
-}) {
+function TopBar({ onExpandIntent }: { onExpandIntent: () => void }) {
   const handleClose = () => {
     if (router.canGoBack()) {
       router.back();
@@ -148,7 +142,7 @@ export default function DancerScreen() {
         />
 
         {/* Top Bar */}
-        <TopBar onExpandIntent={setSheetToExpandedView} onCollapseIntent={setSheetToDefaultView} />
+        <TopBar onExpandIntent={setSheetToExpandedView} />
         {/* BottomSheet with Projects */}
         <BottomSheet
           ref={bottomSheetRef}
@@ -214,6 +208,7 @@ export default function DancerScreen() {
                   recentProjects={recentProjects}
                   allProjects={allProjects}
                   training={training}
+                  onCollapseIntent={setSheetToDefaultView}
                 />
               </Animated.View>
             </BottomSheetScrollView>
