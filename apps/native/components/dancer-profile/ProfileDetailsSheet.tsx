@@ -1,108 +1,108 @@
-import React, { useCallback, useEffect, useMemo, useRef } from 'react'
-import { View } from 'react-native'
-import { BlurView } from 'expo-blur'
-import BottomSheet, { BottomSheetBackdrop, BottomSheetView } from '@gorhom/bottom-sheet'
-import { Text } from '~/components/ui/text'
-import { TabView, type TabRoute } from '~/components/ui/tabs/TabView'
-import { TypecastDetails } from './TypecastDetails'
-import { ProfileAboutTab } from './ProfileAboutTab'
-import { ProfileResumeTab } from './ProfileResumeTab'
-import { ProfileVisualsTab } from './ProfileVisualsTab'
-import { type Doc } from '@packages/backend/convex/_generated/dataModel'
+import React from 'react';
+import { View } from 'react-native';
+import { Text } from '~/components/ui/text';
+import { TabView, type TabRoute } from '~/components/ui/tabs/TabView';
+import { TypecastDetails } from './TypecastDetails';
+import { ProfileAboutTab } from './ProfileAboutTab';
+import { ProfileResumeTab } from './ProfileResumeTab';
+import { ProfileVisualsTab } from './ProfileVisualsTab';
+import { type Doc } from '@packages/backend/convex/_generated/dataModel';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import { Button } from '../ui/button';
+import { Icon } from '~/lib/icons/Icon';
+import { router, useLocalSearchParams } from 'expo-router';
 
 interface ProfileDetailsSheetProps {
-  isOpen: boolean
-  onClose: () => void
-  dancer: Doc<'dancers'>
-  recentProjects: Array<any>
-  allProjects: Array<any>
-  training: Array<any>
+  dancer: Doc<'dancers'>;
+  recentProjects: Array<any>;
+  allProjects: Array<any>;
+  training: Array<any>;
+}
+
+function TopBar({
+  onExpandIntent,
+  onCollapseIntent,
+}: {
+  onExpandIntent: () => void;
+  onCollapseIntent: () => void;
+}) {
+  const handleClose = () => {
+    if (router.canGoBack()) {
+      router.back();
+    } else {
+      // Navigate to home/default screen
+      router.replace('/');
+    }
+  };
+  return (
+    <SafeAreaView
+      edges={['top', 'left', 'right']}
+      style={{ position: 'absolute', top: 0, left: 0, right: 0 }}>
+      <View
+        style={{
+          flexDirection: 'row',
+          justifyContent: 'space-between',
+          paddingHorizontal: 16,
+          paddingTop: 8,
+        }}>
+        {/* Close button (left) */}
+        <Button onPress={handleClose} variant="plain">
+          <Icon name="xmark" size={20} className="text-icon-default" />
+        </Button>
+
+        {/* Profile Details button (right) */}
+        <Button variant="plain" onPress={onExpandIntent}>
+          <Icon name="person.text.rectangle" size={28} className="text-icon-default" />
+        </Button>
+      </View>
+    </SafeAreaView>
+  );
 }
 
 export function ProfileDetailsSheet({
-  isOpen,
-  onClose,
   dancer,
   recentProjects,
   allProjects,
-  training
+  training,
 }: ProfileDetailsSheetProps) {
-  const bottomSheetRef = useRef<BottomSheet>(null)
-  const snapPoints = useMemo(() => ['85%'], [])
-
-  useEffect(() => {
-    if (isOpen) {
-      bottomSheetRef.current?.expand()
-    } else {
-      bottomSheetRef.current?.close()
-    }
-  }, [isOpen])
-
-  const handleSheetChanges = useCallback(
-    (index: number) => {
-      if (index === -1) {
-        onClose()
-      }
-    },
-    [onClose]
-  )
-
-  const renderBackdrop = useCallback(
-    (props: any) => (
-      <BottomSheetBackdrop {...props} disappearsOnIndex={-1} appearsOnIndex={0} opacity={0.5}>
-        <BlurView intensity={20} style={{ flex: 1 }} tint="dark" />
-      </BottomSheetBackdrop>
-    ),
-    []
-  )
+  const displayName = dancer.displayName || 'Dancer';
 
   const tabs: Array<TabRoute> = [
     { key: 'about', title: 'About' },
     { key: 'resume', title: 'Resume' },
-    { key: 'visuals', title: 'Visuals' }
-  ]
+    { key: 'visuals', title: 'Visuals' },
+  ];
 
   const renderScene = (route: TabRoute) => {
     switch (route.key) {
       case 'about':
-        return <ProfileAboutTab dancer={dancer} recentProjects={recentProjects} />
+        return <ProfileAboutTab dancer={dancer} recentProjects={recentProjects} />;
       case 'resume':
-        return <ProfileResumeTab dancer={dancer} allProjects={allProjects} training={training} />
+        return <ProfileResumeTab dancer={dancer} allProjects={allProjects} training={training} />;
       case 'visuals':
-        return <ProfileVisualsTab />
+        return <ProfileVisualsTab />;
       default:
-        return null
+        return null;
     }
-  }
-
-  const displayName = dancer.displayName || 'Dancer'
+  };
 
   return (
-    <BottomSheet
-      ref={bottomSheetRef}
-      index={-1}
-      snapPoints={snapPoints}
-      enablePanDownToClose
-      onChange={handleSheetChanges}
-      backdropComponent={renderBackdrop}
-      backgroundStyle={{ backgroundColor: 'transparent' }}>
-      <BottomSheetView className="flex-1 rounded-t-3xl bg-surface-default">
-        {/* Header */}
-        <View className="gap-2 px-4 pt-4">
-          <Text variant="header3" className="font-semibold">
-            {displayName}
-          </Text>
-          <Text variant="body" className="text-text-low">
-            Dancer
-          </Text>
-          <TypecastDetails dancer={dancer} />
-        </View>
+    <SafeAreaView className="h-screen flex-1 rounded-t-3xl">
+      {/* Header */}
+      <View className="gap-2 px-4 pt-4">
+        <Text variant="header3" className="font-semibold">
+          {displayName}
+        </Text>
+        <Text variant="body" className="text-text-low">
+          Dancer
+        </Text>
+        <TypecastDetails dancer={dancer} />
+      </View>
 
-        {/* Tabs */}
-        <View className="mt-4 flex-1">
-          <TabView routes={tabs} renderScene={renderScene} initialKey="about" />
-        </View>
-      </BottomSheetView>
-    </BottomSheet>
-  )
+      {/* Tabs */}
+      <View className="mt-4 flex-1">
+        <TabView routes={tabs} renderScene={renderScene} initialKey="about" />
+      </View>
+    </SafeAreaView>
+  );
 }

@@ -19,7 +19,6 @@ import { ProfileActionButtons } from '~/components/dancer-profile/ProfileActionB
 import { ProjectCarousel } from '~/components/dancer-profile/ProjectCarousel';
 import { HeadshotCarousel } from '~/components/dancer-profile/HeadshotCarousel';
 import { ProfileDetailsSheet } from '~/components/dancer-profile/ProfileDetailsSheet';
-import { ProfileAboutTab } from '~/components/dancer-profile/ProfileAboutTab';
 import { BackgroundGradientView } from '~/components/ui/background-gradient-view';
 import { Icon } from '~/lib/icons/Icon';
 import { Text } from '~/components/ui/text';
@@ -32,8 +31,6 @@ function TopBar({
   onExpandIntent: () => void;
   onCollapseIntent: () => void;
 }) {
-  const { id } = useLocalSearchParams<{ id: string }>();
-
   const handleClose = () => {
     if (router.canGoBack()) {
       router.back();
@@ -210,9 +207,14 @@ export default function DancerScreen() {
                 <BlurView intensity={40} tint="dark" style={{ flex: 1 }} />
               </Animated.View>
 
-              {/* About tab content */}
+              {/* Profile Details content */}
               <Animated.View style={profileDetailsStyle} className="relative z-10">
-                <ProfileAboutTab dancer={dancer} recentProjects={recentProjects} />
+                <ProfileDetailsSheet
+                  dancer={dancer}
+                  recentProjects={recentProjects}
+                  allProjects={allProjects}
+                  training={training}
+                />
               </Animated.View>
             </BottomSheetScrollView>
           </BottomSheetView>
