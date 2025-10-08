@@ -1,74 +1,20 @@
 import { PressableRef } from '@rn-primitives/types';
-import { cva, type VariantProps } from 'class-variance-authority';
+import { type VariantProps } from 'class-variance-authority';
 import * as React from 'react';
 import { Platform, Pressable, PressableProps, View, ViewStyle } from 'react-native';
+import Animated, {
+  useSharedValue,
+  useAnimatedStyle,
+  withSpring,
+  withTiming,
+  Easing,
+} from 'react-native-reanimated';
 
 import { Slot } from '~/components/primitives/slot';
 import { TextClassContext } from '~/components/ui/text';
 import { cn } from '~/lib/cn';
 import { useColorScheme } from '~/lib/useColorScheme';
-
-const buttonVariants = cva('flex-row items-center justify-center gap-2', {
-  variants: {
-    variant: {
-      primary: 'active:opacity-90 bg-button-surface-default',
-      secondary: 'border border-border-tint bg-button-surface-tint active:bg-button-surface-tint',
-      tertiary: 'ios:active:opacity-70',
-      accent: 'active:opacity-90 bg-button-surface-accent',
-    },
-    size: {
-      none: '',
-      sm: 'py-1 px-2.5 rounded-full',
-      md: 'ios:rounded-full py-2 ios:py-1.5 ios:px-3.5 px-5 rounded-full',
-      lg: 'py-2.5 px-5 ios:py-2 rounded-full gap-2',
-      icon: 'ios:rounded-full h-12 w-12 rounded-full',
-      iconInline: 'ios:rounded-full h-4 w-4 rounded-full',
-    },
-  },
-  defaultVariants: {
-    variant: 'primary',
-    size: 'md',
-  },
-});
-
-const androidRootVariants = cva('overflow-hidden', {
-  variants: {
-    size: {
-      none: '',
-      icon: 'rounded-full',
-      iconInline: 'rounded-full',
-      sm: 'rounded-full',
-      md: 'rounded-full',
-      lg: 'rounded-full',
-    },
-  },
-  defaultVariants: {
-    size: 'md',
-  },
-});
-
-const buttonTextVariants = cva('font-semibold', {
-  variants: {
-    variant: {
-      primary: 'text-text-high',
-      secondary: 'text-text-default',
-      tertiary: 'text-text-default',
-      accent: 'text-text-high',
-    },
-    size: {
-      none: '',
-      icon: 'text-[20px]',
-      iconInline: 'text-[12px]',
-      sm: 'text-[12px] leading-[16.8px]',
-      md: 'text-[16px] leading-[22.4px]',
-      lg: 'text-[16px] leading-[22.4px]',
-    },
-  },
-  defaultVariants: {
-    variant: 'primary',
-    size: 'md',
-  },
-});
+import { buttonVariants, androidRootVariants, buttonTextVariants } from './variants';
 
 // Android ripple colors that adapt to color scheme
 function getAndroidRipple(colorScheme: 'light' | 'dark', variant: ButtonVariant) {
@@ -115,10 +61,78 @@ const Root = Platform.OS === 'android' ? View : Slot;
 
 const Button = React.forwardRef<PressableRef, ButtonProps>(
   (
-    { className, variant = 'primary', size, style = BORDER_CURVE, androidRootClassName, ...props },
+    {
+      className,
+      variant = 'primary',
+      size,
+      style = BORDER_CURVE,
+      androidRootClassName,
+      onPressIn,
+      onPressOut,
+      ...props
+    },
     ref
   ) => {
     const { colorScheme } = useColorScheme();
+
+    // iOS spring animation for press interaction
+    // Smaller buttons need more pronounced scale for visibility
+    const pressedScale = React.useMemo(() => {
+      if (size === 'icon' || size === 'iconInline') return 0.88;
+      if (size === 'sm') return 0.92;
+      return 0.95;
+    }, [size]);
+
+    const scale = useSharedValue(1);
+    const animatedStyle = useAnimatedStyle(() => ({
+      transform: [{ scale: scale.value }],
+    }));
+
+    const handlePressIn = React.useCallback(
+      (event: any) => {
+        if (Platform.OS === 'ios' && !props.disabled) {
+          // Slight bounce on press - less stiff, controlled overshoot
+          scale.value = withSpring(pressedScale, {
+            damping: 14,
+            stiffness: 300,
+            mass: 0.8,
+          });
+        }
+        onPressIn?.(event);
+      },
+      [props.disabled, onPressIn, scale, pressedScale]
+    );
+
+    const handlePressOut = React.useCallback(
+      (event: any) => {
+        if (Platform.OS === 'ios') {
+          // Gentle spring return with minimal bounce
+          scale.value = withSpring(1, {
+            damping: 20,
+            stiffness: 300,
+            mass: 0.8,
+          });
+        }
+        onPressOut?.(event);
+      },
+      [onPressOut, scale]
+    );
+
+    const pressable = (
+      <Pressable
+        className={cn(
+          buttonVariants({ variant, size, className }),
+          props.disabled && 'bg-button-surface-disabled',
+          props.disabled && variant === 'secondary' && 'border-border-disabled'
+        )}
+        ref={ref}
+        style={style}
+        android_ripple={props.disabled ? undefined : getAndroidRipple(colorScheme, variant)}
+        onPressIn={handlePressIn}
+        onPressOut={handlePressOut}
+        {...props}
+      />
+    );
 
     return (
       <TextClassContext.Provider
@@ -131,17 +145,11 @@ const Button = React.forwardRef<PressableRef, ButtonProps>(
               className: androidRootClassName,
             }),
           })}>
-          <Pressable
-            className={cn(
-              buttonVariants({ variant, size, className }),
-              props.disabled && 'bg-button-surface-disabled',
-              props.disabled && variant === 'secondary' && 'border-border-disabled'
-            )}
-            ref={ref}
-            style={style}
-            android_ripple={props.disabled ? undefined : getAndroidRipple(colorScheme, variant)}
-            {...props}
-          />
+          {Platform.OS === 'ios' ? (
+            <Animated.View style={animatedStyle}>{pressable}</Animated.View>
+          ) : (
+            pressable
+          )}
         </Root>
       </TextClassContext.Provider>
     );
