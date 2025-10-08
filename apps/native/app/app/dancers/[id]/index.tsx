@@ -186,7 +186,7 @@ export default function DancerScreen() {
             <BottomSheetScrollView className="relative flex-1">
               <LinearGradient
                 colors={['rgba(0,0,0,0)', 'rgba(0,0,0,0.5)', 'rgba(0,0,0,0.9)', 'rgba(0,0,0,1)']}
-                locations={[0.2, 0.3, 0.4, 0.5]}
+                locations={[0.0, 0.2, 0.25, 0.4]}
                 style={{
                   position: 'absolute',
                   left: 0,

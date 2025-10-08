@@ -99,7 +99,8 @@ export function ProfileDetailsSheet({
           renderScene={renderScene}
           initialKey="about"
           tabStyle="pill"
-          tabContainerClassName="px-4"
+          tabContainerClassName="px-4 pb-6"
+          contentClassName="bg-surface-high"
         />
       </View>
     </SafeAreaView>

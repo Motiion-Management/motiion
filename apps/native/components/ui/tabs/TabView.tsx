@@ -23,6 +23,8 @@ type TabsViewProps = {
   tabStyle?: 'pill' | 'text' | 'animated';
   /** ClassName applied to the wrapper around the tab buttons */
   tabContainerClassName?: string;
+  /** ClassName applied to each page's content wrapper */
+  contentClassName?: string;
 };
 
 export function TabView({
@@ -36,6 +38,7 @@ export function TabView({
   alignment = 'left',
   tabStyle,
   tabContainerClassName,
+  contentClassName,
 }: TabsViewProps) {
   const initialIndex = Math.max(0, initialKey ? routes.findIndex((r) => r.key === initialKey) : 0);
   const [activeIndex, setActiveIndex] = useState<number>(initialIndex);
@@ -112,7 +115,7 @@ export function TabView({
           focusedTab.value = routes[idx]?.title ?? '';
         }}>
         {routes.map((r) => (
-          <View key={r.key} className="flex-1">
+          <View key={r.key} className={contentClassName ?? 'flex-1'}>
             {renderScene(r)}
           </View>
         ))}
