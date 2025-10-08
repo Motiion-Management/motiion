@@ -41,11 +41,11 @@ export function HeadshotCarousel({
       return SCREEN_HEIGHT * 0.7;
     }
 
-    // Interpolate height: -1 (closed) = full screen, 0 (open) = 70%
+    // Interpolate height: -1 (closed) = full screen, 0 (open) = 60%
     return interpolate(
       animatedIndex.value,
       [-1, 0],
-      [SCREEN_HEIGHT, SCREEN_HEIGHT * 0.7],
+      [SCREEN_HEIGHT, SCREEN_HEIGHT * 0.6],
       Extrapolate.CLAMP
     );
   }, [animatedIndex]);
@@ -104,9 +104,11 @@ export function HeadshotCarousel({
       {/* Title - fades in when sheet closes */}
       <Animated.View
         style={[titleStyle]}
-        className="absolute left-0 right-0 top-0 items-center pt-16"
+        className="absolute left-0 right-0 top-0 items-center"
         pointerEvents="none">
-        <Text variant="header5">Headshots</Text>
+        <SafeAreaView className="pt-4">
+          <Text variant="header5">Headshots</Text>
+        </SafeAreaView>
       </Animated.View>
 
       {/* Bottom controls - slides up when sheet closes */}

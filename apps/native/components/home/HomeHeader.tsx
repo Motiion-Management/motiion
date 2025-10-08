@@ -50,17 +50,20 @@ export function HomeHeader({ onNotificationsPress }: HomeHeaderProps) {
       <View className="flex-row items-center gap-4">
         {/* Profile Avatar - Link to dancer profile */}
         {dancerProfileId ? (
-          <Link href={`/app/dancers/${dancerProfileId}`} asChild>
-            <TouchableOpacity>
-              <Avatar
-                alt={profile?.displayName || user?.email || 'User avatar'}
-                className="h-10 w-10">
-                {headshotUrl && <AvatarImage source={{ uri: headshotUrl }} />}
-                <AvatarFallback>
-                  <Text className="text-sm font-medium text-text-default">{getInitials()}</Text>
-                </AvatarFallback>
-              </Avatar>
-            </TouchableOpacity>
+          <Link href={`/app/dancers/${dancerProfileId}`} prefetch asChild>
+            <Link.Preview />
+            <Link.Trigger>
+              <TouchableOpacity>
+                <Avatar
+                  alt={profile?.displayName || user?.email || 'User avatar'}
+                  className="h-10 w-10">
+                  {headshotUrl && <AvatarImage source={{ uri: headshotUrl }} />}
+                  <AvatarFallback>
+                    <Text className="text-sm font-medium text-text-default">{getInitials()}</Text>
+                  </AvatarFallback>
+                </Avatar>
+              </TouchableOpacity>
+            </Link.Trigger>
           </Link>
         ) : (
           <Avatar alt={profile?.displayName || user?.email || 'User avatar'} className="h-10 w-10">

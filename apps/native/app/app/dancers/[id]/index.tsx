@@ -1,9 +1,9 @@
 import React, { useState, useRef, useMemo, useCallback } from 'react';
-import { View, TouchableOpacity, Pressable } from 'react-native';
+import { View, TouchableOpacity, Pressable, Image } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useLocalSearchParams, router, Redirect, Link } from 'expo-router';
 import { useQuery } from 'convex/react';
-import BottomSheet, { BottomSheetView } from '@gorhom/bottom-sheet';
+import BottomSheet, { BottomSheetScrollView, BottomSheetView } from '@gorhom/bottom-sheet';
 import { useSharedValue } from 'react-native-reanimated';
 import { LinearGradient } from 'expo-linear-gradient';
 import { api } from '@packages/backend/convex/_generated/api';
@@ -18,7 +18,13 @@ import { Icon } from '~/lib/icons/Icon';
 import { Text } from '~/components/ui/text';
 import { Button } from '~/components/ui/button';
 
-function TopBar() {
+function TopBar({
+  onExpandIntent,
+  onCollapseIntent,
+}: {
+  onExpandIntent: () => void;
+  onCollapseIntent: () => void;
+}) {
   const { id } = useLocalSearchParams<{ id: string }>();
 
   const handleClose = () => {
@@ -42,15 +48,13 @@ function TopBar() {
         }}>
         {/* Close button (left) */}
         <Button onPress={handleClose} variant="plain">
-          <Icon name="xmark" size={28} className="text-icon-default" />
+          <Icon name="xmark" size={20} className="text-icon-default" />
         </Button>
 
         {/* Profile Details button (right) */}
-        <Link href={`/app/dancers/${id}/details`} asChild>
-          <Button variant="plain">
-            <Icon name="person.text.rectangle" size={28} className="text-icon-default" />
-          </Button>
-        </Link>
+        <Button variant="plain" onPress={onExpandIntent}>
+          <Icon name="person.text.rectangle" size={28} className="text-icon-default" />
+        </Button>
       </View>
     </SafeAreaView>
   );
@@ -59,7 +63,12 @@ export default function DancerScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
   const bottomSheetRef = useRef<BottomSheet>(null);
   const animatedIndex = useSharedValue(0);
-  // const snapPoints = useMemo(() => ['80%'], []);
+  const snapPoints = useMemo(() => ['40%', '100%'], []);
+  const [headshotLoaded, setHeadshotLoaded] = useState(false);
+
+  const setSheetToHeadshotsView = () => bottomSheetRef.current?.close();
+  const setSheetToDefaultView = () => bottomSheetRef.current?.snapToIndex(0);
+  const setSheetToExpandedView = () => bottomSheetRef.current?.snapToIndex(1);
 
   // Fetch profile data
   const profileData = useQuery(
@@ -77,6 +86,24 @@ export default function DancerScreen() {
 
   const { dancer, headshotUrls, recentProjects, allProjects, training, isOwnProfile } = profileData;
 
+  // Wait for headshot URLs to exist
+  if (headshotUrls.length === 0) {
+    return null;
+  }
+
+  // Wait for first headshot image to load
+  if (!headshotLoaded) {
+    return (
+      <View style={{ flex: 1 }}>
+        <Image
+          source={{ uri: headshotUrls[0] }}
+          onLoad={() => setHeadshotLoaded(true)}
+          style={{ width: 0, height: 0 }}
+        />
+      </View>
+    );
+  }
+
   return (
     <BackgroundGradientView>
       <View style={{ flex: 1 }}>
@@ -85,22 +112,26 @@ export default function DancerScreen() {
           animatedIndex={animatedIndex}
           headshotUrls={headshotUrls}
           initialIndex={0}
-          onClose={() => bottomSheetRef.current?.snapToIndex(0)}
-          onPress={() => bottomSheetRef.current?.close()}
+          onClose={setSheetToDefaultView}
+          onPress={setSheetToHeadshotsView}
         />
 
         {/* Top Bar */}
-        <TopBar />
+        <TopBar onExpandIntent={setSheetToExpandedView} onCollapseIntent={setSheetToDefaultView} />
         {/* BottomSheet with Projects */}
         <BottomSheet
           ref={bottomSheetRef}
-          // snapPoints={snapPoints}
+          snapPoints={snapPoints}
+          enableDynamicSizing={false}
+          enableOverDrag={false}
           index={0}
           animatedIndex={animatedIndex}
           enablePanDownToClose={true}
           handleComponent={null}
           backgroundStyle={{ backgroundColor: 'transparent' }}>
-          <BottomSheetView style={{ flex: 0, backgroundColor: 'transparent' }}>
+          <BottomSheetView
+            className="h-[100vh]"
+            style={{ flex: 1, backgroundColor: 'transparent', position: 'relative' }}>
             <LinearGradient
               colors={['rgba(0,0,0,0)', 'rgba(0,0,0,0.98)', 'rgba(0,0,0,0.99)']}
               locations={[0.5, 0.59, 0.6]}
@@ -113,11 +144,9 @@ export default function DancerScreen() {
                 zIndex: 0,
               }}
             />
-            <Pressable
-              className="h-[45vh]"
-              onPress={() => bottomSheetRef.current?.close()}></Pressable>
+
             {/* Project Carousel Section with gradient background */}
-            <View className="relative h-[40vh] gap-8">
+            <View id="collapsible" className="h-[40vh] gap-8">
               {/* Linear gradient background - transparent top to solid bottom */}
 
               {/* Content on top of gradient */}
@@ -129,9 +158,12 @@ export default function DancerScreen() {
               </View>
               <ProjectCarousel projects={recentProjects} />
             </View>
-
-            {/* Transparent Spacer - Rest of sheet */}
-            <View style={{ flex: 1, backgroundColor: 'transparent' }} />
+            <BottomSheetScrollView className="flex-1">
+              <ProjectCarousel projects={recentProjects} />
+              <ProjectCarousel projects={recentProjects} />
+              <ProjectCarousel projects={recentProjects} />
+              <ProjectCarousel projects={recentProjects} />
+            </BottomSheetScrollView>
           </BottomSheetView>
         </BottomSheet>
       </View>
