@@ -157,21 +157,21 @@ export default function DancerScreen() {
           <BottomSheetView
             className="h-[100vh]"
             style={{ flex: 1, backgroundColor: 'transparent', position: 'relative' }}>
-            <LinearGradient
-              colors={['rgba(0,0,0,0)', 'rgba(0,0,0,0.98)', 'rgba(0,0,0,0.99)']}
-              locations={[0.5, 0.59, 0.6]}
-              style={{
-                position: 'absolute',
-                left: 0,
-                right: 0,
-                top: 0,
-                bottom: 0,
-                zIndex: 0,
-              }}
-            />
-
             {/* Collapsible section - fades and collapses when reaching index 1 */}
             <Animated.View style={collapsibleStyle} className="gap-8">
+              <View />
+              <LinearGradient
+                colors={['rgba(0,0,0,0)', 'rgba(0,0,0,0.8)', 'rgba(0,0,0,0.9)', 'rgba(0,0,0,0.99)']}
+                locations={[0.0, 0.1, 0.2, 0.25]}
+                style={{
+                  position: 'absolute',
+                  left: 0,
+                  right: 0,
+                  top: 0,
+                  bottom: 0,
+                  zIndex: 0,
+                }}
+              />
               {/* Content on top of gradient */}
               <View className="z-10 px-4">
                 <Text variant="header3">{dancer.displayName}</Text>
@@ -183,7 +183,19 @@ export default function DancerScreen() {
             </Animated.View>
 
             {/* Profile Details - fades in when reaching index 1 */}
-            <BottomSheetScrollView className="flex-1">
+            <BottomSheetScrollView className="relative flex-1">
+              <LinearGradient
+                colors={['rgba(0,0,0,0)', 'rgba(0,0,0,0.5)', 'rgba(0,0,0,0.9)', 'rgba(0,0,0,1)']}
+                locations={[0.2, 0.3, 0.4, 0.5]}
+                style={{
+                  position: 'absolute',
+                  left: 0,
+                  right: 0,
+                  top: 0,
+                  bottom: 0,
+                  zIndex: 0,
+                }}
+              />
               {/* Blur background */}
               <Animated.View
                 className="bg-surface-high/50"

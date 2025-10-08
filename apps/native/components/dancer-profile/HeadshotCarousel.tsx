@@ -45,7 +45,7 @@ export function HeadshotCarousel({
     return interpolate(
       animatedIndex.value,
       [-1, 0],
-      [SCREEN_HEIGHT, SCREEN_HEIGHT * 0.6],
+      [SCREEN_HEIGHT, SCREEN_HEIGHT * 0.7],
       Extrapolate.CLAMP
     );
   }, [animatedIndex]);
