@@ -4,7 +4,7 @@ import { Doc } from './_generated/dataModel'
 import { ConvexError } from 'convex/values'
 
 // Import schema from schemas folder
-import { Projects, projects, ProjectFormDoc, zProjectsDoc } from './schemas/projects'
+import { Projects, projects, ProjectFormDoc, zProjectsDoc, zProjectsClientDoc } from './schemas/projects'
 
 const zProjectDoc = Projects.zDoc
 
@@ -51,7 +51,7 @@ export const destroy = authMutation({
 // Get all projects for current user's active profile
 export const getMyProjects = authQuery({
   args: {},
-  returns: z.array(zProjectsDoc),
+  returns: z.array(zProjectsClientDoc),
   handler: async (ctx) => {
     if (!ctx.user) return []
 
@@ -60,14 +60,14 @@ export const getMyProjects = authQuery({
       .withIndex('userId', (q) => q.eq('userId', ctx.user._id))
       .collect()
 
-    return projects.map(({ userId, profileType, profileId, ...rest }) => rest) as any
+    return projects.map(({ userId, profileType, profileId, ...rest }) => rest)
   }
 })
 
 // Get recent projects for current user (last 5)
 export const getMyRecentProjects = authQuery({
   args: {},
-  returns: z.array(zProjectsDoc),
+  returns: z.array(zProjectsClientDoc),
   handler: async (ctx) => {
     if (!ctx.user) return []
 
@@ -77,7 +77,7 @@ export const getMyRecentProjects = authQuery({
       .order('desc')
       .take(5)
 
-    return projects.map(({ userId, profileType, profileId, ...rest }) => rest) as any
+    return projects.map(({ userId, profileType, profileId, ...rest }) => rest)
   }
 })
 

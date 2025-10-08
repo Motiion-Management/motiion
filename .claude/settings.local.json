@@ -67,7 +67,9 @@
       "Bash(gh pr view:*)",
       "Bash(pgrep:*)",
       "WebFetch(domain:expo.dev)",
-      "mcp__figma-dev-mode-mcp-server__get_metadata"
+      "mcp__figma-dev-mode-mcp-server__get_metadata",
+      "WebFetch(domain:medium.com)",
+      "WebFetch(domain:tanaschita.com)"
     ]
   },
   "enableAllProjectMcpServers": true
