@@ -7,9 +7,8 @@ import {
   AccordionTrigger,
 } from '~/components/ui/accordion';
 import { Text } from '~/components/ui/text';
-import { MediaCard } from '~/components/ui/media-card';
+import { ProjectCarousel } from './ProjectCarousel';
 import { type DancerProfileData } from '@packages/backend/convex/dancers';
-import { getProjectDisplayTitle } from '~/config/projectTypes';
 
 interface ProfileAboutTabProps {
   profileData: DancerProfileData;
@@ -32,7 +31,7 @@ export function ProfileAboutTab({ profileData }: ProfileAboutTabProps) {
 
   return (
     <ScrollView className="flex-1" showsVerticalScrollIndicator={false}>
-      <Accordion type="multiple" defaultValue={['profile']} className="gap-0">
+      <Accordion type="single" defaultValue={'profile'} className="gap-0">
         {/* Profile Section */}
         <AccordionItem value="profile">
           <AccordionTrigger>
@@ -109,33 +108,15 @@ export function ProfileAboutTab({ profileData }: ProfileAboutTabProps) {
             <Text variant="header4">Highlights</Text>
           </AccordionTrigger>
           <AccordionContent>
-            <View className="px-4">
-              {recentProjects.length > 0 ? (
-                <View className="flex-row flex-wrap gap-2">
-                  {recentProjects.slice(0, 2).map((project, index) => (
-                    <View key={project._id} style={{ width: '48%' }}>
-                      <MediaCard
-                        label={
-                          project.type === 'tv-film'
-                            ? 'TV/FILM'
-                            : project.type === 'music-video'
-                              ? 'MUSIC VIDEO'
-                              : project.type === 'live-performance'
-                                ? 'LIVE'
-                                : 'COMMERCIAL'
-                        }
-                        title={getProjectDisplayTitle(project)}
-                        backgroundColor={index === 0 ? '#ff6b35' : '#4ecdc4'}
-                      />
-                    </View>
-                  ))}
-                </View>
-              ) : (
+            {recentProjects.length > 0 ? (
+              <ProjectCarousel projects={recentProjects} />
+            ) : (
+              <View className="px-4">
                 <Text variant="body" className="text-text-low">
                   No projects yet
                 </Text>
-              )}
-            </View>
+              </View>
+            )}
           </AccordionContent>
         </AccordionItem>
 
