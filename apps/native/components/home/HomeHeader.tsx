@@ -64,9 +64,7 @@ export function HomeHeader({ onNotificationsPress }: HomeHeaderProps) {
             </TouchableOpacity>
           </Link>
         ) : (
-          <Avatar
-            alt={profile?.displayName || user?.email || 'User avatar'}
-            className="h-10 w-10">
+          <Avatar alt={profile?.displayName || user?.email || 'User avatar'} className="h-10 w-10">
             {headshotUrl && <AvatarImage source={{ uri: headshotUrl }} />}
             <AvatarFallback>
               <Text className="text-sm font-medium text-text-default">{getInitials()}</Text>

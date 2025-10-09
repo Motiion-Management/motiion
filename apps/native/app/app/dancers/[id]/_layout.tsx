@@ -28,6 +28,14 @@ export default function DancerViewLayout() {
           headerShown: false,
         }}
       />
+      <Stack.Screen
+        name="projects"
+        options={{
+          presentation: 'modal',
+          headerShown: false,
+          animation: 'slide_from_bottom',
+        }}
+      />
     </Stack>
   );
 }

@@ -4,7 +4,7 @@ import { Doc } from './_generated/dataModel'
 import { ConvexError } from 'convex/values'
 
 // Import schema from schemas folder
-import { Projects, projects, ProjectFormDoc, zProjectsDoc, zProjectsClientDoc } from './schemas/projects'
+import { Projects, projects, ProjectFormDoc, zProjectsDoc, zProjectsClientDoc, PROJECT_TYPES } from './schemas/projects'
 
 const zProjectDoc = Projects.zDoc
 
@@ -117,5 +117,29 @@ export const addMyProject = authMutation({
       userId: ctx.user._id,
       ...profileInfo
     } as any)
+  }
+})
+
+// Get projects for a specific dancer profile, optionally filtered by type
+export const getDancerProjectsByType = zq({
+  args: {
+    dancerId: zid('dancers'),
+    type: z.enum(PROJECT_TYPES).optional()
+  },
+  returns: z.array(Projects.zDoc),
+  handler: async (ctx, { dancerId, type }) => {
+    let query = ctx.db
+      .query('projects')
+      .withIndex('by_profileId', (q) => q.eq('profileId', dancerId))
+      .order('desc')
+
+    const allProjects = await query.collect()
+
+    // Filter by type if provided
+    if (type) {
+      return allProjects.filter((project) => project.type === type)
+    }
+
+    return allProjects
   }
 })

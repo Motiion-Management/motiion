@@ -1,5 +1,6 @@
 import React from 'react';
 import { ScrollView, View } from 'react-native';
+import { router } from 'expo-router';
 import { SectionCard } from '~/components/ui/section-card';
 import { type DancerProfileData } from '@packages/backend/convex/dancers';
 
@@ -23,9 +24,11 @@ export function ProfileResumeTab({ profileData }: ProfileResumeTabProps) {
   const trainingCount = dancer.training?.length || 0;
 
   const handleCategoryPress = (category: string) => {
-    // TODO: Navigate to category detail view (bottomsheet)
-    // Reference design: https://www.figma.com/design/XsSFnEl8pmOL7KMKq2ofx3/Mobile-App?node-id=3136-17408&m=dev
-    console.log(`Category pressed: ${category}`);
+    // Navigate to projects screen with category filter
+    router.push({
+      pathname: `/app/dancers/${dancer._id}/projects`,
+      params: { category }
+    });
   };
 
   return (
