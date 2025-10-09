@@ -1,14 +1,15 @@
 import React from 'react';
 import { ScrollView, View } from 'react-native';
 import { SectionCard } from '~/components/ui/section-card';
-import { type Doc } from '@packages/backend/convex/_generated/dataModel';
+import { type DancerProfileData } from '@packages/backend/convex/dancers';
 
 interface ProfileResumeTabProps {
-  dancer: Doc<'dancers'>;
-  allProjects: Array<any>;
+  profileData: DancerProfileData;
 }
 
-export function ProfileResumeTab({ dancer, allProjects }: ProfileResumeTabProps) {
+export function ProfileResumeTab({ profileData }: ProfileResumeTabProps) {
+  const { dancer, allProjects } = profileData;
+
   // Count projects by type
   const tvFilmCount = allProjects.filter((p) => p.type === 'tv-film').length;
   const musicVideoCount = allProjects.filter((p) => p.type === 'music-video').length;

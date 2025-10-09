@@ -8,23 +8,23 @@ import {
 } from '~/components/ui/accordion';
 import { Text } from '~/components/ui/text';
 import { MediaCard } from '~/components/ui/media-card';
-import { type Doc } from '@packages/backend/convex/_generated/dataModel';
+import { type DancerProfileData } from '@packages/backend/convex/dancers';
 import { getProjectDisplayTitle } from '~/config/projectTypes';
 
 interface ProfileAboutTabProps {
-  dancer: Doc<'dancers'>;
-  recentProjects: Array<any>;
+  profileData: DancerProfileData;
 }
 
-export function ProfileAboutTab({ dancer, recentProjects }: ProfileAboutTabProps) {
+export function ProfileAboutTab({ profileData }: ProfileAboutTabProps) {
+  const { dancer, recentProjects, agency } = profileData;
   const workLocations = dancer.workLocation || [];
   const genres = dancer.genres || [];
   const representation = dancer.representation;
   const sagAftraId = dancer.sagAftraId;
 
   const affiliations = [];
-  if (representation?.agencyId) {
-    affiliations.push('Bloc Talent Agency'); // TODO: Get actual agency name
+  if (representation?.agencyId && agency?.name) {
+    affiliations.push(agency.name);
   }
   if (sagAftraId) {
     affiliations.push('SAG-AFTRA');

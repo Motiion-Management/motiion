@@ -6,16 +6,14 @@ import { TypecastDetails } from './TypecastDetails';
 import { ProfileAboutTab } from './ProfileAboutTab';
 import { ProfileResumeTab } from './ProfileResumeTab';
 import { ProfileVisualsTab } from './ProfileVisualsTab';
-import { type Doc } from '@packages/backend/convex/_generated/dataModel';
+import { type DancerProfileData } from '@packages/backend/convex/dancers';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Button } from '../ui/button';
 import { Icon } from '~/lib/icons/Icon';
 import { router } from 'expo-router';
 
 interface ProfileDetailsSheetProps {
-  dancer: Doc<'dancers'>;
-  recentProjects: Array<any>;
-  allProjects: Array<any>;
+  profileData: DancerProfileData;
   onCollapseIntent: () => void;
 }
 
@@ -52,12 +50,10 @@ function TopBar({ onCollapseIntent }: { onCollapseIntent: () => void }) {
 }
 
 export function ProfileDetailsSheet({
-  dancer,
-  recentProjects,
-  allProjects,
+  profileData,
   onCollapseIntent,
 }: ProfileDetailsSheetProps) {
-  const displayName = dancer.displayName || 'Dancer';
+  const displayName = profileData.dancer.displayName || 'Dancer';
 
   const tabs: Array<TabRoute> = [
     { key: 'about', title: 'About' },
@@ -68,9 +64,9 @@ export function ProfileDetailsSheet({
   const renderScene = (route: TabRoute) => {
     switch (route.key) {
       case 'about':
-        return <ProfileAboutTab dancer={dancer} recentProjects={recentProjects} />;
+        return <ProfileAboutTab profileData={profileData} />;
       case 'resume':
-        return <ProfileResumeTab dancer={dancer} allProjects={allProjects} />;
+        return <ProfileResumeTab profileData={profileData} />;
       case 'visuals':
         return <ProfileVisualsTab />;
       default:
@@ -88,7 +84,7 @@ export function ProfileDetailsSheet({
           <Text variant="header5">Dancer</Text>
         </View>
       </View>
-      <TypecastDetails dancer={dancer} />
+      <TypecastDetails dancer={profileData.dancer} />
 
       {/* Tabs */}
       <View className="mt-4 flex-1">

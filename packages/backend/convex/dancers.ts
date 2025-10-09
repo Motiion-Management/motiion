@@ -3,6 +3,7 @@ import { zid } from 'zodvex'
 import { zq, zm, zim, zAuthMutation, authQuery } from './util'
 import { z } from 'zod'
 import { Dancers, zCreateDancerInput, zDancers } from './schemas/dancers'
+import { Agencies } from './schemas/agencies'
 import { zodDoc } from 'zodvex'
 import { crud } from 'convex-helpers/server/crud'
 import schema from './schema'
@@ -33,6 +34,7 @@ export const getDancerProfileWithDetails = zq({
       recentProjects: z.array(z.any()),
       allProjects: z.array(z.any()),
       training: z.array(z.any()),
+      agency: Agencies.zDoc.nullable(),
       isOwnProfile: z.boolean()
     })
     .nullable(),
@@ -57,6 +59,12 @@ export const getDancerProfileWithDetails = zq({
       }
     }
 
+    // Get agency information if represented
+    let agency = null
+    if (dancer.representation?.agencyId) {
+      agency = await ctx.db.get(dancer.representation.agencyId)
+    }
+
     // Get all projects for this profile
     const allProjects = await ctx.db
       .query('projects')
@@ -79,10 +87,22 @@ export const getDancerProfileWithDetails = zq({
       recentProjects,
       allProjects,
       training,
+      agency,
       isOwnProfile
     }
   }
 })
+
+// Export type for fully resolved dancer profile data
+export type DancerProfileData = {
+  dancer: typeof Dancers.zDoc._output
+  headshotUrls: Array<string>
+  recentProjects: Array<any>
+  allProjects: Array<any>
+  training: Array<any>
+  agency: (typeof Agencies.zDoc._output) | null
+  isOwnProfile: boolean
+}
 
 // Get the active dancer profile for the authenticated user
 export const getMyDancerProfile = authQuery({

@@ -108,10 +108,8 @@ export default function DancerScreen() {
     return <Redirect href="/app/home" />;
   }
 
-  const { dancer, headshotUrls, recentProjects, allProjects, training, isOwnProfile } = profileData;
-
   // Wait for headshot URLs to exist
-  if (headshotUrls.length === 0) {
+  if (profileData.headshotUrls.length === 0) {
     return null;
   }
 
@@ -120,7 +118,7 @@ export default function DancerScreen() {
     return (
       <View style={{ flex: 1 }}>
         <Image
-          source={{ uri: headshotUrls[0] }}
+          source={{ uri: profileData.headshotUrls[0] }}
           onLoad={() => setHeadshotLoaded(true)}
           style={{ width: 0, height: 0 }}
         />
@@ -134,7 +132,7 @@ export default function DancerScreen() {
         {/* Headshot Carousel - expands to full screen when sheet closes */}
         <HeadshotCarousel
           animatedIndex={animatedIndex}
-          headshotUrls={headshotUrls}
+          headshotUrls={profileData.headshotUrls}
           initialIndex={0}
           onClose={setSheetToDefaultView}
           onPress={setSheetToHeadshotsView}
@@ -173,12 +171,12 @@ export default function DancerScreen() {
               />
               {/* Content on top of gradient */}
               <View className="z-10 px-4">
-                <Text variant="header3">{dancer.displayName}</Text>
+                <Text variant="header3">{profileData.dancer.displayName}</Text>
                 <Text variant="body">
-                  {dancer?.location?.city}, {dancer?.location?.state}
+                  {profileData.dancer?.location?.city}, {profileData.dancer?.location?.state}
                 </Text>
               </View>
-              <ProjectCarousel projects={recentProjects} />
+              <ProjectCarousel projects={profileData.recentProjects} />
             </Animated.View>
 
             {/* Profile Details - fades in when reaching index 1 */}
@@ -215,10 +213,7 @@ export default function DancerScreen() {
               {/* Profile Details content */}
               <Animated.View style={profileDetailsStyle} className="relative z-10">
                 <ProfileDetailsSheet
-                  dancer={dancer}
-                  recentProjects={recentProjects}
-                  allProjects={allProjects}
-                  training={training}
+                  profileData={profileData}
                   onCollapseIntent={setSheetToDefaultView}
                 />
               </Animated.View>
