@@ -19,6 +19,7 @@ import * as ImagePicker from 'expo-image-picker';
 import * as DocumentPicker from 'expo-document-picker';
 import { useAction } from 'convex/react';
 import { useOnboardingStatus } from '~/hooks/useOnboardingStatus';
+import { useClerk } from '@clerk/clerk-expo';
 
 type ParsedResumeData = {
   experiences: any[];
@@ -30,6 +31,7 @@ type ParsedResumeData = {
 
 export function DevOnboardingTools() {
   const { user } = useUser();
+  const { signOut } = useClerk();
   const onboarding = useOnboardingGroupFlow();
   const completeOnboarding = useMutation(api.onboarding.completeOnboarding);
   const resetOnboarding = useMutation(api.onboarding.resetOnboarding);
@@ -108,6 +110,16 @@ export function DevOnboardingTools() {
                     await completeOnboarding({});
                   }}>
                   <Text variant="bodySm">Complete</Text>
+                </Button>
+                <Button
+                  size="sm"
+                  variant="outline"
+                  onPress={() => {
+                    signOut().catch((error) => {
+                      console.error('Failed to sign out from dev tools', error);
+                    });
+                  }}>
+                  <Text variant="bodySm">Sign Out</Text>
                 </Button>
               </View>
 
