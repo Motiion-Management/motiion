@@ -16,7 +16,6 @@ interface ProfileDetailsSheetProps {
   dancer: Doc<'dancers'>;
   recentProjects: Array<any>;
   allProjects: Array<any>;
-  training: Array<any>;
   onCollapseIntent: () => void;
 }
 
@@ -56,7 +55,6 @@ export function ProfileDetailsSheet({
   dancer,
   recentProjects,
   allProjects,
-  training,
   onCollapseIntent,
 }: ProfileDetailsSheetProps) {
   const displayName = dancer.displayName || 'Dancer';
@@ -72,7 +70,7 @@ export function ProfileDetailsSheet({
       case 'about':
         return <ProfileAboutTab dancer={dancer} recentProjects={recentProjects} />;
       case 'resume':
-        return <ProfileResumeTab dancer={dancer} allProjects={allProjects} training={training} />;
+        return <ProfileResumeTab dancer={dancer} allProjects={allProjects} />;
       case 'visuals':
         return <ProfileVisualsTab />;
       default:
@@ -97,7 +95,7 @@ export function ProfileDetailsSheet({
         <TabView
           routes={tabs}
           renderScene={renderScene}
-          initialKey="about"
+          initialKey="resume"
           tabStyle="pill"
           tabContainerClassName="px-4 pb-6"
           contentClassName="bg-surface-high"

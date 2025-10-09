@@ -1,32 +1,31 @@
-import React from 'react'
-import { ScrollView, View } from 'react-native'
-import { SectionCard } from '~/components/ui/section-card'
-import { type Doc } from '@packages/backend/convex/_generated/dataModel'
+import React from 'react';
+import { ScrollView, View } from 'react-native';
+import { SectionCard } from '~/components/ui/section-card';
+import { type Doc } from '@packages/backend/convex/_generated/dataModel';
 
 interface ProfileResumeTabProps {
-  dancer: Doc<'dancers'>
-  allProjects: Array<any>
-  training: Array<any>
+  dancer: Doc<'dancers'>;
+  allProjects: Array<any>;
 }
 
-export function ProfileResumeTab({ dancer, allProjects, training }: ProfileResumeTabProps) {
+export function ProfileResumeTab({ dancer, allProjects }: ProfileResumeTabProps) {
   // Count projects by type
-  const tvFilmCount = allProjects.filter((p) => p.type === 'tv-film').length
-  const musicVideoCount = allProjects.filter((p) => p.type === 'music-video').length
-  const livePerformanceCount = allProjects.filter((p) => p.type === 'live-performance').length
-  const commercialCount = allProjects.filter((p) => p.type === 'commercial').length
+  const tvFilmCount = allProjects.filter((p) => p.type === 'tv-film').length;
+  const musicVideoCount = allProjects.filter((p) => p.type === 'music-video').length;
+  const livePerformanceCount = allProjects.filter((p) => p.type === 'live-performance').length;
+  const commercialCount = allProjects.filter((p) => p.type === 'commercial').length;
 
   // Count skills
-  const skillsCount = dancer.skills?.length || 0
+  const skillsCount = dancer.skills?.length || 0;
 
   // Count training
-  const trainingCount = training.length
+  const trainingCount = dancer.training?.length || 0;
 
   const handleCategoryPress = (category: string) => {
     // TODO: Navigate to category detail view (bottomsheet)
     // Reference design: https://www.figma.com/design/XsSFnEl8pmOL7KMKq2ofx3/Mobile-App?node-id=3136-17408&m=dev
-    console.log(`Category pressed: ${category}`)
-  }
+    console.log(`Category pressed: ${category}`);
+  };
 
   return (
     <ScrollView className="flex-1 px-4" showsVerticalScrollIndicator={false}>
@@ -80,5 +79,5 @@ export function ProfileResumeTab({ dancer, allProjects, training }: ProfileResum
         </View>
       </View>
     </ScrollView>
-  )
+  );
 }
