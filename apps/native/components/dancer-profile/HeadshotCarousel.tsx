@@ -38,14 +38,16 @@ export function HeadshotCarousel({
   // Derive the animated height value
   const animatedHeight = useDerivedValue(() => {
     if (!animatedIndex) {
-      return SCREEN_HEIGHT * 0.7;
+      // return SCREEN_HEIGHT * 0.7;
+      return SCREEN_HEIGHT * 0.85;
     }
 
     // Interpolate height: -1 (closed) = full screen, 0 (open) = 60%
     return interpolate(
       animatedIndex.value,
       [-1, 0],
-      [SCREEN_HEIGHT, SCREEN_HEIGHT * 0.7],
+      // [SCREEN_HEIGHT, SCREEN_HEIGHT * 0.7],
+      [SCREEN_HEIGHT, SCREEN_HEIGHT * 0.85],
       Extrapolate.CLAMP
     );
   }, [animatedIndex]);
@@ -121,7 +123,7 @@ export function HeadshotCarousel({
           className="flex-row items-center px-4 pb-4"
           pointerEvents="box-none">
           {/* Close button */}
-          <Button variant="tertiary" size="icon" onPress={onClose}>
+          <Button variant="secondary" size="icon" onPress={onClose}>
             <Icon name="arrow.up.to.line" size={24} className="text-icon-default" />
           </Button>
 
@@ -142,20 +144,22 @@ export function HeadshotCarousel({
           </View>
 
           {/* Spacer for symmetry */}
-          <View style={{ width: 48 }} />
+          <Button variant="secondary" size="icon" onPress={onClose}>
+            <Icon name="arrowshape.turn.up.right.fill" size={24} className="text-icon-default" />
+          </Button>
         </Animated.View>
       </SafeAreaView>
     </Animated.View>
   );
 
   // Wrap in TouchableOpacity for tap to expand (when sheet is open)
-  // if (onPress) {
-  //   return (
-  //     <TouchableOpacity activeOpacity={1} onPress={onPress} style={{ flex: 1 }}>
-  //       {content}
-  //     </TouchableOpacity>
-  //   );
-  // }
+  if (onPress) {
+    return (
+      <TouchableOpacity activeOpacity={1} onPress={onPress} style={{ flex: 1 }}>
+        {content}
+      </TouchableOpacity>
+    );
+  }
 
   return content;
 }

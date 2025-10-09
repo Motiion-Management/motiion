@@ -22,6 +22,7 @@ import { BackgroundGradientView } from '~/components/ui/background-gradient-view
 import { Icon } from '~/lib/icons/Icon';
 import { Text } from '~/components/ui/text';
 import { Button } from '~/components/ui/button';
+import { TypecastDetails } from '~/components/dancer-profile/TypecastDetails';
 
 function TopBar({ onExpandIntent }: { onExpandIntent: () => void }) {
   const handleClose = () => {
@@ -57,13 +58,13 @@ function TopBar({ onExpandIntent }: { onExpandIntent: () => void }) {
   );
 }
 const { height: SCREEN_HEIGHT } = Dimensions.get('window');
-const COLLAPSIBLE_HEIGHT = SCREEN_HEIGHT * 0.4;
+const COLLAPSIBLE_HEIGHT = SCREEN_HEIGHT * 0.5;
 
 export default function DancerScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
   const bottomSheetRef = useRef<BottomSheet>(null);
   const animatedIndex = useSharedValue(0);
-  const snapPoints = useMemo(() => ['40%', '100%'], []);
+  const snapPoints = useMemo(() => ['50%', '100%'], []);
   const [headshotLoaded, setHeadshotLoaded] = useState(false);
 
   const setSheetToHeadshotsView = () => bottomSheetRef.current?.close();
@@ -176,6 +177,7 @@ export default function DancerScreen() {
                   {profileData.dancer?.location?.city}, {profileData.dancer?.location?.state}
                 </Text>
               </View>
+              <TypecastDetails dancer={profileData.dancer} />
               <ProjectCarousel projects={profileData.recentProjects} />
             </Animated.View>
 

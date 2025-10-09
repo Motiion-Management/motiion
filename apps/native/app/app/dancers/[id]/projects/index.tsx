@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { View, ScrollView } from 'react-native';
-import { useLocalSearchParams } from 'expo-router';
+import { useLocalSearchParams, router } from 'expo-router';
 import { useQuery } from 'convex/react';
 import { api } from '@packages/backend/convex/_generated/api';
 import { type Id } from '@packages/backend/convex/_generated/dataModel';
@@ -113,8 +113,7 @@ export default function ProjectsScreen() {
                   organizer={organizer}
                   title={title}
                   onPress={() => {
-                    // TODO: Navigate to project detail
-                    console.log('Project pressed:', project._id);
+                    router.push(`./${project._id}`);
                   }}
                 />
               );
