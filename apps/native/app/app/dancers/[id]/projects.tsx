@@ -63,21 +63,17 @@ export default function ProjectsScreen() {
   }
 
   return (
-    <View className="bg-background-gradient-filled flex-1">
+    <View className="bg-background-gradient-filled flex-1 gap-6 py-6">
       {/* Search Tabs */}
-      <View className="mb-4">
-        <SearchTabs tabs={tabs} activeTab={getActiveTabLabel()} onTabChange={handleTabChange} />
-      </View>
+      <SearchTabs tabs={tabs} activeTab={getActiveTabLabel()} onTabChange={handleTabChange} />
 
       {/* Search Input */}
-      <View className="mb-4 px-4">
-        <Input
-          placeholder="Search projects..."
-          value={searchQuery}
-          onChangeText={setSearchQuery}
-          className="bg-surface-high"
-        />
-      </View>
+      <Input
+        placeholder="Search projects..."
+        value={searchQuery}
+        onChangeText={setSearchQuery}
+        containerClassName="px-4"
+      />
 
       {/* Projects List */}
       <ScrollView className="flex-1 px-4" showsVerticalScrollIndicator={false}>

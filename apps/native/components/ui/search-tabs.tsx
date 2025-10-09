@@ -1,14 +1,14 @@
-import * as React from 'react'
-import { View, ScrollView, TouchableOpacity } from 'react-native'
+import * as React from 'react';
+import { View, ScrollView, TouchableOpacity } from 'react-native';
 
-import { Text } from '~/components/ui/text'
-import { cn } from '~/lib/utils'
+import { Text } from '~/components/ui/text';
+import { cn } from '~/lib/utils';
 
 interface SearchTabsProps {
-  tabs: string[]
-  activeTab: string
-  onTabChange: (tab: string) => void
-  className?: string
+  tabs: string[];
+  activeTab: string;
+  onTabChange: (tab: string) => void;
+  className?: string;
 }
 
 export function SearchTabs({ tabs, activeTab, onTabChange, className }: SearchTabsProps) {
@@ -20,7 +20,7 @@ export function SearchTabs({ tabs, activeTab, onTabChange, className }: SearchTa
         contentContainerClassName="gap-2 px-4"
         className="flex-row">
         {tabs.map((tab) => {
-          const isActive = tab === activeTab
+          const isActive = tab === activeTab;
           return (
             <TouchableOpacity
               key={tab}
@@ -29,8 +29,8 @@ export function SearchTabs({ tabs, activeTab, onTabChange, className }: SearchTa
               className={cn(
                 'rounded-[27px] border px-4 py-2',
                 isActive
-                  ? 'border-border-default bg-surface-default'
-                  : 'border-border-tint bg-surface-high'
+                  ? 'border-border-accent bg-background-accent'
+                  : 'border-transparent bg-surface-tint'
               )}>
               <Text
                 variant="bodySm"
@@ -38,9 +38,9 @@ export function SearchTabs({ tabs, activeTab, onTabChange, className }: SearchTa
                 {tab}
               </Text>
             </TouchableOpacity>
-          )
+          );
         })}
       </ScrollView>
     </View>
-  )
+  );
 }
