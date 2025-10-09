@@ -1,11 +1,12 @@
 import { Href, Stack, usePathname, useRouter } from 'expo-router';
-import React, { useEffect } from 'react';
+import React, { useEffect, useRef } from 'react';
 import { ActivityIndicator, View } from 'react-native';
 import { useAuth } from '@clerk/clerk-expo';
 import { SharedUserProvider } from '~/contexts/SharedUserContext';
 import { BackgroundGradientView } from '~/components/ui/background-gradient-view';
 import DevOnboardingTools from '~/components/dev/DevOnboardingTools';
 import { useOnboardingStatus } from '~/hooks/useOnboardingStatus';
+import { useInitialOnboardingStatus } from '~/hooks/useInitialOnboardingStatus';
 
 /**
  * App layout - handles authentication with declarative redirects
@@ -23,8 +24,20 @@ export default function AppLayout() {
   const router = useRouter();
   const { isSignedIn, isLoaded } = useAuth();
   const pathname = usePathname();
-  const { onboardingComplete, redirectPath } = useOnboardingStatus();
+  const { onboardingComplete, serverComplete, redirectPath } = useOnboardingStatus();
+  const resolvedOnboardingStatus =
+    (serverComplete ?? onboardingComplete) ?? null;
+  const { hasResolved, statusChanged, acknowledgeStatusChange } =
+    useInitialOnboardingStatus(resolvedOnboardingStatus);
   const isOnboardingRoute = pathname?.startsWith('/app/onboarding');
+  const initialPathRef = useRef<string | null>(null);
+
+  useEffect(() => {
+    if (!pathname) return;
+    if (initialPathRef.current === null) {
+      initialPathRef.current = pathname;
+    }
+  }, [pathname]);
 
   useEffect(() => {
     if (!isLoaded) return;
@@ -35,27 +48,48 @@ export default function AppLayout() {
 
   useEffect(() => {
     if (!isLoaded || !isSignedIn) return;
-    if (onboardingComplete === null) return;
+    if (!hasResolved || resolvedOnboardingStatus === null) return;
 
-    if (onboardingComplete === false && !isOnboardingRoute && redirectPath) {
-      router.replace(redirectPath as Href);
+    const homeRoute = '/app/(tabs)/home' as const;
+    const canGoBack = router.canGoBack?.() ?? false;
+    const initialPath = initialPathRef.current;
+    const isInitialOnboardingRoute = initialPath?.startsWith('/app/onboarding');
+    const preservingDeepLink =
+      isOnboardingRoute && isInitialOnboardingRoute && !statusChanged && !canGoBack;
+
+    if (!resolvedOnboardingStatus) {
+      if (!isOnboardingRoute && redirectPath && !preservingDeepLink) {
+        const nextRoute = redirectPath as Href;
+        if (pathname !== nextRoute) {
+          router.replace(nextRoute);
+        }
+      }
+
+      if (statusChanged) {
+        acknowledgeStatusChange();
+      }
+
       return;
     }
 
-    if (onboardingComplete === true && isOnboardingRoute) {
-      const homeRoute = '/app/(tabs)/home' as const;
-      if (pathname !== homeRoute) {
-        router.replace(homeRoute as Href);
-      }
+    if (isOnboardingRoute && !preservingDeepLink && pathname !== homeRoute) {
+      router.replace(homeRoute);
+    }
+
+    if (statusChanged) {
+      acknowledgeStatusChange();
     }
   }, [
     isLoaded,
     isSignedIn,
-    onboardingComplete,
+    hasResolved,
+    resolvedOnboardingStatus,
     isOnboardingRoute,
     redirectPath,
     router,
     pathname,
+    statusChanged,
+    acknowledgeStatusChange,
   ]);
 
   const content = (

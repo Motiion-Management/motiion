@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react'
+import { useState, useEffect, useCallback, useMemo } from 'react'
 import AsyncStorage from '@react-native-async-storage/async-storage'
 import { useQuery } from 'convex/react'
 import { api } from '@packages/backend/convex/_generated/api'
@@ -46,10 +46,16 @@ export function useOnboardingStatus() {
     setLocalComplete(false)
   }, [])
 
+  const redirectPath = serverStatus?.redirectPath || '/app/onboarding/profile/display-name'
+  const serverComplete = serverStatus !== undefined ? !serverStatus.shouldRedirect : undefined
+
+  const isLoading = localComplete === null || serverStatus === undefined
+
   return {
     onboardingComplete: localComplete,
-    isLoading: localComplete === null,
-    redirectPath: serverStatus?.redirectPath || '/app/onboarding/profile/display-name',
+    serverComplete,
+    isLoading,
+    redirectPath,
     markComplete,
     markIncomplete,
   }
