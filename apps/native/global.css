@@ -14,6 +14,7 @@
     --background-utility-accent: 0 61 55;
     --background-gradient-transparent: 255 255 255 / 0;
     --background-gradient-filled: 248 249 250;
+    --background-nav: 30 30 30 / 0.95;
 
     /* Surface tokens - Figma semantic names */
     --surface-default: 248 249 250;
