@@ -20,20 +20,9 @@ export default function DancerViewLayout() {
         }}
       />
       <Stack.Screen
-        name="details"
-        options={{
-          presentation: 'formSheet',
-          sheetAllowedDetents: [0.25, 0.5],
-          sheetGrabberVisible: false,
-          headerShown: false,
-        }}
-      />
-      <Stack.Screen
         name="projects"
         options={{
-          presentation: 'modal',
-          headerShown: false,
-          animation: 'slide_from_bottom',
+          headerShown: true,
         }}
       />
     </Stack>
