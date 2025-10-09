@@ -1,17 +1,20 @@
 import * as AvatarPrimitive from '@rn-primitives/avatar';
 import * as React from 'react';
+import { View } from 'react-native';
 
 import { cn } from '~/lib/cn';
 
 const Avatar = React.forwardRef<AvatarPrimitive.RootRef, AvatarPrimitive.RootProps>(
   ({ alt, className, ...props }, ref) => {
     return (
-      <AvatarPrimitive.Root
-        ref={ref}
-        alt={alt}
-        className={cn('relative flex h-10 w-10 shrink-0 overflow-hidden rounded-full border border-border-tint', className)}
-        {...props}
-      />
+      <View className="rounded-full border border-border-tint">
+        <AvatarPrimitive.Root
+          ref={ref}
+          alt={alt}
+          className={cn('relative flex h-10 w-10 shrink-0 overflow-hidden rounded-full', className)}
+          {...props}
+        />
+      </View>
     );
   }
 );
