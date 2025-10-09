@@ -1,6 +1,6 @@
 import React from 'react';
 import { View, TouchableOpacity } from 'react-native';
-import { Link, useRootNavigationState } from 'expo-router';
+import { Link, router } from 'expo-router';
 import { useQuery } from 'convex/react';
 
 import { Text } from '~/components/ui/text';
@@ -17,8 +17,6 @@ interface HomeHeaderProps {
 }
 
 export function HomeHeader({ onNotificationsPress }: HomeHeaderProps) {
-  const navigationState = useRootNavigationState();
-  const isNavigationReady = !!navigationState?.key;
   const { user } = useUser();
   const profile = useQuery(api.dancers.getMyDancerProfile, {});
   const headshotUrl = useQuery(api.dancers.getMyDancerHeadshotUrl, {});
@@ -53,23 +51,22 @@ export function HomeHeader({ onNotificationsPress }: HomeHeaderProps) {
       <View className="flex-row items-center gap-4">
         {/* Profile Avatar - Link to dancer profile */}
         {dancerProfileId ? (
-          <Link href={`/app/dancers/${dancerProfileId}`} prefetch={isNavigationReady} asChild>
-            {isNavigationReady && <Link.Preview />}
-            <Link.Trigger>
-              <TouchableOpacity>
-                <Avatar
-                  alt={profile?.displayName || user?.email || 'User avatar'}
-                  className="h-10 w-10">
-                  {headshotUrl && <AvatarImage source={{ uri: headshotUrl }} />}
-                  <AvatarFallback>
-                    <Text className="text-sm font-medium text-text-default">{getInitials()}</Text>
-                  </AvatarFallback>
-                </Avatar>
-              </TouchableOpacity>
-            </Link.Trigger>
+          <Link href={`/app/dancers/${dancerProfileId}`} asChild>
+            <TouchableOpacity>
+              <Avatar
+                alt={profile?.displayName || user?.email || 'User avatar'}
+                className="h-10 w-10">
+                {headshotUrl && <AvatarImage source={{ uri: headshotUrl }} />}
+                <AvatarFallback>
+                  <Text className="text-sm font-medium text-text-default">{getInitials()}</Text>
+                </AvatarFallback>
+              </Avatar>
+            </TouchableOpacity>
           </Link>
         ) : (
-          <Avatar alt={profile?.displayName || user?.email || 'User avatar'} className="h-10 w-10">
+          <Avatar
+            alt={profile?.displayName || user?.email || 'User avatar'}
+            className="h-10 w-10">
             {headshotUrl && <AvatarImage source={{ uri: headshotUrl }} />}
             <AvatarFallback>
               <Text className="text-sm font-medium text-text-default">{getInitials()}</Text>
