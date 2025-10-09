@@ -1,6 +1,6 @@
 import React from 'react';
 import { View, TouchableOpacity } from 'react-native';
-import { Link } from 'expo-router';
+import { Link, useRootNavigationState } from 'expo-router';
 import { useQuery } from 'convex/react';
 
 import { Text } from '~/components/ui/text';
@@ -8,6 +8,7 @@ import { Avatar, AvatarFallback, AvatarImage } from '~/components/ui/avatar';
 import { useUser } from '~/hooks/useUser';
 import { api } from '@packages/backend/convex/_generated/api';
 import Bell from '~/lib/icons/Bell';
+import { Button } from '../ui/button';
 
 interface HomeHeaderProps {
   onSettingsPress?: () => void;
@@ -16,6 +17,8 @@ interface HomeHeaderProps {
 }
 
 export function HomeHeader({ onNotificationsPress }: HomeHeaderProps) {
+  const navigationState = useRootNavigationState();
+  const isNavigationReady = !!navigationState?.key;
   const { user } = useUser();
   const profile = useQuery(api.dancers.getMyDancerProfile, {});
   const headshotUrl = useQuery(api.dancers.getMyDancerHeadshotUrl, {});
@@ -50,8 +53,8 @@ export function HomeHeader({ onNotificationsPress }: HomeHeaderProps) {
       <View className="flex-row items-center gap-4">
         {/* Profile Avatar - Link to dancer profile */}
         {dancerProfileId ? (
-          <Link href={`/app/dancers/${dancerProfileId}`} prefetch asChild>
-            <Link.Preview />
+          <Link href={`/app/dancers/${dancerProfileId}`} prefetch={isNavigationReady} asChild>
+            {isNavigationReady && <Link.Preview />}
             <Link.Trigger>
               <TouchableOpacity>
                 <Avatar
@@ -85,9 +88,9 @@ export function HomeHeader({ onNotificationsPress }: HomeHeaderProps) {
         </View>
         {/* Notifications */}
         <Link href="/app/notifications" asChild>
-          <TouchableOpacity className="h-10 w-10 items-center justify-center rounded-full bg-surface-tint shadow-sm">
+          <Button variant="secondary" size="icon">
             <Bell className="h-6 w-6 text-white" />
-          </TouchableOpacity>
+          </Button>
         </Link>
       </View>
     </View>
