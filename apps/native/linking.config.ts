@@ -10,17 +10,30 @@ const linking = {
           onboarding: {
             path: 'onboarding',
             screens: {
+              index: '',
               complete: 'complete',
-              '[group]': {
-                path: ':group',
+              profile: {
+                path: 'profile',
                 screens: {
                   '[step]': ':step',
                 },
               },
-              profile: {
-                path: 'profile',
+              attributes: {
+                path: 'attributes',
                 screens: {
-                  resume: 'resume',
+                  '[step]': ':step',
+                },
+              },
+              'work-details': {
+                path: 'work-details',
+                screens: {
+                  '[step]': ':step',
+                },
+              },
+              experiences: {
+                path: 'experiences',
+                screens: {
+                  '[step]': ':step',
                 },
               },
               review: {
@@ -41,12 +54,6 @@ const linking = {
                       '[id]': ':id',
                     },
                   },
-                },
-              },
-              experiences: {
-                path: 'experiences',
-                screens: {
-                  projects: 'projects',
                 },
               },
             },

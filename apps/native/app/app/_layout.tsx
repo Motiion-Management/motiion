@@ -31,6 +31,7 @@ export default function AppLayout() {
     useInitialOnboardingStatus(resolvedOnboardingStatus);
   const isOnboardingRoute = pathname?.startsWith('/app/onboarding');
   const initialPathRef = useRef<string | null>(null);
+  const forcedOnboardingRef = useRef(false);
 
   useEffect(() => {
     if (!pathname) return;
@@ -61,6 +62,7 @@ export default function AppLayout() {
       if (!isOnboardingRoute && redirectPath && !preservingDeepLink) {
         const nextRoute = redirectPath as Href;
         if (pathname !== nextRoute) {
+          forcedOnboardingRef.current = true;
           router.replace(nextRoute);
         }
       }
@@ -72,7 +74,10 @@ export default function AppLayout() {
       return;
     }
 
-    if (isOnboardingRoute && !preservingDeepLink && pathname !== homeRoute) {
+    const shouldAutoExitOnboarding = forcedOnboardingRef.current && isOnboardingRoute;
+
+    if (shouldAutoExitOnboarding && !preservingDeepLink && pathname !== homeRoute) {
+      forcedOnboardingRef.current = false;
       router.replace(homeRoute);
     }
 
