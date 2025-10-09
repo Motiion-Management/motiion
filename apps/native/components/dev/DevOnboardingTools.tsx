@@ -18,6 +18,7 @@ import { useRouter, Href } from 'expo-router';
 import * as ImagePicker from 'expo-image-picker';
 import * as DocumentPicker from 'expo-document-picker';
 import { useAction } from 'convex/react';
+import { useOnboardingStatus } from '~/hooks/useOnboardingStatus';
 
 type ParsedResumeData = {
   experiences: any[];
@@ -32,6 +33,7 @@ export function DevOnboardingTools() {
   const onboarding = useOnboardingGroupFlow();
   const completeOnboarding = useMutation(api.onboarding.completeOnboarding);
   const resetOnboarding = useMutation(api.onboarding.resetOnboarding);
+  const { markComplete, markIncomplete } = useOnboardingStatus();
   const sheetState = useSheetState();
   const router = useRouter();
   const [activeTab, setActiveTab] = useState<'onboarding' | 'home' | 'resume'>('onboarding');
@@ -92,6 +94,7 @@ export function DevOnboardingTools() {
                   size="sm"
                   variant="secondary"
                   onPress={async () => {
+                    await markIncomplete();
                     await resetOnboarding({});
                     onboarding.navigateToGroup('profile');
                   }}>
@@ -101,6 +104,7 @@ export function DevOnboardingTools() {
                   size="sm"
                   variant="secondary"
                   onPress={async () => {
+                    await markComplete();
                     await completeOnboarding({});
                   }}>
                   <Text variant="bodySm">Complete</Text>
