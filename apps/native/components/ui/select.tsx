@@ -34,7 +34,7 @@ function SelectTrigger({
       )}
       {...props}>
       {children}
-      <ChevronDown size={16} aria-hidden={true} className="text-foreground opacity-50" />
+      <ChevronDown size={20} aria-hidden={true} className="text-foreground opacity-50" />
     </SelectPrimitive.Trigger>
   );
 }
@@ -50,7 +50,7 @@ function SelectScrollUpButton({ className, ...props }: SelectPrimitive.ScrollUpB
     <SelectPrimitive.ScrollUpButton
       className={cn('flex items-center justify-center py-1 web:cursor-default', className)}
       {...props}>
-      <ChevronUp size={14} className="text-foreground" />
+      <ChevronUp size={20} className="text-foreground" />
     </SelectPrimitive.ScrollUpButton>
   );
 }
@@ -66,7 +66,7 @@ function SelectScrollDownButton({ className, ...props }: SelectPrimitive.ScrollD
     <SelectPrimitive.ScrollDownButton
       className={cn('flex items-center justify-center py-1 web:cursor-default', className)}
       {...props}>
-      <ChevronDown size={14} className="text-foreground" />
+      <ChevronDown size={20} className="text-foreground" />
     </SelectPrimitive.ScrollDownButton>
   );
 }

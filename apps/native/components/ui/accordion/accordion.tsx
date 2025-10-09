@@ -74,7 +74,7 @@ const AccordionTrigger = React.forwardRef<
             )}>
             <>{children}</>
             <Animated.View style={chevronStyle}>
-              <ChevronDown size={18} className="shrink-0 text-text-default" />
+              <ChevronDown size={20} className="shrink-0 text-text-default" />
             </Animated.View>
           </Trigger>
         </AccordionPrimitive.Trigger>

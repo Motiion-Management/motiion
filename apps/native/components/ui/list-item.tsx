@@ -60,7 +60,7 @@ export const ListItem = React.forwardRef<ViewRef, ListItemProps>(
                   </Text>
                 </View>
                 <View className="h-7 w-7 items-center justify-center">
-                  <Icon name="chevron.right" size={28} className="text-icon-default" />
+                  <Icon name="chevron.right" size={20} className="text-icon-default" />
                 </View>
               </View>
             </View>

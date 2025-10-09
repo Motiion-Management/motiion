@@ -29,7 +29,7 @@ function ProjectItem({ title, type, onEdit }: ProjectItemProps) {
           {type}
         </Text>
       </View>
-      {onEdit && <ChevronRight className="text-icon-default" />}
+      {onEdit && <ChevronRight size={20} className="text-icon-default" />}
     </Pressable>
   );
 }

@@ -142,7 +142,7 @@ export const BaseOnboardingForm = forwardRef<OnboardingFormRef, BaseOnboardingFo
                   edges={['bottom', 'left', 'right']}
                   className="absolute bottom-0 right-0 flex-row items-center justify-end gap-4 px-4 pb-2">
                   <Button disabled={!canProgress} size="icon" variant="accent" onPress={onSubmit}>
-                    <ChevronRight size={24} className="text-icon-accent" />
+                    <ChevronRight size={20} className="text-icon-accent" />
                   </Button>
                 </SafeAreaView>
               </KeyboardStickyView>
