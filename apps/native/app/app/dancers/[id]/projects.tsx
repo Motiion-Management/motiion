@@ -97,13 +97,13 @@ export default function ProjectsScreen() {
               let title = project.title || 'Untitled Project';
 
               if (project.type === 'tv-film') {
-                organizer = project.studio || 'Unknown Studio';
+                organizer = project.studio || '-';
               } else if (project.type === 'music-video') {
-                organizer = project.artists?.join(', ') || 'Unknown Artist';
+                organizer = project.artists?.join(', ') || '-';
               } else if (project.type === 'commercial') {
-                organizer = project.companyName || 'Unknown Company';
+                organizer = project.companyName || '-';
               } else if (project.type === 'live-performance') {
-                organizer = project.tourArtist || project.venue || 'Unknown Venue';
+                organizer = project.tourArtist || project.venue || '-';
               }
 
               return (
