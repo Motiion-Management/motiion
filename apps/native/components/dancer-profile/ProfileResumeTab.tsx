@@ -1,6 +1,6 @@
 import React from 'react'
 import { ScrollView, View } from 'react-native'
-import { ProfileCategoryCard } from './ProfileCategoryCard'
+import { SectionCard } from '~/components/ui/section-card'
 import { type Doc } from '@packages/backend/convex/_generated/dataModel'
 
 interface ProfileResumeTabProps {
@@ -30,48 +30,54 @@ export function ProfileResumeTab({ dancer, allProjects, training }: ProfileResum
 
   return (
     <ScrollView className="flex-1 px-4" showsVerticalScrollIndicator={false}>
-      <View className="gap-3 pb-4">
-        {/* TV/Film */}
-        <ProfileCategoryCard
-          title="Television & Film"
-          count={tvFilmCount}
-          onPress={() => handleCategoryPress('tv-film')}
-        />
+      <View className="gap-4 pb-4">
+        {/* Row 1: TV/Film & Music Videos */}
+        <View className="flex-row gap-4">
+          <SectionCard
+            title="Television/Film"
+            count={tvFilmCount}
+            backgroundImage={require('~/assets/images/projects/Television_Film.png')}
+            onPress={() => handleCategoryPress('tv-film')}
+          />
+          <SectionCard
+            title="Music Videos"
+            count={musicVideoCount}
+            backgroundImage={require('~/assets/images/projects/MusicVideos.png')}
+            onPress={() => handleCategoryPress('music-video')}
+          />
+        </View>
 
-        {/* Music Videos */}
-        <ProfileCategoryCard
-          title="Music Videos"
-          count={musicVideoCount}
-          onPress={() => handleCategoryPress('music-video')}
-        />
+        {/* Row 2: Live/Stage & Print/Commercial */}
+        <View className="flex-row gap-4">
+          <SectionCard
+            title="Live/Stage Performances"
+            count={livePerformanceCount}
+            backgroundImage={require('~/assets/images/projects/Live_StagePerformances.png')}
+            onPress={() => handleCategoryPress('live-performance')}
+          />
+          <SectionCard
+            title="Print/Commercial"
+            count={commercialCount}
+            backgroundImage={require('~/assets/images/projects/Print_Commercial.png')}
+            onPress={() => handleCategoryPress('commercial')}
+          />
+        </View>
 
-        {/* Live/Stage Performances */}
-        <ProfileCategoryCard
-          title="Live/Stage Performances"
-          count={livePerformanceCount}
-          onPress={() => handleCategoryPress('live-performance')}
-        />
-
-        {/* Print/Commercial */}
-        <ProfileCategoryCard
-          title="Print/Commercial"
-          count={commercialCount}
-          onPress={() => handleCategoryPress('commercial')}
-        />
-
-        {/* Training */}
-        <ProfileCategoryCard
-          title="Training"
-          count={trainingCount}
-          onPress={() => handleCategoryPress('training')}
-        />
-
-        {/* Special Skills */}
-        <ProfileCategoryCard
-          title="Special Skills"
-          count={skillsCount}
-          onPress={() => handleCategoryPress('skills')}
-        />
+        {/* Row 3: Training & Special Skills */}
+        <View className="flex-row gap-4">
+          <SectionCard
+            title="Training"
+            count={trainingCount}
+            backgroundImage={require('~/assets/images/training/Training.png')}
+            onPress={() => handleCategoryPress('training')}
+          />
+          <SectionCard
+            title="Special Skills"
+            count={skillsCount}
+            backgroundImage={require('~/assets/images/skills/Skills.png')}
+            onPress={() => handleCategoryPress('skills')}
+          />
+        </View>
       </View>
     </ScrollView>
   )
