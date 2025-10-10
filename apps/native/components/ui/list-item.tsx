@@ -38,7 +38,7 @@ interface ActivityListItemProps extends BaseListItemProps {
 type ListItemProps = ProfileListItemProps | ExperienceListItemProps | ActivityListItemProps
 
 export const ListItem = React.forwardRef<ViewRef, ListItemProps>(
-  ({ className, variant, onPress, ...props }, ref) => {
+  ({ className, variant, onPress, onBlur, ...props }, ref) => {
     const Content = () => {
       if (variant === 'Experience') {
         const { image, organizer, title } = props as ExperienceListItemProps
@@ -137,7 +137,7 @@ export const ListItem = React.forwardRef<ViewRef, ListItemProps>(
           onPress={onPress}
           activeOpacity={0.7}
           className={cn('w-full', className)}
-          {...(props as ViewProps)}>
+          {...(props as any)}>
           <Content />
         </TouchableOpacity>
       )

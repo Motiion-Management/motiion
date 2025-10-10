@@ -2,6 +2,7 @@ import type { ViewRef } from '@rn-primitives/types'
 import * as React from 'react'
 import { View, type ViewProps } from 'react-native'
 import { Image } from 'expo-image'
+import { type SymbolViewProps } from 'expo-symbols'
 
 import { Text } from '~/components/ui/text'
 import { Icon } from '~/lib/icons/Icon'
@@ -26,13 +27,13 @@ interface TextListContentProps extends BaseListContentProps {
 
 interface IconListContentProps extends BaseListContentProps {
   type: 'Icon'
-  iconName?: string
+  iconName?: SymbolViewProps['name']
 }
 
 interface TextIconListContentProps extends BaseListContentProps {
   type: 'Text + Icon'
   text: string
-  iconName?: string
+  iconName?: SymbolViewProps['name']
 }
 
 interface ActivityListContentProps extends BaseListContentProps {
