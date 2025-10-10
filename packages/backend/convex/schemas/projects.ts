@@ -80,6 +80,13 @@ export const zProjectsDoc = zProjects.extend({
   _creationTime: z.number().optional()
 })
 
+// Client-facing schema (excludes internal metadata fields)
+export const zProjectsClientDoc = zProjectsDoc.omit({
+  userId: true,
+  profileType: true,
+  profileId: true
+})
+
 // Aliases for clarity in imports
 export const zProjectsBase = zProjects
 

@@ -53,7 +53,7 @@ const DropdownMenuSubTrigger = React.forwardRef<
         )}
         {...props}>
         <>{children}</>
-        <Icon size={18} className="ml-auto text-text-default" />
+        <Icon size={20} className="ml-auto text-text-default" />
       </DropdownMenuPrimitive.SubTrigger>
     </TextClassContext.Provider>
   );

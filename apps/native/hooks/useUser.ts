@@ -1,5 +1,5 @@
 import { api } from '@packages/backend/convex/_generated/api';
-import { useQuery } from 'convex/react';
+import { useConvexAuth, useQuery } from 'convex/react';
 import { useContext } from 'react';
 import { SharedUserContext, SharedUserContextValue } from '~/contexts/SharedUserContext';
 
@@ -16,9 +16,13 @@ export function useUser(): SharedUserContextValue {
   }
 
   // Otherwise, make the query directly
-  const user = useQuery(api.users.users.getMyUser) || undefined;
+  const { isAuthenticated, isLoading: authLoading } = useConvexAuth();
+  const shouldFetchUser = isAuthenticated && !authLoading;
+
+  const user = useQuery(api.users.users.getMyUser, shouldFetchUser ? undefined : 'skip');
+
   return {
-    user,
-    isLoading: user === undefined,
+    user: user ?? null,
+    isLoading: authLoading || (shouldFetchUser && user === undefined),
   };
 }

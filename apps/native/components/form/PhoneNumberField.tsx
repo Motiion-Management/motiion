@@ -96,7 +96,7 @@ export const PhoneNumberField = ({ autoFocus = false, helpText }: PhoneNumberFie
                   <Text variant="bodySm" className="mr-2 text-text-default">
                     {models.callingCode}
                   </Text>
-                  <ChevronDown className="text-icon-default" size={14} />
+                  <ChevronDown size={20} className="text-icon-default" />
                 </Pressable>
               )}
             />

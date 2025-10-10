@@ -76,7 +76,7 @@ export const BaseAuthScreen = ({
               <>
                 <View className="flex-1 flex-row justify-start">
                   {secondaryAction && (
-                    <Button variant="plain" onPress={secondaryAction.onPress}>
+                    <Button variant="tertiary" onPress={secondaryAction.onPress}>
                       <Text className="text-sm text-text-default">{secondaryAction.text}</Text>
                     </Button>
                   )}
@@ -93,7 +93,7 @@ export const BaseAuthScreen = ({
                     }
                     primaryAction?.onPress();
                   }}>
-                  <ChevronRight size={24} className="text-icon-accent" />
+                  <ChevronRight size={20} className="text-icon-accent" />
                 </Button>
               </>
             )}

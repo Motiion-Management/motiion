@@ -7,9 +7,12 @@ import { Text } from '~/components/ui/text';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useMutation } from 'convex/react';
 import { api } from '@packages/backend/convex/_generated/api';
+import { useOnboardingStatus } from '~/hooks/useOnboardingStatus';
 
 export default function CompleteScreen() {
   const completeOnboarding = useMutation(api.onboarding.completeOnboarding);
+  const { markComplete } = useOnboardingStatus();
+
   return (
     <ImageBackground source={require('./background.png')} className="h-full">
       <SafeAreaView className="h-full flex-1">
@@ -20,8 +23,9 @@ export default function CompleteScreen() {
 
           <Button
             size="lg"
-            onPress={() => {
-              // Fire-and-forget completion so guard won’t redirect back to onboarding
+            onPress={async () => {
+              // Update both local storage and server
+              await markComplete();
               completeOnboarding({});
               router.replace('/app/home');
             }}>

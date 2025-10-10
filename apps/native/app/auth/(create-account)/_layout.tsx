@@ -43,7 +43,7 @@ export default function CreateAccountLayout() {
             <View className="h-8 flex-row items-center bg-transparent pl-4 pr-0">
               <ProgressBar currentStep={displayStepIndex} totalSteps={6} label="ACCOUNT" />
               <Button
-                variant="plain"
+                variant="tertiary"
                 size="icon"
                 className="px-0"
                 onPress={() => {

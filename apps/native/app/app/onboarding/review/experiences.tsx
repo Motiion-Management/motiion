@@ -29,7 +29,7 @@ function ProjectItem({ title, type, onEdit }: ProjectItemProps) {
           {type}
         </Text>
       </View>
-      {onEdit && <ChevronRight className="text-icon-default" />}
+      {onEdit && <ChevronRight size={20} className="text-icon-default" />}
     </Pressable>
   );
 }
@@ -82,7 +82,7 @@ export default function ExperiencesReviewScreen() {
             <View>
               <View className="mb-4 flex-row items-center justify-between">
                 <Text variant="title3">Projects</Text>
-                <Button variant="plain" onPress={handleEditExperiences}>
+                <Button variant="tertiary" onPress={handleEditExperiences}>
                   <Text className="text-accent-primary">Edit</Text>
                 </Button>
               </View>
@@ -119,7 +119,7 @@ export default function ExperiencesReviewScreen() {
             <View>
               <View className="mb-4 flex-row items-center justify-between">
                 <Text variant="title3">Training</Text>
-                <Button variant="plain" onPress={handleEditTraining}>
+                <Button variant="tertiary" onPress={handleEditTraining}>
                   <Text className="text-accent-primary">Edit</Text>
                 </Button>
               </View>

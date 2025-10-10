@@ -83,7 +83,7 @@ const SCREEN_OPTIONS = {
             </Text>
           </View>
           <Button
-            variant="plain"
+            variant="tertiary"
             size="icon"
             className="ios:px-0"
             onPress={() => {

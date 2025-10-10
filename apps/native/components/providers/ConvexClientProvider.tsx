@@ -2,6 +2,8 @@
 
 import { ClerkProvider, useAuth, ClerkLoaded } from '@clerk/clerk-expo';
 import { tokenCache } from '@clerk/clerk-expo/token-cache';
+import { resourceCache } from '@clerk/clerk-expo/resource-cache';
+
 import { ConvexReactClient } from 'convex/react';
 import { ConvexProviderWithClerk } from 'convex/react-clerk';
 
@@ -24,10 +26,9 @@ export default function ConvexClientProvider({ children }: { children: React.Rea
   return (
     <ClerkProvider
       tokenCache={tokenCache}
+      __experimental_resourceCache={resourceCache}
       publishableKey={process.env.EXPO_PUBLIC_CLERK_PUBLISHABLE_KEY!}>
-      <ClerkLoaded>
-        <StabilizedConvexProvider>{children}</StabilizedConvexProvider>
-      </ClerkLoaded>
+      <StabilizedConvexProvider>{children}</StabilizedConvexProvider>
     </ClerkProvider>
   );
 }

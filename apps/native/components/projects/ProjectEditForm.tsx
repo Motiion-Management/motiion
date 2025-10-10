@@ -312,7 +312,7 @@ export const ProjectEditForm = forwardRef<ProjectEditFormHandle, ProjectEditForm
               )}
               {selectedProject?._id && (
                 <Button
-                  variant="plain"
+                  variant="tertiary"
                   className="w-full"
                   onPress={() => {
                     Alert.alert(

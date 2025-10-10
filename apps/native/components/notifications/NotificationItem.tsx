@@ -60,7 +60,7 @@ export function NotificationItem({
 
           {/* Right side: Chevron + Time */}
           <View className="items-end gap-2">
-            <ChevronRight className="h-6 w-6 text-white" />
+            <ChevronRight size={20} className="text-white" />
             <Text variant="bodyXs" className="text-white">
               {timeAgo}
             </Text>
