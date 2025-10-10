@@ -11,6 +11,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { Button } from '../ui/button';
 import { Icon } from '~/lib/icons/Icon';
 import { router } from 'expo-router';
+import { ProjectCarousel } from './ProjectCarousel';
 
 interface ProfileDetailsSheetProps {
   profileData: DancerProfileData;
@@ -49,10 +50,7 @@ function TopBar({ onCollapseIntent }: { onCollapseIntent: () => void }) {
   );
 }
 
-export function ProfileDetailsSheet({
-  profileData,
-  onCollapseIntent,
-}: ProfileDetailsSheetProps) {
+export function ProfileDetailsSheet({ profileData, onCollapseIntent }: ProfileDetailsSheetProps) {
   const displayName = profileData.dancer.displayName || 'Dancer';
 
   const tabs: Array<TabRoute> = [
@@ -80,10 +78,13 @@ export function ProfileDetailsSheet({
       <View className="gap-2 px-4 pt-4">
         <TopBar onCollapseIntent={onCollapseIntent} />
         <View className="items-center">
-          <Text variant="labelXs">{displayName}</Text>
-          <Text variant="header5">Dancer</Text>
+          <Text variant="header3">{displayName}</Text>
+          <Text variant="body">
+            {profileData.dancer?.location?.city}, {profileData.dancer?.location?.state}
+          </Text>
         </View>
       </View>
+      <ProjectCarousel projects={profileData.recentProjects} />
       <TypecastDetails dancer={profileData.dancer} />
 
       {/* Tabs */}

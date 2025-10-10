@@ -171,13 +171,12 @@ export default function DancerScreen() {
                 }}
               />
               {/* Content on top of gradient */}
-              <View className="z-10 px-4">
+              <View className="z-10 items-center px-4">
                 <Text variant="header3">{profileData.dancer.displayName}</Text>
                 <Text variant="body">
                   {profileData.dancer?.location?.city}, {profileData.dancer?.location?.state}
                 </Text>
               </View>
-              <TypecastDetails dancer={profileData.dancer} />
               <ProjectCarousel projects={profileData.recentProjects} />
             </Animated.View>
 

@@ -70,7 +70,7 @@ export default function ProjectsLayout() {
         }}
       />
       <Stack.Screen
-        name="[id]"
+        name="[projectId]"
         options={{
           headerShown: true,
           header: (props) => <ProjectsHeader route={props.route} />,

@@ -15,7 +15,7 @@ import { Button } from '~/components/ui/button';
 import { getInitials, getRoleLabel, getCategoryInfo, formatProjectDate } from '~/lib/project-utils';
 
 export default function ProjectDetailScreen() {
-  const { id: projectId } = useLocalSearchParams<{ id: string }>();
+  const { projectId } = useLocalSearchParams<{ projectId: string }>();
 
   // Fetch project data
   const project = useQuery(

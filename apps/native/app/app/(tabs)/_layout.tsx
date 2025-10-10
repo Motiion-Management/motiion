@@ -95,7 +95,7 @@ function NativeTabsLayout() {
         <NativeTabIcon sf="house.fill" drawable="custom_android_drawable" selectedColor="white" />
         <Label hidden />
       </NativeTabs.Trigger>
-      <NativeTabs.Trigger name="discover">
+      <NativeTabs.Trigger name="discover" role="search">
         <NativeTabIcon
           sf="magnifyingglass"
           drawable="custom_search_drawable"

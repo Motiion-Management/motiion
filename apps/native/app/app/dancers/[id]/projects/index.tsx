@@ -97,7 +97,7 @@ export default function ProjectsScreen() {
               let title = project.title || 'Untitled Project';
 
               if (project.type === 'tv-film') {
-                organizer = project.studio || '-';
+                organizer = project.studio || 'unknown studio';
               } else if (project.type === 'music-video') {
                 organizer = project.artists?.join(', ') || '-';
               } else if (project.type === 'commercial') {
@@ -113,7 +113,7 @@ export default function ProjectsScreen() {
                   organizer={organizer}
                   title={title}
                   onPress={() => {
-                    router.push(`./${project._id}`);
+                    router.push(`./projects/${project._id}`);
                   }}
                 />
               );

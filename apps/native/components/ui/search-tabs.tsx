@@ -34,7 +34,7 @@ export function SearchTabs({ tabs, activeTab, onTabChange, className }: SearchTa
               )}>
               <Text
                 variant="bodySm"
-                className={cn(isActive ? 'text-text-default' : 'text-text-low')}>
+                className={cn(isActive ? 'font-medium text-text-high' : 'text-text-low')}>
                 {tab}
               </Text>
             </TouchableOpacity>
