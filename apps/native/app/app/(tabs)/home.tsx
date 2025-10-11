@@ -1,16 +1,19 @@
-import * as React from 'react';
-import { View, ScrollView } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import * as React from 'react'
+import { View } from 'react-native'
+import { useSafeAreaInsets } from 'react-native-safe-area-context'
 
-import { BackgroundGradientView } from '~/components/ui/background-gradient-view';
+import { BackgroundGradientView } from '~/components/ui/background-gradient-view'
+import { AnimatedScrollHeader } from '~/components/ui/animated-scroll-header'
 import {
-  HomeHeader,
+  HomeHeaderLeft,
+  HomeHeaderMiddle,
+  HomeHeaderRight,
   HeroCarousel,
   TeachingThisWeekSection,
   InSessionSection,
   ScheduleModal,
   useScheduleModal,
-} from '~/components/home';
+} from '~/components/home'
 import {
   heroCarouselItems,
   choreographers,
@@ -18,50 +21,44 @@ import {
   classesScheduleItems,
   sessionsScheduleItems,
   scheduleModalDays,
-} from '~/data/homeStubData';
+} from '~/data/homeStubData'
+
+function Divider() {
+  return <View className="h-px bg-border-tint" />
+}
 
 export default function HomeScreen() {
-  const classesModal = useScheduleModal();
-  const sessionsModal = useScheduleModal();
+  const classesModal = useScheduleModal()
+  const sessionsModal = useScheduleModal()
+  const { bottom } = useSafeAreaInsets()
 
   return (
     <BackgroundGradientView>
-      <SafeAreaView className="flex-1">
-        {/* Header */}
-        <HomeHeader />
+      <AnimatedScrollHeader threshold={32}>
+        <AnimatedScrollHeader.Header
+          left={<HomeHeaderLeft />}
+          middle={(slot) => <HomeHeaderMiddle {...slot} />}
+          right={(slot) => <HomeHeaderRight {...slot} />}
+        />
 
-        {/* Scrollable content */}
-        <ScrollView
+        <AnimatedScrollHeader.ScrollView
           className="flex-1"
-          showsVerticalScrollIndicator={false}
-          contentContainerStyle={{ paddingTop: 24, paddingBottom: 32 }}>
-          {/* Hero Carousel */}
-          <View className="mb-8">
+          contentInset={{ bottom: bottom + 90 }}
+          contentContainerStyle={{ paddingBottom: bottom + 90 }}>
+          <View className="gap-8">
             <HeroCarousel items={heroCarouselItems} />
-          </View>
 
-          {/* Divider */}
-          <View className="mb-12 h-px bg-border-low" />
+            <Divider />
 
-          {/* Teaching This Week Section */}
-          <View className="mb-12">
             <TeachingThisWeekSection items={choreographers} onViewAllPress={classesModal.open} />
-          </View>
 
-          {/* Divider */}
-          <View className="mb-12 h-px bg-border-low" />
+            <Divider />
 
-          {/* In Session Section */}
-          <View className="mb-12">
             <InSessionSection items={sessions} onViewAllPress={sessionsModal.open} />
           </View>
+        </AnimatedScrollHeader.ScrollView>
+      </AnimatedScrollHeader>
 
-          {/* Divider */}
-          <View className="h-px bg-border-low" />
-        </ScrollView>
-      </SafeAreaView>
-
-      {/* Modals */}
       <ScheduleModal
         isOpen={classesModal.isOpen}
         onClose={classesModal.close}
@@ -80,5 +77,5 @@ export default function HomeScreen() {
         items={sessionsScheduleItems}
       />
     </BackgroundGradientView>
-  );
+  )
 }
