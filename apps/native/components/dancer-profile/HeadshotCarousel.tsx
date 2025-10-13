@@ -21,7 +21,7 @@ interface HeadshotCarouselProps {
   onPress?: () => void;
 }
 
-const SCREEN_HEIGHT_MODIFIER = 0.7;
+const SCREEN_HEIGHT_MODIFIER = 0.75;
 const IMAGE_HEIGHT = SCREEN_HEIGHT * SCREEN_HEIGHT_MODIFIER;
 const COLLAPSED_WIDTH = SCREEN_WIDTH - 24;
 const EXPANDED_WIDTH = SCREEN_WIDTH;
@@ -30,7 +30,6 @@ export function HeadshotCarousel({
   headshotUrls,
   initialIndex = 0,
   animatedIndex,
-  onClose,
   onPress,
 }: HeadshotCarouselProps) {
   const [currentIndex, setCurrentIndex] = useState(initialIndex);
@@ -56,35 +55,23 @@ export function HeadshotCarousel({
       return COLLAPSED_SCALE_X;
     }
 
-    return interpolate(
-      animatedIndex.value,
-      [0, 1],
-      [COLLAPSED_SCALE_X, 1],
-      Extrapolate.CLAMP
-    );
+    return interpolate(animatedIndex.value, [0, 1], [COLLAPSED_SCALE_X, 1], Extrapolate.CLAMP);
   }, [animatedIndex]);
 
-  // Border radius animation: rounded-xl at index 0 → 0 at index 1+ (full screen)
   const containerStyle = useAnimatedStyle(() => {
     const index = animatedIndex?.value || 0;
     const height = animatedHeight.value;
-    const scaleX = animatedScaleX.value;
-
-    const borderRadius = interpolate(index, [0, 1], [20, 0], Extrapolate.CLAMP);
-    const top = interpolate(index, [0, 1], [insets.top + 36, 0], Extrapolate.CLAMP);
-    const translateX = (1 - scaleX) * SCREEN_WIDTH * 0.5;
+    const top = interpolate(index, [0, 1], [insets.top + 48, 0], Extrapolate.CLAMP);
 
     return {
       top,
       height,
       width: SCREEN_WIDTH,
-      borderRadius,
-      overflow: 'hidden',
       position: 'absolute',
       left: 0,
-      transform: [{ translateX }, { scaleX }, { translateX: -translateX }],
+      overflow: 'visible',
     };
-  }, [animatedIndex, animatedHeight, animatedScaleX]);
+  }, [animatedIndex, animatedHeight]);
 
   const titleStyle = useAnimatedStyle(() => {
     if (!animatedIndex) return { opacity: 0 };
@@ -99,18 +86,19 @@ export function HeadshotCarousel({
     if (!animatedIndex) {
       return {
         opacity: 1,
-        top: IMAGE_HEIGHT - 24,
+        top: IMAGE_HEIGHT + 24,
       };
     }
 
     // Fade out controls when sheet expands
     const opacity = interpolate(animatedIndex.value, [0, 1], [1, 0], Extrapolate.CLAMP);
 
+    const IMAGE_BOTTOM = insets.top + 48 + IMAGE_HEIGHT;
     // Animate position to follow carousel bottom edge
     const top = interpolate(
       animatedIndex.value,
       [0, 1],
-      [IMAGE_HEIGHT - 24, SCREEN_HEIGHT],
+      [IMAGE_BOTTOM - 24, IMAGE_BOTTOM],
       Extrapolate.CLAMP
     );
 
@@ -130,6 +118,21 @@ export function HeadshotCarousel({
           onSnapToItem={setCurrentIndex}
           renderItem={({ item }) => {
             // Create animated style for each image
+            const cardStyle = useAnimatedStyle(() => {
+              const index = animatedIndex?.value || 0;
+              const scaleX = animatedScaleX.value;
+              const borderRadius = interpolate(index, [0, 1], [40, 0], Extrapolate.CLAMP);
+              const translateX = (1 - scaleX) * SCREEN_WIDTH * 0.5;
+
+              return {
+                width: SCREEN_WIDTH,
+                height: animatedHeight.value,
+                borderRadius,
+                overflow: 'hidden',
+                transform: [{ translateX }, { scaleX }, { translateX: -translateX }],
+              };
+            });
+
             const imageStyle = useAnimatedStyle(() => ({
               width: SCREEN_WIDTH,
               height: animatedHeight.value,
@@ -137,7 +140,9 @@ export function HeadshotCarousel({
 
             return (
               <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-                <Animated.Image source={{ uri: item }} style={imageStyle} resizeMode="cover" />
+                <Animated.View style={cardStyle}>
+                  <Animated.Image source={{ uri: item }} style={imageStyle} resizeMode="cover" />
+                </Animated.View>
               </View>
             );
           }}
