@@ -18,6 +18,7 @@ interface HeadshotCarouselProps {
   animatedIndex?: SharedValue<number>;
   onClose: () => void;
   onPress?: () => void;
+  onIndexChange?: (index: number) => void;
 }
 
 const SCREEN_HEIGHT_MODIFIER = 0.75;
@@ -30,9 +31,15 @@ export function HeadshotCarousel({
   initialIndex = 0,
   animatedIndex,
   onPress,
+  onIndexChange,
 }: HeadshotCarouselProps) {
   const [currentIndex, setCurrentIndex] = useState(initialIndex);
   const insets = useSafeAreaInsets();
+
+  const handleIndexChange = (index: number) => {
+    setCurrentIndex(index);
+    onIndexChange?.(index);
+  };
 
   // Derive the animated height value
   const animatedHeight = useDerivedValue(() => {
@@ -105,7 +112,7 @@ export function HeadshotCarousel({
           width={EXPANDED_WIDTH}
           data={headshotUrls}
           defaultIndex={initialIndex}
-          onSnapToItem={setCurrentIndex}
+          onSnapToItem={handleIndexChange}
           renderItem={({ item }) => {
             // Create animated style for each image
             const cardStyle = useAnimatedStyle(() => {

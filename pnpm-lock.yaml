@@ -302,6 +302,9 @@ importers:
       react-native-screens:
         specifier: ~4.16.0
         version: 4.16.0(react-native@0.81.4(@babel/core@7.28.3)(@types/react@19.1.10)(react@19.1.0))(react@19.1.0)
+      react-native-share:
+        specifier: ^12.2.0
+        version: 12.2.0
       react-native-sortables:
         specifier: ^1.8.0
         version: 1.8.0(react-native-gesture-handler@2.28.0(react-native@0.81.4(@babel/core@7.28.3)(@types/react@19.1.10)(react@19.1.0))(react@19.1.0))(react-native-reanimated@4.1.2(@babel/core@7.28.3)(react-native-worklets@0.5.1(@babel/core@7.28.3)(react-native@0.81.4(@babel/core@7.28.3)(@types/react@19.1.10)(react@19.1.0))(react@19.1.0))(react-native@0.81.4(@babel/core@7.28.3)(@types/react@19.1.10)(react@19.1.0))(react@19.1.0))(react-native@0.81.4(@babel/core@7.28.3)(@types/react@19.1.10)(react@19.1.0))(react@19.1.0)
@@ -311,6 +314,9 @@ importers:
       react-native-uitextview:
         specifier: 2.1.0-rc.0
         version: 2.1.0-rc.0(react-native@0.81.4(@babel/core@7.28.3)(@types/react@19.1.10)(react@19.1.0))(react@19.1.0)
+      react-native-view-shot:
+        specifier: 4.0.3
+        version: 4.0.3(react-native@0.81.4(@babel/core@7.28.3)(@types/react@19.1.10)(react@19.1.0))(react@19.1.0)
       react-native-web:
         specifier: ~0.21.1
         version: 0.21.1(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
@@ -326,6 +332,9 @@ importers:
       tailwind-merge:
         specifier: ^3.3.1
         version: 3.3.1
+      zeego:
+        specifier: ^3.0.6
+        version: 3.0.6(@react-native-menu/menu@1.2.2(react-native@0.81.4(@babel/core@7.28.3)(@types/react@19.1.10)(react@19.1.0))(react@19.1.0))(@types/react-dom@19.1.6(@types/react@19.1.10))(@types/react@19.1.10)(react-dom@19.1.0(react@19.1.0))(react-native-ios-context-menu@3.1.0(react-native-ios-utilities@5.1.2(react-native@0.81.4(@babel/core@7.28.3)(@types/react@19.1.10)(react@19.1.0))(react@19.1.0))(react-native@0.81.4(@babel/core@7.28.3)(@types/react@19.1.10)(react@19.1.0))(react@19.1.0))(react-native-ios-utilities@5.1.2(react-native@0.81.4(@babel/core@7.28.3)(@types/react@19.1.10)(react@19.1.0))(react@19.1.0))(react-native@0.81.4(@babel/core@7.28.3)(@types/react@19.1.10)(react@19.1.0))(react@19.1.0)
       zod:
         specifier: ^4.1.8
         version: 4.1.8
@@ -1597,6 +1606,9 @@ packages:
   '@csstools/css-tokenizer@3.0.4':
     resolution: {integrity: sha512-Vd/9EVDiu6PPJt9yAh6roZP6El1xHrdvIVGjyBsHR0RYwNHgL7FJPyIIW4fANJNG6FtyZfvlRPpFI4ZM/lubvw==}
     engines: {node: '>=18'}
+
+  '@dominicstop/ts-event-emitter@1.1.0':
+    resolution: {integrity: sha512-CcxmJIvUb1vsFheuGGVSQf4KdPZC44XolpUT34+vlal+LyQoBUOn31pjFET5M9ctOxEpt8xa0M3/2M7uUiAoJw==}
 
   '@egjs/hammerjs@2.0.17':
     resolution: {integrity: sha512-XQsZgjm2EcVUiZQf11UBJQfmZeEmOW8DpI1gsFeln6w0ae0ii4dMQEQ0kjl6DspdWX1aGY1/loyXnP0JS06e/A==}
@@ -3209,6 +3221,12 @@ packages:
   '@react-native-community/slider@5.0.1':
     resolution: {integrity: sha512-K3JRWkIW4wQ79YJ6+BPZzp1SamoikxfPRw7Yw4B4PElEQmqZFrmH9M5LxvIo460/3QSrZF/wCgi3qizJt7g/iw==}
 
+  '@react-native-menu/menu@1.2.2':
+    resolution: {integrity: sha512-Uk65PAhwNkCVBAqJu5t2H9biV+m0JLwJc7m3v2X2A/W8SFJmUqYabBsLH4fOWKI3a7kkR9QDT6HruliIKSfM8w==}
+    peerDependencies:
+      react: '*'
+      react-native: '*'
+
   '@react-native-picker/picker@2.11.1':
     resolution: {integrity: sha512-ThklnkK4fV3yynnIIRBkxxjxR4IFbdMNJVF6tlLdOJ/zEFUEFUEdXY0KmH0iYzMwY8W4/InWsLiA7AkpAbnexA==}
     peerDependencies:
@@ -4469,6 +4487,10 @@ packages:
   base-64@1.0.0:
     resolution: {integrity: sha512-kwDPIFCGx0NZHog36dj+tHiwP4QMzsZ3AgMViUBKI0+V5n4U0ufTCUMhnQ04diaRI8EX/QcPfql7zlhZ7j4zgg==}
 
+  base64-arraybuffer@1.0.2:
+    resolution: {integrity: sha512-I3yl4r9QB5ZRY3XuJVEPfc2XhZO6YweFPI+UovAzn+8/hb3oJ6lnysaFcjVpkCPfVWFUDvoZ8kmVDP7WyRtYtQ==}
+    engines: {node: '>= 0.6.0'}
+
   base64-js@1.5.1:
     resolution: {integrity: sha512-AKpaYlHn8t4SVbOHCy+b5+KKgvR4vrsD8vbvrbiQJps7fKDTkjkDry6ji0rUJjC0kzbNePLwzxq8iypo41qeWA==}
 
@@ -4880,6 +4902,9 @@ packages:
 
   css-in-js-utils@3.1.0:
     resolution: {integrity: sha512-fJAcud6B3rRu+KHYk+Bwf+WFL2MDCJJ1XG9x137tJQ0xYxor7XziQtuGFbWNdqrvF4Tk26O3H73nfVqXt/fW1A==}
+
+  css-line-break@2.1.0:
+    resolution: {integrity: sha512-FHcKFCZcAha3LwfVBhCQbW2nCNbkZXn7KVUJcsT5/P8YmfsVja0FMPJr0B903j/E69HUphKiV9iQArX8SDYA4w==}
 
   css-select@5.2.2:
     resolution: {integrity: sha512-TizTzUddG/xYLA3NXodFM0fSbNizXjOKhqiQQwvhlspadZokn1KDy0NZFS0wuEubIYAV5/c1/lAr0TaaFXEXzw==}
@@ -6158,6 +6183,10 @@ packages:
 
   html-escaper@2.0.2:
     resolution: {integrity: sha512-H2iMtd0I4Mt5eYiapRdIDjp+XzelXQ0tFE4JS7YFwFevXXMmOp9myNrUvCg0D6ws8iqkRPBfKHgbwig1SmlLfg==}
+
+  html2canvas@1.4.1:
+    resolution: {integrity: sha512-fPU6BHNpsyIhr8yyMpTLLxAbkaK8ArIBcmZIRiBLiDhjeqvXolaEmDGmELFuX9I4xDcaKKcJl+TKZLqruBbmWA==}
+    engines: {node: '>=8.0.0'}
 
   http-errors@2.0.0:
     resolution: {integrity: sha512-FtwrG/euBzaEjYeRqOgly7G0qviiXoJWnvEH2Z1plBdXgbyjv34pHTSb9zoeHMyDy33+DWy5Wt9Wo+TURtOYSQ==}
@@ -7787,6 +7816,19 @@ packages:
     peerDependencies:
       react-native: '>=0.60.0'
 
+  react-native-ios-context-menu@3.1.0:
+    resolution: {integrity: sha512-qdPSXMKUp5lDgmZeUPdv5sgBFhkFrIqma+zsnqJQYOvekb6Qs17yJy1Rqhrj0bJrwuduHzZX0aYbaA8whxqpDw==}
+    peerDependencies:
+      react: '*'
+      react-native: '*'
+      react-native-ios-utilities: '*'
+
+  react-native-ios-utilities@5.1.2:
+    resolution: {integrity: sha512-H566MdgC1x0vW6D8EKweno1yRj/gQHeWiK0cRmyRexnUSk7oIecy7l2uyxXLYWFs+yvB/YIdLm+s2c19lKGfaw==}
+    peerDependencies:
+      react: '*'
+      react-native: '*'
+
   react-native-is-edge-to-edge@1.2.1:
     resolution: {integrity: sha512-FLbPWl/MyYQWz+KwqOZsSyj2JmLKglHatd3xLZWskXOpRaio4LfEDEz8E/A6uD8QoTHW6Aobw1jbEwK7KMgR7Q==}
     peerDependencies:
@@ -7853,6 +7895,10 @@ packages:
       react: '*'
       react-native: '*'
 
+  react-native-share@12.2.0:
+    resolution: {integrity: sha512-f6MB9BsKa9xVvu0DKbxq5jw4IyYHqQeqUlCNkD8eAFoJx6SD31ObPAn7SQ6NG9AOuhCy6aYuSJYJvx25DaoMZQ==}
+    engines: {node: '>=16'}
+
   react-native-sortables@1.8.0:
     resolution: {integrity: sha512-uoNY0uiHikq3eKJoF85CATMPpo9jS7t37XUlunxSGjjbGi4L05os8eJBGNZSR+3NQgK2FtYGGkQtFbeSJIwmDg==}
     peerDependencies:
@@ -7876,6 +7922,12 @@ packages:
   react-native-url-polyfill@2.0.0:
     resolution: {integrity: sha512-My330Do7/DvKnEvwQc0WdcBnFPploYKp9CYlefDXzIdEaA+PAhDYllkvGeEroEzvc4Kzzj2O4yVdz8v6fjRvhA==}
     peerDependencies:
+      react-native: '*'
+
+  react-native-view-shot@4.0.3:
+    resolution: {integrity: sha512-USNjYmED7C0me02c1DxKA0074Hw+y/nxo+xJKlffMvfUWWzL5ELh/TJA/pTnVqFurIrzthZDPtDM7aBFJuhrHQ==}
+    peerDependencies:
+      react: '*'
       react-native: '*'
 
   react-native-web@0.21.1:
@@ -8551,6 +8603,9 @@ packages:
     resolution: {integrity: sha512-cAGWPIyOHU6zlmg88jwm7VRyXnMN7iV68OGAbYDk/Mh/xC/pzVPlQtY6ngoIH/5/tciuhGfvESU8GrHrcxD56w==}
     engines: {node: '>=8'}
 
+  text-segmentation@1.0.3:
+    resolution: {integrity: sha512-iOiPUo/BGnZ6+54OsWxZidGCsdU8YbE4PSpdPinp7DeMtUJNJBoJ/ouUSTJjHkh1KntHaltHl/gDs2FC4i5+Nw==}
+
   text-table@0.2.0:
     resolution: {integrity: sha512-N+8UisAXDGk8PFXP4HAzVR9nbfmVJ3zYLAWiTIoqC5v5isinhr+r5uaO8+7r3BMfuNIufIsA7RdpVgacC2cSpw==}
 
@@ -8880,6 +8935,9 @@ packages:
     resolution: {integrity: sha512-pMZTvIkT1d+TFGvDOqodOclx0QWkkgi6Tdoa8gC8ffGAAqz9pzPTZWAybbsHHoED/ztMtkv/VoYTYyShUn81hA==}
     engines: {node: '>= 0.4.0'}
 
+  utrie@1.0.2:
+    resolution: {integrity: sha512-1MLa5ouZiOmQzUbjbu9VmjLzn1QLXBhwpUa7kdLUQK+KQ5KA9I1vk5U4YHe/X2Ch7PYnJfWuWT+VbuxbGwljhw==}
+
   uuid@10.0.0:
     resolution: {integrity: sha512-8XkAphELsDnEGrDxUOHB3RGvXz6TeuYSGEZBOjtTtPm2lwhGBjLgOzLHB63IUWfBpNucQjND6d3AOudO+H3RWQ==}
     hasBin: true
@@ -9176,6 +9234,15 @@ packages:
   yocto-queue@1.2.1:
     resolution: {integrity: sha512-AyeEbWOu/TAXdxlV9wmGcR0+yh2j3vYPGOECcIj2S7MkrLyC7ne+oye2BKTItt0ii2PHk4cDy+95+LshzbXnGg==}
     engines: {node: '>=12.20'}
+
+  zeego@3.0.6:
+    resolution: {integrity: sha512-vg0GCMPYg6or/J91bwRnUpIYwz7QnhkyeKOdd3FjvICg+Gzq2D5QhD8k5RUSv1B+048LpNmNYdLm8qJVIbBONw==}
+    peerDependencies:
+      '@react-native-menu/menu': 1.2.2
+      react: '*'
+      react-native: '*'
+      react-native-ios-context-menu: 3.1.0
+      react-native-ios-utilities: 5.1.2
 
   zod-to-json-schema@3.24.6:
     resolution: {integrity: sha512-h/z3PKvcTcTetyjl1fkj79MHNEjm+HpD6NXheWjzOekY7kV+lwDYnHw+ivHkijnCSMz1yJaWBD9vu/Fcmk+vEg==}
@@ -10129,6 +10196,8 @@ snapshots:
       '@csstools/css-tokenizer': 3.0.4
 
   '@csstools/css-tokenizer@3.0.4': {}
+
+  '@dominicstop/ts-event-emitter@1.1.0': {}
 
   '@egjs/hammerjs@2.0.17':
     dependencies:
@@ -11580,6 +11649,20 @@ snapshots:
       '@types/react': 19.1.10
       '@types/react-dom': 19.1.6(@types/react@19.1.10)
 
+  '@radix-ui/react-context-menu@2.2.16(@types/react-dom@19.1.6(@types/react@19.1.10))(@types/react@19.1.10)(react-dom@19.1.0(react@19.1.0))(react@19.1.0)':
+    dependencies:
+      '@radix-ui/primitive': 1.1.3
+      '@radix-ui/react-context': 1.1.2(@types/react@19.1.10)(react@19.1.0)
+      '@radix-ui/react-menu': 2.1.16(@types/react-dom@19.1.6(@types/react@19.1.10))(@types/react@19.1.10)(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
+      '@radix-ui/react-primitive': 2.1.3(@types/react-dom@19.1.6(@types/react@19.1.10))(@types/react@19.1.10)(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
+      '@radix-ui/react-use-callback-ref': 1.1.1(@types/react@19.1.10)(react@19.1.0)
+      '@radix-ui/react-use-controllable-state': 1.2.2(@types/react@19.1.10)(react@19.1.0)
+      react: 19.1.0
+      react-dom: 19.1.0(react@19.1.0)
+    optionalDependencies:
+      '@types/react': 19.1.10
+      '@types/react-dom': 19.1.6(@types/react@19.1.10)
+
   '@radix-ui/react-context@1.1.2(@types/react@19.0.14)(react@19.0.0)':
     dependencies:
       react: 19.0.0
@@ -12839,6 +12922,11 @@ snapshots:
       expo: 54.0.12(@babel/core@7.28.3)(@expo/metro-runtime@5.0.4(react-native@0.81.4(@babel/core@7.28.3)(@types/react@19.1.10)(react@19.1.0)))(expo-router@6.0.10)(react-native-webview@13.15.0(react-native@0.81.4(@babel/core@7.28.3)(@types/react@19.1.10)(react@19.1.0))(react@19.1.0))(react-native@0.81.4(@babel/core@7.28.3)(@types/react@19.1.10)(react@19.1.0))(react@19.1.0)
 
   '@react-native-community/slider@5.0.1': {}
+
+  '@react-native-menu/menu@1.2.2(react-native@0.81.4(@babel/core@7.28.3)(@types/react@19.1.10)(react@19.1.0))(react@19.1.0)':
+    dependencies:
+      react: 19.1.0
+      react-native: 0.81.4(@babel/core@7.28.3)(@types/react@19.1.10)(react@19.1.0)
 
   '@react-native-picker/picker@2.11.1(react-native@0.81.4(@babel/core@7.28.3)(@types/react@19.1.10)(react@19.1.0))(react@19.1.0)':
     dependencies:
@@ -14380,6 +14468,8 @@ snapshots:
 
   base-64@1.0.0: {}
 
+  base64-arraybuffer@1.0.2: {}
+
   base64-js@1.5.1: {}
 
   better-opn@3.0.2:
@@ -14804,6 +14894,10 @@ snapshots:
   css-in-js-utils@3.1.0:
     dependencies:
       hyphenate-style-name: 1.1.0
+
+  css-line-break@2.1.0:
+    dependencies:
+      utrie: 1.0.2
 
   css-select@5.2.2:
     dependencies:
@@ -16504,6 +16598,11 @@ snapshots:
       whatwg-encoding: 3.1.1
 
   html-escaper@2.0.2: {}
+
+  html2canvas@1.4.1:
+    dependencies:
+      css-line-break: 2.1.0
+      text-segmentation: 1.0.3
 
   http-errors@2.0.0:
     dependencies:
@@ -18316,6 +18415,18 @@ snapshots:
       react-native: 0.81.4(@babel/core@7.28.3)(@types/react@19.1.10)(react@19.1.0)
     optional: true
 
+  react-native-ios-context-menu@3.1.0(react-native-ios-utilities@5.1.2(react-native@0.81.4(@babel/core@7.28.3)(@types/react@19.1.10)(react@19.1.0))(react@19.1.0))(react-native@0.81.4(@babel/core@7.28.3)(@types/react@19.1.10)(react@19.1.0))(react@19.1.0):
+    dependencies:
+      '@dominicstop/ts-event-emitter': 1.1.0
+      react: 19.1.0
+      react-native: 0.81.4(@babel/core@7.28.3)(@types/react@19.1.10)(react@19.1.0)
+      react-native-ios-utilities: 5.1.2(react-native@0.81.4(@babel/core@7.28.3)(@types/react@19.1.10)(react@19.1.0))(react@19.1.0)
+
+  react-native-ios-utilities@5.1.2(react-native@0.81.4(@babel/core@7.28.3)(@types/react@19.1.10)(react@19.1.0))(react@19.1.0):
+    dependencies:
+      react: 19.1.0
+      react-native: 0.81.4(@babel/core@7.28.3)(@types/react@19.1.10)(react@19.1.0)
+
   react-native-is-edge-to-edge@1.2.1(react-native@0.81.4(@babel/core@7.28.3)(@types/react@19.1.10)(react@19.1.0))(react@19.1.0):
     dependencies:
       react: 19.1.0
@@ -18386,6 +18497,8 @@ snapshots:
       react-native-is-edge-to-edge: 1.2.1(react-native@0.81.4(@babel/core@7.28.3)(@types/react@19.1.10)(react@19.1.0))(react@19.1.0)
       warn-once: 0.1.1
 
+  react-native-share@12.2.0: {}
+
   react-native-sortables@1.8.0(react-native-gesture-handler@2.28.0(react-native@0.81.4(@babel/core@7.28.3)(@types/react@19.1.10)(react@19.1.0))(react@19.1.0))(react-native-reanimated@4.1.2(@babel/core@7.28.3)(react-native-worklets@0.5.1(@babel/core@7.28.3)(react-native@0.81.4(@babel/core@7.28.3)(@types/react@19.1.10)(react@19.1.0))(react@19.1.0))(react-native@0.81.4(@babel/core@7.28.3)(@types/react@19.1.10)(react@19.1.0))(react@19.1.0))(react-native@0.81.4(@babel/core@7.28.3)(@types/react@19.1.10)(react@19.1.0))(react@19.1.0):
     dependencies:
       react: 19.1.0
@@ -18412,6 +18525,12 @@ snapshots:
     dependencies:
       react-native: 0.81.4(@babel/core@7.28.3)(@types/react@19.1.10)(react@19.1.0)
       whatwg-url-without-unicode: 8.0.0-3
+
+  react-native-view-shot@4.0.3(react-native@0.81.4(@babel/core@7.28.3)(@types/react@19.1.10)(react@19.1.0))(react@19.1.0):
+    dependencies:
+      html2canvas: 1.4.1
+      react: 19.1.0
+      react-native: 0.81.4(@babel/core@7.28.3)(@types/react@19.1.10)(react@19.1.0)
 
   react-native-web@0.21.1(react-dom@19.1.0(react@19.1.0))(react@19.1.0):
     dependencies:
@@ -19308,6 +19427,10 @@ snapshots:
       glob: 7.2.3
       minimatch: 3.1.2
 
+  text-segmentation@1.0.3:
+    dependencies:
+      utrie: 1.0.2
+
   text-table@0.2.0: {}
 
   thenify-all@1.6.0:
@@ -19684,6 +19807,10 @@ snapshots:
 
   utils-merge@1.0.1: {}
 
+  utrie@1.0.2:
+    dependencies:
+      base64-arraybuffer: 1.0.2
+
   uuid@10.0.0: {}
 
   uuid@7.0.3: {}
@@ -19971,6 +20098,21 @@ snapshots:
   yocto-queue@0.1.0: {}
 
   yocto-queue@1.2.1: {}
+
+  zeego@3.0.6(@react-native-menu/menu@1.2.2(react-native@0.81.4(@babel/core@7.28.3)(@types/react@19.1.10)(react@19.1.0))(react@19.1.0))(@types/react-dom@19.1.6(@types/react@19.1.10))(@types/react@19.1.10)(react-dom@19.1.0(react@19.1.0))(react-native-ios-context-menu@3.1.0(react-native-ios-utilities@5.1.2(react-native@0.81.4(@babel/core@7.28.3)(@types/react@19.1.10)(react@19.1.0))(react@19.1.0))(react-native@0.81.4(@babel/core@7.28.3)(@types/react@19.1.10)(react@19.1.0))(react@19.1.0))(react-native-ios-utilities@5.1.2(react-native@0.81.4(@babel/core@7.28.3)(@types/react@19.1.10)(react@19.1.0))(react@19.1.0))(react-native@0.81.4(@babel/core@7.28.3)(@types/react@19.1.10)(react@19.1.0))(react@19.1.0):
+    dependencies:
+      '@radix-ui/react-context-menu': 2.2.16(@types/react-dom@19.1.6(@types/react@19.1.10))(@types/react@19.1.10)(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
+      '@radix-ui/react-dropdown-menu': 2.1.16(@types/react-dom@19.1.6(@types/react@19.1.10))(@types/react@19.1.10)(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
+      '@react-native-menu/menu': 1.2.2(react-native@0.81.4(@babel/core@7.28.3)(@types/react@19.1.10)(react@19.1.0))(react@19.1.0)
+      react: 19.1.0
+      react-native: 0.81.4(@babel/core@7.28.3)(@types/react@19.1.10)(react@19.1.0)
+      react-native-ios-context-menu: 3.1.0(react-native-ios-utilities@5.1.2(react-native@0.81.4(@babel/core@7.28.3)(@types/react@19.1.10)(react@19.1.0))(react@19.1.0))(react-native@0.81.4(@babel/core@7.28.3)(@types/react@19.1.10)(react@19.1.0))(react@19.1.0)
+      react-native-ios-utilities: 5.1.2(react-native@0.81.4(@babel/core@7.28.3)(@types/react@19.1.10)(react@19.1.0))(react@19.1.0)
+      sf-symbols-typescript: 2.1.0
+    transitivePeerDependencies:
+      - '@types/react'
+      - '@types/react-dom'
+      - react-dom
 
   zod-to-json-schema@3.24.6(zod@3.25.76):
     dependencies:
