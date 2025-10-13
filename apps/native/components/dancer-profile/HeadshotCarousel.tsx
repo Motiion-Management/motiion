@@ -26,6 +26,8 @@ interface HeadshotCarouselProps {
   onPress?: () => void;
 }
 
+const SCREEN_HEIGHT_MODIFIER = 0.81;
+const CONTAINED_HEIGHT = SCREEN_HEIGHT * SCREEN_HEIGHT_MODIFIER;
 export function HeadshotCarousel({
   headshotUrls,
   initialIndex = 0,
@@ -38,14 +40,14 @@ export function HeadshotCarousel({
   // Derive the animated height value
   const animatedHeight = useDerivedValue(() => {
     if (!animatedIndex) {
-      return SCREEN_HEIGHT * 0.77;
+      return CONTAINED_HEIGHT;
     }
 
-    // Interpolate height: 0 (minimized) = 77%, 1+ (expanded) = full screen
+    // Interpolate height: 0 (minimized/letterboxed) = 70%, 1+ (expanded) = full screen
     return interpolate(
       animatedIndex.value,
       [0, 1],
-      [SCREEN_HEIGHT * 0.77, SCREEN_HEIGHT],
+      [CONTAINED_HEIGHT, SCREEN_HEIGHT],
       Extrapolate.CLAMP
     );
   }, [animatedIndex]);
@@ -58,15 +60,10 @@ export function HeadshotCarousel({
   // Border radius animation: rounded-xl at index 0 → 0 at index 1+ (full screen)
   const borderRadiusStyle = useAnimatedStyle(() => {
     if (!animatedIndex) {
-      return { borderRadius: 16, overflow: 'hidden' };
+      return { borderRadius: 0, overflow: 'hidden' };
     }
 
-    const borderRadius = interpolate(
-      animatedIndex.value,
-      [0, 1],
-      [16, 0],
-      Extrapolate.CLAMP
-    );
+    const borderRadius = interpolate(animatedIndex.value, [0, 1], [16, 0], Extrapolate.CLAMP);
 
     return { borderRadius, overflow: 'hidden' };
   }, [animatedIndex]);
@@ -81,61 +78,88 @@ export function HeadshotCarousel({
   }, [animatedIndex]);
 
   const controlsStyle = useAnimatedStyle(() => {
-    if (!animatedIndex) return { opacity: 1, transform: [{ translateY: 0 }] };
+    if (!animatedIndex) {
+      return {
+        opacity: 1,
+        top: CONTAINED_HEIGHT + 16,
+      };
+    }
 
-    // Fade out and slide down controls when sheet expands
+    // Fade out controls when sheet expands
     const opacity = interpolate(animatedIndex.value, [0, 1], [1, 0], Extrapolate.CLAMP);
 
-    const translateY = interpolate(animatedIndex.value, [0, 1], [0, 50], Extrapolate.CLAMP);
+    // Animate position to follow carousel bottom edge
+    const top = interpolate(
+      animatedIndex.value,
+      [0, 1],
+      [CONTAINED_HEIGHT + 16, SCREEN_HEIGHT],
+      Extrapolate.CLAMP
+    );
 
-    return { opacity, transform: [{ translateY }] };
+    return { opacity, top };
   }, [animatedIndex]);
 
   if (headshotUrls.length === 0) return null;
 
   const content = (
-    <Animated.View style={[{ width: SCREEN_WIDTH }, containerStyle, borderRadiusStyle]}>
-      {/* Carousel */}
-      <Carousel
-        width={SCREEN_WIDTH}
-        height={SCREEN_HEIGHT}
-        data={headshotUrls}
-        defaultIndex={initialIndex}
-        onSnapToItem={setCurrentIndex}
-        renderItem={({ item }) => {
-          // Create animated style for each image
-          const imageStyle = useAnimatedStyle(() => ({
-            width: SCREEN_WIDTH,
-            height: animatedHeight.value,
-          }));
-
-          return (
-            <View style={{ flex: 1 }}>
-              <Animated.Image source={{ uri: item }} style={imageStyle} resizeMode="cover" />
-            </View>
-          );
-        }}
-      />
-
-      {/* Title - fades in when sheet closes */}
+    <View style={{ flex: 1 }}>
+      {/* Carousel with border radius */}
       <Animated.View
-        style={[titleStyle]}
-        className="absolute left-0 right-0 top-0 items-center"
-        pointerEvents="none">
-        <SafeAreaView className="pt-4">
-          <Text variant="header5">Headshots</Text>
-        </SafeAreaView>
+        style={[
+          {
+            // width: SCREEN_WIDTH,
+            // marginHorizontal: 0,
+            // position: 'absolute',
+            // top: 0,
+            // left: 0,
+          },
+          containerStyle,
+          borderRadiusStyle,
+        ]}>
+        <Carousel
+          width={SCREEN_WIDTH}
+          // height={animatedHeight.value}
+          data={headshotUrls}
+          defaultIndex={initialIndex}
+          onSnapToItem={setCurrentIndex}
+          renderItem={({ item }) => {
+            // Create animated style for each image
+            const imageStyle = useAnimatedStyle(() => ({
+              width: SCREEN_WIDTH,
+              height: animatedHeight.value,
+            }));
+
+            return (
+              <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+                <Animated.Image source={{ uri: item }} style={imageStyle} resizeMode="cover" />
+              </View>
+            );
+          }}
+        />
+
+        {/* Title - fades in when sheet closes */}
+        <Animated.View
+          style={[titleStyle]}
+          className="absolute left-0 right-0 top-0 items-center"
+          pointerEvents="none">
+          <SafeAreaView className="pt-4">
+            <Text variant="header5">Headshots</Text>
+          </SafeAreaView>
+        </Animated.View>
       </Animated.View>
 
-      {/* Bottom controls - slides up when sheet closes */}
-      <SafeAreaView
-        className="absolute bottom-0 left-0 right-0"
-        edges={['bottom']}
+      {/* Bottom controls - positioned in gap below carousel */}
+      <Animated.View
+        style={[
+          controlsStyle,
+          {
+            position: 'absolute',
+            left: 0,
+            right: 0,
+          },
+        ]}
         pointerEvents="box-none">
-        <Animated.View
-          style={[controlsStyle]}
-          className="flex-row items-center px-4 pb-4"
-          pointerEvents="box-none">
+        <View className="flex-row items-center justify-center px-4" pointerEvents="box-none">
           {/* Close button */}
           <Button variant="secondary" size="icon" onPress={onClose}>
             <Icon name="arrow.up.to.line" size={24} className="text-icon-default" />
@@ -160,9 +184,9 @@ export function HeadshotCarousel({
           <Button variant="secondary" size="icon" onPress={onClose}>
             <Icon name="arrowshape.turn.up.right.fill" size={24} className="text-icon-default" />
           </Button>
-        </Animated.View>
-      </SafeAreaView>
-    </Animated.View>
+        </View>
+      </Animated.View>
+    </View>
   );
 
   // Wrap in TouchableOpacity for tap to expand (when sheet is open)
