@@ -4,8 +4,7 @@ const nextConfig = {
     return [
       {
         source: '/',
-        destination: 'https://lime-environment-912569.framer.app/'
-        // destination: 'https://motiion.framer.website/'
+        destination: 'https://motiion.framer.website/'
       }
     ]
   }
