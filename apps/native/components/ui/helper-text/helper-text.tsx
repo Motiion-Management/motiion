@@ -17,7 +17,7 @@ export const HelperText = ({ message, action }: HelperTextProps) => {
         {message}
       </Text>
       {action && (
-        <Button size="sm" variant="plain" onPress={action.onPress}>
+        <Button size="sm" variant="tertiary" onPress={action.onPress}>
           <Text>{action.label}</Text>
         </Button>
       )}

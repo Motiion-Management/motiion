@@ -18,6 +18,8 @@ import { useRouter, Href } from 'expo-router';
 import * as ImagePicker from 'expo-image-picker';
 import * as DocumentPicker from 'expo-document-picker';
 import { useAction } from 'convex/react';
+import { useOnboardingStatus } from '~/hooks/useOnboardingStatus';
+import { useClerk } from '@clerk/clerk-expo';
 
 type ParsedResumeData = {
   experiences: any[];
@@ -29,9 +31,11 @@ type ParsedResumeData = {
 
 export function DevOnboardingTools() {
   const { user } = useUser();
+  const { signOut } = useClerk();
   const onboarding = useOnboardingGroupFlow();
   const completeOnboarding = useMutation(api.onboarding.completeOnboarding);
   const resetOnboarding = useMutation(api.onboarding.resetOnboarding);
+  const { markComplete, markIncomplete } = useOnboardingStatus();
   const sheetState = useSheetState();
   const router = useRouter();
   const [activeTab, setActiveTab] = useState<'onboarding' | 'home' | 'resume'>('onboarding');
@@ -90,8 +94,9 @@ export function DevOnboardingTools() {
               <View className="mb-2 flex-row gap-2">
                 <Button
                   size="sm"
-                  variant="outline"
+                  variant="secondary"
                   onPress={async () => {
+                    await markIncomplete();
                     await resetOnboarding({});
                     onboarding.navigateToGroup('profile');
                   }}>
@@ -99,11 +104,22 @@ export function DevOnboardingTools() {
                 </Button>
                 <Button
                   size="sm"
-                  variant="outline"
+                  variant="secondary"
                   onPress={async () => {
+                    await markComplete();
                     await completeOnboarding({});
                   }}>
                   <Text variant="bodySm">Complete</Text>
+                </Button>
+                <Button
+                  size="sm"
+                  variant="secondary"
+                  onPress={() => {
+                    signOut().catch((error) => {
+                      console.error('Failed to sign out from dev tools', error);
+                    });
+                  }}>
+                  <Text variant="bodySm">Sign Out</Text>
                 </Button>
               </View>
 
@@ -115,7 +131,7 @@ export function DevOnboardingTools() {
                   <Button
                     key={groupKey}
                     size="sm"
-                    variant={onboarding.currentGroup === groupKey ? 'primary' : 'outline'}
+                    variant={onboarding.currentGroup === groupKey ? 'primary' : 'secondary'}
                     onPress={() => onboarding.navigateToGroup(groupKey)}>
                     <Text variant="bodySm">{ONBOARDING_GROUPS[groupKey].label}</Text>
                   </Button>
@@ -133,7 +149,7 @@ export function DevOnboardingTools() {
                   {allSteps.map((step) => (
                     <Button
                       size="sm"
-                      variant={onboarding.currentStepId === step ? 'primary' : 'outline'}
+                      variant={onboarding.currentStepId === step ? 'primary' : 'secondary'}
                       key={step}
                       onPress={() => onboarding.navigateToStep(step)}>
                       <Text variant="bodySm">{step}</Text>
@@ -154,7 +170,7 @@ export function DevOnboardingTools() {
                 <Text>Go to Home</Text>
               </Button>
 
-              {/* <Button onPress={() => setActiveTab('resume')} variant="outline"> */}
+              {/* <Button onPress={() => setActiveTab('resume')} variant="secondary"> */}
               {/*   <Text>Open Resume Tester</Text> */}
               {/* </Button> */}
 
@@ -183,7 +199,7 @@ export function DevOnboardingTools() {
 
               <View className="flex gap-2">
                 <Button
-                  variant="outline"
+                  variant="secondary"
                   disabled={isProcessing}
                   onPress={async () => {
                     try {
@@ -224,7 +240,7 @@ export function DevOnboardingTools() {
                 </Button>
 
                 <Button
-                  variant="outline"
+                  variant="secondary"
                   disabled={isProcessing}
                   onPress={async () => {
                     try {
@@ -264,7 +280,7 @@ export function DevOnboardingTools() {
                 </Button>
 
                 <Button
-                  variant="outline"
+                  variant="secondary"
                   disabled={isProcessing}
                   onPress={async () => {
                     try {

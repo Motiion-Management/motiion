@@ -4,7 +4,7 @@ import { Doc } from './_generated/dataModel'
 import { ConvexError } from 'convex/values'
 
 // Import schema from schemas folder
-import { Projects, projects, ProjectFormDoc, zProjectsDoc } from './schemas/projects'
+import { Projects, projects, ProjectFormDoc, zProjectsDoc, zProjectsClientDoc, PROJECT_TYPES } from './schemas/projects'
 
 const zProjectDoc = Projects.zDoc
 
@@ -51,7 +51,7 @@ export const destroy = authMutation({
 // Get all projects for current user's active profile
 export const getMyProjects = authQuery({
   args: {},
-  returns: z.array(zProjectsDoc),
+  returns: z.array(zProjectsClientDoc),
   handler: async (ctx) => {
     if (!ctx.user) return []
 
@@ -60,14 +60,14 @@ export const getMyProjects = authQuery({
       .withIndex('userId', (q) => q.eq('userId', ctx.user._id))
       .collect()
 
-    return projects.map(({ userId, profileType, profileId, ...rest }) => rest) as any
+    return projects.map(({ userId, profileType, profileId, ...rest }) => rest)
   }
 })
 
 // Get recent projects for current user (last 5)
 export const getMyRecentProjects = authQuery({
   args: {},
-  returns: z.array(zProjectsDoc),
+  returns: z.array(zProjectsClientDoc),
   handler: async (ctx) => {
     if (!ctx.user) return []
 
@@ -77,7 +77,7 @@ export const getMyRecentProjects = authQuery({
       .order('desc')
       .take(5)
 
-    return projects.map(({ userId, profileType, profileId, ...rest }) => rest) as any
+    return projects.map(({ userId, profileType, profileId, ...rest }) => rest)
   }
 })
 
@@ -117,5 +117,29 @@ export const addMyProject = authMutation({
       userId: ctx.user._id,
       ...profileInfo
     } as any)
+  }
+})
+
+// Get projects for a specific dancer profile, optionally filtered by type
+export const getDancerProjectsByType = zq({
+  args: {
+    dancerId: zid('dancers'),
+    type: z.enum(PROJECT_TYPES).optional()
+  },
+  returns: z.array(Projects.zDoc),
+  handler: async (ctx, { dancerId, type }) => {
+    let query = ctx.db
+      .query('projects')
+      .withIndex('by_profileId', (q) => q.eq('profileId', dancerId))
+      .order('desc')
+
+    const allProjects = await query.collect()
+
+    // Filter by type if provided
+    if (type) {
+      return allProjects.filter((project) => project.type === type)
+    }
+
+    return allProjects
   }
 })

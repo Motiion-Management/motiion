@@ -79,6 +79,9 @@ module.exports = {
         'background-utility-dark': withOpacity('background-utility-dark'),
         'background-utility-light': withOpacity('background-utility-light'),
         'background-utility-accent': withOpacity('background-utility-accent'),
+        'background-gradient-transparent': withOpacity('background-gradient-transparent'),
+        'background-gradient-filled': withOpacity('background-gradient-filled'),
+        'background-nav': withOpacity('background-nav'),
 
         // Surface tokens
         'surface-default': withOpacity('surface-default'),
@@ -92,6 +95,8 @@ module.exports = {
         'surface-disabled': withOpacity('surface-disabled'),
         'surface-error': withOpacity('surface-error'),
         'surface-caution': withOpacity('surface-caution'),
+        'surface-onGradient': withOpacity('surface-onGradient'),
+        'surface-onBackground-accent': withOpacity('surface-onBackground-accent'),
 
         // Text tokens
         'text-default': withOpacity('text-default'),
@@ -128,6 +133,7 @@ module.exports = {
         'icon-accent': withOpacity('icon-accent'),
         'icon-disabled': withOpacity('icon-disabled'),
         'icon-utility-dark': withOpacity('icon-utility-dark'),
+        'icon-utility-light': withOpacity('icon-utility-light'),
         'icon-error': withOpacity('icon-error'),
         'icon-error-emphasis': withOpacity('icon-error-emphasis'),
         'icon-caution-emphasis': withOpacity('icon-caution-emphasis'),

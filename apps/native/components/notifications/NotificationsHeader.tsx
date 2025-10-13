@@ -12,7 +12,7 @@ export function NotificationsHeader() {
       <View className="relative flex-row items-center justify-center px-4">
         {/* Back button */}
         <TouchableOpacity onPress={() => router.back()} className="absolute left-4">
-          <ChevronLeft className="h-6 w-6 text-white" />
+          <ChevronLeft size={20} className="text-white" />
         </TouchableOpacity>
 
         {/* Title */}

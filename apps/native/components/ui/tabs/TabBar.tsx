@@ -25,9 +25,12 @@ type Props = {
   indexDecimal: SharedValue<number>;
   onTabPress: (name: TabName) => void;
   tabNames: TabName[];
+  activeIndex: number;
+  variant?: 'default' | 'pill';
+  alignment?: 'left' | 'center';
 };
 
-export function TabBar({ focusedTab, indexDecimal, onTabPress, tabNames }: Props) {
+export function TabBar({ focusedTab, indexDecimal, onTabPress, tabNames, activeIndex, variant = 'default', alignment = 'left' }: Props) {
   const { width: tabWidth } = useWindowDimensions();
 
   const listAnimatedRef = useAnimatedRef<FlatList>();
@@ -95,6 +98,35 @@ export function TabBar({ focusedTab, indexDecimal, onTabPress, tabNames }: Props
       onTabPress(item);
     };
 
+    const isActive = index === activeIndex;
+
+    if (variant === 'pill') {
+      return (
+        <Pressable
+          key={item}
+          accessibilityRole={Platform.OS === 'web' ? 'link' : 'button'}
+          accessibilityState={isActive ? { selected: true } : {}}
+          accessibilityLabel={item}
+          onPress={onPress}
+          onLongPress={onLongPress}
+          className={`flex h-8 items-center justify-center rounded-2xl px-4 py-2 ${
+            isActive ? 'bg-button-surface-default' : 'bg-transparent'
+          }`}
+          onLayout={(event) => {
+            const { width } = event.nativeEvent.layout;
+            tabWidths.modify((value) => {
+              'worklet';
+              value[index] = width;
+              return value;
+            });
+          }}>
+          <Text className={`text-xs font-semibold ${isActive ? 'text-text-high' : 'text-text-low'}`}>
+            {item}
+          </Text>
+        </Pressable>
+      );
+    }
+
     return (
       <Pressable
         key={item}
@@ -117,28 +149,42 @@ export function TabBar({ focusedTab, indexDecimal, onTabPress, tabNames }: Props
     );
   };
 
+  const flatList = (
+    <Reanimated.FlatList
+      ref={listAnimatedRef}
+      data={tabNames}
+      keyExtractor={(item) => item}
+      renderItem={_renderItem}
+      horizontal
+      contentContainerStyle={{
+        paddingHorizontal: variant === 'pill' ? 0 : TAB_BAR_HORIZONTAL_PADDING,
+        gap: variant === 'pill' ? 0 : TAB_BAR_GAP,
+        justifyContent: alignment === 'center' ? 'center' : 'flex-start',
+      }}
+      showsHorizontalScrollIndicator={false}
+      onScroll={scrollHandler}
+      scrollEventThrottle={16}
+      scrollEnabled={variant === 'default'}
+    />
+  );
+
   return (
-    <View className="bg-black pb-2">
-      <Reanimated.FlatList
-        ref={listAnimatedRef}
-        data={tabNames}
-        keyExtractor={(item) => item}
-        renderItem={_renderItem}
-        horizontal
-        contentContainerStyle={{
-          paddingHorizontal: TAB_BAR_HORIZONTAL_PADDING,
-          gap: TAB_BAR_GAP,
-        }}
-        showsHorizontalScrollIndicator={false}
-        onScroll={scrollHandler}
-        scrollEventThrottle={16}
-      />
-      <TabIndicator
-        activeTabIndex={indexDecimal}
-        tabWidths={tabWidths}
-        tabOffsets={tabOffsets}
-        tabBarOffsetX={tabBarOffsetX}
-      />
+    <View className="pb-2">
+      {variant === 'pill' ? (
+        <View className="border border-border-low bg-surface-tint rounded-[20px] p-1">
+          {flatList}
+        </View>
+      ) : (
+        flatList
+      )}
+      {variant === 'default' && (
+        <TabIndicator
+          activeTabIndex={indexDecimal}
+          tabWidths={tabWidths}
+          tabOffsets={tabOffsets}
+          tabBarOffsetX={tabBarOffsetX}
+        />
+      )}
     </View>
   );
 }

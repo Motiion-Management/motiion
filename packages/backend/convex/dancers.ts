@@ -3,6 +3,7 @@ import { zid } from 'zodvex'
 import { zq, zm, zim, zAuthMutation, authQuery } from './util'
 import { z } from 'zod'
 import { Dancers, zCreateDancerInput, zDancers } from './schemas/dancers'
+import { Agencies } from './schemas/agencies'
 import { zodDoc } from 'zodvex'
 import { crud } from 'convex-helpers/server/crud'
 import schema from './schema'
@@ -22,6 +23,86 @@ export const get = zq({
     return dancer
   }
 })
+
+// Get full dancer profile with all related data for profile screen
+export const getDancerProfileWithDetails = zq({
+  args: { dancerId: zid('dancers') },
+  returns: z
+    .object({
+      dancer: Dancers.zDoc,
+      headshotUrls: z.array(z.string()),
+      recentProjects: z.array(z.any()),
+      allProjects: z.array(z.any()),
+      training: z.array(z.any()),
+      agency: Agencies.zDoc.nullable(),
+      isOwnProfile: z.boolean()
+    })
+    .nullable(),
+  handler: async (ctx, { dancerId }) => {
+    console.log('dancer id', dancerId)
+    const dancer = await ctx.db.get(dancerId)
+    console.log(dancer)
+    if (!dancer) return null
+
+    // Get authenticated user for ownership check
+    const identity = await ctx.auth.getUserIdentity()
+    const isOwnProfile = identity ? dancer.userId === identity.subject : false
+
+    // Resolve headshot URLs
+    const headshotUrls: Array<string> = []
+    if (dancer.headshots && Array.isArray(dancer.headshots)) {
+      for (const headshot of dancer.headshots) {
+        if (headshot.storageId) {
+          const url = await ctx.storage.getUrl(headshot.storageId)
+          if (url) headshotUrls.push(url)
+        }
+      }
+    }
+
+    // Get agency information if represented
+    let agency = null
+    if (dancer.representation?.agencyId) {
+      agency = await ctx.db.get(dancer.representation.agencyId)
+    }
+
+    // Get all projects for this profile
+    const allProjects = await ctx.db
+      .query('projects')
+      .withIndex('by_profileId', (q) => q.eq('profileId', dancerId))
+      .order('desc')
+      .collect()
+
+    // Get recent projects (top 2)
+    const recentProjects = allProjects.slice(0, 2)
+
+    // Get training records
+    const training = await ctx.db
+      .query('training')
+      .withIndex('by_profileId', (q) => q.eq('profileId', dancerId))
+      .collect()
+
+    return {
+      dancer,
+      headshotUrls,
+      recentProjects,
+      allProjects,
+      training,
+      agency,
+      isOwnProfile
+    }
+  }
+})
+
+// Export type for fully resolved dancer profile data
+export type DancerProfileData = {
+  dancer: typeof Dancers.zDoc._output
+  headshotUrls: Array<string>
+  recentProjects: Array<any>
+  allProjects: Array<any>
+  training: Array<any>
+  agency: (typeof Agencies.zDoc._output) | null
+  isOwnProfile: boolean
+}
 
 // Get the active dancer profile for the authenticated user
 export const getMyDancerProfile = authQuery({

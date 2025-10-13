@@ -98,7 +98,7 @@ export const BaseOnboardingForm = forwardRef<OnboardingFormRef, BaseOnboardingFo
             style={{ paddingBottom: 0, paddingTop: mode === 'fullscreen' ? insets.top + 48 : 16 }}>
             {mode === 'sheet' && onCancel && (
               <View className="absolute right-4 top-4 z-10">
-                <Button size="icon" variant="plain" onPress={onCancel}>
+                <Button size="icon" variant="tertiary" onPress={onCancel}>
                   <X size={24} className="text-icon-default" />
                 </Button>
               </View>
@@ -142,7 +142,7 @@ export const BaseOnboardingForm = forwardRef<OnboardingFormRef, BaseOnboardingFo
                   edges={['bottom', 'left', 'right']}
                   className="absolute bottom-0 right-0 flex-row items-center justify-end gap-4 px-4 pb-2">
                   <Button disabled={!canProgress} size="icon" variant="accent" onPress={onSubmit}>
-                    <ChevronRight size={24} className="text-icon-accent" />
+                    <ChevronRight size={20} className="text-icon-accent" />
                   </Button>
                 </SafeAreaView>
               </KeyboardStickyView>

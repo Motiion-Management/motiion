@@ -61,7 +61,7 @@ export function OnboardingScreenWrapper({
 
       <SafeAreaView edges={['bottom', 'left', 'right']}>
         <View className="flex-row items-center justify-between border-t border-border-default bg-surface-default px-4 py-3">
-          <Button variant="plain" onPress={handleBack}>
+          <Button variant="tertiary" onPress={handleBack}>
             <ChevronLeft size={20} className="text-icon-default" />
             <Text className="ml-1">Back</Text>
           </Button>
