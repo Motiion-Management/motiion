@@ -9,6 +9,7 @@ import Animated, {
   useAnimatedStyle,
   interpolate,
   Extrapolate,
+  SharedValue,
 } from 'react-native-reanimated';
 import { LinearGradient } from 'expo-linear-gradient';
 import { BlurView } from 'expo-blur';
@@ -57,6 +58,74 @@ function TopBar({ onExpandIntent }: { onExpandIntent: () => void }) {
     </SafeAreaView>
   );
 }
+
+function CustomHandle({ animatedIndex }: { animatedIndex: SharedValue<number> }) {
+  const handleStyle = useAnimatedStyle(() => {
+    const opacity = interpolate(animatedIndex.value, [0, 1], [0, 1], Extrapolate.CLAMP);
+    return { opacity };
+  });
+
+  return (
+    <Animated.View style={[handleStyle]} className="items-center pb-2 pt-3">
+      <View className="h-1 w-10 rounded-full bg-gray-400" />
+    </Animated.View>
+  );
+}
+
+function AnimatedSheetBackground({
+  animatedIndex,
+  screenHeight,
+}: {
+  animatedIndex: SharedValue<number>;
+  screenHeight: number;
+}) {
+  const backgroundStyle = useAnimatedStyle(() => {
+    // Horizontal margins: 24px at index 0 → 0px at index 1
+    const marginHorizontal = interpolate(animatedIndex.value, [0, 1], [24, 0], Extrapolate.CLAMP);
+
+    // Height: compact pill (80px) at index 0 → full height at index 1
+    const height = interpolate(animatedIndex.value, [0, 1], [80, screenHeight], Extrapolate.CLAMP);
+
+    // Top border radius: 40px (fully rounds 80px pill) → rounded-3xl (24px)
+    const borderTopRadius = interpolate(animatedIndex.value, [0, 1], [40, 24], Extrapolate.CLAMP);
+
+    // Bottom border radius: 40px (matches top for consistent pill shape)
+    const borderBottomRadius = 40;
+
+    // Shadow opacity: visible at index 0, fades out at index 1
+    const shadowOpacity = interpolate(animatedIndex.value, [0, 1], [0.15, 0], Extrapolate.CLAMP);
+
+    return {
+      marginHorizontal,
+      height,
+      borderTopLeftRadius: borderTopRadius,
+      borderTopRightRadius: borderTopRadius,
+      borderBottomLeftRadius: borderBottomRadius,
+      borderBottomRightRadius: borderBottomRadius,
+      shadowOpacity,
+    };
+  });
+
+  return (
+    <Animated.View
+      style={[
+        backgroundStyle,
+        {
+          position: 'absolute',
+          top: 0,
+          left: 0,
+          right: 0,
+          shadowColor: '#000',
+          shadowOffset: { width: 0, height: -2 },
+          shadowRadius: 8,
+          elevation: 5,
+        },
+      ]}
+      className="bg-background-nav"
+    />
+  );
+}
+
 const { height: SCREEN_HEIGHT } = Dimensions.get('window');
 const COLLAPSIBLE_HEIGHT = SCREEN_HEIGHT * 0.5;
 
@@ -64,7 +133,7 @@ export default function DancerScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
   const bottomSheetRef = useRef<BottomSheet>(null);
   const animatedIndex = useSharedValue(0);
-  const snapPoints = useMemo(() => ['50%', '100%'], []);
+  const snapPoints = useMemo(() => ['10%', '50%', '90%'], []);
   const [headshotLoaded, setHeadshotLoaded] = useState(false);
 
   const setSheetToHeadshotsView = () => bottomSheetRef.current?.close();
@@ -128,100 +197,49 @@ export default function DancerScreen() {
   }
 
   return (
-    <BackgroundGradientView>
-      <View style={{ flex: 1 }}>
-        {/* Headshot Carousel - expands to full screen when sheet closes */}
-        <HeadshotCarousel
-          animatedIndex={animatedIndex}
-          headshotUrls={profileData.headshotUrls}
-          initialIndex={0}
-          onClose={setSheetToDefaultView}
-          onPress={setSheetToHeadshotsView}
-        />
+    <View style={{ flex: 1 }}>
+      {/* Headshot Carousel - expands to full screen when sheet closes */}
+      <HeadshotCarousel
+        animatedIndex={animatedIndex}
+        headshotUrls={profileData.headshotUrls}
+        initialIndex={0}
+        onClose={setSheetToDefaultView}
+        onPress={setSheetToHeadshotsView}
+      />
 
-        {/* Top Bar */}
-        <TopBar onExpandIntent={setSheetToExpandedView} />
-        {/* BottomSheet with Projects */}
-        <BottomSheet
-          ref={bottomSheetRef}
-          snapPoints={snapPoints}
-          enableDynamicSizing={false}
-          enableOverDrag={false}
-          index={0}
-          animatedIndex={animatedIndex}
-          enablePanDownToClose={true}
-          handleComponent={null}
-          backgroundStyle={{ backgroundColor: 'transparent' }}>
-          <BottomSheetView
-            className="h-[100vh]"
-            style={{ flex: 1, backgroundColor: 'transparent', position: 'relative' }}>
-            {/* Collapsible section - fades and collapses when reaching index 1 */}
-            <Animated.View style={collapsibleStyle} className="gap-8">
-              <View />
-              <LinearGradient
-                colors={['rgba(0,0,0,0)', 'rgba(0,0,0,0.8)', 'rgba(0,0,0,0.9)', 'rgba(0,0,0,0.99)']}
-                locations={[0.0, 0.1, 0.2, 0.25]}
-                style={{
-                  position: 'absolute',
-                  left: 0,
-                  right: 0,
-                  top: 0,
-                  bottom: 0,
-                  zIndex: 0,
-                }}
-              />
-              {/* Content on top of gradient */}
-              <View className="z-10 items-center px-4">
-                <Text variant="header3">{profileData.dancer.displayName}</Text>
-                <Text variant="body">
-                  {profileData.dancer?.location?.city}, {profileData.dancer?.location?.state}
-                </Text>
-              </View>
-              <ProjectCarousel projects={profileData.recentProjects} />
-            </Animated.View>
+      {/* Top Bar */}
+      <TopBar onExpandIntent={setSheetToExpandedView} />
+      {/* BottomSheet with Projects */}
+      <BottomSheet
+        ref={bottomSheetRef}
+        snapPoints={snapPoints}
+        enableDynamicSizing={false}
+        enableOverDrag={false}
+        index={0}
+        animatedIndex={animatedIndex}
+        enablePanDownToClose={false}
+        handleComponent={() => <CustomHandle animatedIndex={animatedIndex} />}
+        backgroundComponent={() => (
+          <AnimatedSheetBackground animatedIndex={animatedIndex} screenHeight={SCREEN_HEIGHT} />
+        )}>
+        <BottomSheetView
+          className=""
+          style={{ flex: 1, backgroundColor: 'transparent', position: 'relative' }}>
+          <View className="gap-8">
+            {/* Bottomsheet header content */}
+            <View id="profile-sheet-header" className="z-10 items-center px-4 py-2">
+              <Text variant="header3">{profileData.dancer.displayName}</Text>
+              <Text variant="body">
+                {profileData.dancer?.location?.city}, {profileData.dancer?.location?.state}
+              </Text>
+            </View>
+            <ProjectCarousel projects={profileData.recentProjects} />
+          </View>
 
-            {/* Profile Details - fades in when reaching index 1 */}
-            <BottomSheetScrollView className="relative flex-1">
-              <LinearGradient
-                colors={['rgba(0,0,0,0)', 'rgba(0,0,0,0.5)', 'rgba(0,0,0,0.9)', 'rgba(0,0,0,1)']}
-                locations={[0.0, 0.2, 0.25, 0.4]}
-                style={{
-                  position: 'absolute',
-                  left: 0,
-                  right: 0,
-                  top: 0,
-                  bottom: 0,
-                  zIndex: 0,
-                }}
-              />
-              {/* Blur background */}
-              <Animated.View
-                className="bg-surface-high/50"
-                style={[
-                  blurStyle,
-                  {
-                    position: 'absolute',
-                    top: 0,
-                    left: 0,
-                    right: 0,
-                    bottom: 0,
-                    zIndex: 0,
-                  },
-                ]}>
-                <BlurView intensity={40} tint="dark" style={{ flex: 1 }} />
-              </Animated.View>
-
-              {/* Profile Details content */}
-              <Animated.View style={profileDetailsStyle} className="relative z-10">
-                <ProfileDetailsSheet
-                  profileData={profileData}
-                  onCollapseIntent={setSheetToDefaultView}
-                />
-              </Animated.View>
-            </BottomSheetScrollView>
-          </BottomSheetView>
-        </BottomSheet>
-      </View>
-    </BackgroundGradientView>
+          {/* Profile Details - fades in when reaching index 1 */}
+          <ProfileDetailsSheet profileData={profileData} onCollapseIntent={setSheetToDefaultView} />
+        </BottomSheetView>
+      </BottomSheet>
+    </View>
   );
 }

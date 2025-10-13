@@ -73,31 +73,16 @@ export function ProfileDetailsSheet({ profileData, onCollapseIntent }: ProfileDe
   };
 
   return (
-    <SafeAreaView className="h-screen flex-1 gap-6 rounded-t-3xl">
-      {/* Header */}
-      <View className="gap-2 px-4 pt-4">
-        <TopBar onCollapseIntent={onCollapseIntent} />
-        <View className="items-center">
-          <Text variant="header3">{displayName}</Text>
-          <Text variant="body">
-            {profileData.dancer?.location?.city}, {profileData.dancer?.location?.state}
-          </Text>
-        </View>
-      </View>
-      <ProjectCarousel projects={profileData.recentProjects} />
-      <TypecastDetails dancer={profileData.dancer} />
-
+    <SafeAreaView className="flex-1 gap-6">
       {/* Tabs */}
-      <View className="mt-4 flex-1">
-        <TabView
-          routes={tabs}
-          renderScene={renderScene}
-          initialKey="resume"
-          tabStyle="pill"
-          tabContainerClassName="px-4 pb-6"
-          contentClassName="bg-surface-high"
-        />
-      </View>
+      <TabView
+        routes={tabs}
+        renderScene={renderScene}
+        initialKey="resume"
+        tabStyle="pill"
+        tabContainerClassName="px-4 pb-6"
+        contentClassName="bg-surface-high"
+      />
     </SafeAreaView>
   );
 }

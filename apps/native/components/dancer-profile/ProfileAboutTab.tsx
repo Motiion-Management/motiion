@@ -9,6 +9,7 @@ import {
 import { Text } from '~/components/ui/text';
 import { ProjectCarousel } from './ProjectCarousel';
 import { type DancerProfileData } from '@packages/backend/convex/dancers';
+import { TypecastDetails } from './TypecastDetails';
 
 interface ProfileAboutTabProps {
   profileData: DancerProfileData;
@@ -103,20 +104,12 @@ export function ProfileAboutTab({ profileData }: ProfileAboutTabProps) {
         </AccordionItem>
 
         {/* Highlights Section */}
-        <AccordionItem value="highlights">
+        <AccordionItem value="typecast">
           <AccordionTrigger>
-            <Text variant="header4">Highlights</Text>
+            <Text variant="header4">Typecast</Text>
           </AccordionTrigger>
           <AccordionContent>
-            {recentProjects.length > 0 ? (
-              <ProjectCarousel projects={recentProjects} />
-            ) : (
-              <View className="px-4">
-                <Text variant="body" className="text-text-low">
-                  No projects yet
-                </Text>
-              </View>
-            )}
+            <TypecastDetails dancer={profileData.dancer} />
           </AccordionContent>
         </AccordionItem>
 

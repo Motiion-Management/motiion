@@ -38,16 +38,14 @@ export function HeadshotCarousel({
   // Derive the animated height value
   const animatedHeight = useDerivedValue(() => {
     if (!animatedIndex) {
-      // return SCREEN_HEIGHT * 0.7;
-      return SCREEN_HEIGHT * 0.85;
+      return SCREEN_HEIGHT * 0.77;
     }
 
-    // Interpolate height: -1 (closed) = full screen, 0 (open) = 60%
+    // Interpolate height: -1 (closed) = full screen, 0 (open) = 77%
     return interpolate(
       animatedIndex.value,
       [-1, 0],
-      // [SCREEN_HEIGHT, SCREEN_HEIGHT * 0.7],
-      [SCREEN_HEIGHT, SCREEN_HEIGHT * 0.85],
+      [SCREEN_HEIGHT, SCREEN_HEIGHT * 0.77],
       Extrapolate.CLAMP
     );
   }, [animatedIndex]);
@@ -56,6 +54,22 @@ export function HeadshotCarousel({
   const containerStyle = useAnimatedStyle(() => {
     return { height: animatedHeight.value };
   }, [animatedHeight]);
+
+  // Border radius animation: rounded-xl at index 0 → 0 at index -1 (full screen)
+  const borderRadiusStyle = useAnimatedStyle(() => {
+    if (!animatedIndex) {
+      return { borderRadius: 16, overflow: 'hidden' };
+    }
+
+    const borderRadius = interpolate(
+      animatedIndex.value,
+      [-1, 0],
+      [0, 16],
+      Extrapolate.CLAMP
+    );
+
+    return { borderRadius, overflow: 'hidden' };
+  }, [animatedIndex]);
 
   const titleStyle = useAnimatedStyle(() => {
     if (!animatedIndex) return { opacity: 0 };
@@ -80,7 +94,7 @@ export function HeadshotCarousel({
   if (headshotUrls.length === 0) return null;
 
   const content = (
-    <Animated.View style={[{ width: SCREEN_WIDTH }, containerStyle]}>
+    <Animated.View style={[{ width: SCREEN_WIDTH }, containerStyle, borderRadiusStyle]}>
       {/* Carousel */}
       <Carousel
         width={SCREEN_WIDTH}
@@ -134,9 +148,8 @@ export function HeadshotCarousel({
                 {headshotUrls.map((_, index) => (
                   <View
                     key={index}
-                    className={`h-2 w-2 rounded-full ${
-                      index === currentIndex ? 'bg-white' : 'bg-white/30'
-                    }`}
+                    className={`h-2 w-2 rounded-full ${index === currentIndex ? 'bg-white' : 'bg-white/30'
+                      }`}
                   />
                 ))}
               </View>

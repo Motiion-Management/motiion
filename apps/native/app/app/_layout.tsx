@@ -25,8 +25,7 @@ export default function AppLayout() {
   const { isSignedIn, isLoaded } = useAuth();
   const pathname = usePathname();
   const { onboardingComplete, serverComplete, redirectPath } = useOnboardingStatus();
-  const resolvedOnboardingStatus =
-    (serverComplete ?? onboardingComplete) ?? null;
+  const resolvedOnboardingStatus = serverComplete ?? onboardingComplete ?? null;
   const { hasResolved, statusChanged, acknowledgeStatusChange } =
     useInitialOnboardingStatus(resolvedOnboardingStatus);
   const isOnboardingRoute = pathname?.startsWith('/app/onboarding');
@@ -135,7 +134,7 @@ export default function AppLayout() {
         />
       </Stack>
       {/* Dev-only floating tools for onboarding iteration */}
-      <DevOnboardingTools />
+      {/* <DevOnboardingTools /> */}
       {!isLoaded && (
         <View className="absolute inset-0 items-center justify-center">
           <ActivityIndicator size="large" />
