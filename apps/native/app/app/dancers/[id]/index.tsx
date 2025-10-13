@@ -75,27 +75,41 @@ function CustomHandle({ animatedIndex }: { animatedIndex: SharedValue<number> })
 function AnimatedSheetBackground({
   animatedIndex,
   screenHeight,
+  headerHeight,
 }: {
   animatedIndex: SharedValue<number>;
   screenHeight: number;
+  headerHeight: number;
 }) {
   const backgroundStyle = useAnimatedStyle(() => {
     // Horizontal margins: 24px at index 0 → 0px at index 1
-    const marginHorizontal = interpolate(animatedIndex.value, [0, 1], [24, 0], Extrapolate.CLAMP);
+    const marginHorizontal = interpolate(animatedIndex.value, [0, 1], [12, 0], Extrapolate.CLAMP);
+    const marginTop = interpolate(animatedIndex.value, [0, 1], [6, 0], Extrapolate.CLAMP);
 
-    // Height: compact pill (80px) at index 0 → full height at index 1
-    const height = interpolate(animatedIndex.value, [0, 1], [80, screenHeight], Extrapolate.CLAMP);
+    // Height: dynamic based on header content → full height at index 1
+    const height = interpolate(
+      animatedIndex.value,
+      [0, 1],
+      [headerHeight, screenHeight],
+      Extrapolate.CLAMP
+    );
 
-    // Top border radius: 40px (fully rounds 80px pill) → rounded-3xl (24px)
-    const borderTopRadius = interpolate(animatedIndex.value, [0, 1], [40, 24], Extrapolate.CLAMP);
+    // Top border radius: half of header height (fully rounds pill) → rounded-3xl (24px)
+    const borderTopRadius = interpolate(
+      animatedIndex.value,
+      [0, 1],
+      [headerHeight / 2, 24],
+      Extrapolate.CLAMP
+    );
 
-    // Bottom border radius: 40px (matches top for consistent pill shape)
-    const borderBottomRadius = 40;
+    // Bottom border radius: half of header height (matches top for consistent pill shape)
+    const borderBottomRadius = headerHeight / 2;
 
     // Shadow opacity: visible at index 0, fades out at index 1
     const shadowOpacity = interpolate(animatedIndex.value, [0, 1], [0.15, 0], Extrapolate.CLAMP);
 
     return {
+      marginTop,
       marginHorizontal,
       height,
       borderTopLeftRadius: borderTopRadius,
@@ -133,8 +147,9 @@ export default function DancerScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
   const bottomSheetRef = useRef<BottomSheet>(null);
   const animatedIndex = useSharedValue(0);
-  const snapPoints = useMemo(() => ['10%', '50%', '90%'], []);
+  const snapPoints = useMemo(() => ['11%', '50%', '90%'], []);
   const [headshotLoaded, setHeadshotLoaded] = useState(false);
+  const [headerHeight, setHeaderHeight] = useState(80);
 
   const setSheetToHeadshotsView = () => bottomSheetRef.current?.close();
   const setSheetToDefaultView = () => bottomSheetRef.current?.snapToIndex(0);
@@ -220,14 +235,24 @@ export default function DancerScreen() {
         enablePanDownToClose={false}
         handleComponent={() => <CustomHandle animatedIndex={animatedIndex} />}
         backgroundComponent={() => (
-          <AnimatedSheetBackground animatedIndex={animatedIndex} screenHeight={SCREEN_HEIGHT} />
+          <AnimatedSheetBackground
+            animatedIndex={animatedIndex}
+            screenHeight={SCREEN_HEIGHT}
+            headerHeight={headerHeight}
+          />
         )}>
         <BottomSheetView
           className=""
           style={{ flex: 1, backgroundColor: 'transparent', position: 'relative' }}>
           <View className="gap-8">
             {/* Bottomsheet header content */}
-            <View id="profile-sheet-header" className="z-10 items-center px-4 py-2">
+            <View
+              id="profile-sheet-header"
+              className="z-10 items-center px-4 pb-4"
+              onLayout={(event) => {
+                const measuredHeight = event.nativeEvent.layout.height;
+                setHeaderHeight(measuredHeight + 16);
+              }}>
               <Text variant="header3">{profileData.dancer.displayName}</Text>
               <Text variant="body">
                 {profileData.dancer?.location?.city}, {profileData.dancer?.location?.state}
