@@ -123,12 +123,12 @@ export function HomeHeaderRight({ scrollProgress }: HeaderSlot) {
   });
 
   return (
-    <Link href="/app/notifications" asChild>
-      <Animated.View style={buttonShadowStyle}>
+    <Animated.View style={buttonShadowStyle}>
+      <Link href="/app/notifications" asChild>
         <Button variant="secondary" size="icon">
           <Bell className="h-6 w-6 text-white" />
         </Button>
-      </Animated.View>
-    </Link>
+      </Link>
+    </Animated.View>
   );
 }

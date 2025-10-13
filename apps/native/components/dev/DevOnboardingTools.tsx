@@ -113,7 +113,7 @@ export function DevOnboardingTools() {
                 </Button>
                 <Button
                   size="sm"
-                  variant="outline"
+                  variant="secondary"
                   onPress={() => {
                     signOut().catch((error) => {
                       console.error('Failed to sign out from dev tools', error);
@@ -131,7 +131,7 @@ export function DevOnboardingTools() {
                   <Button
                     key={groupKey}
                     size="sm"
-                    variant={onboarding.currentGroup === groupKey ? 'primary' : 'outline'}
+                    variant={onboarding.currentGroup === groupKey ? 'primary' : 'secondary'}
                     onPress={() => onboarding.navigateToGroup(groupKey)}>
                     <Text variant="bodySm">{ONBOARDING_GROUPS[groupKey].label}</Text>
                   </Button>
@@ -149,7 +149,7 @@ export function DevOnboardingTools() {
                   {allSteps.map((step) => (
                     <Button
                       size="sm"
-                      variant={onboarding.currentStepId === step ? 'primary' : 'outline'}
+                      variant={onboarding.currentStepId === step ? 'primary' : 'secondary'}
                       key={step}
                       onPress={() => onboarding.navigateToStep(step)}>
                       <Text variant="bodySm">{step}</Text>

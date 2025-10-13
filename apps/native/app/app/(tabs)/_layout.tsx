@@ -7,6 +7,7 @@ import { Icon } from '~/lib/icons/Icon';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import React from 'react';
 import { cn } from '~/lib/cn';
+import { BackgroundGradientView } from '~/components/ui/background-gradient-view';
 
 interface CustomTabButtonProps extends React.PropsWithChildren, TabTriggerSlotProps {
   route: string;
@@ -90,8 +91,12 @@ function CustomTabsLayout() {
 
 function NativeTabsLayout() {
   return (
-    <NativeTabs iconColor="#8B8B8B" tintColor="white" disableTransparentOnScrollEdge>
-      <NativeTabs.Trigger name="home">
+    <NativeTabs
+      // iconColor="#8B8B8B"
+      // tintColor="white"
+      disableTransparentOnScrollEdge
+      minimizeBehavior="onScrollDown">
+      <NativeTabs.Trigger name="home" options={{ backgroundColor: 'transparent' }}>
         <NativeTabIcon sf="house.fill" drawable="custom_android_drawable" selectedColor="white" />
         <Label hidden />
       </NativeTabs.Trigger>

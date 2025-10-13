@@ -23,7 +23,7 @@ export default {
       variants: {
         primary: 'variant="primary"',
         secondary: 'variant="secondary"',
-        outline: 'variant="outline"',
+        outline: 'variant="secondary"',
         accent: 'variant="accent"',
         destructive: 'variant="destructive"',
       },

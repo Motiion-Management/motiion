@@ -1,11 +1,10 @@
-import { cva } from 'class-variance-authority'
+import { cva } from 'class-variance-authority';
 
 export const buttonVariants = cva('flex-row items-center justify-center gap-2', {
   variants: {
     variant: {
       primary: 'active:opacity-90 bg-button-surface-default',
       secondary: 'border border-border-tint bg-button-surface-tint active:bg-button-surface-tint',
-      outline: 'border border-border-tint bg-transparent active:bg-button-surface-tint/40',
       tertiary: 'ios:active:opacity-70',
       accent: 'active:opacity-90 bg-button-surface-accent',
     },
@@ -22,7 +21,7 @@ export const buttonVariants = cva('flex-row items-center justify-center gap-2', 
     variant: 'primary',
     size: 'md',
   },
-})
+});
 
 export const androidRootVariants = cva('overflow-hidden', {
   variants: {
@@ -38,7 +37,7 @@ export const androidRootVariants = cva('overflow-hidden', {
   defaultVariants: {
     size: 'md',
   },
-})
+});
 
 export const buttonTextVariants = cva('font-semibold', {
   variants: {
@@ -46,7 +45,6 @@ export const buttonTextVariants = cva('font-semibold', {
       primary: 'text-text-high',
       secondary: 'text-text-default',
       tertiary: 'text-text-default',
-      outline: 'text-text-default',
       accent: 'text-text-high',
     },
     size: {
@@ -62,4 +60,4 @@ export const buttonTextVariants = cva('font-semibold', {
     variant: 'primary',
     size: 'md',
   },
-})
+});

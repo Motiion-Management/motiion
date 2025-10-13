@@ -56,26 +56,25 @@ export default function HomeScreen() {
 
             <InSessionSection items={sessions} onViewAllPress={sessionsModal.open} />
           </View>
+          <ScheduleModal
+            isOpen={classesModal.isOpen}
+            onClose={classesModal.close}
+            title="Classes"
+            dateRange="AUG 19 - AUG 25"
+            days={scheduleModalDays}
+            items={classesScheduleItems}
+          />
+
+          <ScheduleModal
+            isOpen={sessionsModal.isOpen}
+            onClose={sessionsModal.close}
+            title="Sessions"
+            dateRange="AUG 19 - AUG 25"
+            days={scheduleModalDays}
+            items={sessionsScheduleItems}
+          />
         </AnimatedScrollHeader.ScrollView>
       </AnimatedScrollHeader>
-
-      <ScheduleModal
-        isOpen={classesModal.isOpen}
-        onClose={classesModal.close}
-        title="Classes"
-        dateRange="AUG 19 - AUG 25"
-        days={scheduleModalDays}
-        items={classesScheduleItems}
-      />
-
-      <ScheduleModal
-        isOpen={sessionsModal.isOpen}
-        onClose={sessionsModal.close}
-        title="Sessions"
-        dateRange="AUG 19 - AUG 25"
-        days={scheduleModalDays}
-        items={sessionsScheduleItems}
-      />
     </BackgroundGradientView>
   )
 }
