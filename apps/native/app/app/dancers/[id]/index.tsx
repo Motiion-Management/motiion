@@ -151,9 +151,13 @@ export default function DancerScreen() {
   const [headshotLoaded, setHeadshotLoaded] = useState(false);
   const [headerHeight, setHeaderHeight] = useState(80);
 
-  const setSheetToHeadshotsView = () => bottomSheetRef.current?.close();
   const setSheetToDefaultView = () => bottomSheetRef.current?.snapToIndex(0);
   const setSheetToExpandedView = () => bottomSheetRef.current?.snapToIndex(1);
+
+  const toggleSheet = () =>
+    animatedIndex.value
+      ? bottomSheetRef.current?.snapToIndex(0)
+      : bottomSheetRef.current?.snapToIndex(1);
 
   // Animated styles for collapsible section
   const collapsibleStyle = useAnimatedStyle(() => {
@@ -175,6 +179,17 @@ export default function DancerScreen() {
 
   // Animated styles for blur background
   const blurStyle = useAnimatedStyle(() => {
+    const opacity = interpolate(animatedIndex.value, [0, 1], [0, 1], Extrapolate.CLAMP);
+    return { opacity };
+  });
+
+  // Animated styles for toggle button icons
+  const arrowIconStyle = useAnimatedStyle(() => {
+    const opacity = interpolate(animatedIndex.value, [0, 1], [1, 0], Extrapolate.CLAMP);
+    return { opacity };
+  });
+
+  const personIconStyle = useAnimatedStyle(() => {
     const opacity = interpolate(animatedIndex.value, [0, 1], [0, 1], Extrapolate.CLAMP);
     return { opacity };
   });
@@ -244,25 +259,58 @@ export default function DancerScreen() {
         <BottomSheetView
           className="h-[90vh] pb-10"
           style={{ flex: 1, backgroundColor: 'transparent', position: 'relative' }}>
-          <View className="gap-8">
+          <View className="flex-1 gap-8">
             {/* Bottomsheet header content */}
             <View
               id="profile-sheet-header"
-              className="z-10 items-center px-4 pb-4"
+              className="z-10 px-8 pb-4"
               onLayout={(event) => {
                 const measuredHeight = event.nativeEvent.layout.height;
                 setHeaderHeight(measuredHeight + 16);
               }}>
-              <Text variant="header3">{profileData.dancer.displayName}</Text>
-              <Text variant="body">
-                {profileData.dancer?.location?.city}, {profileData.dancer?.location?.state}
-              </Text>
+              <View className="flex-row items-center justify-between">
+                {/* Left button */}
+                <Button variant="secondary" size="icon" onPress={toggleSheet}>
+                  <View style={{ position: 'relative', width: 24, height: 24 }}>
+                    <Animated.View style={[arrowIconStyle, { position: 'absolute' }]}>
+                      <Icon name="arrow.up.to.line" size={24} className="text-icon-default" />
+                    </Animated.View>
+                    <Animated.View style={[personIconStyle, { position: 'absolute' }]}>
+                      <Icon
+                        name="person.crop.square.on.square.angled.fill"
+                        size={24}
+                        className="text-icon-default"
+                      />
+                    </Animated.View>
+                  </View>
+                </Button>
+
+                {/* Center content */}
+                <View className="flex-1 items-center">
+                  <Text variant="header3">{profileData.dancer.displayName}</Text>
+                  <Text variant="body">
+                    {profileData.dancer?.location?.city}, {profileData.dancer?.location?.state}
+                  </Text>
+                </View>
+
+                {/* Right button */}
+                <Button variant="secondary" size="icon" onPress={() => { }}>
+                  <Icon
+                    name="arrowshape.turn.up.right.fill"
+                    size={24}
+                    className="text-icon-default"
+                  />
+                </Button>
+              </View>
             </View>
             <ProjectCarousel projects={profileData.recentProjects} />
-          </View>
 
-          {/* Profile Details - fades in when reaching index 1 */}
-          <ProfileDetailsSheet profileData={profileData} onCollapseIntent={setSheetToDefaultView} />
+            {/* Profile Details - fades in when reaching index 1 */}
+            <ProfileDetailsSheet
+              profileData={profileData}
+              onCollapseIntent={setSheetToDefaultView}
+            />
+          </View>
         </BottomSheetView>
       </BottomSheet>
     </View>

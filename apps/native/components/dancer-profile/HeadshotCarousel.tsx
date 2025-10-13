@@ -12,9 +12,7 @@ import Animated, {
   type SharedValue,
 } from 'react-native-reanimated';
 import { Text } from '~/components/ui/text';
-import { Icon } from '~/lib/icons/Icon';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { Button } from '../ui/button';
 
 const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get('window');
 
@@ -148,7 +146,7 @@ export function HeadshotCarousel({
         </Animated.View>
       </Animated.View>
 
-      {/* Bottom controls - positioned in gap below carousel */}
+      {/* Stepper indicator - positioned below carousel */}
       <Animated.View
         style={[
           controlsStyle,
@@ -158,32 +156,20 @@ export function HeadshotCarousel({
             right: 0,
           },
         ]}
-        pointerEvents="box-none">
-        <View className="flex-row items-center justify-center px-4" pointerEvents="box-none">
-          {/* Close button */}
-          <Button variant="secondary" size="icon" onPress={onClose}>
-            <Icon name="arrow.up.to.line" size={24} className="text-icon-default" />
-          </Button>
-
-          {/* Stepper indicator */}
-          <View className="flex-1 items-center">
-            {headshotUrls.length > 1 && (
-              <View className="flex-row gap-2">
-                {headshotUrls.map((_, index) => (
-                  <View
-                    key={index}
-                    className={`h-2 w-2 rounded-full ${index === currentIndex ? 'bg-white' : 'bg-white/30'
-                      }`}
-                  />
-                ))}
-              </View>
-            )}
-          </View>
-
-          {/* Spacer for symmetry */}
-          <Button variant="secondary" size="icon" onPress={onClose}>
-            <Icon name="arrowshape.turn.up.right.fill" size={24} className="text-icon-default" />
-          </Button>
+        pointerEvents="none">
+        <View className="items-center justify-center">
+          {headshotUrls.length > 1 && (
+            <View className="flex-row gap-2">
+              {headshotUrls.map((_, index) => (
+                <View
+                  key={index}
+                  className={`h-2 w-2 rounded-full ${
+                    index === currentIndex ? 'bg-white' : 'bg-white/30'
+                  }`}
+                />
+              ))}
+            </View>
+          )}
         </View>
       </Animated.View>
     </View>
