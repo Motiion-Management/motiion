@@ -8,8 +8,7 @@ import Animated, {
   useDerivedValue,
   type SharedValue,
 } from 'react-native-reanimated';
-import { Text } from '~/components/ui/text';
-import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get('window');
 
@@ -72,15 +71,6 @@ export function HeadshotCarousel({
       overflow: 'visible',
     };
   }, [animatedIndex, animatedHeight]);
-
-  const titleStyle = useAnimatedStyle(() => {
-    if (!animatedIndex) return { opacity: 0 };
-
-    // Fade in title when sheet closes (index goes from 0 to -1)
-    const opacity = interpolate(animatedIndex.value, [-1, 0], [1, 0], Extrapolate.CLAMP);
-
-    return { opacity };
-  }, [animatedIndex]);
 
   const controlsStyle = useAnimatedStyle(() => {
     if (!animatedIndex) {
@@ -147,16 +137,6 @@ export function HeadshotCarousel({
             );
           }}
         />
-
-        {/* Title - fades in when sheet closes */}
-        <Animated.View
-          style={[titleStyle]}
-          className="absolute left-0 right-0 top-0 items-center"
-          pointerEvents="none">
-          <SafeAreaView className="pt-4">
-            <Text variant="header5">Headshots</Text>
-          </SafeAreaView>
-        </Animated.View>
       </Animated.View>
 
       {/* Stepper indicator - positioned below carousel */}
