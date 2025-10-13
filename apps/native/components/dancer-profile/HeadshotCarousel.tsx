@@ -24,8 +24,8 @@ interface HeadshotCarouselProps {
   onPress?: () => void;
 }
 
-const SCREEN_HEIGHT_MODIFIER = 0.81;
-const CONTAINED_HEIGHT = SCREEN_HEIGHT * SCREEN_HEIGHT_MODIFIER;
+const SCREEN_HEIGHT_MODIFIER = 0.89;
+const IMAGE_HEIGHT = SCREEN_HEIGHT * SCREEN_HEIGHT_MODIFIER;
 export function HeadshotCarousel({
   headshotUrls,
   initialIndex = 0,
@@ -38,14 +38,14 @@ export function HeadshotCarousel({
   // Derive the animated height value
   const animatedHeight = useDerivedValue(() => {
     if (!animatedIndex) {
-      return CONTAINED_HEIGHT;
+      return IMAGE_HEIGHT;
     }
 
     // Interpolate height: 0 (minimized/letterboxed) = 70%, 1+ (expanded) = full screen
     return interpolate(
       animatedIndex.value,
       [0, 1],
-      [CONTAINED_HEIGHT, SCREEN_HEIGHT],
+      [IMAGE_HEIGHT, SCREEN_HEIGHT],
       Extrapolate.CLAMP
     );
   }, [animatedIndex]);
@@ -61,7 +61,7 @@ export function HeadshotCarousel({
       return { borderRadius: 0, overflow: 'hidden' };
     }
 
-    const borderRadius = interpolate(animatedIndex.value, [0, 1], [16, 0], Extrapolate.CLAMP);
+    const borderRadius = interpolate(animatedIndex.value, [0, 1], [40, 0], Extrapolate.CLAMP);
 
     return { borderRadius, overflow: 'hidden' };
   }, [animatedIndex]);
@@ -79,7 +79,7 @@ export function HeadshotCarousel({
     if (!animatedIndex) {
       return {
         opacity: 1,
-        top: CONTAINED_HEIGHT + 16,
+        top: IMAGE_HEIGHT - 24,
       };
     }
 
@@ -90,7 +90,7 @@ export function HeadshotCarousel({
     const top = interpolate(
       animatedIndex.value,
       [0, 1],
-      [CONTAINED_HEIGHT + 16, SCREEN_HEIGHT],
+      [IMAGE_HEIGHT - 24, SCREEN_HEIGHT],
       Extrapolate.CLAMP
     );
 
