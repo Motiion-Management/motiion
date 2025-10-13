@@ -2,7 +2,11 @@ import { Stack } from 'expo-router';
 
 export default function SearchLayout() {
   return (
-    <Stack>
+    <Stack
+      screenOptions={{
+        headerShown: false,
+        contentStyle: { backgroundColor: 'transparent' },
+      }}>
       <Stack.Screen
         name="index"
         options={{
@@ -10,7 +14,7 @@ export default function SearchLayout() {
           headerSearchBarOptions: {
             placement: 'automatic',
             placeholder: 'Search',
-            onChangeText: () => { },
+            onChangeText: () => {},
           },
         }}
       />
