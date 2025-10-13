@@ -3,7 +3,11 @@ import { View, TouchableOpacity, Pressable, Image, Dimensions } from 'react-nati
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useLocalSearchParams, router, Redirect, Link } from 'expo-router';
 import { useQuery } from 'convex/react';
-import BottomSheet, { BottomSheetScrollView, BottomSheetView } from '@gorhom/bottom-sheet';
+import BottomSheet, {
+  BottomSheetBackdrop,
+  BottomSheetScrollView,
+  BottomSheetView,
+} from '@gorhom/bottom-sheet';
 import Animated, {
   useSharedValue,
   useAnimatedStyle,
@@ -43,7 +47,7 @@ function TopBar({ onExpandIntent }: { onExpandIntent: () => void }) {
           flexDirection: 'row',
           justifyContent: 'space-between',
           paddingHorizontal: 16,
-          paddingTop: 8,
+          paddingTop: 0,
         }}>
         {/* Close button (left) */}
         <Button onPress={handleClose} variant="tertiary">
@@ -52,7 +56,7 @@ function TopBar({ onExpandIntent }: { onExpandIntent: () => void }) {
 
         {/* Profile Details button (right) */}
         <Button variant="tertiary" onPress={onExpandIntent}>
-          <Icon name="person.text.rectangle" size={28} className="text-icon-default" />
+          <Icon name="qrcode" size={28} className="text-icon-default" />
         </Button>
       </View>
     </SafeAreaView>
@@ -249,6 +253,9 @@ export default function DancerScreen() {
         animatedIndex={animatedIndex}
         enablePanDownToClose={false}
         handleComponent={() => <CustomHandle animatedIndex={animatedIndex} />}
+        backdropComponent={(props) => (
+          <BottomSheetBackdrop {...props} appearsOnIndex={2} disappearsOnIndex={1} />
+        )}
         backgroundComponent={() => (
           <AnimatedSheetBackground
             animatedIndex={animatedIndex}
@@ -294,7 +301,7 @@ export default function DancerScreen() {
                 </View>
 
                 {/* Right button */}
-                <Button variant="secondary" size="icon" onPress={() => { }}>
+                <Button variant="secondary" size="icon" onPress={() => {}}>
                   <Icon
                     name="arrowshape.turn.up.right.fill"
                     size={24}
