@@ -242,7 +242,7 @@ export default function DancerScreen() {
           />
         )}>
         <BottomSheetView
-          className=""
+          className="h-[90vh] pb-10"
           style={{ flex: 1, backgroundColor: 'transparent', position: 'relative' }}>
           <View className="gap-8">
             {/* Bottomsheet header content */}

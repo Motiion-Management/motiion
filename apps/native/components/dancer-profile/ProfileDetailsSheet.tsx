@@ -51,8 +51,6 @@ function TopBar({ onCollapseIntent }: { onCollapseIntent: () => void }) {
 }
 
 export function ProfileDetailsSheet({ profileData, onCollapseIntent }: ProfileDetailsSheetProps) {
-  const displayName = profileData.dancer.displayName || 'Dancer';
-
   const tabs: Array<TabRoute> = [
     { key: 'about', title: 'About' },
     { key: 'resume', title: 'Resume' },
@@ -73,16 +71,13 @@ export function ProfileDetailsSheet({ profileData, onCollapseIntent }: ProfileDe
   };
 
   return (
-    <SafeAreaView className="flex-1 gap-6">
-      {/* Tabs */}
-      <TabView
-        routes={tabs}
-        renderScene={renderScene}
-        initialKey="resume"
-        tabStyle="pill"
-        tabContainerClassName="px-4 pb-6"
-        contentClassName="bg-surface-high"
-      />
-    </SafeAreaView>
+    <TabView
+      routes={tabs}
+      renderScene={renderScene}
+      initialKey="resume"
+      tabStyle="pill"
+      tabContainerClassName="px-4 pb-6"
+    // contentClassName="bg-surface-high"
+    />
   );
 }
