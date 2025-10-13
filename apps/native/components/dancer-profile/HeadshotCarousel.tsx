@@ -41,11 +41,11 @@ export function HeadshotCarousel({
       return SCREEN_HEIGHT * 0.77;
     }
 
-    // Interpolate height: -1 (closed) = full screen, 0 (open) = 77%
+    // Interpolate height: 0 (minimized) = 77%, 1+ (expanded) = full screen
     return interpolate(
       animatedIndex.value,
-      [-1, 0],
-      [SCREEN_HEIGHT, SCREEN_HEIGHT * 0.77],
+      [0, 1],
+      [SCREEN_HEIGHT * 0.77, SCREEN_HEIGHT],
       Extrapolate.CLAMP
     );
   }, [animatedIndex]);
@@ -55,7 +55,7 @@ export function HeadshotCarousel({
     return { height: animatedHeight.value };
   }, [animatedHeight]);
 
-  // Border radius animation: rounded-xl at index 0 → 0 at index -1 (full screen)
+  // Border radius animation: rounded-xl at index 0 → 0 at index 1+ (full screen)
   const borderRadiusStyle = useAnimatedStyle(() => {
     if (!animatedIndex) {
       return { borderRadius: 16, overflow: 'hidden' };
@@ -63,8 +63,8 @@ export function HeadshotCarousel({
 
     const borderRadius = interpolate(
       animatedIndex.value,
-      [-1, 0],
-      [0, 16],
+      [0, 1],
+      [16, 0],
       Extrapolate.CLAMP
     );
 
@@ -81,12 +81,12 @@ export function HeadshotCarousel({
   }, [animatedIndex]);
 
   const controlsStyle = useAnimatedStyle(() => {
-    if (!animatedIndex) return { opacity: 0, transform: [{ translateY: 50 }] };
+    if (!animatedIndex) return { opacity: 1, transform: [{ translateY: 0 }] };
 
-    // Fade in and slide up controls when sheet closes
-    const opacity = interpolate(animatedIndex.value, [-1, 0], [1, 0], Extrapolate.CLAMP);
+    // Fade out and slide down controls when sheet expands
+    const opacity = interpolate(animatedIndex.value, [0, 1], [1, 0], Extrapolate.CLAMP);
 
-    const translateY = interpolate(animatedIndex.value, [-1, 0], [0, 50], Extrapolate.CLAMP);
+    const translateY = interpolate(animatedIndex.value, [0, 1], [0, 50], Extrapolate.CLAMP);
 
     return { opacity, transform: [{ translateY }] };
   }, [animatedIndex]);

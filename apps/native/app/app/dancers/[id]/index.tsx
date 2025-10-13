@@ -219,7 +219,7 @@ export default function DancerScreen() {
         headshotUrls={profileData.headshotUrls}
         initialIndex={0}
         onClose={setSheetToDefaultView}
-        onPress={setSheetToHeadshotsView}
+        onPress={setSheetToDefaultView}
       />
 
       {/* Top Bar */}
