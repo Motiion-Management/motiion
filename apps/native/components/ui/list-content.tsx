@@ -4,7 +4,7 @@ import { View, type ViewProps } from 'react-native'
 import { Image } from 'expo-image'
 
 import { Text } from '~/components/ui/text'
-import { Icon } from '~/lib/icons/Icon'
+import { Icon, type IconProps } from '~/lib/icons/Icon'
 import { cn } from '~/lib/utils'
 
 type ListContentType = 'Profile' | 'Text' | 'Icon' | 'Text + Icon' | 'Activity'
@@ -26,13 +26,13 @@ interface TextListContentProps extends BaseListContentProps {
 
 interface IconListContentProps extends BaseListContentProps {
   type: 'Icon'
-  iconName?: string
+  iconName?: IconProps['name']
 }
 
 interface TextIconListContentProps extends BaseListContentProps {
   type: 'Text + Icon'
   text: string
-  iconName?: string
+  iconName?: IconProps['name']
 }
 
 interface ActivityListContentProps extends BaseListContentProps {

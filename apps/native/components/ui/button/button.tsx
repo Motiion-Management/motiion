@@ -19,7 +19,8 @@ import { buttonVariants, androidRootVariants, buttonTextVariants } from './varia
 // Android ripple colors that adapt to color scheme
 function getAndroidRipple(colorScheme: 'light' | 'dark', variant: ButtonVariant) {
   const baseColor = colorScheme === 'dark' ? '255, 255, 255' : '0, 0, 0';
-  const opacity = variant === 'secondary' || variant === 'tertiary' ? 0.1 : 0.2;
+  const lowEmphasisVariants: Array<ButtonVariant> = ['secondary', 'tertiary', 'outline'];
+  const opacity = lowEmphasisVariants.includes(variant) ? 0.1 : 0.2;
   return {
     color: `rgba(${baseColor}, ${opacity})`,
     borderless: false,

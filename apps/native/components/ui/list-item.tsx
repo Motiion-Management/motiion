@@ -1,6 +1,11 @@
 import type { ViewRef } from '@rn-primitives/types'
 import * as React from 'react'
-import { View, type ViewProps, TouchableOpacity } from 'react-native'
+import {
+  View,
+  type ViewProps,
+  TouchableOpacity,
+  type TouchableOpacityProps,
+} from 'react-native'
 import { Image, type ImageSource } from 'expo-image'
 
 import { Text } from '~/components/ui/text'
@@ -9,9 +14,37 @@ import { cn } from '~/lib/utils'
 
 type ListItemVariant = 'Profile' | 'Experience' | 'Activity'
 
-interface BaseListItemProps extends ViewProps {
+type NativeViewProps = Pick<
+  ViewProps,
+  | 'accessible'
+  | 'accessibilityHint'
+  | 'accessibilityLabel'
+  | 'accessibilityRole'
+  | 'className'
+  | 'style'
+  | 'testID'
+>
+
+type NativeTouchableProps = Pick<
+  TouchableOpacityProps,
+  | 'activeOpacity'
+  | 'delayLongPress'
+  | 'delayPressIn'
+  | 'delayPressOut'
+  | 'disabled'
+  | 'focusable'
+  | 'hitSlop'
+  | 'onBlur'
+  | 'onFocus'
+  | 'onLongPress'
+  | 'onPressIn'
+  | 'onPressOut'
+  | 'pressRetentionOffset'
+>
+
+interface BaseListItemProps extends NativeViewProps, NativeTouchableProps {
   variant: ListItemVariant
-  onPress?: () => void
+  onPress?: TouchableOpacityProps['onPress']
 }
 
 interface ProfileListItemProps extends BaseListItemProps {
@@ -38,10 +71,66 @@ interface ActivityListItemProps extends BaseListItemProps {
 type ListItemProps = ProfileListItemProps | ExperienceListItemProps | ActivityListItemProps
 
 export const ListItem = React.forwardRef<ViewRef, ListItemProps>(
-  ({ className, variant, onPress, ...props }, ref) => {
+  (
+    {
+      className,
+      variant,
+      onPress,
+      style,
+      testID,
+      accessible,
+      accessibilityHint,
+      accessibilityLabel,
+      accessibilityRole,
+      activeOpacity,
+      delayLongPress,
+      delayPressIn,
+      delayPressOut,
+      disabled,
+      focusable,
+      hitSlop,
+      onBlur,
+      onFocus,
+      onLongPress,
+      onPressIn,
+      onPressOut,
+      pressRetentionOffset,
+      ...variantProps
+    },
+    ref
+  ) => {
+    const commonViewProps = {
+      style,
+      testID,
+      accessible,
+      accessibilityHint,
+      accessibilityLabel,
+      accessibilityRole,
+    }
+
+    const touchableProps: NativeTouchableProps = {
+      activeOpacity,
+      delayLongPress,
+      delayPressIn,
+      delayPressOut,
+      disabled,
+      focusable,
+      hitSlop,
+      onBlur,
+      onFocus,
+      onLongPress,
+      onPressIn,
+      onPressOut,
+      pressRetentionOffset,
+    }
+
+    const resolvedTouchableProps: NativeTouchableProps = {
+      ...touchableProps,
+      activeOpacity: activeOpacity ?? 0.7,
+    }
     const Content = () => {
       if (variant === 'Experience') {
-        const { image, organizer, title } = props as ExperienceListItemProps
+        const { image, organizer, title } = variantProps as ExperienceListItemProps
         return (
           <View className="flex-col gap-4">
             <View className="flex-row gap-4">
@@ -70,7 +159,7 @@ export const ListItem = React.forwardRef<ViewRef, ListItemProps>(
       }
 
       if (variant === 'Profile') {
-        const { label, avatarUrl, name } = props as ProfileListItemProps
+        const { label, avatarUrl, name } = variantProps as ProfileListItemProps
         return (
           <View className="flex-col">
             <Text variant="labelSm" className="mb-1 uppercase text-text-low">
@@ -99,7 +188,8 @@ export const ListItem = React.forwardRef<ViewRef, ListItemProps>(
       }
 
       if (variant === 'Activity') {
-        const { category, activityType = 'Job', activityLabel } = props as ActivityListItemProps
+        const { category, activityType = 'Job', activityLabel } =
+          variantProps as ActivityListItemProps
 
         const activityColor =
           activityType === 'Session' ? 'text-[#cc00be]' :
@@ -135,16 +225,21 @@ export const ListItem = React.forwardRef<ViewRef, ListItemProps>(
         <TouchableOpacity
           ref={ref}
           onPress={onPress}
-          activeOpacity={0.7}
           className={cn('w-full', className)}
-          {...(props as ViewProps)}>
+          {...commonViewProps}
+          {...resolvedTouchableProps}>
           <Content />
         </TouchableOpacity>
       )
     }
 
     return (
-      <View ref={ref} className={cn('w-full', className)} {...(props as ViewProps)}>
+      <View
+        ref={ref}
+        className={cn('w-full', className)}
+        {...commonViewProps}
+        {...(onBlur ? { onBlur } : {})}
+        {...(onFocus ? { onFocus } : {})}>
         <Content />
       </View>
     )

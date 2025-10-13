@@ -143,7 +143,7 @@ function TeamTab({ project }: { project: any }) {
               <View className="gap-3">
                 {field.data.map((name: string, index: number) => (
                   <View key={index} className="flex-row items-center gap-2">
-                    <Avatar className="h-8 w-8">
+                    <Avatar alt={`Avatar for ${name}`} className="h-8 w-8">
                       <AvatarFallback>
                         <Text variant="bodySm" className="text-text-default">
                           {getInitials(name)}

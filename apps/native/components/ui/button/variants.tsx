@@ -5,6 +5,7 @@ export const buttonVariants = cva('flex-row items-center justify-center gap-2', 
     variant: {
       primary: 'active:opacity-90 bg-button-surface-default',
       secondary: 'border border-border-tint bg-button-surface-tint active:bg-button-surface-tint',
+      outline: 'border border-border-tint bg-transparent active:bg-button-surface-tint/40',
       tertiary: 'ios:active:opacity-70',
       accent: 'active:opacity-90 bg-button-surface-accent',
     },
@@ -45,6 +46,7 @@ export const buttonTextVariants = cva('font-semibold', {
       primary: 'text-text-high',
       secondary: 'text-text-default',
       tertiary: 'text-text-default',
+      outline: 'text-text-default',
       accent: 'text-text-high',
     },
     size: {
