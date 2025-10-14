@@ -91,36 +91,38 @@ function CustomTabsLayout() {
 
 function NativeTabsLayout() {
   return (
-    <NativeTabs
-      // iconColor="#8B8B8B"
-      // tintColor="white"
-      disableTransparentOnScrollEdge
-      minimizeBehavior="onScrollDown">
-      <NativeTabs.Trigger name="home" options={{ backgroundColor: 'transparent' }}>
-        <NativeTabIcon sf="house.fill" drawable="custom_android_drawable" selectedColor="white" />
-        <Label hidden />
-      </NativeTabs.Trigger>
-      <NativeTabs.Trigger name="discover" role="search">
-        <NativeTabIcon
-          sf="magnifyingglass"
-          drawable="custom_search_drawable"
-          selectedColor="white"
-        />
-        <Label hidden />
-      </NativeTabs.Trigger>
-      <NativeTabs.Trigger name="activity">
-        <NativeTabIcon sf="note" drawable="custom_notifications_drawable" selectedColor="white" />
-        <Label hidden />
-      </NativeTabs.Trigger>
-      <NativeTabs.Trigger name="profile">
-        <NativeTabIcon
-          sf="rectangle.stack.person.crop"
-          drawable="custom_settings_drawable"
-          selectedColor="white"
-        />
-        <Label hidden />
-      </NativeTabs.Trigger>
-    </NativeTabs>
+    <BackgroundGradientView>
+      <NativeTabs
+        // iconColor="#8B8B8B"
+        // tintColor="white"
+        // disableTransparentOnScrollEdge
+        minimizeBehavior="onScrollDown">
+        <NativeTabs.Trigger name="home" options={{ backgroundColor: 'transparent' }}>
+          <NativeTabIcon sf="house.fill" drawable="custom_android_drawable" selectedColor="white" />
+          <Label hidden />
+        </NativeTabs.Trigger>
+        <NativeTabs.Trigger name="discover" role="search">
+          <NativeTabIcon
+            sf="magnifyingglass"
+            drawable="custom_search_drawable"
+            selectedColor="white"
+          />
+          <Label hidden />
+        </NativeTabs.Trigger>
+        <NativeTabs.Trigger name="activity">
+          <NativeTabIcon sf="note" drawable="custom_notifications_drawable" selectedColor="white" />
+          <Label hidden />
+        </NativeTabs.Trigger>
+        <NativeTabs.Trigger name="profile">
+          <NativeTabIcon
+            sf="rectangle.stack.person.crop"
+            drawable="custom_settings_drawable"
+            selectedColor="white"
+          />
+          <Label hidden />
+        </NativeTabs.Trigger>
+      </NativeTabs>
+    </BackgroundGradientView>
   );
 }
 
