@@ -1,82 +1,74 @@
-import React, { useState, useCallback, useEffect } from 'react'
-import { View, StyleSheet, Alert, Linking } from 'react-native'
-import { CameraView, useCameraPermissions, BarcodeScanningResult } from 'expo-camera'
-import { router } from 'expo-router'
-import * as Haptics from 'expo-haptics'
-import { Text } from '~/components/ui/text'
-import { Button } from '~/components/ui/button'
+import React, { useState, useCallback, useEffect } from 'react';
+import { View, StyleSheet, Alert, Linking } from 'react-native';
+import { CameraView, useCameraPermissions, BarcodeScanningResult } from 'expo-camera';
+import { Href, router } from 'expo-router';
+import * as Haptics from 'expo-haptics';
+import { Text } from '~/components/ui/text';
+import { Button } from '~/components/ui/button';
 
-interface ScanCodeTabProps {
-  onScanSuccess?: () => void
-}
-
-export function ScanCodeTab({ onScanSuccess }: ScanCodeTabProps) {
-  const [permission, requestPermission] = useCameraPermissions()
-  const [hasScanned, setHasScanned] = useState(false)
+export function ScanCodeTab() {
+  const [permission, requestPermission] = useCameraPermissions();
+  const [hasScanned, setHasScanned] = useState(false);
 
   useEffect(() => {
     // Reset scan state when component mounts
-    setHasScanned(false)
-  }, [])
+    setHasScanned(false);
+  }, []);
 
-  const parseAndNavigate = useCallback(
-    (url: string) => {
-      try {
-        // Supported URL patterns:
-        // - https://motiion.io/app/dancers/123
-        // - motiion://app/dancers/123
-        // - motiion-dev://app/dancers/123
+  const parseAndNavigate = useCallback((url: string) => {
+    try {
+      // Supported URL patterns:
+      // - https://motiion.io/app/dancers/123
+      // - motiion://app/dancers/123
+      // - motiion-dev://app/dancers/123
 
-        let path: string | null = null
+      let path: string | null = null;
 
-        // Check for https://motiion.io URLs
-        if (url.startsWith('https://motiion.io/')) {
-          path = url.replace('https://motiion.io', '')
-        }
-        // Check for motiion:// deep links
-        else if (url.startsWith('motiion://')) {
-          path = url.replace('motiion:/', '')
-        }
-        // Check for motiion-dev:// deep links
-        else if (url.startsWith('motiion-dev://')) {
-          path = url.replace('motiion-dev:/', '')
-        }
-
-        if (path) {
-          // Ensure path starts with /
-          if (!path.startsWith('/')) {
-            path = '/' + path
-          }
-
-          // Navigate in-app
-          router.push(path as any)
-          onScanSuccess?.()
-
-          // Success haptic feedback
-          Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success)
-          return true
-        }
-
-        return false
-      } catch (error) {
-        console.error('Error parsing URL:', error)
-        return false
+      // Check for https://motiion.io URLs
+      if (url.startsWith('https://motiion.io/')) {
+        path = url.replace('https://motiion.io', '');
       }
-    },
-    [onScanSuccess]
-  )
+      // Check for motiion:// deep links
+      else if (url.startsWith('motiion://')) {
+        path = url.replace('motiion:/', '');
+      }
+      // Check for motiion-dev:// deep links
+      else if (url.startsWith('motiion-dev://')) {
+        path = url.replace('motiion-dev:/', '');
+      }
+
+      if (path) {
+        // Ensure path starts with /
+        if (!path.startsWith('/')) {
+          path = '/' + path;
+        }
+
+        // Navigate in-app
+        router.push(path as Href);
+
+        // Success haptic feedback
+        Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+        return true;
+      }
+
+      return false;
+    } catch (error) {
+      console.error('Error parsing URL:', error);
+      return false;
+    }
+  }, []);
 
   const handleBarCodeScanned = useCallback(
     ({ data }: BarcodeScanningResult) => {
-      if (hasScanned) return
+      if (hasScanned) return;
 
-      setHasScanned(true)
+      setHasScanned(true);
 
-      const success = parseAndNavigate(data)
+      const success = parseAndNavigate(data);
 
       if (!success) {
         // Error haptic feedback
-        Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error)
+        Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
         Alert.alert(
           'Invalid QR Code',
           'This QR code is not a valid Motiion link. Please scan a Motiion profile QR code.',
@@ -84,15 +76,15 @@ export function ScanCodeTab({ onScanSuccess }: ScanCodeTabProps) {
             {
               text: 'Try Again',
               onPress: () => {
-                setHasScanned(false)
+                setHasScanned(false);
               },
             },
           ]
-        )
+        );
       }
     },
     [hasScanned, parseAndNavigate]
-  )
+  );
 
   if (!permission) {
     // Camera permissions are still loading
@@ -102,7 +94,7 @@ export function ScanCodeTab({ onScanSuccess }: ScanCodeTabProps) {
           Loading camera...
         </Text>
       </View>
-    )
+    );
   }
 
   if (!permission.granted) {
@@ -116,7 +108,7 @@ export function ScanCodeTab({ onScanSuccess }: ScanCodeTabProps) {
           <Text>Grant Camera Permission</Text>
         </Button>
       </View>
-    )
+    );
   }
 
   return (
@@ -147,5 +139,5 @@ export function ScanCodeTab({ onScanSuccess }: ScanCodeTabProps) {
         </View>
       </View>
     </View>
-  )
+  );
 }

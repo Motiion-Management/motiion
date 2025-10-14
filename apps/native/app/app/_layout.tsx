@@ -107,28 +107,24 @@ export default function AppLayout() {
           name="(modals)"
           options={{
             presentation: 'modal',
-            headerShown: false,
             animation: 'slide_from_bottom',
           }}
         />
         <Stack.Screen
           name="notifications"
           options={{
-            headerShown: false,
             animation: 'default',
           }}
         />
         <Stack.Screen
           name="dancers/[id]"
           options={{
-            headerShown: false,
             animation: 'default',
           }}
         />
         <Stack.Screen
           name="(tabs)"
           options={{
-            headerShown: false,
             animation: 'fade',
           }}
         />

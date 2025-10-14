@@ -1,26 +1,27 @@
-import React, { useCallback } from 'react'
-import { View, Alert, Pressable } from 'react-native'
-import QRCode from 'react-native-qrcode-svg'
-import * as Clipboard from 'expo-clipboard'
-import * as Haptics from 'expo-haptics'
-import { Text } from '~/components/ui/text'
-import { Icon } from '~/lib/icons/Icon'
+import React, { useCallback } from 'react';
+import { View, Alert, Pressable } from 'react-native';
+import QRCode from 'react-native-qrcode-svg';
+import * as Clipboard from 'expo-clipboard';
+import * as Haptics from 'expo-haptics';
+import { Text } from '~/components/ui/text';
+import { Icon } from '~/lib/icons/Icon';
+import { Button } from '~/components/ui/button';
 
 interface MyCodeTabProps {
-  profileUrl: string
+  profileUrl: string;
 }
 
 export function MyCodeTab({ profileUrl }: MyCodeTabProps) {
   const handleCopyLink = useCallback(async () => {
     try {
-      await Clipboard.setStringAsync(profileUrl)
-      await Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success)
-      Alert.alert('Link Copied', 'Profile link copied to clipboard')
+      await Clipboard.setStringAsync(profileUrl);
+      await Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+      Alert.alert('Link Copied', 'Profile link copied to clipboard');
     } catch (error) {
-      console.error('Error copying link:', error)
-      Alert.alert('Error', 'Failed to copy link')
+      console.error('Error copying link:', error);
+      Alert.alert('Error', 'Failed to copy link');
     }
-  }, [profileUrl])
+  }, [profileUrl]);
 
   return (
     <View className="flex-1 items-center justify-center gap-8 px-4 py-8">
@@ -36,16 +37,6 @@ export function MyCodeTab({ profileUrl }: MyCodeTabProps) {
           motiion
         </Text>
       </View>
-
-      {/* Copy Link Button */}
-      <Pressable
-        onPress={handleCopyLink}
-        className="w-full flex-row items-center justify-center gap-2 rounded-full border border-border-low bg-button-surface-tint px-6 py-3">
-        <Icon name="link" size={24} className="text-icon-default" />
-        <Text variant="header5" className="text-text-default">
-          Copy Link
-        </Text>
-      </Pressable>
     </View>
-  )
+  );
 }

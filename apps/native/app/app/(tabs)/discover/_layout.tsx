@@ -2,15 +2,16 @@ import { Stack } from 'expo-router';
 
 export default function SearchLayout() {
   return (
-    <Stack
-      screenOptions={{
-        headerShown: false,
-        contentStyle: { backgroundColor: 'transparent' },
-      }}>
+    <Stack>
       <Stack.Screen
         name="index"
         options={{
           title: 'Search',
+          contentStyle: {
+            backgroundColor: 'transparent',
+          },
+          headerTitleStyle: { color: 'transparent' },
+          headerStyle: { backgroundColor: 'transparent' },
           headerSearchBarOptions: {
             placement: 'automatic',
             placeholder: 'Search',

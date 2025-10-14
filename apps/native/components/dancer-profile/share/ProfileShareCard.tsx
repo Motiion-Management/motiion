@@ -49,7 +49,7 @@ export function ProfileShareCard({ profileData, headshotUrl }: ProfileShareCardP
         </View>
 
         <Text variant="header2" className="">
-          {displayName} Hebert
+          {displayName}
         </Text>
 
         {location && <Text variant="body">{location}</Text>}

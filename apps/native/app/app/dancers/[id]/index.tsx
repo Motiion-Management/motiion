@@ -15,11 +15,11 @@ import { ProfileSheet, useProfileSheet } from '~/components/profile-sheet';
 import { ProfileShareCard } from '~/components/dancer-profile/share/ProfileShareCard';
 import { HeadshotShareCard } from '~/components/dancer-profile/share/HeadshotShareCard';
 import { ShareBottomSheet } from '~/components/dancer-profile/share/ShareBottomSheet';
-import { QRCodeModal } from '~/components/dancer-profile/qr';
+import { QRCodeDialog } from '~/components/dancer-profile/qr';
 import { Icon } from '~/lib/icons/Icon';
 import { Button } from '~/components/ui/button';
 
-function TopBar({ onExpandIntent }: { onExpandIntent: () => void }) {
+function TopBar({ profileUrl }: { onExpandIntent: () => void; profileUrl: string }) {
   const handleClose = () => {
     if (router.canGoBack()) {
       router.back();
@@ -41,9 +41,7 @@ function TopBar({ onExpandIntent }: { onExpandIntent: () => void }) {
         <Button onPress={handleClose} variant="tertiary">
           <Icon name="xmark" size={20} className="text-icon-default" />
         </Button>
-        <Button variant="tertiary" onPress={onExpandIntent}>
-          <Icon name="qrcode" size={28} className="text-icon-default" />
-        </Button>
+        <QRCodeDialog profileUrl={profileUrl} />
       </View>
     </SafeAreaView>
   );
@@ -81,7 +79,7 @@ export default function DancerScreen() {
     if (!id || !profileData || !profileShareCardRef.current) return;
 
     // Wait for view to be fully mounted and rendered
-    await new Promise(resolve => setTimeout(resolve, 100));
+    await new Promise((resolve) => setTimeout(resolve, 100));
 
     try {
       const imageUri = await captureRef(profileShareCardRef, {
@@ -101,7 +99,7 @@ export default function DancerScreen() {
     if (!id || !profileData || !headshotShareCardRef.current) return;
 
     // Wait for view to be fully mounted and rendered
-    await new Promise(resolve => setTimeout(resolve, 100));
+    await new Promise((resolve) => setTimeout(resolve, 100));
 
     try {
       const imageUri = await captureRef(headshotShareCardRef, {
@@ -171,7 +169,7 @@ export default function DancerScreen() {
         onIndexChange={setCurrentHeadshotIndex}
       />
 
-      <TopBar onExpandIntent={() => setQrModalVisible(true)} />
+      <TopBar onExpandIntent={() => setQrModalVisible(true)} profileUrl={profileUrl} />
 
       <ProfileSheet
         bottomSheetRef={bottomSheetRef}
@@ -205,7 +203,11 @@ export default function DancerScreen() {
           <DropdownMenu.Root>
             <DropdownMenu.Trigger>
               <Button variant="secondary" size="icon">
-                <Icon name="arrowshape.turn.up.right.fill" size={24} className="text-icon-default" />
+                <Icon
+                  name="arrowshape.turn.up.right.fill"
+                  size={24}
+                  className="text-icon-default"
+                />
               </Button>
             </DropdownMenu.Trigger>
             <DropdownMenu.Content>
@@ -251,13 +253,6 @@ export default function DancerScreen() {
           onClose={() => setShareSheetVisible(false)}
         />
       )}
-
-      {/* QR Code Modal */}
-      <QRCodeModal
-        visible={qrModalVisible}
-        profileUrl={profileUrl}
-        onClose={() => setQrModalVisible(false)}
-      />
     </View>
   );
 }

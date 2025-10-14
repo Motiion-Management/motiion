@@ -1,9 +1,9 @@
-import * as React from 'react'
-import { View } from 'react-native'
-import { useSafeAreaInsets } from 'react-native-safe-area-context'
+import * as React from 'react';
+import { View } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
-import { BackgroundGradientView } from '~/components/ui/background-gradient-view'
-import { AnimatedScrollHeader } from '~/components/ui/animated-scroll-header'
+import { BackgroundGradientView } from '~/components/ui/background-gradient-view';
+import { AnimatedScrollHeader } from '~/components/ui/animated-scroll-header';
 import {
   HomeHeaderLeft,
   HomeHeaderMiddle,
@@ -13,7 +13,7 @@ import {
   InSessionSection,
   ScheduleModal,
   useScheduleModal,
-} from '~/components/home'
+} from '~/components/home';
 import {
   heroCarouselItems,
   choreographers,
@@ -21,16 +21,16 @@ import {
   classesScheduleItems,
   sessionsScheduleItems,
   scheduleModalDays,
-} from '~/data/homeStubData'
+} from '~/data/homeStubData';
 
 function Divider() {
-  return <View className="h-px bg-border-tint" />
+  return <View className="h-px bg-border-tint" />;
 }
 
 export default function HomeScreen() {
-  const classesModal = useScheduleModal()
-  const sessionsModal = useScheduleModal()
-  const { bottom } = useSafeAreaInsets()
+  const classesModal = useScheduleModal();
+  const sessionsModal = useScheduleModal();
+  const { bottom } = useSafeAreaInsets();
 
   return (
     <BackgroundGradientView>
@@ -76,5 +76,5 @@ export default function HomeScreen() {
         </AnimatedScrollHeader.ScrollView>
       </AnimatedScrollHeader>
     </BackgroundGradientView>
-  )
+  );
 }
