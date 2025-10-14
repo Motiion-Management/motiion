@@ -83,7 +83,7 @@ export default function DancerScreen() {
 
     try {
       const imageUri = await captureRef(profileShareCardRef, {
-        result: 'data-uri',
+        result: 'tmpfile',
         quality: 1,
         format: 'png',
       });
