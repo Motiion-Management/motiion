@@ -15,6 +15,7 @@ import { ProfileSheet, useProfileSheet } from '~/components/profile-sheet';
 import { ProfileShareCard } from '~/components/dancer-profile/share/ProfileShareCard';
 import { HeadshotShareCard } from '~/components/dancer-profile/share/HeadshotShareCard';
 import { ShareBottomSheet } from '~/components/dancer-profile/share/ShareBottomSheet';
+import { QRCodeModal } from '~/components/dancer-profile/qr';
 import { Icon } from '~/lib/icons/Icon';
 import { Button } from '~/components/ui/button';
 
@@ -54,6 +55,7 @@ export default function DancerScreen() {
   const [currentHeadshotIndex, setCurrentHeadshotIndex] = useState(0);
   const [shareSheetVisible, setShareSheetVisible] = useState(false);
   const [shareData, setShareData] = useState<{ imageUri: string; shareUrl: string } | null>(null);
+  const [qrModalVisible, setQrModalVisible] = useState(false);
 
   const profileShareCardRef = useRef<View>(null);
   const headshotShareCardRef = useRef<View>(null);
@@ -156,6 +158,7 @@ export default function DancerScreen() {
   }
 
   const currentHeadshotUrl = profileData.headshotUrls[currentHeadshotIndex];
+  const profileUrl = `https://motiion.io/app/dancers/${id}`;
 
   return (
     <View style={{ flex: 1 }}>
@@ -168,7 +171,7 @@ export default function DancerScreen() {
         onIndexChange={setCurrentHeadshotIndex}
       />
 
-      <TopBar onExpandIntent={snapToExpanded} />
+      <TopBar onExpandIntent={() => setQrModalVisible(true)} />
 
       <ProfileSheet
         bottomSheetRef={bottomSheetRef}
@@ -248,6 +251,13 @@ export default function DancerScreen() {
           onClose={() => setShareSheetVisible(false)}
         />
       )}
+
+      {/* QR Code Modal */}
+      <QRCodeModal
+        visible={qrModalVisible}
+        profileUrl={profileUrl}
+        onClose={() => setQrModalVisible(false)}
+      />
     </View>
   );
 }
