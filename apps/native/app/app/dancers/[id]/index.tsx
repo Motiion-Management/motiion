@@ -118,6 +118,19 @@ export default function DancerScreen() {
     }
   };
 
+  const handleShareProfileLink = async () => {
+    if (!id) return;
+
+    try {
+      const profileLink = `https://motiion.io/app/dancers/${id}`;
+      await Share.share({
+        message: `Check out my profile on Motiion\n\n${profileLink}`,
+      });
+    } catch (error) {
+      console.error('Error sharing profile link:', error);
+    }
+  };
+
   if (profileData === undefined) {
     return null;
   }
@@ -193,11 +206,14 @@ export default function DancerScreen() {
               </Button>
             </DropdownMenu.Trigger>
             <DropdownMenu.Content>
-              <DropdownMenu.Item key="profile" onSelect={handleShareProfile}>
-                <DropdownMenu.ItemTitle>Share Profile</DropdownMenu.ItemTitle>
+              <DropdownMenu.Item key="profile-card" onSelect={handleShareProfile}>
+                <DropdownMenu.ItemTitle>Send Profile Card</DropdownMenu.ItemTitle>
               </DropdownMenu.Item>
               <DropdownMenu.Item key="headshot" onSelect={handleShareHeadshot}>
-                <DropdownMenu.ItemTitle>Share Headshot</DropdownMenu.ItemTitle>
+                <DropdownMenu.ItemTitle>Send this Headshot</DropdownMenu.ItemTitle>
+              </DropdownMenu.Item>
+              <DropdownMenu.Item key="profile-link" onSelect={handleShareProfileLink}>
+                <DropdownMenu.ItemTitle>Share Profile Link</DropdownMenu.ItemTitle>
               </DropdownMenu.Item>
             </DropdownMenu.Content>
           </DropdownMenu.Root>
