@@ -7,11 +7,11 @@ import { View } from 'react-native';
 import { Icon } from '~/lib/icons/Icon';
 import { Button } from '~/components/ui/button';
 
-interface QRCodeModalProps {
+interface QRCodeDialogProps {
   profileUrl: string;
 }
 
-export function QRCodeModal({ profileUrl }: QRCodeModalProps) {
+export function QRCodeDialog({ profileUrl }: QRCodeDialogProps) {
   const tabs: Array<TabRoute> = [
     { key: 'scan', title: 'Scan Code' },
     { key: 'mycode', title: 'My Code' },

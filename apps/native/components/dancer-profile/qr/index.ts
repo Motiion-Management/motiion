@@ -1,3 +1,3 @@
-export { QRCodeModal } from './QRCodeModal'
-export { MyCodeTab } from './MyCodeTab'
-export { ScanCodeTab } from './ScanCodeTab'
+export { QRCodeDialog } from './QRCodeDialog';
+export { MyCodeTab } from './MyCodeTab';
+export { ScanCodeTab } from './ScanCodeTab';

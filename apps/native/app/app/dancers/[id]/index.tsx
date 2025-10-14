@@ -1,5 +1,4 @@
 import React, { useState, useRef } from 'react';
-import { Dialog, DialogContent, DialogClose, DialogTrigger } from '~/components/ui/dialog';
 import { View, Image, Share } from 'react-native';
 import Animated from 'react-native-reanimated';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -16,7 +15,7 @@ import { ProfileSheet, useProfileSheet } from '~/components/profile-sheet';
 import { ProfileShareCard } from '~/components/dancer-profile/share/ProfileShareCard';
 import { HeadshotShareCard } from '~/components/dancer-profile/share/HeadshotShareCard';
 import { ShareBottomSheet } from '~/components/dancer-profile/share/ShareBottomSheet';
-import { QRCodeModal } from '~/components/dancer-profile/qr';
+import { QRCodeDialog } from '~/components/dancer-profile/qr';
 import { Icon } from '~/lib/icons/Icon';
 import { Button } from '~/components/ui/button';
 
@@ -42,7 +41,7 @@ function TopBar({ profileUrl }: { onExpandIntent: () => void; profileUrl: string
         <Button onPress={handleClose} variant="tertiary">
           <Icon name="xmark" size={20} className="text-icon-default" />
         </Button>
-        <QRCodeModal profileUrl={profileUrl} />
+        <QRCodeDialog profileUrl={profileUrl} />
       </View>
     </SafeAreaView>
   );
