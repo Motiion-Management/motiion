@@ -69,7 +69,9 @@
       "WebFetch(domain:expo.dev)",
       "mcp__figma-dev-mode-mcp-server__get_metadata",
       "WebFetch(domain:medium.com)",
-      "WebFetch(domain:tanaschita.com)"
+      "WebFetch(domain:tanaschita.com)",
+      "WebFetch(domain:raw.githubusercontent.com)",
+      "Read(//Users/jshebert/Downloads/**)"
     ]
   },
   "enableAllProjectMcpServers": true

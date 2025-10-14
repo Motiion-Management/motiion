@@ -35,6 +35,14 @@
           "cameraPermission": "Allow Motiion to access your camera to take photos."
         }
       ],
+      [
+        "expo-media-library",
+        {
+          "photosPermission": "Allow Motiion to save photos to your library.",
+          "savePhotosPermission": "Allow Motiion to save photos to your library.",
+          "isAccessMediaLocationEnabled": true
+        }
+      ],
       "expo-asset",
       "expo-document-picker",
       [
@@ -45,7 +53,8 @@
           "defaultChannel": "default",
           "enableBackgroundRemoteNotifications": false
         }
-      ]
+      ],
+      "./plugins/withFollyFix.js"
     ],
     "experiments": {
       "typedRoutes": true,
