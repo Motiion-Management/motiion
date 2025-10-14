@@ -78,6 +78,9 @@ export default function DancerScreen() {
   const handleShareProfile = async () => {
     if (!id || !profileData || !profileShareCardRef.current) return;
 
+    // Wait for view to be fully mounted and rendered
+    await new Promise(resolve => setTimeout(resolve, 100));
+
     try {
       const imageUri = await captureRef(profileShareCardRef, {
         result: 'data-uri',
@@ -94,6 +97,9 @@ export default function DancerScreen() {
 
   const handleShareHeadshot = async () => {
     if (!id || !profileData || !headshotShareCardRef.current) return;
+
+    // Wait for view to be fully mounted and rendered
+    await new Promise(resolve => setTimeout(resolve, 100));
 
     try {
       const imageUri = await captureRef(headshotShareCardRef, {
@@ -200,12 +206,16 @@ export default function DancerScreen() {
       {/* Off-screen share cards for capture */}
       <View
         ref={profileShareCardRef}
+        collapsable={false}
+        pointerEvents="none"
         style={{ position: 'absolute', left: -99999, top: -99999 }}>
         <ProfileShareCard profileData={profileData} headshotUrl={currentHeadshotUrl} />
       </View>
 
       <View
         ref={headshotShareCardRef}
+        collapsable={false}
+        pointerEvents="none"
         style={{ position: 'absolute', left: -99999, top: -99999 }}>
         <HeadshotShareCard headshotUrl={currentHeadshotUrl} />
       </View>
