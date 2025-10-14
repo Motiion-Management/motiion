@@ -51,9 +51,9 @@ export default function RootLayout() {
           </BottomSheetModalProvider>
           <AlertAnchor ref={alertRef} />
           <Toaster position="top-center" richColors />
+          <PortalHost />
         </KeyboardProvider>
       </GestureHandlerRootView>
-      <PortalHost />
     </ConvexClientProvider>
   );
 }

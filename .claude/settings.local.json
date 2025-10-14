@@ -71,7 +71,8 @@
       "WebFetch(domain:medium.com)",
       "WebFetch(domain:tanaschita.com)",
       "WebFetch(domain:raw.githubusercontent.com)",
-      "Read(//Users/jshebert/Downloads/**)"
+      "Read(//Users/jshebert/Downloads/**)",
+      "WebFetch(domain:reactnativereusables.com)"
     ]
   },
   "enableAllProjectMcpServers": true
