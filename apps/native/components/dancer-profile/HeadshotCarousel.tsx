@@ -25,7 +25,6 @@ const SCREEN_HEIGHT_MODIFIER = 0.75;
 const IMAGE_HEIGHT = SCREEN_HEIGHT * SCREEN_HEIGHT_MODIFIER;
 const COLLAPSED_WIDTH = SCREEN_WIDTH - 24;
 const EXPANDED_WIDTH = SCREEN_WIDTH;
-const COLLAPSED_SCALE_X = COLLAPSED_WIDTH / EXPANDED_WIDTH;
 export function HeadshotCarousel({
   headshotUrls,
   initialIndex = 0,
@@ -56,12 +55,12 @@ export function HeadshotCarousel({
     );
   }, [animatedIndex]);
 
-  const animatedScaleX = useDerivedValue(() => {
+  const animatedWidth = useDerivedValue(() => {
     if (!animatedIndex) {
-      return COLLAPSED_SCALE_X;
+      return COLLAPSED_WIDTH;
     }
 
-    return interpolate(animatedIndex.value, [0, 1], [COLLAPSED_SCALE_X, 1], Extrapolate.CLAMP);
+    return interpolate(animatedIndex.value, [0, 1], [COLLAPSED_WIDTH, EXPANDED_WIDTH], Extrapolate.CLAMP);
   }, [animatedIndex]);
 
   const containerStyle = useAnimatedStyle(() => {
@@ -117,21 +116,20 @@ export function HeadshotCarousel({
             // Create animated style for each image
             const cardStyle = useAnimatedStyle(() => {
               const index = animatedIndex?.value || 0;
-              const scaleX = animatedScaleX.value;
               const borderRadius = interpolate(index, [0, 1], [40, 0], Extrapolate.CLAMP);
-              const translateX = (1 - scaleX) * SCREEN_WIDTH * 0.5;
+              const width = animatedWidth.value;
+              const height = animatedHeight.value;
 
               return {
-                width: SCREEN_WIDTH,
-                height: animatedHeight.value,
+                width,
+                height,
                 borderRadius,
                 overflow: 'hidden',
-                transform: [{ translateX }, { scaleX }, { translateX: -translateX }],
               };
             });
 
             const imageStyle = useAnimatedStyle(() => ({
-              width: SCREEN_WIDTH,
+              width: animatedWidth.value,
               height: animatedHeight.value,
             }));
 
