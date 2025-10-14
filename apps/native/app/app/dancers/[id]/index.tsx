@@ -1,5 +1,5 @@
 import React, { useState, useRef } from 'react';
-import { View, Image } from 'react-native';
+import { View, Image, Share } from 'react-native';
 import Animated from 'react-native-reanimated';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useLocalSearchParams, router, Redirect } from 'expo-router';
@@ -103,15 +103,18 @@ export default function DancerScreen() {
 
     try {
       const imageUri = await captureRef(headshotShareCardRef, {
-        result: 'data-uri',
+        result: 'tmpfile',
         quality: 1,
         format: 'png',
       });
-      const shareUrl = `https://motiion.io/app/dancers/${id}`;
-      setShareData({ imageUri, shareUrl });
-      setShareSheetVisible(true);
+
+      // Share directly with native share sheet
+      await Share.share({
+        url: imageUri,
+        message: `Check out this photo on Motiion!\n\nhttps://motiion.io/app/dancers/${id}`,
+      });
     } catch (error) {
-      console.error('Error capturing headshot card:', error);
+      console.error('Error sharing headshot:', error);
     }
   };
 
