@@ -1,35 +1,34 @@
-import React from 'react'
-import { View, Image } from 'react-native'
-import { type DancerProfileData } from '@packages/backend/convex/dancers'
-import { Text } from '~/components/ui/text'
-import { TypecastDetails } from '../TypecastDetails'
-import { MotiionLogo } from '~/lib/icons/MotiionLogo'
+import React from 'react';
+import { View, Image } from 'react-native';
+import { type DancerProfileData } from '@packages/backend/convex/dancers';
+import { Text } from '~/components/ui/text';
+import { TypecastDetails } from '../TypecastDetails';
+import { MotiionLogo } from '~/lib/icons/MotiionLogo';
 
 interface ProfileShareCardProps {
-  profileData: DancerProfileData
-  headshotUrl: string
+  profileData: DancerProfileData;
+  headshotUrl: string;
 }
 
 // Instagram Story dimensions: 1080x1920
-const CARD_WIDTH = 1080
-const CARD_HEIGHT = 1920
-const HEADSHOT_WIDTH = CARD_WIDTH / 3
+const CARD_WIDTH = 380;
+const CARD_HEIGHT = 280;
+const HEADSHOT_WIDTH = CARD_WIDTH / 2.5;
 
 export function ProfileShareCard({ profileData, headshotUrl }: ProfileShareCardProps) {
-  const { dancer } = profileData
-  const displayName = dancer.displayName || 'Dancer'
+  const { dancer } = profileData;
+  const displayName = dancer.displayName || 'Dancer';
   const location =
     dancer.location?.city && dancer.location?.state
       ? `${dancer.location.city}, ${dancer.location.state}`
-      : undefined
+      : undefined;
 
   return (
     <View
+      className="flex-row bg-background-utility-dark"
       style={{
         width: CARD_WIDTH,
         height: CARD_HEIGHT,
-        backgroundColor: '#001F1A',
-        flexDirection: 'row',
       }}>
       {/* Headshot - Left 1/3 */}
       <Image
@@ -42,61 +41,28 @@ export function ProfileShareCard({ profileData, headshotUrl }: ProfileShareCardP
       />
 
       {/* Profile Info - Right 2/3 */}
-      <View
-        style={{
-          flex: 1,
-          padding: 60,
-          justifyContent: 'space-between',
-        }}>
+      <View className="flex-1 justify-start gap-1 p-6">
         {/* Top Section - Profile Info */}
-        <View style={{ gap: 32 }}>
-          <Text
-            variant="labelSm"
-            style={{
-              color: '#6B9B8F',
-              fontSize: 28,
-              textTransform: 'uppercase',
-              letterSpacing: 2,
-            }}>
-            Dancer
-          </Text>
-
-          <Text
-            variant="header1"
-            style={{
-              color: '#FFFFFF',
-              fontSize: 72,
-              lineHeight: 80,
-              fontWeight: '600',
-            }}>
-            {displayName}
-          </Text>
-
-          {location && (
-            <Text
-              variant="body"
-              style={{
-                color: '#9FB9B3',
-                fontSize: 32,
-                lineHeight: 40,
-              }}>
-              {location}
-            </Text>
-          )}
-
-          {/* Typecast Details */}
-          {dancer.attributes && (
-            <View style={{ marginTop: 40 }}>
-              <TypecastDetails dancer={dancer} />
-            </View>
-          )}
+        <View className="flex-row justify-between">
+          <Text variant="labelSm">Dancer</Text>
+          <MotiionLogo height={12} />
         </View>
+
+        <Text variant="header2" className="">
+          {displayName} Hebert
+        </Text>
+
+        {location && <Text variant="body">{location}</Text>}
+
+        {/* Typecast Details */}
+        {dancer.attributes && (
+          <View className="flex-1 justify-end">
+            <TypecastDetails dancer={dancer} variant="share-card" />
+          </View>
+        )}
 
         {/* Bottom Section - Logo */}
-        <View style={{ alignItems: 'flex-start' }}>
-          <MotiionLogo width={120} height={75} />
-        </View>
       </View>
     </View>
-  )
+  );
 }

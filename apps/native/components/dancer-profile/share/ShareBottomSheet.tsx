@@ -71,7 +71,7 @@ export function ShareBottomSheet({ visible, imageUri, shareUrl, onClose }: Share
           <Image
             source={{ uri: imageUri }}
             style={{
-              width: 280,
+              width: 380,
               height: 280,
               borderRadius: 20,
             }}

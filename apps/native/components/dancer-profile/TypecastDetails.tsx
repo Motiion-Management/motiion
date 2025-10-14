@@ -6,6 +6,7 @@ import { formatHeight } from '~/lib/utils';
 
 interface TypecastDetailsProps {
   dancer: Doc<'dancers'>;
+  variant?: 'default' | 'share-card';
 }
 
 function truncateValue(value: string | undefined, maxLength: number = 3): string {
@@ -26,7 +27,7 @@ function formatEthnicity(ethnicity: string[] | undefined): string {
   return truncateValue(combined, 3);
 }
 
-export function TypecastDetails({ dancer }: TypecastDetailsProps) {
+export function TypecastDetails({ dancer, variant = 'default' }: TypecastDetailsProps) {
   const { attributes } = dancer;
 
   if (!attributes) return null;
@@ -39,16 +40,22 @@ export function TypecastDetails({ dancer }: TypecastDetailsProps) {
     { label: 'Hair', value: truncateValue(attributes.hairColor) },
   ];
 
+  const isShareCard = variant === 'share-card';
+  const itemGap = isShareCard ? 'gap-2' : 'gap-6';
+  const valueLabelGap = isShareCard ? 'gap-0.5' : 'gap-1';
+  const valueVariant = isShareCard ? 'caption2' : 'body';
+  const labelVariant = isShareCard ? 'caption2' : 'labelXs';
+
   return (
     <View className="flex-col gap-2">
       {/* Values row */}
-      <View className="flex-row items-center justify-center gap-6">
+      <View className={`flex-row items-center justify-center ${itemGap}`}>
         {stats.map((stat, index) => (
-          <View key={index} className="items-center justify-center gap-1">
-            <Text variant="body" className="text-center text-text-default">
+          <View key={index} className={`items-center justify-center ${valueLabelGap}`}>
+            <Text variant={valueVariant} className="text-center text-text-default">
               {stat.value}
             </Text>
-            <Text variant="labelXs" className="text-center uppercase text-text-low">
+            <Text variant={labelVariant} className="text-center uppercase text-text-low">
               {stat.label}
             </Text>
           </View>
