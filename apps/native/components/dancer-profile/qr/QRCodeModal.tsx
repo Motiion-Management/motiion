@@ -1,39 +1,40 @@
-import React from 'react'
-import { View, Modal, Pressable, StatusBar } from 'react-native'
-import { BlurView } from 'expo-blur'
-import { SafeAreaView } from 'react-native-safe-area-context'
-import { TabView, type TabRoute } from '~/components/ui/tabs/TabView'
-import { Icon } from '~/lib/icons/Icon'
-import { MyCodeTab } from './MyCodeTab'
-import { ScanCodeTab } from './ScanCodeTab'
+import React from 'react';
+import { View, Modal, Pressable, StatusBar } from 'react-native';
+import { BlurView } from 'expo-blur';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import { TabView, type TabRoute } from '~/components/ui/tabs/TabView';
+import { Icon } from '~/lib/icons/Icon';
+import { MyCodeTab } from './MyCodeTab';
+import { ScanCodeTab } from './ScanCodeTab';
+import { Button } from '~/components/ui/button';
 
 interface QRCodeModalProps {
-  visible: boolean
-  profileUrl: string
-  onClose: () => void
+  visible: boolean;
+  profileUrl: string;
+  onClose: () => void;
 }
 
 export function QRCodeModal({ visible, profileUrl, onClose }: QRCodeModalProps) {
   const tabs: Array<TabRoute> = [
     { key: 'scan', title: 'Scan Code' },
     { key: 'mycode', title: 'My Code' },
-  ]
+  ];
 
   const handleScanSuccess = () => {
     // Close modal after successful scan
-    onClose()
-  }
+    onClose();
+  };
 
   const renderScene = (route: TabRoute) => {
     switch (route.key) {
       case 'scan':
-        return <ScanCodeTab onScanSuccess={handleScanSuccess} />
+        return <ScanCodeTab onScanSuccess={handleScanSuccess} />;
       case 'mycode':
-        return <MyCodeTab profileUrl={profileUrl} />
+        return <MyCodeTab profileUrl={profileUrl} />;
       default:
-        return null
+        return null;
     }
-  }
+  };
 
   return (
     <Modal
@@ -48,19 +49,17 @@ export function QRCodeModal({ visible, profileUrl, onClose }: QRCodeModalProps) 
         <BlurView intensity={20} tint="dark" style={{ flex: 1 }}>
           {/* Close button overlay - top left */}
           <SafeAreaView edges={['top']} className="absolute left-0 right-0 top-0 z-50">
-            <View className="px-4 py-2">
-              <Pressable
-                onPress={onClose}
-                className="h-10 w-10 items-center justify-center rounded-full active:opacity-70">
-                <Icon name="xmark" size={24} className="text-white" />
-              </Pressable>
+            <View className="flex-row px-4">
+              <Button onPress={onClose} variant="tertiary">
+                <Icon name="xmark" size={20} className="text-icon-default" />
+              </Button>
             </View>
           </SafeAreaView>
 
           {/* Centered modal content */}
           <View className="flex-1 items-center justify-center px-4">
-            <View className="w-full max-w-[370px] overflow-hidden rounded-[18px] border-[0.5px] border-white/10 bg-surface-tint/80 backdrop-blur-xl">
-              <View className="h-[600px]">
+            <View className="h-[450px] w-full overflow-hidden rounded-xl border border-border-tint bg-surface-overlay">
+              <View className="flex-1">
                 <TabView
                   routes={tabs}
                   renderScene={renderScene}
@@ -78,5 +77,5 @@ export function QRCodeModal({ visible, profileUrl, onClose }: QRCodeModalProps) 
         </BlurView>
       </View>
     </Modal>
-  )
+  );
 }
