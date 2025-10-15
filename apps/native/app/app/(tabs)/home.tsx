@@ -32,9 +32,9 @@ export default function HomeScreen() {
   return (
     <TabScreenLayout
       header={{
-        left: <HomeHeaderLeft />,
-        middle: (slot) => <HomeHeaderMiddle {...slot} />,
-        right: (slot) => <HomeHeaderRight {...slot} />,
+        left: HomeHeaderLeft,
+        middle: HomeHeaderMiddle,
+        right: HomeHeaderRight,
       }}>
       <View className="gap-8">
         <HeroCarousel items={heroCarouselItems} />

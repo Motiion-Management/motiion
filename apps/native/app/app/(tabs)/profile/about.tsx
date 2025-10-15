@@ -1,19 +1,16 @@
 import React from 'react';
 import { View } from 'react-native';
-import { Stack } from 'expo-router';
 
 import { Text } from '~/components/ui/text';
+import { TabScreenLayout } from '~/components/layouts/TabScreenLayout';
 
 export default function AboutScreen() {
   return (
-    <>
-      <Stack.Screen
-        options={{
-          title: 'About',
-          headerShown: true,
-          headerBackTitle: 'Profile',
-        }}
-      />
+    <TabScreenLayout
+      header={{
+        left: 'back',
+        middle: 'About',
+      }}>
       <View className="flex-1 items-center justify-center p-4">
         <Text variant="header4" className="text-text-default">
           About
@@ -22,6 +19,6 @@ export default function AboutScreen() {
           Profile information will be displayed here
         </Text>
       </View>
-    </>
+    </TabScreenLayout>
   );
 }

@@ -11,9 +11,9 @@ import { api } from '@packages/backend/convex/_generated/api';
 import Bell from '~/lib/icons/Bell';
 import { Button } from '../ui/button';
 import { MotiionLogo } from '~/lib/icons/MotiionLogo';
-import type { HeaderSlot } from '~/components/ui/animated-scroll-header';
+import type { TabHeaderSlot } from '~/components/layouts/TabScreenLayout';
 
-export function HomeHeaderLeft() {
+export function HomeHeaderLeft(_: TabHeaderSlot) {
   const { user } = useUser();
   const profile = useQuery(api.dancers.getMyDancerProfile, {});
   const headshotUrl = useQuery(api.dancers.getMyDancerHeadshotUrl, {});
@@ -63,7 +63,7 @@ export function HomeHeaderLeft() {
   );
 }
 
-export function HomeHeaderMiddle({ scrollProgress }: HeaderSlot) {
+export function HomeHeaderMiddle({ scrollProgress }: TabHeaderSlot) {
   const { user } = useUser();
   const profile = useQuery(api.dancers.getMyDancerProfile, {});
 
@@ -107,7 +107,7 @@ export function HomeHeaderMiddle({ scrollProgress }: HeaderSlot) {
   );
 }
 
-export function HomeHeaderRight({ scrollProgress }: HeaderSlot) {
+export function HomeHeaderRight({ scrollProgress }: TabHeaderSlot) {
   const buttonShadowStyle = useAnimatedStyle(() => {
     'worklet';
     const progress = scrollProgress.value;

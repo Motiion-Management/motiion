@@ -13,9 +13,8 @@ export default function ProfileScreen() {
   return (
     <TabScreenLayout
       header={{
-        left: <View className="size-10" />,
-        middle: (slot) => <ProfileHeaderTitle {...slot} />,
-        right: (slot) => <ProfileHeaderSettingsButton {...slot} />,
+        middle: ProfileHeaderTitle,
+        right: ProfileHeaderSettingsButton,
       }}>
       <View className="gap-8">
         {/* Section Cards Pager */}

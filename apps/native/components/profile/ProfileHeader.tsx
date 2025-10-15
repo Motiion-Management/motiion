@@ -1,24 +1,15 @@
 import React from 'react';
-import { View } from 'react-native';
 import { router } from 'expo-router';
-import Animated, { type SharedValue } from 'react-native-reanimated';
 
-import { Text } from '~/components/ui/text';
 import { HeaderActionButton } from '~/components/ui/animated-scroll-header';
+import { HeaderTitle } from '../ui/animated-scroll-header/HeaderTitle';
+import type { TabHeaderSlot } from '~/components/layouts/TabScreenLayout';
 
-interface AnimatedSlotProps {
-  scrollProgress: SharedValue<number>;
+export function ProfileHeaderTitle(_: TabHeaderSlot) {
+  return <HeaderTitle title="Profile" />;
 }
 
-export function ProfileHeaderTitle({ scrollProgress }: AnimatedSlotProps) {
-  return (
-    <View className="items-center justify-center">
-      <Text variant="header5">Profile</Text>
-    </View>
-  );
-}
-
-export function ProfileHeaderSettingsButton({ scrollProgress }: AnimatedSlotProps) {
+export function ProfileHeaderSettingsButton({ scrollProgress }: TabHeaderSlot) {
   return (
     <HeaderActionButton
       scrollProgress={scrollProgress}

@@ -1,4 +1,4 @@
-import React, { useMemo, type ReactNode } from 'react';
+import React, { type ComponentType, type ReactNode } from 'react';
 import { View } from 'react-native';
 import { router } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -14,25 +14,32 @@ import Animated, {
 import { BlurView } from 'expo-blur';
 
 import { BackgroundGradientView } from '~/components/ui/background-gradient-view';
-import { Button } from '~/components/ui/button';
-import { Icon, type IconProps } from '~/lib/icons/Icon';
+import { HeaderActionButton } from '~/components/ui/animated-scroll-header/HeaderActionButton';
+import { HeaderTitle } from '~/components/ui/animated-scroll-header/HeaderTitle';
+import { type IconProps } from '~/lib/icons/Icon';
 
 // Constants - standardized across all tab screens
 const HEADER_HEIGHT = 90;
 const HEADER_HEIGHT_COLLAPSED = 60;
 const SCROLL_THRESHOLD = 32;
+const SIDE_SLOT_MIN_WIDTH = 40;
+const SLOT_PLACEHOLDER_SIZE = 40;
 
 // Header slot type
 export interface HeaderSlot {
   scrollProgress: SharedValue<number>;
 }
 
+type HeaderSlotComponent = ComponentType<HeaderSlot>;
+type LeftHeaderSlot = HeaderSlotComponent | 'back' | Array<'back' | HeaderSlotComponent>;
+type MiddleHeaderSlot = HeaderSlotComponent | string;
+type RightHeaderSlot = HeaderSlotComponent;
+
 // Header props
 export interface TabScreenLayoutHeaderProps {
-  left?: ReactNode | ((slot: HeaderSlot) => ReactNode);
-  middle?: ReactNode | ((slot: HeaderSlot) => ReactNode);
-  right?: ReactNode | ((slot: HeaderSlot) => ReactNode);
-  showBackButton?: boolean;
+  left?: LeftHeaderSlot;
+  middle?: MiddleHeaderSlot;
+  right?: RightHeaderSlot;
   backIconName?: IconProps['name'];
   onBackPress?: () => void;
 }
@@ -51,7 +58,6 @@ export function TabScreenLayout({ children, header }: TabScreenLayoutProps) {
     left,
     middle,
     right,
-    showBackButton = false,
     backIconName = 'chevron.left',
     onBackPress = () => router.back(),
   } = header ?? {};
@@ -69,37 +75,48 @@ export function TabScreenLayout({ children, header }: TabScreenLayoutProps) {
     return Math.min(Math.max(scrollY.value / SCROLL_THRESHOLD, 0), 1);
   });
 
-  // Render slot content (supports both static and function slots)
-  const renderSlot = (slot: TabScreenLayoutHeaderProps['left' | 'middle' | 'right']) => {
-    if (typeof slot === 'function') {
-      return slot({ scrollProgress });
+  const renderSlotComponent = (SlotComponent?: HeaderSlotComponent) => {
+    if (!SlotComponent) {
+      return null;
     }
-    return slot;
+
+    const Component = SlotComponent;
+    return <Component scrollProgress={scrollProgress} />;
   };
 
-  // Left slot with optional back button
-  const leftSlot = useMemo(() => {
-    if (!showBackButton && !left) {
-      return null;
+  const normalizeLeftSlot = (value: LeftHeaderSlot | undefined) => {
+    if (!value) {
+      return [];
     }
 
-    const customLeft = typeof left === 'function' ? left({ scrollProgress }) : left;
-
-    if (!showBackButton && !customLeft) {
-      return null;
+    if (Array.isArray(value)) {
+      return value;
     }
 
-    return (
-      <View className="flex-row items-center gap-2">
-        {showBackButton ? (
-          <Button variant="secondary" size="icon" onPress={onBackPress}>
-            <Icon name={backIconName} className="text-icon-default" size={20} />
-          </Button>
-        ) : null}
-        {customLeft}
-      </View>
-    );
-  }, [left, showBackButton, backIconName, onBackPress, scrollProgress]);
+    return [value];
+  };
+
+  const leftItems = normalizeLeftSlot(left).map((item, index) => {
+    if (item === 'back') {
+      return (
+        <HeaderActionButton
+          key={`left-back-${index}`}
+          scrollProgress={scrollProgress}
+          iconName={backIconName}
+          iconSize={20}
+          onPress={onBackPress}
+        />
+      );
+    }
+
+    const SlotComponent = item;
+    return <SlotComponent key={`left-component-${index}`} scrollProgress={scrollProgress} />;
+  });
+
+  const middleContent =
+    typeof middle === 'string' ? <HeaderTitle title={middle} /> : renderSlotComponent(middle);
+
+  const rightContent = renderSlotComponent(right);
 
   // Animated styles for header
   const headerContainerStyle = useAnimatedStyle(() => {
@@ -158,15 +175,27 @@ export function TabScreenLayout({ children, header }: TabScreenLayoutProps) {
           {/* Header content - centered in remaining space */}
           <View className="flex-1 flex-row items-center justify-between px-4">
             {/* Left slot */}
-            {leftSlot && <View className="flex-row items-center">{leftSlot}</View>}
+            <View className="flex-row items-center gap-2" style={{ minWidth: SIDE_SLOT_MIN_WIDTH }}>
+              {leftItems.length > 0 ? (
+                leftItems
+              ) : (
+                <View style={{ width: SLOT_PLACEHOLDER_SIZE, height: SLOT_PLACEHOLDER_SIZE }} />
+              )}
+            </View>
 
             {/* Middle slot */}
-            {middle && (
-              <View className="flex-row items-center justify-center">{renderSlot(middle)}</View>
-            )}
+            <View className="flex-1 items-center justify-center px-2">
+              {middleContent ?? <View style={{ height: SLOT_PLACEHOLDER_SIZE }} />}
+            </View>
 
             {/* Right slot */}
-            {right && <View className="flex-row items-center">{renderSlot(right)}</View>}
+            <View
+              className="flex-row items-center justify-end gap-2"
+              style={{ minWidth: SIDE_SLOT_MIN_WIDTH }}>
+              {rightContent ?? (
+                <View style={{ width: SLOT_PLACEHOLDER_SIZE, height: SLOT_PLACEHOLDER_SIZE }} />
+              )}
+            </View>
           </View>
         </Animated.View>
 
