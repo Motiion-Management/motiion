@@ -1,7 +1,6 @@
 import * as React from 'react';
 import { View } from 'react-native';
 
-import { BackgroundGradientView } from '~/components/ui/background-gradient-view';
 import { TabScreenLayout } from '~/components/layouts/TabScreenLayout';
 import {
   HomeHeaderLeft,

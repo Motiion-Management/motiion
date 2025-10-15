@@ -13,6 +13,7 @@ import Animated, {
 } from 'react-native-reanimated'
 import { BlurView } from 'expo-blur'
 
+import { BackgroundGradientView } from '~/components/ui/background-gradient-view'
 import { Button } from '~/components/ui/button'
 import { Icon, type IconProps } from '~/lib/icons/Icon'
 
@@ -134,52 +135,54 @@ export function TabScreenLayout({ children, header }: TabScreenLayoutProps) {
   })
 
   return (
-    <View className="flex-1">
-      {/* Animated Header - Absolutely Positioned */}
-      <Animated.View
-        style={[
-          headerContainerStyle,
-          borderStyle,
-          { position: 'absolute', top: 0, left: 0, right: 0, zIndex: 10 },
-        ]}>
-        {/* Blur background layer */}
+    <BackgroundGradientView>
+      <View className="flex-1">
+        {/* Animated Header - Absolutely Positioned */}
         <Animated.View
-          pointerEvents="none"
-          className="bg-background-nav"
-          style={[blurStyle, { position: 'absolute', top: 0, left: 0, right: 0, bottom: 0 }]}>
-          <BlurView intensity={20} className="flex-1" />
+          style={[
+            headerContainerStyle,
+            borderStyle,
+            { position: 'absolute', top: 0, left: 0, right: 0, zIndex: 10 },
+          ]}>
+          {/* Blur background layer */}
+          <Animated.View
+            pointerEvents="none"
+            className="bg-background-nav"
+            style={[blurStyle, { position: 'absolute', top: 0, left: 0, right: 0, bottom: 0 }]}>
+            <BlurView intensity={20} className="flex-1" />
+          </Animated.View>
+
+          {/* Safe area spacer */}
+          <View style={{ height: safeAreaTop }} />
+
+          {/* Header content - centered in remaining space */}
+          <View className="flex-1 flex-row items-center justify-between px-4">
+            {/* Left slot */}
+            {leftSlot && <View className="flex-row items-center">{leftSlot}</View>}
+
+            {/* Middle slot */}
+            {middle && (
+              <View className="flex-row items-center justify-center">{renderSlot(middle)}</View>
+            )}
+
+            {/* Right slot */}
+            {right && <View className="flex-row items-center">{renderSlot(right)}</View>}
+          </View>
         </Animated.View>
 
-        {/* Safe area spacer */}
-        <View style={{ height: safeAreaTop }} />
-
-        {/* Header content - centered in remaining space */}
-        <View className="flex-1 flex-row items-center justify-between px-4">
-          {/* Left slot */}
-          {leftSlot && <View className="flex-row items-center">{leftSlot}</View>}
-
-          {/* Middle slot */}
-          {middle && (
-            <View className="flex-row items-center justify-center">{renderSlot(middle)}</View>
-          )}
-
-          {/* Right slot */}
-          {right && <View className="flex-row items-center">{renderSlot(right)}</View>}
-        </View>
-      </Animated.View>
-
-      {/* Scrollable Content */}
-      <Animated.ScrollView
-        onScroll={scrollHandler}
-        scrollEventThrottle={16}
-        showsVerticalScrollIndicator={false}
-        contentContainerStyle={{
-          paddingTop: HEADER_HEIGHT + safeAreaTop,
-          paddingBottom: safeAreaBottom + 120,
-        }}>
-        {children}
-      </Animated.ScrollView>
-    </View>
+        {/* Scrollable Content */}
+        <Animated.ScrollView
+          onScroll={scrollHandler}
+          scrollEventThrottle={16}
+          showsVerticalScrollIndicator={false}
+          contentContainerStyle={{
+            paddingTop: HEADER_HEIGHT + safeAreaTop,
+            paddingBottom: safeAreaBottom + 120,
+          }}>
+          {children}
+        </Animated.ScrollView>
+      </View>
+    </BackgroundGradientView>
   )
 }
 
