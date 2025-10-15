@@ -1,7 +1,7 @@
-import React, { useMemo, type ReactNode } from 'react'
-import { View } from 'react-native'
-import { router } from 'expo-router'
-import { useSafeAreaInsets } from 'react-native-safe-area-context'
+import React, { useMemo, type ReactNode } from 'react';
+import { View } from 'react-native';
+import { router } from 'expo-router';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import Animated, {
   useSharedValue,
   useAnimatedScrollHandler,
@@ -10,41 +10,41 @@ import Animated, {
   interpolate,
   Extrapolate,
   type SharedValue,
-} from 'react-native-reanimated'
-import { BlurView } from 'expo-blur'
+} from 'react-native-reanimated';
+import { BlurView } from 'expo-blur';
 
-import { BackgroundGradientView } from '~/components/ui/background-gradient-view'
-import { Button } from '~/components/ui/button'
-import { Icon, type IconProps } from '~/lib/icons/Icon'
+import { BackgroundGradientView } from '~/components/ui/background-gradient-view';
+import { Button } from '~/components/ui/button';
+import { Icon, type IconProps } from '~/lib/icons/Icon';
 
 // Constants - standardized across all tab screens
-const HEADER_HEIGHT = 90
-const HEADER_HEIGHT_COLLAPSED = 60
-const SCROLL_THRESHOLD = 32
+const HEADER_HEIGHT = 90;
+const HEADER_HEIGHT_COLLAPSED = 60;
+const SCROLL_THRESHOLD = 32;
 
 // Header slot type
 export interface HeaderSlot {
-  scrollProgress: SharedValue<number>
+  scrollProgress: SharedValue<number>;
 }
 
 // Header props
 export interface TabScreenLayoutHeaderProps {
-  left?: ReactNode | ((slot: HeaderSlot) => ReactNode)
-  middle?: ReactNode | ((slot: HeaderSlot) => ReactNode)
-  right?: ReactNode | ((slot: HeaderSlot) => ReactNode)
-  showBackButton?: boolean
-  backIconName?: IconProps['name']
-  onBackPress?: () => void
+  left?: ReactNode | ((slot: HeaderSlot) => ReactNode);
+  middle?: ReactNode | ((slot: HeaderSlot) => ReactNode);
+  right?: ReactNode | ((slot: HeaderSlot) => ReactNode);
+  showBackButton?: boolean;
+  backIconName?: IconProps['name'];
+  onBackPress?: () => void;
 }
 
 // Layout props - minimal API surface
 interface TabScreenLayoutProps {
-  children: ReactNode
-  header?: TabScreenLayoutHeaderProps
+  children: ReactNode;
+  header?: TabScreenLayoutHeaderProps;
 }
 
 export function TabScreenLayout({ children, header }: TabScreenLayoutProps) {
-  const { top: safeAreaTop, bottom: safeAreaBottom } = useSafeAreaInsets()
+  const { top: safeAreaTop, bottom: safeAreaBottom } = useSafeAreaInsets();
 
   // Extract header props
   const {
@@ -54,39 +54,39 @@ export function TabScreenLayout({ children, header }: TabScreenLayoutProps) {
     showBackButton = false,
     backIconName = 'chevron.left',
     onBackPress = () => router.back(),
-  } = header ?? {}
+  } = header ?? {};
 
   // Scroll animation logic
-  const scrollY = useSharedValue(0)
+  const scrollY = useSharedValue(0);
 
   const scrollHandler = useAnimatedScrollHandler({
     onScroll: (event) => {
-      scrollY.value = event.contentOffset.y
+      scrollY.value = event.contentOffset.y;
     },
-  })
+  });
 
   const scrollProgress = useDerivedValue(() => {
-    return Math.min(Math.max(scrollY.value / SCROLL_THRESHOLD, 0), 1)
-  })
+    return Math.min(Math.max(scrollY.value / SCROLL_THRESHOLD, 0), 1);
+  });
 
   // Render slot content (supports both static and function slots)
   const renderSlot = (slot: TabScreenLayoutHeaderProps['left' | 'middle' | 'right']) => {
     if (typeof slot === 'function') {
-      return slot({ scrollProgress })
+      return slot({ scrollProgress });
     }
-    return slot
-  }
+    return slot;
+  };
 
   // Left slot with optional back button
   const leftSlot = useMemo(() => {
     if (!showBackButton && !left) {
-      return null
+      return null;
     }
 
-    const customLeft = typeof left === 'function' ? left({ scrollProgress }) : left
+    const customLeft = typeof left === 'function' ? left({ scrollProgress }) : left;
 
     if (!showBackButton && !customLeft) {
-      return null
+      return null;
     }
 
     return (
@@ -98,41 +98,41 @@ export function TabScreenLayout({ children, header }: TabScreenLayoutProps) {
         ) : null}
         {customLeft}
       </View>
-    )
-  }, [left, showBackButton, backIconName, onBackPress, scrollProgress])
+    );
+  }, [left, showBackButton, backIconName, onBackPress, scrollProgress]);
 
   // Animated styles for header
   const headerContainerStyle = useAnimatedStyle(() => {
-    'worklet'
-    const progress = scrollProgress.value
+    'worklet';
+    const progress = scrollProgress.value;
     const height = interpolate(
       progress,
       [0, 1],
       [HEADER_HEIGHT + safeAreaTop, HEADER_HEIGHT_COLLAPSED + safeAreaTop],
       Extrapolate.CLAMP
-    )
+    );
 
-    return { height }
-  })
+    return { height };
+  });
 
   const blurStyle = useAnimatedStyle(() => {
-    'worklet'
-    const progress = scrollProgress.value
-    const opacity = interpolate(progress, [0, 1], [0, 0.95], Extrapolate.CLAMP)
+    'worklet';
+    const progress = scrollProgress.value;
+    const opacity = interpolate(progress, [0, 1], [0, 0.95], Extrapolate.CLAMP);
 
-    return { opacity }
-  })
+    return { opacity };
+  });
 
   const borderStyle = useAnimatedStyle(() => {
-    'worklet'
-    const progress = scrollProgress.value
-    const opacity = interpolate(progress, [0, 1], [0, 1], Extrapolate.CLAMP)
+    'worklet';
+    const progress = scrollProgress.value;
+    const opacity = interpolate(progress, [0, 1], [0, 1], Extrapolate.CLAMP);
 
     return {
       borderBottomWidth: 1,
       borderBottomColor: `rgba(55, 59, 65, ${opacity * 0.4})`,
-    }
-  })
+    };
+  });
 
   return (
     <BackgroundGradientView>
@@ -183,8 +183,8 @@ export function TabScreenLayout({ children, header }: TabScreenLayoutProps) {
         </Animated.ScrollView>
       </View>
     </BackgroundGradientView>
-  )
+  );
 }
 
 // Export types for external use
-export type { HeaderSlot as TabHeaderSlot }
+export type { HeaderSlot as TabHeaderSlot };

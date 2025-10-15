@@ -41,7 +41,7 @@ The registry currently saves all form data to `updateMyUser`, but profile-specif
 ```typescript
 // ❌ WRONG - Saves attributes to users table
 save: async (values: any, ctx) => {
-  await ctx.updateMyUser({ attributes: { height: values.height } });
+  await ctx.updateMyUser({ attributes: { height: values.height } })
 }
 ```
 
@@ -50,13 +50,16 @@ save: async (values: any, ctx) => {
 ```typescript
 // ✅ CORRECT - Route to appropriate profile mutation
 save: async (values: any, ctx) => {
-  const profileType = ctx.data.user?.activeProfileType || ctx.data.user?.profileType;
+  const profileType =
+    ctx.data.user?.activeProfileType || ctx.data.user?.profileType
 
   if (profileType === 'dancer') {
-    await ctx.patchDancerAttributes({ attributes: { height: values.height } });
+    await ctx.patchDancerAttributes({ attributes: { height: values.height } })
   } else if (profileType === 'choreographer') {
     // Choreographers might not need height, or use different mutation
-    await ctx.updateMyChoreographerProfile({ /* fields */ });
+    await ctx.updateMyChoreographerProfile({
+      /* fields */
+    })
   }
 }
 ```
@@ -67,22 +70,22 @@ Add profile-specific mutations to SaveContext:
 
 ```typescript
 export interface SaveContext {
-  data: OnboardingData;
+  data: OnboardingData
 
   // Account-level
-  updateMyUser: (args: any) => Promise<any>;
+  updateMyUser: (args: any) => Promise<any>
 
   // Dancer-specific
-  patchDancerAttributes: (args: any) => Promise<any>;
-  updateMyDancerProfile: (args: any) => Promise<any>;
-  updateDancerSizingField?: (args: any) => Promise<any>;
+  patchDancerAttributes: (args: any) => Promise<any>
+  updateMyDancerProfile: (args: any) => Promise<any>
+  updateDancerSizingField?: (args: any) => Promise<any>
 
   // Choreographer-specific
-  updateMyChoreographerProfile: (args: any) => Promise<any>;
+  updateMyChoreographerProfile: (args: any) => Promise<any>
 
   // Shared
-  updateMyResume: (args: any) => Promise<any>;
-  addMyRepresentation: (args: any) => Promise<any>;
+  updateMyResume: (args: any) => Promise<any>
+  addMyRepresentation: (args: any) => Promise<any>
 }
 ```
 
@@ -304,15 +307,15 @@ Selectors should read from active profile when available:
 ```typescript
 // BEFORE
 export function selectHeight(data: OnboardingData) {
-  return data.user?.attributes?.height || { feet: 5, inches: 6 };
+  return data.user?.attributes?.height || { feet: 5, inches: 6 }
 }
 
 // AFTER
 export function selectHeight(data: OnboardingData) {
   // Check active profile first
-  const profile = data.dancer || data.choreographer; // Add these to OnboardingData
-  const attributes = profile?.attributes || data.user?.attributes;
-  return attributes?.height || { feet: 5, inches: 6 };
+  const profile = data.dancer || data.choreographer // Add these to OnboardingData
+  const attributes = profile?.attributes || data.user?.attributes
+  return attributes?.height || { feet: 5, inches: 6 }
 }
 ```
 
@@ -322,9 +325,9 @@ Add active profile data to the OnboardingData type:
 
 ```typescript
 export interface OnboardingData {
-  user: UserDoc | null;
-  dancer: DancerDoc | null;        // Add this
-  choreographer: ChoreographerDoc | null;  // Add this
+  user: UserDoc | null
+  dancer: DancerDoc | null // Add this
+  choreographer: ChoreographerDoc | null // Add this
   // ... other fields
 }
 ```
@@ -335,31 +338,33 @@ The hook that loads onboarding data should fetch the active profile:
 
 ```typescript
 // In useOnboardingData or similar
-const user = useQuery(api.users.users.getMyUser);
+const user = useQuery(api.users.users.getMyUser)
 const dancer = user?.activeDancerId
   ? useQuery(api.dancers.get, { id: user.activeDancerId })
-  : null;
+  : null
 const choreographer = user?.activeChoreographerId
   ? useQuery(api.choreographers.getMyChoreographerProfile)
-  : null;
+  : null
 
 return {
   user,
   dancer,
-  choreographer,
+  choreographer
   // ... other data
-};
+}
 ```
 
 ## Migration Strategy
 
 ### Phase 1: Backend Preparation ✅ DONE
+
 - [x] Complete choreographer mutations
 - [x] Consolidate profile creation
 - [x] Update validators
 - [x] Clean deprecated fields
 
 ### Phase 2: Frontend Updates (THIS PHASE)
+
 1. Update OnboardingData interface
 2. Update data loading to include active profile
 3. Update selectors to read from profile
@@ -369,6 +374,7 @@ return {
 7. Test choreographer onboarding end-to-end
 
 ### Phase 3: Cleanup (FUTURE)
+
 1. Remove backward compatibility from validators
 2. Reject profile fields in updateMyUser
 3. Remove deprecated fields from users schema
@@ -377,6 +383,7 @@ return {
 ## Testing Checklist
 
 ### Dancer Onboarding
+
 - [ ] Profile type selection creates dancer profile
 - [ ] Attributes save to dancers.attributes
 - [ ] Headshots save to dancers.headshots
@@ -387,6 +394,7 @@ return {
 - [ ] Union saves to dancers.sagAftraId
 
 ### Choreographer Onboarding
+
 - [ ] Profile type selection creates choreographer profile
 - [ ] Headshots save to choreographers.headshots
 - [ ] Location saves to choreographers.location
@@ -396,6 +404,7 @@ return {
 - [ ] Representation saves to choreographers.representation
 
 ### Validation
+
 - [ ] Validators check active profile data
 - [ ] Progress bar shows correct completion
 - [ ] Review screen shows all data from active profile

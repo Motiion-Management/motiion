@@ -151,7 +151,7 @@ export const adminAuthMutation = zCustomMutationBuilder(
   })
 )
 
-async function getUserOrThrow(ctx: QueryCtx | MutationCtx) {
+export async function getUserOrThrow(ctx: QueryCtx | MutationCtx) {
   const tokenId = (await ctx.auth.getUserIdentity())?.subject
 
   if (!tokenId) {

@@ -100,7 +100,7 @@ export type DancerProfileData = {
   recentProjects: Array<any>
   allProjects: Array<any>
   training: Array<any>
-  agency: (typeof Agencies.zDoc._output) | null
+  agency: typeof Agencies.zDoc._output | null
   isOwnProfile: boolean
 }
 

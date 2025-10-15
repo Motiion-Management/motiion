@@ -1,11 +1,13 @@
 # Schema Cleanup Plan: REVISED - Safer Sequencing
 
 ## Overview
+
 Migrate profile data from users → dancers table following safe additive-then-removal pattern.
 
 **Key Insight:** NO choreographers exist in dev/prod yet, so we only migrate to dancers for now.
 
 ## Core Approach
+
 1. **Add** new fields to dancers schema
 2. **Mark** fields on users as deprecated (comment + ensure optional)
 3. **Create** migration function (don't run yet)
@@ -18,10 +20,12 @@ Migrate profile data from users → dancers table following safe additive-then-r
 ## Phase 1: Add New Fields to Dancers Schema
 
 ### 1.1 Add Profile-Level Identity Fields
+
 - [x] Add `displayName: z.string().optional()` to dancers
 - [x] Verify it's different from user.fullName (derived from first/last)
 
 ### 1.2 Add Onboarding State Fields
+
 - [x] Add `onboardingCompleted: z.boolean().optional()` to dancers
 - [x] Add `onboardingCompletedAt: z.string().optional()` to dancers
 - [x] Add `onboardingVersion: z.string().optional()` to dancers
@@ -29,10 +33,12 @@ Migrate profile data from users → dancers table following safe additive-then-r
 - [x] Add `currentOnboardingStepIndex: z.number().optional()` to dancers
 
 ### 1.3 Add Favorites Fields
+
 - [x] Add `favoriteDancers: z.array(zid('dancers')).optional()` to dancers
 - [x] Add `favoriteChoreographers: z.array(zid('choreographers')).optional()` to dancers
 
 ### 1.4 Flatten Resume Fields
+
 - [x] Add `projects: z.array(zid('projects')).optional()` to dancers
 - [x] Add `skills: z.array(z.string()).optional()` to dancers
 - [x] Add `genres: z.array(z.string()).optional()` to dancers
@@ -40,6 +46,7 @@ Migrate profile data from users → dancers table following safe additive-then-r
 - [x] Keep existing `resume` object for now (will deprecate in Phase 2)
 
 ### 1.5 Verify All Existing Fields Present
+
 - [x] Confirm dancers has: headshots, attributes, sizing, location, representation, etc.
 - [x] No fields should be missing that exist on users
 
@@ -50,6 +57,7 @@ Migrate profile data from users → dancers table following safe additive-then-r
 ## Phase 2: Mark Users Fields as Deprecated
 
 ### 2.1 Update Users Schema with Deprecation Comments
+
 - [x] Add comment above `profileType`: `// DEPRECATED: Will be removed after migration to dancers/choreographers`
 - [x] Add comment above `displayName`: `// DEPRECATED: Moved to dancer/choreographer profiles`
 - [x] Add comment above `location`: `// DEPRECATED: Moved to profiles`
@@ -60,6 +68,7 @@ Migrate profile data from users → dancers table following safe additive-then-r
 - [x] Add comment above all profile-specific fields (headshots, attributes, sizing, etc.)
 
 ### 2.2 Ensure All Deprecated Fields are Optional
+
 - [x] Verify `profileType` is optional
 - [x] Verify `displayName` is optional
 - [x] Verify `location` is optional
@@ -68,6 +77,7 @@ Migrate profile data from users → dancers table following safe additive-then-r
 - [x] Verify all profile fields optional
 
 ### 2.3 Remove pointsEarned Field (Not in Designs)
+
 - [x] Remove `pointsEarned` from users schema entirely (not needed anywhere)
 
 **Deploy Phase 2** - ✅ COMPLETE - Fields marked deprecated, schema still validates
@@ -89,27 +99,36 @@ export const migrateUserToDancerProfile = internalMutation({
     message: v.string()
   }),
   handler: async (ctx, { userId }) => {
-    const user = await ctx.db.get(userId);
-    if (!user) return { success: false, profileId: null, message: 'User not found' };
+    const user = await ctx.db.get(userId)
+    if (!user)
+      return { success: false, profileId: null, message: 'User not found' }
 
     // Skip if already migrated
     if (user.activeDancerId) {
-      return { success: true, profileId: user.activeDancerId, message: 'Already migrated' };
+      return {
+        success: true,
+        profileId: user.activeDancerId,
+        message: 'Already migrated'
+      }
     }
 
     // Check if profile already exists
     const existing = await ctx.db
       .query('dancers')
-      .withIndex('by_userId', q => q.eq('userId', userId))
-      .first();
+      .withIndex('by_userId', (q) => q.eq('userId', userId))
+      .first()
 
     if (existing) {
       // Update user reference
       await ctx.db.patch(userId, {
         activeProfileType: 'dancer',
         activeDancerId: existing._id
-      });
-      return { success: true, profileId: existing._id, message: 'Profile existed, linked to user' };
+      })
+      return {
+        success: true,
+        profileId: existing._id,
+        message: 'Profile existed, linked to user'
+      }
     }
 
     // Create dancer profile with all user data
@@ -158,13 +177,13 @@ export const migrateUserToDancerProfile = internalMutation({
 
       profileCompleteness: 0,
       profileTipDismissed: user.profileTipDismissed
-    });
+    })
 
     // Update user with profile reference
     await ctx.db.patch(userId, {
       activeProfileType: 'dancer',
       activeDancerId: profileId
-    });
+    })
 
     // REMOVE DATA FROM USER (critical!)
     await ctx.db.patch(userId, {
@@ -192,32 +211,36 @@ export const migrateUserToDancerProfile = internalMutation({
       resumeImportVersion: undefined,
       resumeImportedAt: undefined,
       profileTipDismissed: undefined
-    });
+    })
 
-    return { success: true, profileId, message: 'Profile created and data migrated' };
+    return {
+      success: true,
+      profileId,
+      message: 'Profile created and data migrated'
+    }
   }
-});
+})
 
 export const migrateFavorites = internalMutation({
   args: { userId: zid('users') },
   returns: v.object({ success: v.boolean(), converted: v.number() }),
   handler: async (ctx, { userId }) => {
-    const user = await ctx.db.get(userId);
-    if (!user || !user.activeDancerId) return { success: false, converted: 0 };
+    const user = await ctx.db.get(userId)
+    if (!user || !user.activeDancerId) return { success: false, converted: 0 }
 
-    const favoriteUsers = user.favoriteUsers || [];
-    const favoriteDancers: Id<'dancers'>[] = [];
-    const favoriteChoreographers: Id<'choreographers'>[] = [];
+    const favoriteUsers = user.favoriteUsers || []
+    const favoriteDancers: Id<'dancers'>[] = []
+    const favoriteChoreographers: Id<'choreographers'>[] = []
 
     for (const favUserId of favoriteUsers) {
-      const favUser = await ctx.db.get(favUserId);
-      if (!favUser) continue; // Skip deleted users
+      const favUser = await ctx.db.get(favUserId)
+      if (!favUser) continue // Skip deleted users
 
       if (favUser.activeDancerId) {
-        favoriteDancers.push(favUser.activeDancerId);
+        favoriteDancers.push(favUser.activeDancerId)
       }
       if (favUser.activeChoreographerId) {
-        favoriteChoreographers.push(favUser.activeChoreographerId);
+        favoriteChoreographers.push(favUser.activeChoreographerId)
       }
     }
 
@@ -225,19 +248,19 @@ export const migrateFavorites = internalMutation({
     await ctx.db.patch(user.activeDancerId, {
       favoriteDancers,
       favoriteChoreographers
-    });
+    })
 
     // Remove from user
     await ctx.db.patch(userId, {
       favoriteUsers: undefined
-    });
+    })
 
     return {
       success: true,
       converted: favoriteDancers.length + favoriteChoreographers.length
-    };
+    }
   }
-});
+})
 
 export const migrateAllUsers = internalMutation({
   args: {},
@@ -247,20 +270,20 @@ export const migrateAllUsers = internalMutation({
     errors: v.number()
   }),
   handler: async (ctx) => {
-    const users = await ctx.db.query('users').collect();
-    let migrated = 0;
-    let errors = 0;
+    const users = await ctx.db.query('users').collect()
+    let migrated = 0
+    let errors = 0
 
     for (const user of users) {
       try {
         const result = await ctx.db.system.mutation(
           internal.migrations.migrateUsersToDancers.migrateUserToDancerProfile,
           { userId: user._id }
-        );
-        if (result.success) migrated++;
+        )
+        if (result.success) migrated++
       } catch (error) {
-        console.error('Migration error for user', user._id, error);
-        errors++;
+        console.error('Migration error for user', user._id, error)
+        errors++
       }
     }
 
@@ -270,20 +293,21 @@ export const migrateAllUsers = internalMutation({
         await ctx.db.system.mutation(
           internal.migrations.migrateUsersToDancers.migrateFavorites,
           { userId: user._id }
-        );
+        )
       } catch (error) {
-        console.error('Favorites migration error', user._id, error);
+        console.error('Favorites migration error', user._id, error)
       }
     }
 
-    return { total: users.length, migrated, errors };
+    return { total: users.length, migrated, errors }
   }
-});
+})
 ```
 
 ### 3.2 Create Migration Tasks Checklist
+
 - [x] Create migration file as shown above
-- [x] Add to convex/_generated/api exports
+- [x] Add to convex/\_generated/api exports
 - [ ] Test migration on single user in dev
 - [ ] Test rollback (can we undo?)
 - [ ] Test migrating all dev users
@@ -296,11 +320,13 @@ export const migrateAllUsers = internalMutation({
 ## Phase 4: Update Projects/Training References
 
 ### 4.1 Populate profileId on Existing Projects
+
 - [x] Create migration: For each project without profileId, set it to user's activeDancerId
 - [x] Same for training records
 - [x] Keep userId for now (safety net)
 
 ### 4.2 Update Project Queries
+
 - [ ] Update frontend to query by profileId instead of userId
 - [ ] Keep both indexes for now
 
@@ -311,6 +337,7 @@ export const migrateAllUsers = internalMutation({
 ## Phase 5: Update Backend Functions
 
 ### 5.1 Update ProfileTypeForm Backend
+
 - [x] Modify `createDancerProfile` to accept displayName in args
 - [x] Ensure it sets onboarding state properly:
   ```typescript
@@ -323,6 +350,7 @@ export const migrateAllUsers = internalMutation({
   ```
 
 ### 5.2 Update Onboarding Functions
+
 - [x] Update `completeOnboarding` to:
   - Update `profile.onboardingCompleted` instead of user
   - Remove user onboarding updates
@@ -334,6 +362,7 @@ export const migrateAllUsers = internalMutation({
 - [x] Remove `createProfileFromUserData` dead code
 
 ### 5.3 Update Validators (Already Mostly Done)
+
 - [x] Verify all validators check `profile?.field || user.field`
 - [x] Specifically check `displayName` validator
 - [x] Update validators to use flattened resume fields:
@@ -341,15 +370,15 @@ export const migrateAllUsers = internalMutation({
   - `profile?.skills || user.resume?.skills`
 
 ### 5.4 Update Completeness Calculation
+
 - [x] Update `calculateDancerCompleteness` to check flattened fields:
   ```typescript
-  if (profile.projects && profile.projects.length > 0)
-    score += weights.resume
-  if (profile.skills && profile.skills.length > 0)
-    score += weights.skills
+  if (profile.projects && profile.projects.length > 0) score += weights.resume
+  if (profile.skills && profile.skills.length > 0) score += weights.skills
   ```
 
 ### 5.5 Update Search Pattern Generation
+
 - [x] Update to use flattened fields:
   ```typescript
   if (data.skills) parts.push(...data.skills)
@@ -357,15 +386,18 @@ export const migrateAllUsers = internalMutation({
   ```
 
 ### 5.6 Update Representation Mutations
+
 - [x] Update `addMyRepresentation` to write to profile (uses `getActiveProfileTarget` helper)
 
 ### 5.7 Update Favorites Mutations
+
 - [x] Update `addFavoriteUser` → `addFavoriteDancer`/`addFavoriteChoreographer`
 - [x] Write to `profile.favoriteDancers` instead of `user.favoriteUsers`
 - [x] Update `removeFavoriteUser` → `removeFavoriteDancer`/`removeFavoriteChoreographer`
 - [x] All functions write to profile arrays
 
 ### 5.8 Update Resume Mutations
+
 - [x] No dedicated resume mutations exist - apps use `updateMyDancerProfile` directly with flattened fields
 
 **Deploy Phase 5** - ✅ COMPLETE - All functions updated to use profile data
@@ -375,11 +407,13 @@ export const migrateAllUsers = internalMutation({
 ## Phase 6: Update Frontend
 
 ### 6.1 Update ProfileTypeForm
+
 - [x] Remove `updateMyUser({ profileType })` call
 - [x] Add `createDancerProfile({ displayName: user?.fullName })` call
 - [x] Handle creation errors gracefully
 
 ### 6.2 Update Onboarding Registry Save Functions
+
 All saves should target profile instead of user:
 
 - [x] displayName → `updateMyDancerProfile({ displayName })`
@@ -396,11 +430,13 @@ All saves should target profile instead of user:
 - [x] Remove `updateMyResume` dead code from SaveContext and routes
 
 ### 6.3 Update Data Loading
+
 - [x] Load active dancer profile in onboarding hook (`useOnboardingData`)
 - [x] Update selectors to read from profile instead of user (with fallback)
 - [ ] Remove user fallbacks after migration (deferred to Phase 8)
 
 ### 6.4 Update Favorites UI
+
 - [x] Favorites UI not implemented yet (skip - backend ready for future use)
 
 **Deploy Phase 6** - ✅ COMPLETE - All frontend code using profile data
@@ -410,6 +446,7 @@ All saves should target profile instead of user:
 ## Phase 7: Run Migration
 
 ### 7.1 Pre-Migration Checklist
+
 - [ ] Backup database
 - [ ] Disable schema validation if needed: `schemaValidation: false`
 - [ ] Test migration on single user in production
@@ -417,12 +454,14 @@ All saves should target profile instead of user:
 - [ ] Check that no data was lost
 
 ### 7.2 Run Full Migration
+
 - [ ] Run `migrateAllUsers` mutation in Convex dashboard
 - [ ] Monitor for errors
 - [ ] Check total/migrated/errors counts
 - [ ] Manually verify sample of users
 
 ### 7.3 Post-Migration Verification
+
 - [ ] All users have `activeDancerId` set
 - [ ] All dancer profiles have expected data
 - [ ] Deprecated user fields are cleared (undefined)
@@ -431,6 +470,7 @@ All saves should target profile instead of user:
 - [ ] Favorites converted correctly
 
 ### 7.4 Monitor for Issues
+
 - [ ] Watch error rates for 24 hours
 - [ ] Check user support tickets
 - [ ] Verify new signups work
@@ -443,13 +483,16 @@ All saves should target profile instead of user:
 ## Phase 8: Remove Deprecated Fields (After 30 Days)
 
 ### 8.1 Verify Safe to Remove
+
 - [ ] 30+ days since migration
 - [ ] Zero validation errors
 - [ ] All users successfully migrated
 - [ ] No rollback needed
 
 ### 8.2 Remove from Users Schema
+
 Remove these fields entirely:
+
 - [ ] `profileType`
 - [ ] `displayName`
 - [ ] `location`
@@ -472,11 +515,13 @@ Remove these fields entirely:
 - [ ] `profileTipDismissed`
 
 ### 8.3 Re-enable Schema Validation
+
 - [ ] Set `schemaValidation: true`
 - [ ] Verify no validation errors
 - [ ] Deploy
 
 ### 8.4 Remove Backward Compatibility Code
+
 - [ ] Remove merge logic from `getMyUser`
 - [ ] Remove user fallback in validators (use profile only)
 - [ ] Remove `userId` from projects/training tables
@@ -489,6 +534,7 @@ Remove these fields entirely:
 ## Rollback Procedures
 
 ### If Migration Fails (Phase 7)
+
 1. Stop migration immediately
 2. Keep deprecated fields on users (don't remove)
 3. Update functions to read from user again
@@ -496,6 +542,7 @@ Remove these fields entirely:
 5. Investigate error, fix, retry
 
 ### If Issues Found After Migration
+
 1. Keep backward compatibility code (don't run Phase 8)
 2. Fix issues in dancer profile data
 3. Re-run specific user migrations as needed
@@ -506,6 +553,7 @@ Remove these fields entirely:
 ## Testing Checklist
 
 ### Before Migration
+
 - [ ] Test profile creation for new user
 - [ ] Test migration on single dev user
 - [ ] Test migration on all dev users
@@ -513,6 +561,7 @@ Remove these fields entirely:
 - [ ] Verify favorites converted correctly
 
 ### After Migration
+
 - [ ] New user signup and onboarding works
 - [ ] Existing user can log in and see data
 - [ ] Projects/training visible
@@ -525,6 +574,7 @@ Remove these fields entirely:
 ## Critical Notes from Root Cause Analysis
 
 ### Issues Addressed in This Plan
+
 ✅ Schema validation timing (Phase 2 ensures fields optional first)
 ✅ Onboarding state migration (Phase 3.1 copies all onboarding fields)
 ✅ Profile creation race conditions (Phase 3.1 checks for existing)
@@ -535,6 +585,7 @@ Remove these fields entirely:
 ✅ Active profile references (Phase 3.1 validates and sets)
 
 ### Key Safety Measures
+
 - Additive-first approach (add before remove)
 - Migration removes data from user fields (prevents duplicate sources of truth)
 - Backward compatibility during transition

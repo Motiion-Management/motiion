@@ -7,6 +7,7 @@ Successfully aligned backend to use profile-specific tables (`dancers`, `choreog
 ## Changes Made
 
 ### 1. Choreographer Mutations Completed ✅
+
 **File:** `packages/backend/convex/choreographers.ts`
 
 Added missing choreographer mutations to achieve parity with dancers:
@@ -39,6 +40,7 @@ Added missing choreographer mutations to achieve parity with dancers:
   - Updates `profileCompleteness` field on the profile
 
 ### 2. Profile Creation Consolidated ✅
+
 **File:** `packages/backend/convex/onboarding.ts`
 
 Eliminated profileType branching by extracting to helper function:
@@ -51,12 +53,14 @@ Eliminated profileType branching by extracting to helper function:
   - Maintains all migration logic in one place
 
 **Benefits:**
+
 - No more profileType branching in `completeOnboarding`
 - Easier to test and maintain
 - Clear separation of concerns
 - Easy to add new profile types in future
 
 ### 3. Validators Updated to Use Active Profile ✅
+
 **File:** `packages/backend/convex/onboardingConfig.ts`
 
 Updated all step validators to check active profile data:
@@ -78,6 +82,7 @@ Updated all step validators to check active profile data:
   - Returns accurate completion status based on active profile
 
 ### 4. Onboarding Functions Updated ✅
+
 **File:** `packages/backend/convex/onboarding.ts`
 
 Updated all functions that use validators to fetch and pass active profile:
@@ -95,6 +100,7 @@ Updated all functions that use validators to fetch and pass active profile:
   - Passes profile to `isStepComplete`
 
 ### 5. Users Mutations Cleaned ✅
+
 **File:** `packages/backend/convex/users/users.ts`
 
 Updated `updateMyUser` to clearly indicate account-level vs profile-level fields:
@@ -115,6 +121,7 @@ Updated `updateMyUser` to clearly indicate account-level vs profile-level fields
 ## Architecture Improvements
 
 ### Before: Branching Logic ❌
+
 ```typescript
 // Old pattern - branching everywhere
 if (user.profileType === 'dancer') {
@@ -129,6 +136,7 @@ if (user.profileType === 'dancer') {
 ```
 
 ### After: Unified Pattern ✅
+
 ```typescript
 // New pattern - single code path
 await createProfileFromUserData(ctx, user)
@@ -144,6 +152,7 @@ if (ctx.user.activeProfileType === 'dancer') {
 ## Data Flow
 
 ### Old Flow (DEPRECATED)
+
 ```
 Frontend → updateMyUser → users table
                         ↓
@@ -151,6 +160,7 @@ Frontend → updateMyUser → users table
 ```
 
 ### New Flow (CURRENT)
+
 ```
 Frontend → profile mutation → dancers/choreographers table
                              ↓
@@ -158,6 +168,7 @@ Frontend → profile mutation → dancers/choreographers table
 ```
 
 ### Future Flow (TARGET)
+
 ```
 Frontend → smart router → active profile mutation
                         ↓
@@ -169,6 +180,7 @@ Frontend → smart router → active profile mutation
 ## Migration Status
 
 ### ✅ Backend Complete
+
 - [x] Choreographer mutations implemented
 - [x] Profile creation consolidated
 - [x] Validators use active profile
@@ -177,7 +189,9 @@ Frontend → smart router → active profile mutation
 - [x] Documentation complete
 
 ### 🔄 Frontend Pending
+
 See `FRONTEND_MIGRATION_GUIDE.md` for details:
+
 - [ ] Update OnboardingData interface
 - [ ] Update data loading to fetch active profile
 - [ ] Update selectors to read from profile
@@ -186,6 +200,7 @@ See `FRONTEND_MIGRATION_GUIDE.md` for details:
 - [ ] Test both profile types end-to-end
 
 ### 🚀 Future Cleanup
+
 - [ ] Remove backward compatibility from validators
 - [ ] Reject profile fields in updateMyUser
 - [ ] Remove deprecated fields from users schema
@@ -195,18 +210,21 @@ See `FRONTEND_MIGRATION_GUIDE.md` for details:
 ## Testing Recommendations
 
 ### Unit Tests
+
 1. Test `createProfileFromUserData` with both profile types
 2. Test validators with profile data
 3. Test validators with user fallback data
 4. Test choreographer mutations
 
 ### Integration Tests
+
 1. Complete onboarding flow as dancer
 2. Complete onboarding flow as choreographer
 3. Verify data lands in correct tables
 4. Verify validators show correct progress
 
 ### Edge Cases
+
 1. User with profileType but no active profile (migration case)
 2. User with both profileType and active profile (normal case)
 3. Switching between dancer and choreographer profiles
@@ -222,11 +240,13 @@ See `FRONTEND_MIGRATION_GUIDE.md` for details:
 ## Breaking Changes
 
 ### None for Existing Users ✅
+
 - Backward compatibility maintained
 - User table data still works as fallback
 - `getMyUser` merges profile data for compatibility
 
 ### For New Development
+
 - Use `patchDancerAttributes` instead of `updateMyUser` for attributes
 - Use `updateMyDancerProfile` instead of `updateMyUser` for profile fields
 - Use `updateMyChoreographerProfile` for choreographer-specific fields

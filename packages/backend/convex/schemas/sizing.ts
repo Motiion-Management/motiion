@@ -1,4 +1,6 @@
+import { zodToConvex } from 'zodvex'
 import { z } from 'zod'
+import { v } from 'convex/values'
 
 // waist range 20-70, increments of 1, as object literal of strings
 export const WAIST = [
@@ -412,6 +414,16 @@ export const UNDERBUST = [
   '66'
 ] as const
 export const zUnderBust = z.enum(UNDERBUST).optional()
+
+const zodEnum = z.enum(['foo', 'bar'])
+
+// EXPECTED OUTPUT TYPE TO BE SAME AS BELOW
+// VUnion<"foo" | "bar", [VLiteral<"foo", "required">, VLiteral<"bar", "required">], "required", never>
+const convexEnum = v.union(v.literal('foo'), v.literal('bar'))
+
+// ACTUAL OUTPUT TYPE CONVERTING FROM ZOD ENUM
+// VUnion<"foo" | "bar", any[], "required", any>
+const test = zodToConvex(zodEnum)
 
 // Hip range 15-70, increments of 1, as object literal of strings
 export const HIPS = [

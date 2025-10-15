@@ -360,8 +360,8 @@ importers:
         specifier: ^4.1.8
         version: 4.1.8
       zodvex:
-        specifier: ^0.2.1
-        version: 0.2.1(convex-helpers@0.1.104(convex@1.27.0(@clerk/clerk-react@5.43.1(react-dom@19.1.0(react@19.1.0))(react@19.1.0))(react@19.1.0))(react@19.1.0)(typescript@5.9.3)(zod@4.1.8))(convex@1.27.0(@clerk/clerk-react@5.43.1(react-dom@19.1.0(react@19.1.0))(react@19.1.0))(react@19.1.0))(zod@4.1.8)
+        specifier: workspace:*
+        version: link:../../packages/zodvex
     devDependencies:
       '@babel/core':
         specifier: ^7.28.0
@@ -488,8 +488,8 @@ importers:
         specifier: ^4.1.8
         version: 4.1.8
       zodvex:
-        specifier: ^0.2.1
-        version: 0.2.1(convex-helpers@0.1.101-alpha.1(convex@1.27.0(@clerk/clerk-react@5.43.1(react-dom@19.1.0(react@19.1.0))(react@19.1.0))(react@19.1.0))(react@19.1.0)(typescript@5.9.3)(zod@4.1.8))(convex@1.27.0(@clerk/clerk-react@5.43.1(react-dom@19.1.0(react@19.1.0))(react@19.1.0))(react@19.1.0))(zod@4.1.8)
+        specifier: workspace:*
+        version: link:../zodvex
 
   packages/codemods: {}
 
@@ -9373,14 +9373,6 @@ packages:
   zod@4.1.8:
     resolution: {integrity: sha512-5R1P+WwQqmmMIEACyzSvo4JXHY5WiAFHRMg+zBZKgKS+Q1viRa0C1hmUKtHltoIFKtIdki3pRxkmpP74jnNYHQ==}
 
-  zodvex@0.2.1:
-    resolution: {integrity: sha512-8DRsL8rXVoSesle+aSFJD/6TbmMDpsC+5uaAhqm72By8cxg6co9FLfLHz/iLmn+9haJBTkWIgfUf9s250k0Obg==}
-    engines: {bun: '>=1.0.0', node: '>=20'}
-    peerDependencies:
-      convex: 1.27.0
-      convex-helpers: 0.1.101-alpha.1
-      zod: 4.1.8
-
   zustand@4.5.7:
     resolution: {integrity: sha512-CHOUy7mu3lbD6o6LJLfllpjkzhHXSBlX8B9+qPddUsIfeF5S/UZ5q0kmCsnRqT1UHFQZchNFDDzMbQsuesHWlw==}
     engines: {node: '>=12.7.0'}
@@ -14959,14 +14951,6 @@ snapshots:
       typescript: 5.8.3
       zod: 4.1.8
 
-  convex-helpers@0.1.104(convex@1.27.0(@clerk/clerk-react@5.43.1(react-dom@19.1.0(react@19.1.0))(react@19.1.0))(react@19.1.0))(react@19.1.0)(typescript@5.9.3)(zod@4.1.8):
-    dependencies:
-      convex: 1.27.0(@clerk/clerk-react@5.43.1(react-dom@19.1.0(react@19.1.0))(react@19.1.0))(react@19.1.0)
-    optionalDependencies:
-      react: 19.1.0
-      typescript: 5.9.3
-      zod: 4.1.8
-
   convex@1.27.0(@clerk/clerk-react@5.43.1(react-dom@19.0.0(react@19.0.0))(react@19.0.0))(react@19.0.0):
     dependencies:
       esbuild: 0.25.4
@@ -20344,18 +20328,6 @@ snapshots:
   zod@4.0.5: {}
 
   zod@4.1.8: {}
-
-  zodvex@0.2.1(convex-helpers@0.1.101-alpha.1(convex@1.27.0(@clerk/clerk-react@5.43.1(react-dom@19.1.0(react@19.1.0))(react@19.1.0))(react@19.1.0))(react@19.1.0)(typescript@5.9.3)(zod@4.1.8))(convex@1.27.0(@clerk/clerk-react@5.43.1(react-dom@19.1.0(react@19.1.0))(react@19.1.0))(react@19.1.0))(zod@4.1.8):
-    dependencies:
-      convex: 1.27.0(@clerk/clerk-react@5.43.1(react-dom@19.1.0(react@19.1.0))(react@19.1.0))(react@19.1.0)
-      convex-helpers: 0.1.101-alpha.1(convex@1.27.0(@clerk/clerk-react@5.43.1(react-dom@19.1.0(react@19.1.0))(react@19.1.0))(react@19.1.0))(react@19.1.0)(typescript@5.9.3)(zod@4.1.8)
-      zod: 4.1.8
-
-  zodvex@0.2.1(convex-helpers@0.1.104(convex@1.27.0(@clerk/clerk-react@5.43.1(react-dom@19.1.0(react@19.1.0))(react@19.1.0))(react@19.1.0))(react@19.1.0)(typescript@5.9.3)(zod@4.1.8))(convex@1.27.0(@clerk/clerk-react@5.43.1(react-dom@19.1.0(react@19.1.0))(react@19.1.0))(react@19.1.0))(zod@4.1.8):
-    dependencies:
-      convex: 1.27.0(@clerk/clerk-react@5.43.1(react-dom@19.1.0(react@19.1.0))(react@19.1.0))(react@19.1.0)
-      convex-helpers: 0.1.104(convex@1.27.0(@clerk/clerk-react@5.43.1(react-dom@19.1.0(react@19.1.0))(react@19.1.0))(react@19.1.0))(react@19.1.0)(typescript@5.9.3)(zod@4.1.8)
-      zod: 4.1.8
 
   zustand@4.5.7(@types/react@19.0.14)(react@19.1.0):
     dependencies:
