@@ -1,4 +1,4 @@
-const prefixes = ['https://motiion.io', 'motiion://', 'motiion-dev://']
+const prefixes = ['https://motiion.io', 'motiion://', 'motiion-dev://'];
 
 const linking = {
   prefixes,
@@ -90,6 +90,6 @@ const linking = {
       },
     },
   },
-} as const
+} as const;
 
-export default linking
+export default linking;

@@ -27,7 +27,7 @@ export function ProfileResumeTab({ profileData }: ProfileResumeTabProps) {
     // Navigate to projects screen with category filter
     router.push({
       pathname: '/app/dancers/[id]/projects',
-      params: { id: dancer._id, category }
+      params: { id: dancer._id, category },
     });
   };
 

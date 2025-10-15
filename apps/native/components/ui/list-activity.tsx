@@ -1,17 +1,17 @@
-import type { ViewRef } from '@rn-primitives/types'
-import * as React from 'react'
-import { View, type ViewProps } from 'react-native'
+import type { ViewRef } from '@rn-primitives/types';
+import * as React from 'react';
+import { View, type ViewProps } from 'react-native';
 
-import { Text } from '~/components/ui/text'
-import { Icon } from '~/lib/icons/Icon'
-import { cn } from '~/lib/utils'
+import { Text } from '~/components/ui/text';
+import { Icon } from '~/lib/icons/Icon';
+import { cn } from '~/lib/utils';
 
-type ActivityType = 'Session' | 'Class' | 'Job'
+type ActivityType = 'Session' | 'Class' | 'Job';
 
 interface ListActivityProps extends ViewProps {
-  category: string
-  activityType?: ActivityType
-  activityLabel: string
+  category: string;
+  activityType?: ActivityType;
+  activityLabel: string;
 }
 
 export const ListActivity = React.forwardRef<ViewRef, ListActivityProps>(
@@ -21,7 +21,7 @@ export const ListActivity = React.forwardRef<ViewRef, ListActivityProps>(
         ? 'text-[#cc00be]'
         : activityType === 'Class'
           ? 'text-[#00cc55]'
-          : 'text-[#4fcfcf]'
+          : 'text-[#4fcfcf]';
 
     return (
       <View ref={ref} className={cn('w-full flex-col', className)} {...props}>
@@ -41,8 +41,8 @@ export const ListActivity = React.forwardRef<ViewRef, ListActivityProps>(
           </View>
         </View>
       </View>
-    )
+    );
   }
-)
+);
 
-ListActivity.displayName = 'ListActivity'
+ListActivity.displayName = 'ListActivity';

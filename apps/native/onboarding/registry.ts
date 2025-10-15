@@ -296,7 +296,9 @@ export const STEP_REGISTRY = {
       if (ctx.data.user?.activeProfileType === 'dancer') {
         await ctx.updateMyDancerProfile({ representationStatus: values.representationStatus });
       } else if (ctx.data.user?.activeProfileType === 'choreographer') {
-        await ctx.updateMyChoreographerProfile({ representationStatus: values.representationStatus });
+        await ctx.updateMyChoreographerProfile({
+          representationStatus: values.representationStatus,
+        });
       }
     },
   },
@@ -313,11 +315,11 @@ export const STEP_REGISTRY = {
         // Update representation on the active profile
         if (ctx.data.user?.activeProfileType === 'dancer') {
           await ctx.updateMyDancerProfile({
-            representation: { agencyId: values.agencyId as any }
+            representation: { agencyId: values.agencyId as any },
           });
         } else if (ctx.data.user?.activeProfileType === 'choreographer') {
           await ctx.updateMyChoreographerProfile({
-            representation: { agencyId: values.agencyId as any }
+            representation: { agencyId: values.agencyId as any },
           });
         }
       }
@@ -358,7 +360,7 @@ export const STEP_REGISTRY = {
     Component: DatabaseUseForm as unknown as ComponentType<FormProps<any>>,
     schema: databaseUseSchema,
     getInitialValues: (data: OnboardingData) => ({
-      databaseUse: (data.profile as any)?.databaseUse || ''
+      databaseUse: (data.profile as any)?.databaseUse || '',
     }),
     save: async (values: any, ctx) => {
       // Database use is choreographer-specific
@@ -375,7 +377,7 @@ export const STEP_REGISTRY = {
     Component: CompanyForm as unknown as ComponentType<FormProps<any>>,
     schema: companySchema,
     getInitialValues: (data: OnboardingData) => ({
-      companyName: (data.profile as any)?.companyName || ''
+      companyName: (data.profile as any)?.companyName || '',
     }),
     save: async (values: any, ctx) => {
       // Company name is choreographer-specific

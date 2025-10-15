@@ -1,8 +1,8 @@
-export { ProfileSheet } from './ProfileSheet'
-export { ProfileSheetHandle } from './ProfileSheetHandle'
-export { ProfileSheetBackground } from './ProfileSheetBackground'
-export { ProfileSheetHeader } from './ProfileSheetHeader'
-export { useProfileSheet } from './useProfileSheet'
+export { ProfileSheet } from './ProfileSheet';
+export { ProfileSheetHandle } from './ProfileSheetHandle';
+export { ProfileSheetBackground } from './ProfileSheetBackground';
+export { ProfileSheetHeader } from './ProfileSheetHeader';
+export { useProfileSheet } from './useProfileSheet';
 export type {
   UseProfileSheetConfig,
   UseProfileSheetReturn,
@@ -10,4 +10,4 @@ export type {
   ProfileSheetHeaderProps,
   ProfileSheetBackgroundProps,
   ProfileSheetHandleProps,
-} from './types'
+} from './types';

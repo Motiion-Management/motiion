@@ -95,9 +95,7 @@ export function TabView({
 
   return (
     <View className={className} style={{ flex: 1 }}>
-      <View className={tabContainerClassName}>
-        {renderTabs()}
-      </View>
+      <View className={tabContainerClassName}>{renderTabs()}</View>
       <PagerView
         ref={pagerRef}
         initialPage={initialIndex}

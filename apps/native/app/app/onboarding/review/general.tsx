@@ -133,8 +133,7 @@ export default function GeneralReviewScreen() {
   if (isLoading) return null;
 
   // Get sizing from profile (dancer-specific field)
-  const sizing =
-    (data.profile && 'sizing' in data.profile ? data.profile.sizing : undefined);
+  const sizing = data.profile && 'sizing' in data.profile ? data.profile.sizing : undefined;
 
   return (
     <BaseOnboardingScreen

@@ -47,9 +47,7 @@ export default function AuthLandingScreen() {
           </Link>
 
           <Link href="/auth/(login)" asChild>
-            <Button
-              variant="tertiary"
-              size={Platform.select({ ios: 'lg', default: 'md' })}>
+            <Button variant="tertiary" size={Platform.select({ ios: 'lg', default: 'md' })}>
               <Text>Sign In</Text>
             </Button>
           </Link>

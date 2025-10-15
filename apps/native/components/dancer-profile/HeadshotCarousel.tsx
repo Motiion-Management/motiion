@@ -60,7 +60,12 @@ export function HeadshotCarousel({
       return COLLAPSED_WIDTH;
     }
 
-    return interpolate(animatedIndex.value, [0, 1], [COLLAPSED_WIDTH, EXPANDED_WIDTH], Extrapolate.CLAMP);
+    return interpolate(
+      animatedIndex.value,
+      [0, 1],
+      [COLLAPSED_WIDTH, EXPANDED_WIDTH],
+      Extrapolate.CLAMP
+    );
   }, [animatedIndex]);
 
   const containerStyle = useAnimatedStyle(() => {

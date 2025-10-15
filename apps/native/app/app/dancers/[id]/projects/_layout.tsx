@@ -32,7 +32,7 @@ const ProjectsHeader = ({ route }: { route: any }) => {
   return (
     <SafeAreaView
       edges={['top', 'left', 'right']}
-      className="bg-background-nav border-b border-border-tint">
+      className="border-b border-border-tint bg-background-nav">
       <View className="flex-row items-center justify-between px-2 py-6">
         <Button onPress={handleBack} variant="tertiary">
           <Icon name="chevron.left" size={20} className="text-icon-default" />

@@ -175,7 +175,7 @@ export function MultiImageUploadOptimized({ onImageCountChange }: MultiImageUplo
         // Save all headshots at once by appending to existing headshots
         const currentHeadshots = profile?.headshots ?? [];
         await updateMyDancerProfile({
-          headshots: [...currentHeadshots, ...headshots]
+          headshots: [...currentHeadshots, ...headshots],
         });
 
         setUploadState({ isUploading: false, progress: 100, error: null });
@@ -189,7 +189,13 @@ export function MultiImageUploadOptimized({ onImageCountChange }: MultiImageUplo
         setUploadState({ isUploading: false, progress: 0, error: errorMessage });
       }
     },
-    [generateUploadUrl, updateMyDancerProfile, profile, headshotsWithUrls.length, onImageCountChange]
+    [
+      generateUploadUrl,
+      updateMyDancerProfile,
+      profile,
+      headshotsWithUrls.length,
+      onImageCountChange,
+    ]
   );
 
   const handleImageUpload = useCallback(async () => {
@@ -284,9 +290,9 @@ export function MultiImageUploadOptimized({ onImageCountChange }: MultiImageUplo
           storageId: h.storageId,
           uploadDate: h.uploadDate || new Date().toISOString(),
           title: h.title,
-          position: idx
+          position: idx,
         })),
-        ...tail
+        ...tail,
       ];
       updateMyDancerProfile({ headshots: reorderedHeadshots as any }).catch(() => {
         setHeadshotsWithUrls((current) => {

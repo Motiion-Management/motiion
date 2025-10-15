@@ -1,21 +1,21 @@
-import React from 'react'
-import { TouchableOpacity, View } from 'react-native'
-import { Text } from '~/components/ui/text'
-import { Icon } from '~/lib/icons/Icon'
-import { cn } from '~/lib/utils'
+import React from 'react';
+import { TouchableOpacity, View } from 'react-native';
+import { Text } from '~/components/ui/text';
+import { Icon } from '~/lib/icons/Icon';
+import { cn } from '~/lib/utils';
 
 interface ProfileCategoryCardProps {
-  title: string
-  count: number
-  onPress?: () => void
-  className?: string
+  title: string;
+  count: number;
+  onPress?: () => void;
+  className?: string;
 }
 
 export function ProfileCategoryCard({
   title,
   count,
   onPress,
-  className
+  className,
 }: ProfileCategoryCardProps) {
   return (
     <TouchableOpacity
@@ -35,5 +35,5 @@ export function ProfileCategoryCard({
       </View>
       <Icon name="chevron.right" size={20} className="text-icon-low" />
     </TouchableOpacity>
-  )
+  );
 }

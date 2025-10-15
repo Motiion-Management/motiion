@@ -1,16 +1,16 @@
-import type { ViewRef } from '@rn-primitives/types'
-import * as React from 'react'
-import { View, type ViewProps, TouchableOpacity } from 'react-native'
-import { Image, type ImageSource } from 'expo-image'
+import type { ViewRef } from '@rn-primitives/types';
+import * as React from 'react';
+import { View, type ViewProps, TouchableOpacity } from 'react-native';
+import { Image, type ImageSource } from 'expo-image';
 
-import { Text } from '~/components/ui/text'
-import { cn } from '~/lib/utils'
+import { Text } from '~/components/ui/text';
+import { cn } from '~/lib/utils';
 
 interface SectionCardProps extends ViewProps {
-  title: string
-  count: number
-  backgroundImage?: ImageSource
-  onPress?: () => void
+  title: string;
+  count: number;
+  backgroundImage?: ImageSource;
+  onPress?: () => void;
 }
 
 export const SectionCard = React.forwardRef<ViewRef, SectionCardProps>(
@@ -34,13 +34,10 @@ export const SectionCard = React.forwardRef<ViewRef, SectionCardProps>(
                 left: 0,
                 right: 0,
                 bottom: 0,
-                borderRadius: 8
+                borderRadius: 8,
               }}
             />
-            <View
-              className="absolute inset-0 rounded-lg bg-white"
-              style={{ opacity: 0.15 }}
-            />
+            <View className="absolute inset-0 rounded-lg bg-white" style={{ opacity: 0.15 }} />
           </>
         )}
 
@@ -56,18 +53,18 @@ export const SectionCard = React.forwardRef<ViewRef, SectionCardProps>(
           {count}
         </Text>
       </View>
-    )
+    );
 
     if (onPress) {
       return (
         <TouchableOpacity onPress={onPress} className="flex-1" activeOpacity={0.7}>
           {CardContent}
         </TouchableOpacity>
-      )
+      );
     }
 
-    return <View className="flex-1">{CardContent}</View>
+    return <View className="flex-1">{CardContent}</View>;
   }
-)
+);
 
-SectionCard.displayName = 'SectionCard'
+SectionCard.displayName = 'SectionCard';

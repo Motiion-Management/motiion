@@ -7,7 +7,8 @@ import {
   ProfileHeaderSettingsButton,
   ProfileHeaderTitle,
 } from '~/components/profile/ProfileHeader';
-import { Text } from '~/components/ui/text';
+import { SectionCardPager } from '~/components/profile/SectionCardPager';
+import { ProfessionalExperienceSection } from '~/components/profile/ProfessionalExperienceSection';
 
 export default function ProfileScreen() {
   const { bottom } = useSafeAreaInsets();
@@ -21,13 +22,21 @@ export default function ProfileScreen() {
       }}
       className="flex-1"
       contentContainerStyle={{
-        paddingHorizontal: 16,
         paddingTop: 24,
         paddingBottom: bottom + 120,
       }}
       showsVerticalScrollIndicator={false}>
       <View className="gap-8">
-        <Text>Profile Screen</Text>
+        {/* Section Cards Pager */}
+        <SectionCardPager />
+
+        {/* Divider */}
+        <View className="mx-4 h-px bg-border-tint" />
+
+        {/* Professional Experience Section */}
+        <View className="px-4">
+          <ProfessionalExperienceSection />
+        </View>
       </View>
     </TabScreenLayout>
   );

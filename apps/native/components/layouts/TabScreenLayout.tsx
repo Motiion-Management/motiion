@@ -69,7 +69,9 @@ export function TabScreenLayout({
   return (
     <AnimatedScrollHeader {...headerConfig}>
       <AnimatedScrollHeader.Header left={leftSlot} middle={middle} right={right} />
-      <AnimatedScrollHeader.ScrollView {...scrollViewProps}>{children}</AnimatedScrollHeader.ScrollView>
+      <AnimatedScrollHeader.ScrollView {...scrollViewProps}>
+        {children}
+      </AnimatedScrollHeader.ScrollView>
     </AnimatedScrollHeader>
   );
 }

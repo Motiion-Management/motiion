@@ -9,9 +9,7 @@ const AnimatedScrollHeaderContext = createContext<AnimatedScrollHeaderContextVal
 export function useAnimatedScrollHeaderContext() {
   const context = useContext(AnimatedScrollHeaderContext);
   if (!context) {
-    throw new Error(
-      'useAnimatedScrollHeaderContext must be used within AnimatedScrollHeader'
-    );
+    throw new Error('useAnimatedScrollHeaderContext must be used within AnimatedScrollHeader');
   }
   return context;
 }

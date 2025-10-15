@@ -26,21 +26,26 @@ export default function DancerUniversalLink() {
   }, [id])
 
   return (
-    <div style={{
-      display: 'flex',
-      flexDirection: 'column',
-      alignItems: 'center',
-      justifyContent: 'center',
-      minHeight: '100vh',
-      padding: '20px',
-      fontFamily: 'system-ui, -apple-system, sans-serif',
-      backgroundColor: '#003D37',
-      color: 'white',
-      textAlign: 'center'
-    }}>
-      <h1 style={{ fontSize: '24px', marginBottom: '16px' }}>Opening Motiion...</h1>
+    <div
+      style={{
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+        justifyContent: 'center',
+        minHeight: '100vh',
+        padding: '20px',
+        fontFamily: 'system-ui, -apple-system, sans-serif',
+        backgroundColor: '#003D37',
+        color: 'white',
+        textAlign: 'center'
+      }}
+    >
+      <h1 style={{ fontSize: '24px', marginBottom: '16px' }}>
+        Opening Motiion...
+      </h1>
       <p style={{ fontSize: '16px', opacity: 0.8 }}>
-        If the app doesn't open automatically, make sure you have Motiion installed.
+        If the app doesn't open automatically, make sure you have Motiion
+        installed.
       </p>
     </div>
   )

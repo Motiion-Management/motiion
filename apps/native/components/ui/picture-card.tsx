@@ -16,7 +16,10 @@ export const PictureCard = React.forwardRef<ViewRef, PictureCardProps>(
     return (
       <View
         ref={ref}
-        className={cn('overflow-hidden rounded border border-border-tint bg-transparent', className)}
+        className={cn(
+          'overflow-hidden rounded border border-border-tint bg-transparent',
+          className
+        )}
         style={{ aspectRatio }}
         {...props}>
         {image ? (
