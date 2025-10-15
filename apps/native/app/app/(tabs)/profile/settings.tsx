@@ -1,5 +1,6 @@
 import React from 'react';
 import { View } from 'react-native';
+import { router } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import {
@@ -8,27 +9,26 @@ import {
 } from '~/components/layouts/TabScreenLayout';
 import { Text } from '~/components/ui/text';
 
-function DiscoverHeaderTitle() {
-  return (
-    <View className="items-center justify-center">
-      <Text variant="header5">Discover</Text>
-    </View>
-  );
-}
-
-export default function DiscoverScreen() {
+export default function SettingsScreen() {
   const { bottom } = useSafeAreaInsets();
 
   return (
     <TabScreenLayout
       header={{
-        left: <View className="size-10" />,
-        middle: <DiscoverHeaderTitle />,
+        left: ({ scrollProgress }) => (
+          <TabScreenHeaderActionButton
+            scrollProgress={scrollProgress}
+            iconName="xmark"
+            iconSize={20}
+            onPress={() => router.back()}
+          />
+        ),
         right: ({ scrollProgress }) => (
           <TabScreenHeaderActionButton
             scrollProgress={scrollProgress}
-            iconName="magnifyingglass"
-            onPress={() => console.log('Search')}
+            iconName="ellipsis"
+            iconSize={20}
+            onPress={() => console.log('More options')}
           />
         ),
       }}
@@ -40,7 +40,7 @@ export default function DiscoverScreen() {
       }}
       showsVerticalScrollIndicator={false}>
       <View className="gap-8">
-        <Text>Discover Screen</Text>
+        <Text>Settings Screen</Text>
       </View>
     </TabScreenLayout>
   );

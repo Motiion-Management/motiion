@@ -2,7 +2,7 @@ import { Stack } from 'expo-router';
 
 import { BackgroundGradientView } from '~/components/ui/background-gradient-view';
 
-export default function DiscoverLayout() {
+export default function ProfileLayout() {
   return (
     <BackgroundGradientView>
       <Stack
@@ -15,7 +15,13 @@ export default function DiscoverLayout() {
         <Stack.Screen
           name="index"
           options={{
-            title: 'Discover',
+            title: 'Profile',
+          }}
+        />
+        <Stack.Screen
+          name="settings"
+          options={{
+            title: 'Settings',
           }}
         />
       </Stack>
