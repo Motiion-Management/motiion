@@ -17,7 +17,7 @@ export function ScrollView({ children, ...scrollViewProps }: AnimatedScrollViewP
       scrollEventThrottle={16}
       showsVerticalScrollIndicator={false}
       {...scrollViewProps}>
-      <View style={{ paddingTop: headerHeight + safeAreaTop }}>{children}</View>
+      <View style={{ paddingTop: headerHeight }}>{children}</View>
     </Animated.ScrollView>
   );
 }

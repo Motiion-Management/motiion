@@ -8,18 +8,19 @@ import { cn } from '~/lib/utils';
 
 interface SectionCardProps extends ViewProps {
   title: string;
-  count: number;
+  count?: number;
+  icon?: React.ReactNode;
   backgroundImage?: ImageSource;
   onPress?: () => void;
 }
 
 export const SectionCard = React.forwardRef<ViewRef, SectionCardProps>(
-  ({ className, title, count, backgroundImage, onPress, ...props }, ref) => {
+  ({ className, title, count, icon, backgroundImage, onPress, ...props }, ref) => {
     const CardContent = (
       <View
         ref={ref}
         className={cn(
-          'h-[86px] flex-col justify-end rounded-lg border border-[rgba(21,25,28,0.4)] p-4',
+          'h-[86px] flex-col justify-end rounded-lg border border-border-tint bg-surface-tint-accent p-4',
           className
         )}
         {...props}>
@@ -41,17 +42,19 @@ export const SectionCard = React.forwardRef<ViewRef, SectionCardProps>(
           </>
         )}
 
-        <View className="relative z-10">
-          <Text variant="header6" className="text-text-default">
+        <View className="relative z-10 flex-row justify-between">
+          <Text variant="header5" className="text-text-default">
             {title}
           </Text>
-        </View>
 
-        <Text
-          variant="header4"
-          className="absolute right-5 top-2 text-center text-text-low opacity-50">
-          {count}
-        </Text>
+          {icon ? (
+            <View className="">{icon}</View>
+          ) : count !== undefined ? (
+            <Text variant="header4" className="text-center text-text-low opacity-50">
+              {count}
+            </Text>
+          ) : null}
+        </View>
       </View>
     );
 

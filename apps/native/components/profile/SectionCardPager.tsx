@@ -102,52 +102,28 @@ function SectionCardGrid({ cards }: SectionCardGridProps) {
   return (
     <View className="gap-4">
       <View className="flex-row gap-4">
-        <TouchableOpacity
-          className="flex-1"
+        <SectionCard
+          title={cards[0]?.title}
+          icon={cards[0]?.icon}
           onPress={() => router.push(cards[0]?.route)}
-          activeOpacity={0.7}>
-          <View className="h-[86px] flex-col justify-end rounded-lg border border-border-tint bg-surface-tint-accent p-4">
-            <View className="absolute right-4 top-2">{cards[0]?.icon}</View>
-            <Text variant="header6" className="text-text-default">
-              {cards[0]?.title}
-            </Text>
-          </View>
-        </TouchableOpacity>
-        <TouchableOpacity
-          className="flex-1"
+        />
+        <SectionCard
+          title={cards[1]?.title}
+          icon={cards[1]?.icon}
           onPress={() => router.push(cards[1]?.route)}
-          activeOpacity={0.7}>
-          <View className="h-[86px] flex-col justify-end rounded-lg border border-border-tint bg-surface-tint-accent p-4">
-            <View className="absolute right-4 top-2">{cards[1]?.icon}</View>
-            <Text variant="header6" className="text-text-default">
-              {cards[1]?.title}
-            </Text>
-          </View>
-        </TouchableOpacity>
+        />
       </View>
       <View className="flex-row gap-4">
-        <TouchableOpacity
-          className="flex-1"
+        <SectionCard
+          title={cards[2]?.title}
+          icon={cards[2]?.icon}
           onPress={() => router.push(cards[2]?.route)}
-          activeOpacity={0.7}>
-          <View className="h-[86px] flex-col justify-end rounded-lg border border-border-tint bg-surface-tint-accent p-4">
-            <View className="absolute right-4 top-2">{cards[2]?.icon}</View>
-            <Text variant="header6" className="text-text-default">
-              {cards[2]?.title}
-            </Text>
-          </View>
-        </TouchableOpacity>
-        <TouchableOpacity
-          className="flex-1"
+        />
+        <SectionCard
+          title={cards[3]?.title}
+          icon={cards[3]?.icon}
           onPress={() => router.push(cards[3]?.route)}
-          activeOpacity={0.7}>
-          <View className="h-[86px] flex-col justify-end rounded-lg border border-border-tint bg-surface-tint-accent p-4">
-            <View className="absolute right-4 top-2">{cards[3]?.icon}</View>
-            <Text variant="header6" className="text-text-default">
-              {cards[3]?.title}
-            </Text>
-          </View>
-        </TouchableOpacity>
+        />
       </View>
     </View>
   );

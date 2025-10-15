@@ -1,6 +1,5 @@
 import React from 'react';
 import { View } from 'react-native';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { TabScreenLayout } from '~/components/layouts/TabScreenLayout';
 import { Text } from '~/components/ui/text';
@@ -16,8 +15,6 @@ function DiscoverHeaderTitle() {
 }
 
 export default function DiscoverScreen() {
-  const { bottom } = useSafeAreaInsets();
-
   return (
     <TabScreenLayout
       header={{
@@ -36,15 +33,8 @@ export default function DiscoverScreen() {
             onPress={() => console.log('Search')}
           />
         ),
-      }}
-      className="flex-1"
-      contentContainerStyle={{
-        paddingHorizontal: 16,
-        paddingTop: 24,
-        paddingBottom: bottom + 120,
-      }}
-      showsVerticalScrollIndicator={false}>
-      <View className="gap-8">
+      }}>
+      <View className="gap-8 px-4">
         <Text>Discover Screen</Text>
       </View>
     </TabScreenLayout>

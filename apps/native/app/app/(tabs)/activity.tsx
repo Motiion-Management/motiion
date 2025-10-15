@@ -1,6 +1,5 @@
 import React from 'react';
 import { View } from 'react-native';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { BackgroundGradientView } from '~/components/ui/background-gradient-view';
 import { TabScreenLayout } from '~/components/layouts/TabScreenLayout';
@@ -16,8 +15,6 @@ function ActivityHeaderTitle() {
 }
 
 export default function ActivityScreen() {
-  const { bottom } = useSafeAreaInsets();
-
   return (
     <BackgroundGradientView>
       <TabScreenLayout
@@ -37,15 +34,8 @@ export default function ActivityScreen() {
               onPress={() => console.log('Schedule')}
             />
           ),
-        }}
-        className="flex-1"
-        contentContainerStyle={{
-          paddingHorizontal: 16,
-          paddingTop: 24,
-          paddingBottom: bottom + 120,
-        }}
-        showsVerticalScrollIndicator={false}>
-        <View className="gap-8">
+        }}>
+        <View className="gap-8 px-4">
           <Text>Activity Screen</Text>
         </View>
       </TabScreenLayout>
