@@ -5,6 +5,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { BackgroundGradientView } from '~/components/ui/background-gradient-view';
 import { TabScreenLayout } from '~/components/layouts/TabScreenLayout';
 import { Text } from '~/components/ui/text';
+import { HeaderActionButton } from '~/components/ui/animated-scroll-header';
 
 function ActivityHeaderTitle() {
   return (
@@ -21,8 +22,21 @@ export default function ActivityScreen() {
     <BackgroundGradientView>
       <TabScreenLayout
         header={{
-          left: <View className="size-10" />,
+          left: ({ scrollProgress }) => (
+            <HeaderActionButton
+              scrollProgress={scrollProgress}
+              iconName="list.dash"
+              onPress={() => console.log('Filter list')}
+            />
+          ),
           middle: <ActivityHeaderTitle />,
+          right: ({ scrollProgress }) => (
+            <HeaderActionButton
+              scrollProgress={scrollProgress}
+              iconName="calendar.badge.clock"
+              onPress={() => console.log('Schedule')}
+            />
+          ),
         }}
         className="flex-1"
         contentContainerStyle={{

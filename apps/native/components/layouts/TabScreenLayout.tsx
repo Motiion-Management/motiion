@@ -1,12 +1,6 @@
 import React, { useMemo, type ReactNode } from 'react';
 import { View } from 'react-native';
 import { router } from 'expo-router';
-import Animated, {
-  Extrapolate,
-  interpolate,
-  useAnimatedStyle,
-  type SharedValue,
-} from 'react-native-reanimated';
 
 import {
   AnimatedScrollHeader,
@@ -81,43 +75,3 @@ export function TabScreenLayout({
 }
 
 export type { HeaderSlot as TabHeaderSlot };
-
-function useTabScreenActionButtonShadow(scrollProgress: SharedValue<number>) {
-  return useAnimatedStyle(() => {
-    'worklet';
-    const progress = scrollProgress.value;
-    const shadowOpacity = interpolate(progress, [0, 1], [0.25, 0], Extrapolate.CLAMP);
-
-    return {
-      shadowColor: '#000',
-      shadowOffset: { width: 0, height: 3 },
-      shadowOpacity,
-      shadowRadius: 7,
-      elevation: shadowOpacity * 10,
-    };
-  });
-}
-
-interface TabScreenHeaderActionButtonProps {
-  scrollProgress: SharedValue<number>;
-  iconName: string;
-  iconSize?: number;
-  onPress?: () => void;
-}
-
-export function TabScreenHeaderActionButton({
-  scrollProgress,
-  iconName,
-  iconSize = 24,
-  onPress,
-}: TabScreenHeaderActionButtonProps) {
-  const buttonShadowStyle = useTabScreenActionButtonShadow(scrollProgress);
-
-  return (
-    <Animated.View style={buttonShadowStyle}>
-      <Button variant="secondary" size="icon" onPress={onPress}>
-        <Icon name={iconName} className="text-icon-default" size={iconSize} />
-      </Button>
-    </Animated.View>
-  );
-}

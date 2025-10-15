@@ -3,10 +3,8 @@ import { View } from 'react-native';
 import { router } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
-import {
-  TabScreenHeaderActionButton,
-  TabScreenLayout,
-} from '~/components/layouts/TabScreenLayout';
+import { TabScreenLayout } from '~/components/layouts/TabScreenLayout';
+import { HeaderActionButton } from '~/components/ui/animated-scroll-header';
 import { Text } from '~/components/ui/text';
 
 export default function SettingsScreen() {
@@ -16,19 +14,24 @@ export default function SettingsScreen() {
     <TabScreenLayout
       header={{
         left: ({ scrollProgress }) => (
-          <TabScreenHeaderActionButton
+          <HeaderActionButton
             scrollProgress={scrollProgress}
-            iconName="xmark"
+            iconName="chevron.left"
             iconSize={20}
             onPress={() => router.back()}
           />
         ),
+        middle: () => (
+          <View className="items-center justify-center">
+            <Text variant="header5">Settings</Text>
+          </View>
+        ),
         right: ({ scrollProgress }) => (
-          <TabScreenHeaderActionButton
+          <HeaderActionButton
             scrollProgress={scrollProgress}
-            iconName="ellipsis"
+            iconName="rectangle.portrait.and.arrow.right"
             iconSize={20}
-            onPress={() => console.log('More options')}
+            onPress={() => console.log('Logout')}
           />
         ),
       }}

@@ -2,11 +2,10 @@ import React from 'react';
 import { View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
-import {
-  TabScreenHeaderActionButton,
-  TabScreenLayout,
-} from '~/components/layouts/TabScreenLayout';
+import { TabScreenLayout } from '~/components/layouts/TabScreenLayout';
 import { Text } from '~/components/ui/text';
+
+import { HeaderActionButton } from '~/components/ui/animated-scroll-header';
 
 function DiscoverHeaderTitle() {
   return (
@@ -22,10 +21,16 @@ export default function DiscoverScreen() {
   return (
     <TabScreenLayout
       header={{
-        left: <View className="size-10" />,
+        left: ({ scrollProgress }) => (
+          <HeaderActionButton
+            scrollProgress={scrollProgress}
+            iconName="bookmark"
+            onPress={() => console.log('Saved')}
+          />
+        ),
         middle: <DiscoverHeaderTitle />,
         right: ({ scrollProgress }) => (
-          <TabScreenHeaderActionButton
+          <HeaderActionButton
             scrollProgress={scrollProgress}
             iconName="magnifyingglass"
             onPress={() => console.log('Search')}
