@@ -38,6 +38,8 @@ import type * as schemas_base from "../schemas/base.js";
 import type * as schemas_choreographers from "../schemas/choreographers.js";
 import type * as schemas_dancers from "../schemas/dancers.js";
 import type * as schemas_featuredMembers from "../schemas/featuredMembers.js";
+import type * as schemas_fields_displayName from "../schemas/fields/displayName.js";
+import type * as schemas_fields_index from "../schemas/fields/index.js";
 import type * as schemas_projects from "../schemas/projects.js";
 import type * as schemas_sizing from "../schemas/sizing.js";
 import type * as schemas_training from "../schemas/training.js";
@@ -83,6 +85,8 @@ declare const fullApi: ApiFromModules<{
   "schemas/choreographers": typeof schemas_choreographers;
   "schemas/dancers": typeof schemas_dancers;
   "schemas/featuredMembers": typeof schemas_featuredMembers;
+  "schemas/fields/displayName": typeof schemas_fields_displayName;
+  "schemas/fields/index": typeof schemas_fields_index;
   "schemas/projects": typeof schemas_projects;
   "schemas/sizing": typeof schemas_sizing;
   "schemas/training": typeof schemas_training;

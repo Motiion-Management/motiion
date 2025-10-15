@@ -6,6 +6,7 @@ import { zFileUploadObjectArray, zLocation } from './base'
 import { attributesPlainObject } from './attributes'
 import { sizingPlainObject } from './sizing'
 import { zRepresentation, zResume, zLinks } from './users'
+import { displayNameDbField } from './fields'
 
 // Dancer-specific schema
 export const dancers = {
@@ -17,7 +18,7 @@ export const dancers = {
   createdAt: z.string(), // ISO date string
 
   // Profile-level identity
-  displayName: z.string().optional(),
+  displayName: displayNameDbField,
 
   // Onboarding state (per profile)
   onboardingCompleted: z.boolean().optional(),

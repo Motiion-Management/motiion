@@ -4,6 +4,7 @@ import { z } from 'zod'
 import { Doc } from '../_generated/dataModel'
 import { zFileUploadObjectArray, zLocation } from './base'
 import { zRepresentation, zResume, zLinks } from './users'
+import { displayNameDbField } from './fields'
 
 // Choreographer-specific schema
 export const choreographers = {
@@ -15,7 +16,7 @@ export const choreographers = {
   createdAt: z.string(), // ISO date string
 
   // Profile-level identity
-  displayName: z.string().optional(),
+  displayName: displayNameDbField,
 
   // Onboarding state (per profile)
   onboardingCompleted: z.boolean().optional(),

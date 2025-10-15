@@ -1,19 +1,16 @@
 import React from 'react';
 import { View } from 'react-native';
-import { Stack } from 'expo-router';
 
+import { TabScreenLayout } from '~/components/layouts/TabScreenLayout';
 import { Text } from '~/components/ui/text';
 
 export default function MediaScreen() {
   return (
-    <>
-      <Stack.Screen
-        options={{
-          title: 'Media',
-          headerShown: true,
-          headerBackTitle: 'Profile',
-        }}
-      />
+    <TabScreenLayout
+      header={{
+        left: 'back',
+        middle: 'Media',
+      }}>
       <View className="flex-1 items-center justify-center p-4">
         <Text variant="header4" className="text-text-default">
           Media
@@ -22,6 +19,6 @@ export default function MediaScreen() {
           Photos and videos will be displayed here
         </Text>
       </View>
-    </>
+    </TabScreenLayout>
   );
 }
