@@ -7,3 +7,4 @@
 
 export * from './displayName'
 export * from './height'
+export * from './ethnicity'
