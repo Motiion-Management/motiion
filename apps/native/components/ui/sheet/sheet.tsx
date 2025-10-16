@@ -14,11 +14,11 @@ import { Text } from '../text';
 import { cn } from '~/lib/cn';
 import X from '~/lib/icons/X';
 
-interface SheetProps extends BottomSheetModalProps {
+interface SheetProps extends Omit<BottomSheetModalProps, 'children'> {
+  children?: React.ReactNode;
   label?: string;
   isOpened: boolean;
   onIsOpenedChange: (isOpen: boolean) => void;
-  children: React.ReactNode;
   className?: string;
   backgroundClassName?: string;
   handleClassName?: string;
@@ -68,6 +68,7 @@ const SheetContent = forwardRef<SheetRef, SheetProps>(
       handleIndicatorStyle,
       enableCustomHandle = true,
       borderRadius = 'xl',
+      enableDynamicSizing = true,
       ...rest
     },
     ref
@@ -130,7 +131,7 @@ const SheetContent = forwardRef<SheetRef, SheetProps>(
       <BottomSheetModal
         ref={bottomSheetModalRef}
         index={0}
-        enableDynamicSizing
+        enableDynamicSizing={enableDynamicSizing}
         keyboardBehavior="interactive"
         keyboardBlurBehavior="restore"
         android_keyboardInputMode="adjustResize"
@@ -141,8 +142,10 @@ const SheetContent = forwardRef<SheetRef, SheetProps>(
         handleIndicatorStyle={!enableCustomHandle ? handleIndicatorStyle : undefined}
         enablePanDownToClose
         {...rest}>
-        <BottomSheetView className="h-full">
-          <SafeAreaView edges={['bottom']} className={cn('flex-1', className)}>
+        <BottomSheetView className={enableDynamicSizing ? '' : 'h-full'}>
+          <SafeAreaView
+            edges={['bottom']}
+            className={cn(!enableDynamicSizing && 'flex-1', className)}>
             <View className="flex-row items-center justify-between px-4 pb-4">
               <Text variant="header4" className="text-text-default">
                 {label}
