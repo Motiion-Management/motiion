@@ -1,164 +1,434 @@
-# Onboarding Navigation Refactor Plan (Deprecated)
+# Onboarding & Profile Management Refactor Plan
 
-Note: This document described a server-driven onboarding flow stored in Convex. The project has moved to a local-first model where the client controls the flow and the server only persists the last step and completion status for redirect. The `onboardingFlows` table and associated APIs were removed.
+**Status:** In Progress - Phase 1
+**Last Updated:** 2025-10-16
+**Owner:** Development Team
 
-## Core Architecture Decisions
+---
 
-### Current Approach Summary
+## Executive Summary
 
-- Flow defined client-side via `useSimpleOnboardingFlow`.
-- Server exposes minimal APIs: `setOnboardingStep`, `getOnboardingRedirect`, `completeOnboarding`, `resetOnboarding`.
-- Screens validate and save their own data; onboarding completion is non-blocking.
+Refactoring the onboarding system from a complex, dynamic STEP_REGISTRY pattern to explicit, declarative routes with shared schema validation. This improves maintainability, type safety, and code reusability across onboarding and profile editing.
 
-### 2. Local-First Navigation
+---
 
-- URL remains the source of truth for current position
-- Client handles all navigation decisions based on cached flow
-- Server only validates data completion, not navigation flow
-- Optimistic navigation with async validation
+## Current State (Accomplished)
 
-### 3. Real-Time Form Persistence
+### ✅ Phase 0: Foundation & Proof of Concept
 
-- Every form field auto-saves to Convex on change
-- Debounced text inputs (300ms), immediate for selections
-- Navigation enabled/disabled based on Convex query state
-- Leverage Convex's real-time sync instead of manual refetching
+1. **Established Shared Schema Pattern** (`displayName`)
+   - Created: `packages/backend/convex/schemas/fields/displayName.ts`
+   - Updated backend schemas (dancers.ts, choreographers.ts)
+   - Updated `DisplayNameForm` to import shared schema
+   - Type-safe end-to-end validation
 
-## Implementation Phases
+2. **Created Explicit Onboarding Routes**
+   - `app/(modals)/onboarding/dancer/display-name.tsx`
+   - `app/(modals)/onboarding/choreographer/display-name.tsx`
+   - Removed dynamic routing complexity
 
-### Migration Notes (historical)
+3. **Eliminated STEP_REGISTRY from Profile Editing**
+   - Created `FieldEditSheet` wrapper component (reuses `Sheet`)
+   - Refactored `app/(tabs)/profile/about.tsx` with explicit bottom sheets
+   - Created `ProfileFieldList` for declarative field rendering
+   - Single shared ScrollView across tabs
+   - Conditional Attributes tab (dancers only)
 
-1. **Create Convex table schema**:
+4. **Clarified Tab Component Architecture**
+   - Renamed `TabView` → `PagerTabView` (swipeable pages)
+   - Created `TabbedView` (simple tab switching)
+   - Clear separation of concerns
 
-   ```typescript
-   onboardingFlows: defineTable({
-     version: v.string(),
-     profileType: v.string(),
-     steps: v.array(
-       v.object({
-         id: v.string(),
-         name: v.string(),
-         route: v.string(),
-         required: v.array(v.string()),
-         conditional: v.optional(
-           v.object({
-             field: v.string(),
-             value: v.string(),
-             show: v.boolean()
-           })
-         ),
-         validation: v.optional(
-           v.object({
-             type: v.string(), // "backend" or "local"
-             endpoint: v.optional(v.string())
-           })
-         )
-       })
-     ),
-     decisionPoints: v.array(
-       v.object({
-         stepId: v.string(),
-         field: v.string(),
-         branches: v.array(
-           v.object({
-             value: v.string(),
-             nextStep: v.string()
-           })
-         )
-       })
-     ),
-     isActive: v.boolean(),
-     createdAt: v.string()
-   })
-   ```
+---
 
-2. **Fix navigation error**:
-   - Remove `beforeRemove` listener from BaseOnboardingScreen
-   - Replace `router.dismissTo()` with `router.replace()`
-   - Implement proper back handling with navigation state
+## Established Patterns
 
-This section is retained for historical context but is not applicable after the pivot to client-controlled onboarding.
+### Pattern 1: Shared Schema Layer
 
-1. **Migrate existing flow constants to Convex table**:
-   - Convert ONBOARDING_FLOWS to table entries
-   - Add conditional logic for agency step
-   - Include decision matrices for dynamic routing
+```typescript
+// packages/backend/convex/schemas/fields/{fieldName}.ts
+export const {field}FormSchema = z.object({
+  {field}: {validator}
+})
 
-2. **Create flow query hook**:
-   ```typescript
-   const useOnboardingFlow = () => {
-     const user = useQuery(api.users.getMyUser)
-     const flow = useQuery(api.onboarding.getFlow, {
-       version: CURRENT_VERSION,
-       profileType: user?.profileType
-     })
-     // Cache and return processed flow
-   }
-   ```
+export const {field}DbField = {validator}.optional()
 
-See `apps/native/hooks/useSimpleOnboardingFlow.ts` for the current navigation implementation.
+export type {Field}FormValues = z.infer<typeof {field}FormSchema>
+```
 
-1. **Refactor useOnboardingCursor**:
-   - Remove backend step validation calls
-   - Use cached flow for all navigation decisions
-   - Implement optimistic navigation
+### Pattern 2: Form Component Integration
 
-2. **Centralize conditional logic**:
-   - Single function to evaluate step visibility
-   - Use decision matrices from flow data
-   - Remove duplicate agency filtering
+```typescript
+// components/forms/onboarding/{Field}Form.tsx
+import { {field}FormSchema } from '@packages/backend/convex/schemas/fields'
 
-Forms own validation and persistence per screen (unchanged).
+export const {field}Schema = {field}FormSchema // backward compat
+```
 
-1. **Create auto-save form hooks**:
+### Pattern 3: Explicit Onboarding Routes
 
-   ```typescript
-   const useOnboardingForm = (stepId: string) => {
-     const updateField = useMutation(api.onboarding.updateField)
-     // Auto-save logic with debouncing
-     // Real-time validation state from Convex
-   }
-   ```
+```typescript
+// app/(modals)/onboarding/{profileType}/{field-name}.tsx
+export default function {ProfileType}{Field}Screen() {
+  const profile = useQuery(api.{profileType}s.getMy{ProfileType}Profile, {})
+  const updateProfile = useMutation(api.{profileType}s.updateMy{ProfileType}Profile)
 
-2. **Update all form components**:
-   - Remove manual save buttons where appropriate
-   - Show real-time save status
-   - Enable navigation based on Convex state
+  return (
+    <BaseOnboardingScreen>
+      <{Field}Form
+        initialValues={{ {field}: profile?.{field} }}
+        onSubmit={handleSubmit}
+      />
+    </BaseOnboardingScreen>
+  )
+}
+```
 
-General performance tips still apply.
+### Pattern 4: Profile Edit Sheet
 
-1. **Implement prefetching**:
-   - Preload all onboarding screens on mount
-   - Cache user data for instant population
+```typescript
+<FieldEditSheet
+  title="Edit {Field}"
+  description="..."
+  open={editingField === '{field}'}
+  onClose={() => setEditingField(null)}
+  canSave={canSubmit}
+  onSave={() => formRef.current?.submit()}>
+  <{Field}Form
+    ref={formRef}
+    initialValues={{ {field}: value }}
+    onSubmit={handleSave}
+    onValidChange={setCanSubmit}
+  />
+</FieldEditSheet>
+```
 
-2. **Add optimistic updates**:
-   - Navigate immediately, validate async
-   - Show loading states instead of blocking
+---
 
-3. **Error recovery**:
-   - Handle offline scenarios
-   - Retry failed mutations
-   - Conflict resolution for concurrent edits
+## Field Categorization
 
-## Success Metrics
+### Shared Fields (Both Dancers & Choreographers)
+- ✅ `displayName` - **COMPLETE**
+- `headshots` - Photo uploads
+- `representation` - Agency/management info
+- `location` - Primary location
 
-- Navigation errors eliminated
-- Form interactions feel instant (<100ms feedback)
-- Reduced server calls by 80%
-- Onboarding completion rate increase
-- Easy to add/modify onboarding flows
+### Dancer-Only Fields (Physical Attributes)
+- `height` - Feet/inches
+- `ethnicity` - Array of selections
+- `hairColor` - Enum selection
+- `eyeColor` - Enum selection
+- `gender` - Enum selection
 
-## Technical Debt Addressed
+### Dancer-Only Fields (Professional)
+- `sizing` - Clothing measurements
+- `sagAftraId` - Union membership
+- `training` - Training history (complex)
+- `workLocation` - Work preferences
 
-1. Navigation state synchronization issues
-2. Duplicate conditional logic
-3. Slow form responsiveness
-4. Difficult flow modifications
-5. Missing error handling
+### Choreographer-Only Fields
+- `companyName` - Company/collective name
+- `databaseUse` - Intended use case
+- `specialties` - Dance styles
+- `yearsOfExperience` - Number
+- `notableWorks` - Array of strings
 
-## Future Enhancements
+### Complex/Future Fields
+- `projects` - Project history (uses separate table)
+- `skills` - Skills array
+- `resumeUploads` - File uploads
+- `links` - Social/professional links
 
-- A/B testing different flows
-- Personalized onboarding paths
-- Skip/resume functionality
-- Progress persistence across devices
+---
+
+## Phase Breakdown
+
+### 🎯 Phase 1: Core Physical Attributes (Dancer-Only)
+**Priority:** HIGH - Already in use on profile/about page
+**Complexity:** LOW - Simple field types
+**Status:** ⏳ Ready to start
+
+- [ ] `height` - Object with feet/inches
+- [ ] `ethnicity` - Multi-select array
+- [ ] `hairColor` - Single select enum
+- [ ] `eyeColor` - Single select enum
+- [ ] `gender` - Single select enum
+
+**Deliverables per field:**
+1. Create shared schema in `fields/{field}.ts`
+2. Export from `fields/index.ts`
+3. Update `attributes.ts` to use shared field (or deprecate into fields)
+4. Update form component to import shared schema
+5. Create `app/(modals)/onboarding/dancer/{field}.tsx`
+6. Update profile about page (already has edit sheets)
+
+---
+
+### 🎯 Phase 2: Shared Profile Fields
+**Priority:** HIGH - Common across both profiles
+**Complexity:** MEDIUM - File uploads, nested data
+**Status:** 📋 Planned
+
+- [ ] `headshots` - File upload array
+- [ ] `representation` - Nested object (agency, manager, etc.)
+- [ ] `location` - Location object with geo data
+
+**Deliverables per field:**
+1. Create shared schema in `fields/{field}.ts`
+2. Update both dancer and choreographer schemas
+3. Update form components
+4. Create routes for both `dancer/` and `choreographer/`
+5. Update profile about page
+
+---
+
+### 🎯 Phase 3: Dancer Professional Fields
+**Priority:** MEDIUM - Dancer-specific professional data
+**Complexity:** MEDIUM
+**Status:** 📋 Planned
+
+- [ ] `sizing` - Clothing measurements object
+- [ ] `workLocation` - Work preference array
+- [ ] `sagAftraId` - Union ID string
+
+**Deliverables per field:**
+1. Create shared schema in `fields/{field}.ts`
+2. Update dancer schema only
+3. Update form component
+4. Create `app/(modals)/onboarding/dancer/{field}.tsx`
+5. Add to profile about page (new Work Details tab?)
+
+---
+
+### 🎯 Phase 4: Choreographer-Specific Fields
+**Priority:** MEDIUM - Choreographer onboarding
+**Complexity:** LOW-MEDIUM
+**Status:** 📋 Planned
+
+- [ ] `companyName` - String
+- [ ] `databaseUse` - Enum/string
+- [ ] `specialties` - Array of strings
+- [ ] `yearsOfExperience` - Number (might overlap with dancers.attributes)
+- [ ] `notableWorks` - Array of strings
+
+**Deliverables per field:**
+1. Create shared schema in `fields/{field}.ts`
+2. Update choreographer schema only
+3. Update/create form component
+4. Create `app/(modals)/onboarding/choreographer/{field}.tsx`
+5. Add to choreographer profile about page
+
+---
+
+### 🎯 Phase 5: Complex Relational Fields
+**Priority:** LOW - Can defer, existing solutions may work
+**Complexity:** HIGH - Separate tables, complex UI
+**Status:** 📋 Deferred
+
+- [ ] `training` - Training history (uses training table)
+- [ ] `projects` - Project history (uses projects table)
+- [ ] `skills` - Skills array with autocomplete
+- [ ] `resumeUploads` - File upload array
+
+**Note:** These may not fit the simple field pattern and might need custom solutions.
+
+---
+
+## Phase 1 Detailed Steps
+
+### Step 1: Height Field
+
+**Schema:**
+```typescript
+// packages/backend/convex/schemas/fields/height.ts
+export const heightFormSchema = z.object({
+  height: z.object({
+    feet: z.number().min(3).max(8),
+    inches: z.number().min(0).max(11)
+  })
+})
+
+export const heightDbField = z.object({
+  feet: z.number(),
+  inches: z.number()
+}).optional()
+```
+
+**Files to modify:**
+1. Create `packages/backend/convex/schemas/fields/height.ts`
+2. Update `packages/backend/convex/schemas/fields/index.ts`
+3. Update `packages/backend/convex/schemas/attributes.ts` (use shared or deprecate)
+4. Update `apps/native/components/forms/onboarding/HeightForm.tsx`
+5. Create `apps/native/app/app/(modals)/onboarding/dancer/height.tsx`
+
+### Step 2: Ethnicity Field
+
+**Schema:**
+```typescript
+// packages/backend/convex/schemas/fields/ethnicity.ts
+export const ETHNICITY = [
+  'American Indian / Alaska Native',
+  'Asian',
+  'Black / African American',
+  'Hispanic / Latino',
+  'Native Hawaiian / Pacific Islander',
+  'White / Caucasian'
+] as const
+
+export const ethnicityFormSchema = z.object({
+  ethnicity: z.array(z.enum(ETHNICITY)).min(1)
+})
+
+export const ethnicityDbField = z.array(z.enum(ETHNICITY)).optional()
+```
+
+**Files to modify:**
+1. Create `packages/backend/convex/schemas/fields/ethnicity.ts`
+2. Update `packages/backend/convex/schemas/fields/index.ts`
+3. Update `packages/backend/convex/schemas/attributes.ts`
+4. Update `apps/native/components/forms/onboarding/EthnicityForm.tsx`
+5. Create `apps/native/app/app/(modals)/onboarding/dancer/ethnicity.tsx`
+
+### Step 3: Hair Color Field
+
+**Schema:**
+```typescript
+// packages/backend/convex/schemas/fields/hairColor.ts
+export const HAIR_COLOR = ['Black', 'Blonde', 'Brown', 'Red', 'Other'] as const
+
+export const hairColorFormSchema = z.object({
+  hairColor: z.enum(HAIR_COLOR)
+})
+
+export const hairColorDbField = z.enum(HAIR_COLOR).optional()
+```
+
+**Files to modify:**
+1. Create `packages/backend/convex/schemas/fields/hairColor.ts`
+2. Update `packages/backend/convex/schemas/fields/index.ts`
+3. Update `packages/backend/convex/schemas/attributes.ts`
+4. Update `apps/native/components/forms/onboarding/HairColorForm.tsx`
+5. Create `apps/native/app/app/(modals)/onboarding/dancer/hair-color.tsx`
+
+### Step 4: Eye Color Field
+
+**Schema:**
+```typescript
+// packages/backend/convex/schemas/fields/eyeColor.ts
+export const EYE_COLOR = [
+  'Amber', 'Blue', 'Brown', 'Green', 'Gray', 'Mixed'
+] as const
+
+export const eyeColorFormSchema = z.object({
+  eyeColor: z.enum(EYE_COLOR)
+})
+
+export const eyeColorDbField = z.enum(EYE_COLOR).optional()
+```
+
+**Files to modify:**
+1. Create `packages/backend/convex/schemas/fields/eyeColor.ts`
+2. Update `packages/backend/convex/schemas/fields/index.ts`
+3. Update `packages/backend/convex/schemas/attributes.ts`
+4. Update `apps/native/components/forms/onboarding/EyeColorForm.tsx`
+5. Create `apps/native/app/app/(modals)/onboarding/dancer/eye-color.tsx`
+
+### Step 5: Gender Field
+
+**Schema:**
+```typescript
+// packages/backend/convex/schemas/fields/gender.ts
+export const GENDER = ['Male', 'Female', 'Non-binary'] as const
+
+export const genderFormSchema = z.object({
+  gender: z.enum(GENDER)
+})
+
+export const genderDbField = z.enum(GENDER).optional()
+```
+
+**Files to modify:**
+1. Create `packages/backend/convex/schemas/fields/gender.ts`
+2. Update `packages/backend/convex/schemas/fields/index.ts`
+3. Update `packages/backend/convex/schemas/attributes.ts`
+4. Update `apps/native/components/forms/onboarding/GenderForm.tsx`
+5. Create `apps/native/app/app/(modals)/onboarding/dancer/gender.tsx`
+
+---
+
+## Success Criteria
+
+- [ ] All onboarding fields have explicit routes (no dynamic routing)
+- [ ] All fields share schema validation between frontend and backend
+- [ ] All fields are reusable in both onboarding and profile editing
+- [ ] Type safety maintained throughout
+- [ ] No STEP_REGISTRY references remain
+- [ ] Profile editing works for both dancers and choreographers
+- [ ] All existing onboarding flows continue to work
+
+---
+
+## Migration Strategy
+
+1. **Parallel Implementation:** Keep old registry system working while building new routes
+2. **Incremental Rollout:** Ship phases as they complete
+3. **Cleanup:** Remove old registry code once all fields migrated
+4. **Testing:** Verify each field works in both onboarding and profile editing
+
+---
+
+## Notes & Considerations
+
+### Attributes Object Strategy
+The current `attributes` object in dancers schema groups physical attributes. We have two options:
+
+**Option A:** Keep attributes object, use shared schemas within it
+```typescript
+// attributes.ts uses shared fields
+import { heightDbField, ethnicityDbField, ... } from './fields'
+export const attributesPlainObject = {
+  height: heightDbField,
+  ethnicity: ethnicityDbField,
+  // ...
+}
+```
+
+**Option B:** Flatten attributes, deprecate the nested object
+```typescript
+// dancers.ts
+export const dancers = {
+  // Direct fields instead of nested attributes
+  height: heightDbField,
+  ethnicity: ethnicityDbField,
+  // ...
+}
+```
+
+**Recommendation:** Start with Option A (less disruptive), consider Option B in future refactor.
+
+### Form Component Updates
+Each form component needs to:
+1. Import shared schema from backend
+2. Export it as backward-compatible const
+3. Update types to use shared types
+4. No UI changes needed
+
+### Profile Page Updates
+The profile about page already has:
+- Edit sheets for all attribute fields
+- Conditional rendering for dancer vs choreographer
+- ProfileFieldList component for declarative rendering
+- Conditional Attributes tab (dancers only)
+
+New onboarding routes just need to follow the pattern established by display-name.
+
+---
+
+## Progress Tracking
+
+**Phase 0:** ✅ Complete
+**Phase 1:** ⏳ Ready to start
+**Phase 2:** 📋 Planned
+**Phase 3:** 📋 Planned
+**Phase 4:** 📋 Planned
+**Phase 5:** 📋 Deferred

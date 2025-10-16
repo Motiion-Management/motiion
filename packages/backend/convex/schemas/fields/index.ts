@@ -6,3 +6,4 @@
  */
 
 export * from './displayName'
+export * from './height'
