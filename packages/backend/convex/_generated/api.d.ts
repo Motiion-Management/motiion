@@ -40,6 +40,7 @@ import type * as schemas_dancers from "../schemas/dancers.js";
 import type * as schemas_featuredMembers from "../schemas/featuredMembers.js";
 import type * as schemas_fields_displayName from "../schemas/fields/displayName.js";
 import type * as schemas_fields_ethnicity from "../schemas/fields/ethnicity.js";
+import type * as schemas_fields_hairColor from "../schemas/fields/hairColor.js";
 import type * as schemas_fields_height from "../schemas/fields/height.js";
 import type * as schemas_fields_index from "../schemas/fields/index.js";
 import type * as schemas_projects from "../schemas/projects.js";
@@ -89,6 +90,7 @@ declare const fullApi: ApiFromModules<{
   "schemas/featuredMembers": typeof schemas_featuredMembers;
   "schemas/fields/displayName": typeof schemas_fields_displayName;
   "schemas/fields/ethnicity": typeof schemas_fields_ethnicity;
+  "schemas/fields/hairColor": typeof schemas_fields_hairColor;
   "schemas/fields/height": typeof schemas_fields_height;
   "schemas/fields/index": typeof schemas_fields_index;
   "schemas/projects": typeof schemas_projects;
