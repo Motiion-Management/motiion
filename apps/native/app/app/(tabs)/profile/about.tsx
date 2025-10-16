@@ -1,5 +1,5 @@
 import React, { useRef, useState } from 'react';
-import { View, TouchableOpacity, ScrollView } from 'react-native';
+import { View, ScrollView } from 'react-native';
 import { useQuery, useMutation } from 'convex/react';
 import { api } from '@packages/backend/convex/_generated/api';
 import type { DancerDoc } from '@packages/backend/convex/schemas/dancers';
@@ -35,22 +35,46 @@ type EditableField =
   | 'representation'
   | 'union';
 
-interface ProfileFieldProps {
+interface ProfileFieldConfig {
   label: string;
   value?: string;
   onPress?: () => void;
-  readOnly?: boolean;
 }
 
-function ProfileField({ label, value, onPress }: ProfileFieldProps) {
-  return <ListItem variant="Experience" onPress={onPress} label={label} title={value || ''} />;
+interface ProfileFieldListProps {
+  fields: ProfileFieldConfig[];
+  emptyMessage?: string;
+}
+
+function ProfileFieldList({ fields, emptyMessage }: ProfileFieldListProps) {
+  if (fields.length === 0 && emptyMessage) {
+    return (
+      <View className="flex-1 items-center justify-center p-8">
+        <Text variant="body" className="text-center text-text-low">
+          {emptyMessage}
+        </Text>
+      </View>
+    );
+  }
+
+  return (
+    <View className="gap-4">
+      {fields.map((field, index) => (
+        <ListItem
+          key={index}
+          variant="Experience"
+          onPress={field.onPress}
+          label={field.label}
+          title={field.value || ''}
+        />
+      ))}
+    </View>
+  );
 }
 
 export default function AboutScreen() {
   const { user } = useUser();
   const [editingField, setEditingField] = useState<EditableField | null>(null);
-
-  console.log({ editingField });
   const [canSubmit, setCanSubmit] = useState(false);
 
   // Form refs for each field
@@ -109,8 +133,39 @@ export default function AboutScreen() {
       ? activeProfile.attributes?.gender
       : null;
 
-  // Tabs
-  const tabs = ['Profile', 'Attributes', 'Work Details'];
+  // Field configurations
+  const profileFields = React.useMemo<ProfileFieldConfig[]>(
+    () => [
+      { label: 'PROFILE TYPE', value: profileType },
+      { label: 'DISPLAY NAME', value: displayName, onPress: () => setEditingField('displayName') },
+    ],
+    [profileType, displayName]
+  );
+
+  const attributeFields = React.useMemo<ProfileFieldConfig[]>(
+    () => [
+      {
+        label: 'HEIGHT',
+        value: height ? `${height.feet}'${height.inches}"` : undefined,
+        onPress: () => setEditingField('height'),
+      },
+      {
+        label: 'ETHNICITY',
+        value: ethnicity?.join(', '),
+        onPress: () => setEditingField('ethnicity'),
+      },
+      { label: 'HAIR COLOR', value: hairColor, onPress: () => setEditingField('hairColor') },
+      { label: 'EYE COLOR', value: eyeColor, onPress: () => setEditingField('eyeColor') },
+      { label: 'GENDER', value: gender, onPress: () => setEditingField('gender') },
+    ],
+    [height, ethnicity, hairColor, eyeColor, gender]
+  );
+
+  // Tabs - conditionally include Attributes for dancers only
+  const tabs = React.useMemo(
+    () => (isDancer ? ['Profile', 'Attributes', 'Work Details'] : ['Profile', 'Work Details']),
+    [isDancer]
+  );
 
   // Save handlers
   const handleSaveDisplayName = async (values: DisplayNameValues) => {
@@ -188,78 +243,15 @@ export default function AboutScreen() {
         middle: 'About',
       }}>
       <TabbedView tabs={tabs} className="flex-1" contentClassName="flex-1 pt-6">
-        {(activeTab) => {
-          if (activeTab === 'Profile') {
-            return (
-              <ScrollView className="flex-1 px-4" showsVerticalScrollIndicator={false}>
-                <View className="gap-4">
-                  <ProfileField label="PROFILE TYPE" value={profileType} />
-                  <ProfileField
-                    label="DISPLAY NAME"
-                    value={displayName}
-                    onPress={() => setEditingField('displayName')}
-                  />
-                </View>
-              </ScrollView>
-            );
-          }
-
-          if (activeTab === 'Attributes') {
-            return (
-              <ScrollView className="flex-1 px-4" showsVerticalScrollIndicator={false}>
-                {isDancer ? (
-                  <>
-                    <ProfileField
-                      label="HEIGHT"
-                      value={height ? `${height.feet}'${height.inches}"` : undefined}
-                      onPress={() => setEditingField('height')}
-                    />
-                    <ProfileField
-                      label="ETHNICITY"
-                      value={ethnicity?.join(', ')}
-                      onPress={() => setEditingField('ethnicity')}
-                    />
-                    <ProfileField
-                      label="HAIR COLOR"
-                      value={hairColor}
-                      onPress={() => setEditingField('hairColor')}
-                    />
-                    <ProfileField
-                      label="EYE COLOR"
-                      value={eyeColor}
-                      onPress={() => setEditingField('eyeColor')}
-                    />
-                    <ProfileField
-                      label="GENDER"
-                      value={gender}
-                      onPress={() => setEditingField('gender')}
-                    />
-                  </>
-                ) : (
-                  <View className="flex-1 items-center justify-center p-8">
-                    <Text variant="body" className="text-center text-text-low">
-                      Physical attributes are not applicable for choreographer profiles
-                    </Text>
-                  </View>
-                )}
-              </ScrollView>
-            );
-          }
-
-          if (activeTab === 'Work Details') {
-            return (
-              <ScrollView className="flex-1 px-4" showsVerticalScrollIndicator={false}>
-                <View className="flex-1 items-center justify-center p-8">
-                  <Text variant="body" className="text-center text-text-low">
-                    Work details coming soon
-                  </Text>
-                </View>
-              </ScrollView>
-            );
-          }
-
-          return null;
-        }}
+        {(activeTab) => (
+          <ScrollView className="flex-1 px-4" showsVerticalScrollIndicator={false}>
+            {activeTab === 'Profile' && <ProfileFieldList fields={profileFields} />}
+            {activeTab === 'Attributes' && <ProfileFieldList fields={attributeFields} />}
+            {activeTab === 'Work Details' && (
+              <ProfileFieldList fields={[]} emptyMessage="Work details coming soon" />
+            )}
+          </ScrollView>
+        )}
       </TabbedView>
 
       {/* Edit Sheets */}
@@ -278,82 +270,86 @@ export default function AboutScreen() {
         />
       </FieldEditSheet>
 
-      <FieldEditSheet
-        title="Edit Height"
-        description="Update your height information"
-        open={editingField === 'height'}
-        onClose={() => setEditingField(null)}
-        canSave={canSubmit}
-        onSave={() => heightFormRef.current?.submit()}>
-        <HeightForm
-          ref={heightFormRef}
-          initialValues={{
-            height: height || { feet: 5, inches: 0 },
-          }}
-          onSubmit={handleSaveHeight}
-          onValidChange={setCanSubmit}
-        />
-      </FieldEditSheet>
+      {isDancer && (
+        <>
+          <FieldEditSheet
+            title="Edit Height"
+            description="Update your height information"
+            open={editingField === 'height'}
+            onClose={() => setEditingField(null)}
+            canSave={canSubmit}
+            onSave={() => heightFormRef.current?.submit()}>
+            <HeightForm
+              ref={heightFormRef}
+              initialValues={{
+                height: height || { feet: 5, inches: 0 },
+              }}
+              onSubmit={handleSaveHeight}
+              onValidChange={setCanSubmit}
+            />
+          </FieldEditSheet>
 
-      <FieldEditSheet
-        title="Edit Ethnicity"
-        description="Select all that apply"
-        open={editingField === 'ethnicity'}
-        onClose={() => setEditingField(null)}
-        canSave={canSubmit}
-        onSave={() => ethnicityFormRef.current?.submit()}>
-        <EthnicityForm
-          ref={ethnicityFormRef}
-          initialValues={{ ethnicity: ethnicity || [] }}
-          onSubmit={handleSaveEthnicity}
-          onValidChange={setCanSubmit}
-        />
-      </FieldEditSheet>
+          <FieldEditSheet
+            title="Edit Ethnicity"
+            description="Select all that apply"
+            open={editingField === 'ethnicity'}
+            onClose={() => setEditingField(null)}
+            canSave={canSubmit}
+            onSave={() => ethnicityFormRef.current?.submit()}>
+            <EthnicityForm
+              ref={ethnicityFormRef}
+              initialValues={{ ethnicity: ethnicity || [] }}
+              onSubmit={handleSaveEthnicity}
+              onValidChange={setCanSubmit}
+            />
+          </FieldEditSheet>
 
-      <FieldEditSheet
-        title="Edit Hair Color"
-        description="Select your current hair color"
-        open={editingField === 'hairColor'}
-        onClose={() => setEditingField(null)}
-        canSave={canSubmit}
-        onSave={() => hairColorFormRef.current?.submit()}>
-        <HairColorForm
-          ref={hairColorFormRef}
-          initialValues={{ hairColor: hairColor || '' }}
-          onSubmit={handleSaveHairColor}
-          onValidChange={setCanSubmit}
-        />
-      </FieldEditSheet>
+          <FieldEditSheet
+            title="Edit Hair Color"
+            description="Select your current hair color"
+            open={editingField === 'hairColor'}
+            onClose={() => setEditingField(null)}
+            canSave={canSubmit}
+            onSave={() => hairColorFormRef.current?.submit()}>
+            <HairColorForm
+              ref={hairColorFormRef}
+              initialValues={{ hairColor: hairColor || '' }}
+              onSubmit={handleSaveHairColor}
+              onValidChange={setCanSubmit}
+            />
+          </FieldEditSheet>
 
-      <FieldEditSheet
-        title="Edit Eye Color"
-        description="Select your eye color"
-        open={editingField === 'eyeColor'}
-        onClose={() => setEditingField(null)}
-        canSave={canSubmit}
-        onSave={() => eyeColorFormRef.current?.submit()}>
-        <EyeColorForm
-          ref={eyeColorFormRef}
-          initialValues={{ eyeColor: eyeColor || '' }}
-          onSubmit={handleSaveEyeColor}
-          onValidChange={setCanSubmit}
-        />
-      </FieldEditSheet>
+          <FieldEditSheet
+            title="Edit Eye Color"
+            description="Select your eye color"
+            open={editingField === 'eyeColor'}
+            onClose={() => setEditingField(null)}
+            canSave={canSubmit}
+            onSave={() => eyeColorFormRef.current?.submit()}>
+            <EyeColorForm
+              ref={eyeColorFormRef}
+              initialValues={{ eyeColor: eyeColor || '' }}
+              onSubmit={handleSaveEyeColor}
+              onValidChange={setCanSubmit}
+            />
+          </FieldEditSheet>
 
-      <FieldEditSheet
-        title="Edit Gender"
-        description="Select the option that best describes you"
-        open={editingField === 'gender'}
-        onClose={() => setEditingField(null)}
-        canSave={canSubmit}
-        onSave={() => genderFormRef.current?.submit()}>
-        <GenderForm
-          ref={genderFormRef}
-          initialValues={{ gender: gender || '' }}
-          onSubmit={handleSaveGender}
-          onValidChange={setCanSubmit}
-        />
-      </FieldEditSheet>
+          <FieldEditSheet
+            title="Edit Gender"
+            description="Select the option that best describes you"
+            open={editingField === 'gender'}
+            onClose={() => setEditingField(null)}
+            canSave={canSubmit}
+            onSave={() => genderFormRef.current?.submit()}>
+            <GenderForm
+              ref={genderFormRef}
+              initialValues={{ gender: gender || '' }}
+              onSubmit={handleSaveGender}
+              onValidChange={setCanSubmit}
+            />
+          </FieldEditSheet>
+        </>
+      )}
     </TabScreenLayout>
   );
 }
