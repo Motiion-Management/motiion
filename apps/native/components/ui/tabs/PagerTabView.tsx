@@ -27,7 +27,7 @@ type TabsViewProps = {
   contentClassName?: string;
 };
 
-export function TabView({
+export function PagerTabView({
   routes,
   renderScene,
   initialKey,

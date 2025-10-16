@@ -52,7 +52,8 @@ interface ProfileListItemProps extends BaseListItemProps {
 interface ExperienceListItemProps extends BaseListItemProps {
   variant: 'Experience';
   image?: ImageSource;
-  organizer: string;
+  organizer?: string;
+  label?: string;
   title: string;
 }
 
@@ -125,7 +126,12 @@ export const ListItem = React.forwardRef<ViewRef, ListItemProps>(
     };
     const Content = () => {
       if (variant === 'Experience') {
-        const { image, organizer, title } = variantProps as ExperienceListItemProps;
+        const {
+          image,
+          label = '',
+          organizer = label,
+          title,
+        } = variantProps as ExperienceListItemProps;
         return (
           <View className="flex-col gap-4">
             <View className="flex-row gap-4">
@@ -143,9 +149,11 @@ export const ListItem = React.forwardRef<ViewRef, ListItemProps>(
                     {title}
                   </Text>
                 </View>
-                <View className="h-7 w-7 items-center justify-center">
-                  <Icon name="chevron.right" size={20} className="text-icon-default" />
-                </View>
+                {onPress && (
+                  <View className="h-7 w-7 items-center justify-center">
+                    <Icon name="chevron.right" size={20} className="text-icon-default" />
+                  </View>
+                )}
               </View>
             </View>
             <View className="h-px w-full bg-border-tint" />

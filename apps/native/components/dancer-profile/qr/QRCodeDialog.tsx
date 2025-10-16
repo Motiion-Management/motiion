@@ -1,6 +1,6 @@
 import React from 'react';
 import { Dialog, DialogContent, DialogTrigger } from '~/components/ui/dialog';
-import { TabView, type TabRoute } from '~/components/ui/tabs/TabView';
+import { PagerTabView, type TabRoute } from '~/components/ui/tabs/PagerTabView';
 import { MyCodeTab } from './MyCodeTab';
 import { ScanCodeTab } from './ScanCodeTab';
 import { View } from 'react-native';
@@ -38,7 +38,12 @@ export function QRCodeDialog({ profileUrl }: QRCodeDialogProps) {
 
       <DialogContent>
         <View className="h-[36vh] w-[75vw]">
-          <TabView routes={tabs} renderScene={renderScene} initialKey="mycode" tabStyle="pill" />
+          <PagerTabView
+            routes={tabs}
+            renderScene={renderScene}
+            initialKey="mycode"
+            tabStyle="pill"
+          />
         </View>
       </DialogContent>
     </Dialog>

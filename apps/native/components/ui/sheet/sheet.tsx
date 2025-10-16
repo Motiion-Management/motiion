@@ -141,8 +141,8 @@ const SheetContent = forwardRef<SheetRef, SheetProps>(
         handleIndicatorStyle={!enableCustomHandle ? handleIndicatorStyle : undefined}
         enablePanDownToClose
         {...rest}>
-        <BottomSheetView>
-          <SafeAreaView edges={['bottom']} className={className}>
+        <BottomSheetView className="h-full">
+          <SafeAreaView edges={['bottom']} className={cn('flex-1', className)}>
             <View className="flex-row items-center justify-between px-4 pb-4">
               <Text variant="header4" className="text-text-default">
                 {label}
