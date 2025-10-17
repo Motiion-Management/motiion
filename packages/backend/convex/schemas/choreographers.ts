@@ -3,8 +3,8 @@ import { zodTable } from 'zodvex'
 import { z } from 'zod'
 import { Doc } from '../_generated/dataModel'
 import { zFileUploadObjectArray, zLocation } from './base'
-import { zRepresentation, zResume, zLinks } from './users'
-import { displayNameDbField } from './fields'
+import { zResume, zLinks } from './users'
+import { displayNameDbField, headshotsDbField, representationDbField, locationDbField } from './fields'
 
 // Choreographer-specific schema
 export const choreographers = {
@@ -30,8 +30,8 @@ export const choreographers = {
   favoriteChoreographers: z.array(zid('choreographers')).optional(),
 
   // Profile data (common with dancers but may diverge)
-  headshots: zFileUploadObjectArray.optional(),
-  representation: zRepresentation.optional(),
+  headshots: headshotsDbField,
+  representation: representationDbField,
   representationStatus: z
     .enum(['represented', 'seeking', 'independent'])
     .optional(),
@@ -67,7 +67,7 @@ export const choreographers = {
 
   // Search and discovery
   searchPattern: z.string().optional(), // For text search
-  location: zLocation.optional(), // Primary location
+  location: locationDbField, // Primary location
   verified: z.boolean().default(false), // Verification badge
   featured: z.boolean().default(false), // Featured choreographer status
 

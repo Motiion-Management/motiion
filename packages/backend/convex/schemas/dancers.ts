@@ -2,11 +2,11 @@ import { zid } from 'zodvex'
 import { zodTable } from 'zodvex'
 import { z } from 'zod'
 import { Doc } from '../_generated/dataModel'
-import { zFileUploadObjectArray, zLocation } from './base'
+import { zFileUploadObjectArray } from './base'
 import { attributesPlainObject } from './attributes'
 import { sizingPlainObject } from './sizing'
-import { zRepresentation, zResume, zLinks } from './users'
-import { displayNameDbField } from './fields'
+import { zResume, zLinks } from './users'
+import { displayNameDbField, headshotsDbField, representationDbField, locationDbField } from './fields'
 
 // Dancer-specific schema
 export const dancers = {
@@ -32,8 +32,8 @@ export const dancers = {
   favoriteChoreographers: z.array(zid('choreographers')).optional(),
 
   // Profile data (migrated from users table)
-  headshots: zFileUploadObjectArray.optional(),
-  representation: zRepresentation.optional(),
+  headshots: headshotsDbField,
+  representation: representationDbField,
   representationStatus: z
     .enum(['represented', 'seeking', 'independent'])
     .optional(),
@@ -56,7 +56,7 @@ export const dancers = {
 
   // Search and discovery
   searchPattern: z.string().optional(), // For text search
-  location: zLocation.optional(), // For proximity search
+  location: locationDbField, // For proximity search
 
   // Profile completeness
   profileCompleteness: z.number().default(0), // 0-100 percentage

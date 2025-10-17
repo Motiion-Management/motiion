@@ -1,17 +1,19 @@
 import React, { forwardRef, useEffect, useImperativeHandle } from 'react';
-import * as z from 'zod';
 import { useStore } from '@tanstack/react-form';
+import {
+  eyeColorFormSchema,
+  type EyeColorFormValues,
+  EYE_COLOR
+} from '@packages/backend/convex/schemas/fields';
 
-import { EYECOLOR } from '@packages/backend/convex/schemas/attributes';
 import { ValidationModeForm } from '~/components/form/ValidationModeForm';
 import { useAppForm } from '~/components/form/appForm';
 import type { FormHandle, FormProps } from '~/components/forms/onboarding/contracts';
 
-export const eyeColorSchema = z.object({
-  eyeColor: z.enum(EYECOLOR, { message: 'Please select an eye color' }),
-});
+// Backward compatibility export
+export const eyeColorSchema = eyeColorFormSchema;
 
-export type EyeColorValues = z.infer<typeof eyeColorSchema>;
+export type EyeColorValues = EyeColorFormValues;
 
 export const EyeColorForm = forwardRef<FormHandle, FormProps<EyeColorValues>>(function EyeColorForm(
   { initialValues, onSubmit, onValidChange },
@@ -35,7 +37,7 @@ export const EyeColorForm = forwardRef<FormHandle, FormProps<EyeColorValues>>(fu
     onValidChange?.(!!isValid);
   }, [isValid, onValidChange]);
 
-  const options = EYECOLOR.map((c) => ({ value: c, label: c }));
+  const options = EYE_COLOR.map((c) => ({ value: c, label: c }));
 
   return (
     <ValidationModeForm form={form}>

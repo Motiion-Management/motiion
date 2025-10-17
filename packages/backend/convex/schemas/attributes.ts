@@ -1,28 +1,26 @@
 import { z } from 'zod'
-import { heightDbField, ethnicityDbField, hairColorDbField, ETHNICITY, HAIR_COLOR } from './fields'
-
-export const EYECOLOR = [
-  'Amber',
-  'Blue',
-  'Brown',
-  'Green',
-  'Gray',
-  'Mixed'
-] as const
-export const zEyeColor = z.enum(EYECOLOR).optional()
-
-export const GENDER = ['Male', 'Female', 'Non-binary'] as const
-export const zGender = z.enum(GENDER).optional()
+import {
+  heightDbField,
+  ethnicityDbField,
+  hairColorDbField,
+  eyeColorDbField,
+  genderDbField,
+  ETHNICITY,
+  HAIR_COLOR,
+  EYE_COLOR,
+  GENDER
+} from './fields'
 
 // Re-export for backward compatibility
-export { ETHNICITY, HAIR_COLOR }
+export { ETHNICITY, HAIR_COLOR, EYE_COLOR, GENDER }
 export const HAIRCOLOR = HAIR_COLOR
+export const EYECOLOR = EYE_COLOR
 
 export const attributesPlainObject = {
   ethnicity: ethnicityDbField,
   hairColor: hairColorDbField,
-  eyeColor: zEyeColor,
-  gender: zGender,
+  eyeColor: eyeColorDbField,
+  gender: genderDbField,
   height: heightDbField,
   yearsOfExperience: z.number().optional()
 }
