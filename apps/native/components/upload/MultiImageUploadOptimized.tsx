@@ -76,12 +76,12 @@ export function MultiImageUploadOptimized({ onImageCountChange }: MultiImageUplo
     }
   }, [headshotsMetadata, getHeadshotUrls]);
 
-  const canAddMore = headshotsWithUrls.length < 5;
+  const canAddMore = headshotsWithUrls.length < 4;
 
   const imagePickerOptions = {
     mediaTypes: ImagePicker.MediaTypeOptions.Images,
     allowsMultipleSelection: true,
-    selectionLimit: 3 - headshotsWithUrls.length,
+    selectionLimit: 4 - headshotsWithUrls.length,
     quality: 1, // Keep original quality; we compress in optimizer
   };
 
@@ -199,8 +199,8 @@ export function MultiImageUploadOptimized({ onImageCountChange }: MultiImageUplo
   );
 
   const handleImageUpload = useCallback(async () => {
-    // Check UI limit of 3 images for this screen
-    if (headshotsWithUrls.length >= 3) return;
+    // Check UI limit of 4 images for this screen
+    if (headshotsWithUrls.length >= 4) return;
     if (!canAddMore) return;
 
     // Show image source selector with proper upload flow
@@ -243,9 +243,9 @@ export function MultiImageUploadOptimized({ onImageCountChange }: MultiImageUplo
     [updateMyDancerProfile, profile, headshotsWithUrls.length, onImageCountChange]
   );
 
-  // Derive first 3 headshots for this UI and remaining slots
-  const sortableHeadshots = headshotsWithUrls.slice(0, 3);
-  const remainingSlots = Math.max(0, 3 - sortableHeadshots.length);
+  // Derive first 4 headshots for this UI and remaining slots
+  const sortableHeadshots = headshotsWithUrls.slice(0, 4);
+  const remainingSlots = Math.max(0, 4 - sortableHeadshots.length);
   const uiCanAddMore = remainingSlots > 0 && canAddMore;
 
   const handleDragEnd = useCallback(
@@ -275,16 +275,16 @@ export function MultiImageUploadOptimized({ onImageCountChange }: MultiImageUplo
         .map((i) => i.payload);
 
       const prev = headshots;
-      // Optimistic local update (first 3 only)
+      // Optimistic local update (first 4 only)
       setHeadshotsWithUrls((current) => {
-        const tail = current.slice(3);
+        const tail = current.slice(4);
         const updatedFirst = nextHeadshots.map((item, idx) => ({ ...item, position: idx }));
         return [...updatedFirst, ...tail];
       });
 
       // Persist; rollback on failure
       const currentHeadshots = profile?.headshots ?? [];
-      const tail = currentHeadshots.slice(3);
+      const tail = currentHeadshots.slice(4);
       const reorderedHeadshots = [
         ...nextHeadshots.map((h, idx) => ({
           storageId: h.storageId,
@@ -296,7 +296,7 @@ export function MultiImageUploadOptimized({ onImageCountChange }: MultiImageUplo
       ];
       updateMyDancerProfile({ headshots: reorderedHeadshots as any }).catch(() => {
         setHeadshotsWithUrls((current) => {
-          const tail = current.slice(3);
+          const tail = current.slice(4);
           const updatedFirst = prev.map((item, idx) => ({ ...item, position: idx }));
           return [...updatedFirst, ...tail];
         });
@@ -352,8 +352,7 @@ export function MultiImageUploadOptimized({ onImageCountChange }: MultiImageUplo
 
               let uploadIdx = 0;
               return allItems.map((item, index) => {
-                const primary = index === 0;
-                const itemWidth = primary ? containerWidth : (containerWidth - 16) / 2;
+                const itemWidth = (containerWidth - 16) / 2;
                 return (
                   <View
                     key={item.key}
@@ -375,12 +374,10 @@ export function MultiImageUploadOptimized({ onImageCountChange }: MultiImageUplo
                       (() => {
                         const isFirstUpload = uploadIdx === 0;
                         uploadIdx += 1;
-                        const shape =
-                          headshots.length === 0 && isFirstUpload ? 'primary' : 'secondary';
                         return (
                           <Sortable.Handle mode="fixed-order">
                             <ImageUploadCard
-                              shape={shape}
+                              shape="secondary"
                               onPress={handleImageUpload}
                               isActive={isFirstUpload}
                               disabled={uploadState.isUploading || !uiCanAddMore}

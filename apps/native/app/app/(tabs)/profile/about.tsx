@@ -185,7 +185,10 @@ export default function AboutScreen() {
         label: 'WORK LOCATIONS',
         value: workLocation?.join(', ') || '',
         onPress: () => setEditingField('workLocation'),
-        preview: workLocation && workLocation.length > 0 ? <Chips variant="filter" items={workLocation} /> : undefined,
+        preview:
+          workLocation && workLocation.length > 0 ? (
+            <Chips variant="filter" items={workLocation} />
+          ) : undefined,
       },
       {
         label: 'SAG-AFTRA',

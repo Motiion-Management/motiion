@@ -33,6 +33,7 @@
   },
   "workspaces": [
     "apps/*",
-    "packages/*"
+    "packages/*",
+    "!packages/zodvex"
   ]
 }
