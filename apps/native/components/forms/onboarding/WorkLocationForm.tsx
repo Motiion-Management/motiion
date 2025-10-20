@@ -1,5 +1,9 @@
 import React, { forwardRef, useEffect, useImperativeHandle } from 'react';
 import { View, ScrollView, Pressable, Keyboard } from 'react-native';
+import {
+  workLocationFormSchema,
+  type WorkLocationFormValues
+} from '@packages/backend/convex/schemas/fields';
 
 import { WorkLocationPicker } from '~/components/ui/work-location-picker';
 import { useWorkLocationForm } from '~/hooks/useWorkLocationForm';
@@ -7,9 +11,14 @@ import type { FormHandle, FormProps } from '~/components/forms/onboarding/contra
 
 import type { PlaceKitLocation } from '~/components/ui/location-picker-placekit';
 
+// This form uses WorkLocationPicker which handles location selection
+// The shared workLocationFormSchema is available for backend validation
 export interface WorkLocationValues {
   locations: (PlaceKitLocation | null)[];
 }
+
+// Backward compatibility export
+export const workLocationSchema = workLocationFormSchema;
 
 export const WorkLocationForm = forwardRef<FormHandle, FormProps<WorkLocationValues>>(
   function WorkLocationForm({ initialValues, onSubmit, onValidChange }, ref) {
