@@ -229,16 +229,32 @@ export function MultiImageUploadOptimized({ onImageCountChange }: MultiImageUplo
 
   const handleRemoveImage = useCallback(
     async (storageId: string) => {
-      try {
-        const currentHeadshots = profile?.headshots ?? [];
-        const updatedHeadshots = currentHeadshots.filter((h: any) => h.storageId !== storageId);
-        await updateMyDancerProfile({ headshots: updatedHeadshots });
-        if (onImageCountChange) {
-          onImageCountChange(Math.max(0, headshotsWithUrls.length - 1));
-        }
-      } catch (error) {
-        console.error('Failed to remove image:', error);
-      }
+      Alert.alert(
+        'Remove Image',
+        'Are you sure you want to remove this headshot?',
+        [
+          {
+            text: 'Cancel',
+            style: 'cancel',
+          },
+          {
+            text: 'Remove',
+            style: 'destructive',
+            onPress: async () => {
+              try {
+                const currentHeadshots = profile?.headshots ?? [];
+                const updatedHeadshots = currentHeadshots.filter((h: any) => h.storageId !== storageId);
+                await updateMyDancerProfile({ headshots: updatedHeadshots });
+                if (onImageCountChange) {
+                  onImageCountChange(Math.max(0, headshotsWithUrls.length - 1));
+                }
+              } catch (error) {
+                console.error('Failed to remove image:', error);
+              }
+            },
+          },
+        ]
+      );
     },
     [updateMyDancerProfile, profile, headshotsWithUrls.length, onImageCountChange]
   );
@@ -316,7 +332,7 @@ export function MultiImageUploadOptimized({ onImageCountChange }: MultiImageUplo
   }
 
   return (
-    <View className="flex-1 gap-4">
+    <View className="flex-1 gap-4 py-4">
       {/* Sortable uploaded images */}
       <View onLayout={(e) => setContainerWidth(e.nativeEvent.layout.width)} className="w-full">
         {containerWidth != null && (
