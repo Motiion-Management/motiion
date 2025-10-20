@@ -15,11 +15,17 @@ import { EthnicityForm } from '~/components/forms/onboarding/EthnicityForm';
 import { HairColorForm } from '~/components/forms/onboarding/HairColorForm';
 import { EyeColorForm } from '~/components/forms/onboarding/EyeColorForm';
 import { GenderForm } from '~/components/forms/onboarding/GenderForm';
+import { WorkLocationForm } from '~/components/forms/onboarding/WorkLocationForm';
+import { UnionForm } from '~/components/forms/onboarding/UnionForm';
 import type { FormHandle } from '~/components/forms/onboarding/contracts';
 import type { DisplayNameValues } from '~/components/forms/onboarding/DisplayNameForm';
 import type { HeightValues } from '~/components/forms/onboarding/HeightForm';
+import type { WorkLocationValues } from '~/components/forms/onboarding/WorkLocationForm';
+import type { UnionValues } from '~/components/forms/onboarding/UnionForm';
+import type { PlaceKitLocation } from '~/components/ui/location-picker-placekit';
 import { useUser } from '~/hooks/useUser';
 import { ListItem } from '~/components/ui/list-item';
+import { Chips } from '~/components/ui/chips/chips';
 
 type EditableField =
   | 'displayName'
@@ -39,6 +45,7 @@ interface ProfileFieldConfig {
   label: string;
   value?: string;
   onPress?: () => void;
+  preview?: React.ReactNode;
 }
 
 interface ProfileFieldListProps {
@@ -66,6 +73,7 @@ function ProfileFieldList({ fields, emptyMessage }: ProfileFieldListProps) {
           onPress={field.onPress}
           label={field.label}
           title={field.value || ''}
+          preview={field.preview}
         />
       ))}
     </View>
@@ -84,6 +92,8 @@ export default function AboutScreen() {
   const hairColorFormRef = useRef<FormHandle>(null);
   const eyeColorFormRef = useRef<FormHandle>(null);
   const genderFormRef = useRef<FormHandle>(null);
+  const workLocationFormRef = useRef<FormHandle>(null);
+  const unionFormRef = useRef<FormHandle>(null);
 
   // Load active profile based on user's active profile type
   const dancerProfile = useQuery(
@@ -133,6 +143,14 @@ export default function AboutScreen() {
       ? activeProfile.attributes?.gender
       : null;
 
+  // Dancer-specific work details
+  const workLocation =
+    isDancer && activeProfile && 'workLocation' in activeProfile
+      ? activeProfile.workLocation
+      : null;
+  const sagAftraId =
+    isDancer && activeProfile && 'sagAftraId' in activeProfile ? activeProfile.sagAftraId : null;
+
   // Field configurations
   const profileFields = React.useMemo<ProfileFieldConfig[]>(
     () => [
@@ -159,6 +177,23 @@ export default function AboutScreen() {
       { label: 'GENDER', value: gender, onPress: () => setEditingField('gender') },
     ],
     [height, ethnicity, hairColor, eyeColor, gender]
+  );
+
+  const workDetailsFields = React.useMemo<ProfileFieldConfig[]>(
+    () => [
+      {
+        label: 'WORK LOCATIONS',
+        value: workLocation?.join(', ') || '',
+        onPress: () => setEditingField('workLocation'),
+        preview: workLocation && workLocation.length > 0 ? <Chips variant="filter" items={workLocation} /> : undefined,
+      },
+      {
+        label: 'SAG-AFTRA',
+        value: sagAftraId ? `Member ID: ${sagAftraId}` : 'Not a member',
+        onPress: () => setEditingField('union'),
+      },
+    ],
+    [workLocation, sagAftraId]
   );
 
   // Tabs - conditionally include Attributes for dancers only
@@ -236,6 +271,31 @@ export default function AboutScreen() {
     }
   };
 
+  const handleSaveWorkLocation = async (values: WorkLocationValues) => {
+    try {
+      if (isDancer) {
+        const workLocationStrings = values.locations
+          .filter((loc): loc is PlaceKitLocation => loc !== null)
+          .map((loc) => `${loc.city}, ${loc.state}`);
+        await updateDancerProfile({ workLocation: workLocationStrings });
+      }
+      setEditingField(null);
+    } catch (error) {
+      console.error('Failed to save work location:', error);
+    }
+  };
+
+  const handleSaveUnion = async (values: UnionValues) => {
+    try {
+      if (isDancer) {
+        await updateDancerProfile({ sagAftraId: values.sagAftraId || undefined });
+      }
+      setEditingField(null);
+    } catch (error) {
+      console.error('Failed to save union:', error);
+    }
+  };
+
   return (
     <TabScreenLayout
       header={{
@@ -247,9 +307,7 @@ export default function AboutScreen() {
           <ScrollView className="flex-1 px-4" showsVerticalScrollIndicator={false}>
             {activeTab === 'Profile' && <ProfileFieldList fields={profileFields} />}
             {activeTab === 'Attributes' && <ProfileFieldList fields={attributeFields} />}
-            {activeTab === 'Work Details' && (
-              <ProfileFieldList fields={[]} emptyMessage="Work details coming soon" />
-            )}
+            {activeTab === 'Work Details' && <ProfileFieldList fields={workDetailsFields} />}
           </ScrollView>
         )}
       </TabbedView>
@@ -345,6 +403,47 @@ export default function AboutScreen() {
               ref={genderFormRef}
               initialValues={{ gender: gender || '' }}
               onSubmit={handleSaveGender}
+              onValidChange={setCanSubmit}
+            />
+          </FieldEditSheet>
+
+          <FieldEditSheet
+            title="Edit Work Locations"
+            description="Select where you're willing to work"
+            open={editingField === 'workLocation'}
+            onClose={() => setEditingField(null)}
+            canSave={canSubmit}
+            onSave={() => workLocationFormRef.current?.submit()}>
+            <WorkLocationForm
+              ref={workLocationFormRef}
+              initialValues={{
+                locations:
+                  workLocation?.map((locationStr) => {
+                    const [city = '', state = ''] = locationStr.split(', ');
+                    return {
+                      city,
+                      state,
+                      stateCode: state,
+                      country: 'United States',
+                    };
+                  }) || [],
+              }}
+              onSubmit={handleSaveWorkLocation}
+              onValidChange={setCanSubmit}
+            />
+          </FieldEditSheet>
+
+          <FieldEditSheet
+            title="Edit Union Membership"
+            description="Are you a SAG-AFTRA member? Enter your ID if applicable."
+            open={editingField === 'union'}
+            onClose={() => setEditingField(null)}
+            canSave={canSubmit}
+            onSave={() => unionFormRef.current?.submit()}>
+            <UnionForm
+              ref={unionFormRef}
+              initialValues={{ sagAftraId: sagAftraId || '' }}
+              onSubmit={handleSaveUnion}
               onValidChange={setCanSubmit}
             />
           </FieldEditSheet>

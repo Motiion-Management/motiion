@@ -1,7 +1,7 @@
 # Onboarding & Profile Management Refactor Plan
 
-**Status:** Phase 3 Complete - Ready for Phase 4
-**Last Updated:** 2025-10-16
+**Status:** Phase 3 Complete (Including Profile Integration) - Ready for Phase 4
+**Last Updated:** 2025-10-20
 **Owner:** Development Team
 
 ---
@@ -108,12 +108,14 @@ export default function {ProfileType}{Field}Screen() {
 ## Field Categorization
 
 ### Shared Fields (Both Dancers & Choreographers)
+
 - ✅ `displayName` - **COMPLETE**
 - `headshots` - Photo uploads
 - `representation` - Agency/management info
 - `location` - Primary location
 
 ### Dancer-Only Fields (Physical Attributes)
+
 - `height` - Feet/inches
 - `ethnicity` - Array of selections
 - `hairColor` - Enum selection
@@ -121,12 +123,14 @@ export default function {ProfileType}{Field}Screen() {
 - `gender` - Enum selection
 
 ### Dancer-Only Fields (Professional)
+
 - `sizing` - Clothing measurements
 - `sagAftraId` - Union membership
 - `training` - Training history (complex)
 - `workLocation` - Work preferences
 
 ### Choreographer-Only Fields
+
 - `companyName` - Company/collective name
 - `databaseUse` - Intended use case
 - `specialties` - Dance styles
@@ -134,6 +138,7 @@ export default function {ProfileType}{Field}Screen() {
 - `notableWorks` - Array of strings
 
 ### Complex/Future Fields
+
 - `projects` - Project history (uses separate table)
 - `skills` - Skills array
 - `resumeUploads` - File uploads
@@ -144,6 +149,7 @@ export default function {ProfileType}{Field}Screen() {
 ## Phase Breakdown
 
 ### ✅ Phase 1: Core Physical Attributes (Dancer-Only)
+
 **Priority:** HIGH - Already in use on profile/about page
 **Complexity:** LOW - Simple field types
 **Status:** ✅ COMPLETE
@@ -155,6 +161,7 @@ export default function {ProfileType}{Field}Screen() {
 - [x] `gender` - Single select enum
 
 **Deliverables per field:**
+
 1. Create shared schema in `fields/{field}.ts`
 2. Export from `fields/index.ts`
 3. Update `attributes.ts` to use shared field (or deprecate into fields)
@@ -165,6 +172,7 @@ export default function {ProfileType}{Field}Screen() {
 ---
 
 ### ✅ Phase 2: Shared Profile Fields
+
 **Priority:** HIGH - Common across both profiles
 **Complexity:** MEDIUM - File uploads, nested data
 **Status:** ✅ COMPLETE
@@ -174,6 +182,7 @@ export default function {ProfileType}{Field}Screen() {
 - [x] `location` - Location object with geo data
 
 **Deliverables per field:**
+
 1. Create shared schema in `fields/{field}.ts`
 2. Update both dancer and choreographer schemas
 3. Update form components
@@ -183,6 +192,7 @@ export default function {ProfileType}{Field}Screen() {
 ---
 
 ### ✅ Phase 3: Dancer Professional Fields
+
 **Priority:** MEDIUM - Dancer-specific professional data
 **Complexity:** MEDIUM
 **Status:** ✅ COMPLETE
@@ -192,15 +202,25 @@ export default function {ProfileType}{Field}Screen() {
 - [x] `sagAftraId` - Union ID string
 
 **Deliverables per field:**
+
 1. Create shared schema in `fields/{field}.ts`
 2. Update dancer schema only
 3. Update form component
 4. Create `app/(modals)/onboarding/dancer/{field}.tsx`
 5. Add to profile about page (new Work Details tab?)
 
+**Profile Integration (COMPLETE):**
+
+- Sizing: Wired to `profile/sizes.tsx` using self-contained SizingSection components
+- Work Locations & SAG-AFTRA: Added to Work Details tab in `profile/about.tsx`
+  - Work Locations displays comma-separated city names
+  - SAG-AFTRA shows "Member ID: {id}" or "Not a member"
+  - Both use FieldEditSheet pattern matching other profile fields
+
 ---
 
 ### 🎯 Phase 4: Choreographer-Specific Fields
+
 **Priority:** MEDIUM - Choreographer onboarding
 **Complexity:** LOW-MEDIUM
 **Status:** 📋 Planned
@@ -212,6 +232,7 @@ export default function {ProfileType}{Field}Screen() {
 - [ ] `notableWorks` - Array of strings
 
 **Deliverables per field:**
+
 1. Create shared schema in `fields/{field}.ts`
 2. Update choreographer schema only
 3. Update/create form component
@@ -221,6 +242,7 @@ export default function {ProfileType}{Field}Screen() {
 ---
 
 ### 🎯 Phase 5: Complex Relational Fields
+
 **Priority:** LOW - Can defer, existing solutions may work
 **Complexity:** HIGH - Separate tables, complex UI
 **Status:** 📋 Deferred
@@ -239,6 +261,7 @@ export default function {ProfileType}{Field}Screen() {
 ### Step 1: Height Field
 
 **Schema:**
+
 ```typescript
 // packages/backend/convex/schemas/fields/height.ts
 export const heightFormSchema = z.object({
@@ -248,13 +271,16 @@ export const heightFormSchema = z.object({
   })
 })
 
-export const heightDbField = z.object({
-  feet: z.number(),
-  inches: z.number()
-}).optional()
+export const heightDbField = z
+  .object({
+    feet: z.number(),
+    inches: z.number()
+  })
+  .optional()
 ```
 
 **Files to modify:**
+
 1. Create `packages/backend/convex/schemas/fields/height.ts`
 2. Update `packages/backend/convex/schemas/fields/index.ts`
 3. Update `packages/backend/convex/schemas/attributes.ts` (use shared or deprecate)
@@ -264,6 +290,7 @@ export const heightDbField = z.object({
 ### Step 2: Ethnicity Field
 
 **Schema:**
+
 ```typescript
 // packages/backend/convex/schemas/fields/ethnicity.ts
 export const ETHNICITY = [
@@ -283,6 +310,7 @@ export const ethnicityDbField = z.array(z.enum(ETHNICITY)).optional()
 ```
 
 **Files to modify:**
+
 1. Create `packages/backend/convex/schemas/fields/ethnicity.ts`
 2. Update `packages/backend/convex/schemas/fields/index.ts`
 3. Update `packages/backend/convex/schemas/attributes.ts`
@@ -292,6 +320,7 @@ export const ethnicityDbField = z.array(z.enum(ETHNICITY)).optional()
 ### Step 3: Hair Color Field
 
 **Schema:**
+
 ```typescript
 // packages/backend/convex/schemas/fields/hairColor.ts
 export const HAIR_COLOR = ['Black', 'Blonde', 'Brown', 'Red', 'Other'] as const
@@ -304,6 +333,7 @@ export const hairColorDbField = z.enum(HAIR_COLOR).optional()
 ```
 
 **Files to modify:**
+
 1. Create `packages/backend/convex/schemas/fields/hairColor.ts`
 2. Update `packages/backend/convex/schemas/fields/index.ts`
 3. Update `packages/backend/convex/schemas/attributes.ts`
@@ -313,10 +343,16 @@ export const hairColorDbField = z.enum(HAIR_COLOR).optional()
 ### Step 4: Eye Color Field
 
 **Schema:**
+
 ```typescript
 // packages/backend/convex/schemas/fields/eyeColor.ts
 export const EYE_COLOR = [
-  'Amber', 'Blue', 'Brown', 'Green', 'Gray', 'Mixed'
+  'Amber',
+  'Blue',
+  'Brown',
+  'Green',
+  'Gray',
+  'Mixed'
 ] as const
 
 export const eyeColorFormSchema = z.object({
@@ -327,6 +363,7 @@ export const eyeColorDbField = z.enum(EYE_COLOR).optional()
 ```
 
 **Files to modify:**
+
 1. Create `packages/backend/convex/schemas/fields/eyeColor.ts`
 2. Update `packages/backend/convex/schemas/fields/index.ts`
 3. Update `packages/backend/convex/schemas/attributes.ts`
@@ -336,6 +373,7 @@ export const eyeColorDbField = z.enum(EYE_COLOR).optional()
 ### Step 5: Gender Field
 
 **Schema:**
+
 ```typescript
 // packages/backend/convex/schemas/fields/gender.ts
 export const GENDER = ['Male', 'Female', 'Non-binary'] as const
@@ -348,6 +386,7 @@ export const genderDbField = z.enum(GENDER).optional()
 ```
 
 **Files to modify:**
+
 1. Create `packages/backend/convex/schemas/fields/gender.ts`
 2. Update `packages/backend/convex/schemas/fields/index.ts`
 3. Update `packages/backend/convex/schemas/attributes.ts`
@@ -380,9 +419,11 @@ export const genderDbField = z.enum(GENDER).optional()
 ## Notes & Considerations
 
 ### Attributes Object Strategy
+
 The current `attributes` object in dancers schema groups physical attributes. We have two options:
 
 **Option A:** Keep attributes object, use shared schemas within it
+
 ```typescript
 // attributes.ts uses shared fields
 import { heightDbField, ethnicityDbField, ... } from './fields'
@@ -394,12 +435,13 @@ export const attributesPlainObject = {
 ```
 
 **Option B:** Flatten attributes, deprecate the nested object
+
 ```typescript
 // dancers.ts
 export const dancers = {
   // Direct fields instead of nested attributes
   height: heightDbField,
-  ethnicity: ethnicityDbField,
+  ethnicity: ethnicityDbField
   // ...
 }
 ```
@@ -407,14 +449,18 @@ export const dancers = {
 **Recommendation:** Start with Option A (less disruptive), consider Option B in future refactor.
 
 ### Form Component Updates
+
 Each form component needs to:
+
 1. Import shared schema from backend
 2. Export it as backward-compatible const
 3. Update types to use shared types
 4. No UI changes needed
 
 ### Profile Page Updates
+
 The profile about page already has:
+
 - Edit sheets for all attribute fields
 - Conditional rendering for dancer vs choreographer
 - ProfileFieldList component for declarative rendering

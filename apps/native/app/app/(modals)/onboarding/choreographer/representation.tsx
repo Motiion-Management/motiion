@@ -1,35 +1,35 @@
-import React, { useRef, useState } from 'react'
-import { useRouter } from 'expo-router'
-import { useQuery, useMutation } from 'convex/react'
-import { api } from '@packages/backend/convex/_generated/api'
+import React, { useRef, useState } from 'react';
+import { useRouter } from 'expo-router';
+import { useQuery, useMutation } from 'convex/react';
+import { api } from '@packages/backend/convex/_generated/api';
 
-import { RepresentationForm } from '~/components/forms/onboarding/RepresentationForm'
-import type { FormHandle } from '~/components/forms/onboarding/contracts'
-import type { RepresentationValues } from '~/components/forms/onboarding/RepresentationForm'
-import { BaseOnboardingScreen } from '~/components/layouts/BaseOnboardingScreen'
+import { RepresentationForm } from '~/components/forms/onboarding/RepresentationForm';
+import type { FormHandle } from '~/components/forms/onboarding/contracts';
+import type { RepresentationValues } from '~/components/forms/onboarding/RepresentationForm';
+import { BaseOnboardingScreen } from '~/components/layouts/BaseOnboardingScreen';
 
 export default function ChoreographerRepresentationScreen() {
-  const router = useRouter()
-  const formRef = useRef<FormHandle>(null)
-  const [canSubmit, setCanSubmit] = useState(false)
+  const router = useRouter();
+  const formRef = useRef<FormHandle>(null);
+  const [canSubmit, setCanSubmit] = useState(false);
 
   // Load choreographer profile
-  const choreographerProfile = useQuery(api.choreographers.getMyChoreographerProfile, {})
-  const updateChoreographerProfile = useMutation(api.choreographers.updateMyChoreographerProfile)
+  const choreographerProfile = useQuery(api.choreographers.getMyChoreographerProfile, {});
+  const updateChoreographerProfile = useMutation(api.choreographers.updateMyChoreographerProfile);
 
   const handleSubmit = async (values: RepresentationValues) => {
     try {
       await updateChoreographerProfile({
-        representationStatus: values.representationStatus
-      })
-      router.back()
+        representationStatus: values.representationStatus,
+      });
+      router.back();
     } catch (error) {
-      console.error('Failed to save representation status:', error)
+      console.error('Failed to save representation status:', error);
     }
-  }
+  };
 
   if (choreographerProfile === undefined) {
-    return null // Loading state
+    return null; // Loading state
   }
 
   return (
@@ -50,5 +50,5 @@ export default function ChoreographerRepresentationScreen() {
         onValidChange={setCanSubmit}
       />
     </BaseOnboardingScreen>
-  )
+  );
 }

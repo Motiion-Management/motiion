@@ -1,35 +1,35 @@
-import React, { useRef, useState } from 'react'
-import { useRouter } from 'expo-router'
-import { useQuery, useMutation } from 'convex/react'
-import { api } from '@packages/backend/convex/_generated/api'
+import React, { useRef, useState } from 'react';
+import { useRouter } from 'expo-router';
+import { useQuery, useMutation } from 'convex/react';
+import { api } from '@packages/backend/convex/_generated/api';
 
-import { HeightForm } from '~/components/forms/onboarding/HeightForm'
-import type { FormHandle } from '~/components/forms/onboarding/contracts'
-import type { HeightValues } from '~/components/forms/onboarding/HeightForm'
-import { BaseOnboardingScreen } from '~/components/layouts/BaseOnboardingScreen'
+import { HeightForm } from '~/components/forms/onboarding/HeightForm';
+import type { FormHandle } from '~/components/forms/onboarding/contracts';
+import type { HeightValues } from '~/components/forms/onboarding/HeightForm';
+import { BaseOnboardingScreen } from '~/components/layouts/BaseOnboardingScreen';
 
 export default function DancerHeightScreen() {
-  const router = useRouter()
-  const formRef = useRef<FormHandle>(null)
-  const [canSubmit, setCanSubmit] = useState(false)
+  const router = useRouter();
+  const formRef = useRef<FormHandle>(null);
+  const [canSubmit, setCanSubmit] = useState(false);
 
   // Load dancer profile
-  const dancerProfile = useQuery(api.dancers.getMyDancerProfile, {})
-  const patchDancerAttributes = useMutation(api.dancers.patchDancerAttributes)
+  const dancerProfile = useQuery(api.dancers.getMyDancerProfile, {});
+  const patchDancerAttributes = useMutation(api.dancers.patchDancerAttributes);
 
   const handleSubmit = async (values: HeightValues) => {
     try {
-      await patchDancerAttributes({ attributes: { height: values.height } })
+      await patchDancerAttributes({ attributes: { height: values.height } });
       // TODO: Navigate to next step in dancer flow (ethnicity)
       // router.push('/onboarding/dancer/ethnicity' as any)
-      router.back()
+      router.back();
     } catch (error) {
-      console.error('Failed to save height:', error)
+      console.error('Failed to save height:', error);
     }
-  }
+  };
 
   if (dancerProfile === undefined) {
-    return null // Loading state
+    return null; // Loading state
   }
 
   return (
@@ -50,5 +50,5 @@ export default function DancerHeightScreen() {
         onValidChange={setCanSubmit}
       />
     </BaseOnboardingScreen>
-  )
+  );
 }

@@ -5,7 +5,15 @@ import { Doc } from '../_generated/dataModel'
 import { zFileUploadObjectArray } from './base'
 import { attributesPlainObject } from './attributes'
 import { zResume, zLinks } from './users'
-import { displayNameDbField, headshotsDbField, representationDbField, locationDbField, sizingDbField, workLocationDbField, sagAftraIdDbField } from './fields'
+import {
+  displayNameDbField,
+  headshotsDbField,
+  representationDbField,
+  locationDbField,
+  sizingDbField,
+  workLocationDbField,
+  sagAftraIdDbField
+} from './fields'
 
 // Dancer-specific schema
 export const dancers = {

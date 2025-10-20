@@ -1,8 +1,5 @@
 import React, { forwardRef, useEffect, useImperativeHandle } from 'react';
-import {
-  sizingFormSchema,
-  type SizingFormValues
-} from '@packages/backend/convex/schemas/fields';
+import { sizingFormSchema, type SizingFormValues } from '@packages/backend/convex/schemas/fields';
 
 import { SizingSection } from '~/components/sizing/SizingSection';
 import type { FormHandle, FormProps } from '~/components/forms/onboarding/contracts';

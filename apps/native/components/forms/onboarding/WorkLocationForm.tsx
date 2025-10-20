@@ -2,7 +2,7 @@ import React, { forwardRef, useEffect, useImperativeHandle } from 'react';
 import { View, ScrollView, Pressable, Keyboard } from 'react-native';
 import {
   workLocationFormSchema,
-  type WorkLocationFormValues
+  type WorkLocationFormValues,
 } from '@packages/backend/convex/schemas/fields';
 
 import { WorkLocationPicker } from '~/components/ui/work-location-picker';

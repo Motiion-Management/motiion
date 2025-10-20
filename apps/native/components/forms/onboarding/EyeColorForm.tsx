@@ -3,7 +3,7 @@ import { useStore } from '@tanstack/react-form';
 import {
   eyeColorFormSchema,
   type EyeColorFormValues,
-  EYE_COLOR
+  EYE_COLOR,
 } from '@packages/backend/convex/schemas/fields';
 
 import { ValidationModeForm } from '~/components/form/ValidationModeForm';

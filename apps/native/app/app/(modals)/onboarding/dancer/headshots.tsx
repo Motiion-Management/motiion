@@ -1,33 +1,33 @@
-import React, { useRef, useState } from 'react'
-import { useRouter } from 'expo-router'
-import { useQuery } from 'convex/react'
-import { api } from '@packages/backend/convex/_generated/api'
+import React, { useRef, useState } from 'react';
+import { useRouter } from 'expo-router';
+import { useQuery } from 'convex/react';
+import { api } from '@packages/backend/convex/_generated/api';
 
-import { HeadshotsForm } from '~/components/forms/onboarding/HeadshotsForm'
-import type { FormHandle } from '~/components/forms/onboarding/contracts'
-import type { HeadshotsValues } from '~/components/forms/onboarding/HeadshotsForm'
-import { BaseOnboardingScreen } from '~/components/layouts/BaseOnboardingScreen'
+import { HeadshotsForm } from '~/components/forms/onboarding/HeadshotsForm';
+import type { FormHandle } from '~/components/forms/onboarding/contracts';
+import type { HeadshotsValues } from '~/components/forms/onboarding/HeadshotsForm';
+import { BaseOnboardingScreen } from '~/components/layouts/BaseOnboardingScreen';
 
 export default function DancerHeadshotsScreen() {
-  const router = useRouter()
-  const formRef = useRef<FormHandle>(null)
-  const [canSubmit, setCanSubmit] = useState(false)
+  const router = useRouter();
+  const formRef = useRef<FormHandle>(null);
+  const [canSubmit, setCanSubmit] = useState(false);
 
   // Load dancer profile
-  const dancerProfile = useQuery(api.dancers.getMyDancerProfile, {})
+  const dancerProfile = useQuery(api.dancers.getMyDancerProfile, {});
 
   const handleSubmit = async (values: HeadshotsValues) => {
     try {
       // MultiImageUpload component handles the upload directly
       // No mutation needed here
-      router.back()
+      router.back();
     } catch (error) {
-      console.error('Failed to save headshots:', error)
+      console.error('Failed to save headshots:', error);
     }
-  }
+  };
 
   if (dancerProfile === undefined) {
-    return null // Loading state
+    return null; // Loading state
   }
 
   return (
@@ -47,5 +47,5 @@ export default function DancerHeadshotsScreen() {
         onValidChange={setCanSubmit}
       />
     </BaseOnboardingScreen>
-  )
+  );
 }

@@ -4,7 +4,12 @@ import { z } from 'zod'
 import { Doc } from '../_generated/dataModel'
 import { zFileUploadObjectArray, zLocation } from './base'
 import { zResume, zLinks } from './users'
-import { displayNameDbField, headshotsDbField, representationDbField, locationDbField } from './fields'
+import {
+  displayNameDbField,
+  headshotsDbField,
+  representationDbField,
+  locationDbField
+} from './fields'
 
 // Choreographer-specific schema
 export const choreographers = {

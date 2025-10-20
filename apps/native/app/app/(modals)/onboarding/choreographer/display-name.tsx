@@ -1,35 +1,35 @@
-import React, { useRef, useState } from 'react'
-import { useRouter } from 'expo-router'
-import { useQuery, useMutation } from 'convex/react'
-import { api } from '@packages/backend/convex/_generated/api'
+import React, { useRef, useState } from 'react';
+import { useRouter } from 'expo-router';
+import { useQuery, useMutation } from 'convex/react';
+import { api } from '@packages/backend/convex/_generated/api';
 
-import { DisplayNameForm } from '~/components/forms/onboarding/DisplayNameForm'
-import type { FormHandle } from '~/components/forms/onboarding/contracts'
-import type { DisplayNameValues } from '~/components/forms/onboarding/DisplayNameForm'
-import { BaseOnboardingScreen } from '~/components/layouts/BaseOnboardingScreen'
+import { DisplayNameForm } from '~/components/forms/onboarding/DisplayNameForm';
+import type { FormHandle } from '~/components/forms/onboarding/contracts';
+import type { DisplayNameValues } from '~/components/forms/onboarding/DisplayNameForm';
+import { BaseOnboardingScreen } from '~/components/layouts/BaseOnboardingScreen';
 
 export default function ChoreographerDisplayNameScreen() {
-  const router = useRouter()
-  const formRef = useRef<FormHandle>(null)
-  const [canSubmit, setCanSubmit] = useState(false)
+  const router = useRouter();
+  const formRef = useRef<FormHandle>(null);
+  const [canSubmit, setCanSubmit] = useState(false);
 
   // Load choreographer profile
-  const choreographerProfile = useQuery(api.choreographers.getMyChoreographerProfile, {})
-  const updateChoreographerProfile = useMutation(api.choreographers.updateMyChoreographerProfile)
+  const choreographerProfile = useQuery(api.choreographers.getMyChoreographerProfile, {});
+  const updateChoreographerProfile = useMutation(api.choreographers.updateMyChoreographerProfile);
 
   const handleSubmit = async (values: DisplayNameValues) => {
     try {
-      await updateChoreographerProfile({ displayName: values.displayName.trim() })
+      await updateChoreographerProfile({ displayName: values.displayName.trim() });
       // TODO: Navigate to next step in choreographer flow (location)
       // router.push('/onboarding/choreographer/location' as any)
-      router.back()
+      router.back();
     } catch (error) {
-      console.error('Failed to save display name:', error)
+      console.error('Failed to save display name:', error);
     }
-  }
+  };
 
   if (choreographerProfile === undefined) {
-    return null // Loading state
+    return null; // Loading state
   }
 
   return (
@@ -50,5 +50,5 @@ export default function ChoreographerDisplayNameScreen() {
         onValidChange={setCanSubmit}
       />
     </BaseOnboardingScreen>
-  )
+  );
 }

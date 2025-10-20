@@ -1,52 +1,53 @@
-import React, { useRef, useState } from 'react'
-import { useRouter } from 'expo-router'
-import { useQuery, useMutation } from 'convex/react'
-import { api } from '@packages/backend/convex/_generated/api'
+import React, { useRef, useState } from 'react';
+import { useRouter } from 'expo-router';
+import { useQuery, useMutation } from 'convex/react';
+import { api } from '@packages/backend/convex/_generated/api';
 
-import { WorkLocationForm } from '~/components/forms/onboarding/WorkLocationForm'
-import type { FormHandle } from '~/components/forms/onboarding/contracts'
-import type { WorkLocationValues } from '~/components/forms/onboarding/WorkLocationForm'
-import { BaseOnboardingScreen } from '~/components/layouts/BaseOnboardingScreen'
-import type { PlaceKitLocation } from '~/components/ui/location-picker-placekit'
+import { WorkLocationForm } from '~/components/forms/onboarding/WorkLocationForm';
+import type { FormHandle } from '~/components/forms/onboarding/contracts';
+import type { WorkLocationValues } from '~/components/forms/onboarding/WorkLocationForm';
+import { BaseOnboardingScreen } from '~/components/layouts/BaseOnboardingScreen';
+import type { PlaceKitLocation } from '~/components/ui/location-picker-placekit';
 
 export default function DancerWorkLocationScreen() {
-  const router = useRouter()
-  const formRef = useRef<FormHandle>(null)
-  const [canSubmit, setCanSubmit] = useState(false)
+  const router = useRouter();
+  const formRef = useRef<FormHandle>(null);
+  const [canSubmit, setCanSubmit] = useState(false);
 
   // Load dancer profile
-  const dancerProfile = useQuery(api.dancers.getMyDancerProfile, {})
-  const updateDancerProfile = useMutation(api.dancers.updateMyDancerProfile)
+  const dancerProfile = useQuery(api.dancers.getMyDancerProfile, {});
+  const updateDancerProfile = useMutation(api.dancers.updateMyDancerProfile);
 
   const handleSubmit = async (values: WorkLocationValues) => {
     try {
       // Convert PlaceKitLocation array to string array
       const workLocationStrings = values.locations
         .filter((loc): loc is PlaceKitLocation => loc !== null)
-        .map((loc) => loc.name)
+        .map((loc) => loc.name);
 
-      await updateDancerProfile({ workLocation: workLocationStrings })
-      router.back()
+      await updateDancerProfile({ workLocation: workLocationStrings });
+      router.back();
     } catch (error) {
-      console.error('Failed to save work locations:', error)
+      console.error('Failed to save work locations:', error);
     }
-  }
+  };
 
   if (dancerProfile === undefined) {
-    return null // Loading state
+    return null; // Loading state
   }
 
   // Convert workLocation strings to PlaceKitLocation objects for the form
   // Note: This is a simplified conversion - full location data would need to be stored
-  const initialLocations: (PlaceKitLocation | null)[] =
-    dancerProfile?.workLocation?.map((locationName) => ({
+  const initialLocations: (PlaceKitLocation | null)[] = dancerProfile?.workLocation?.map(
+    (locationName) => ({
       name: locationName,
       city: locationName,
       administrative: '',
       country: '',
       lat: 0,
       lng: 0,
-    })) || [null]
+    })
+  ) || [null];
 
   return (
     <BaseOnboardingScreen
@@ -64,5 +65,5 @@ export default function DancerWorkLocationScreen() {
         onValidChange={setCanSubmit}
       />
     </BaseOnboardingScreen>
-  )
+  );
 }

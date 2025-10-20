@@ -54,7 +54,8 @@ interface ExperienceListItemProps extends BaseListItemProps {
   image?: ImageSource;
   organizer?: string;
   label?: string;
-  title: string;
+  title?: string;
+  preview?: React.ReactNode;
 }
 
 interface ActivityListItemProps extends BaseListItemProps {
@@ -131,6 +132,7 @@ export const ListItem = React.forwardRef<ViewRef, ListItemProps>(
           label = '',
           organizer = label,
           title,
+          preview,
         } = variantProps as ExperienceListItemProps;
         return (
           <View className="flex-col gap-4">
@@ -141,13 +143,17 @@ export const ListItem = React.forwardRef<ViewRef, ListItemProps>(
                 </View>
               )}
               <View className="flex-1 flex-row items-center justify-between">
-                <View className="flex-col gap-1">
+                <View className="flex-1 flex-col gap-1">
                   <Text variant="labelSm" className="uppercase text-text-low">
                     {organizer}
                   </Text>
-                  <Text variant="body" className="text-text-default">
-                    {title}
-                  </Text>
+                  {preview ? (
+                    <View>{preview}</View>
+                  ) : (
+                    <Text variant="body" className="text-text-default">
+                      {title}
+                    </Text>
+                  )}
                 </View>
                 {onPress && (
                   <View className="h-7 w-7 items-center justify-center">

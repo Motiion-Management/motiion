@@ -3,7 +3,7 @@ import { useStore } from '@tanstack/react-form';
 import {
   ethnicityFormSchema,
   type EthnicityFormValues,
-  ETHNICITY
+  ETHNICITY,
 } from '@packages/backend/convex/schemas/fields';
 
 import { ValidationModeForm } from '~/components/form/ValidationModeForm';

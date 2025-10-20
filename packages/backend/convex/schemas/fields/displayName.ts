@@ -17,7 +17,7 @@ export const displayNameFormSchema = z.object({
     .string()
     .min(1, { message: 'Preferred name is required' })
     .min(2, { message: 'Preferred name must be at least 2 characters' })
-    .max(50, { message: 'Preferred name must be less than 50 characters' }),
+    .max(50, { message: 'Preferred name must be less than 50 characters' })
 })
 
 // For database (optional)

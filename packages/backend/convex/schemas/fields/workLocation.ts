@@ -11,7 +11,10 @@ export const workLocationArray = z.array(z.string())
  * Validates work location preferences
  */
 export const workLocationFormSchema = z.object({
-  workLocation: workLocationArray.min(1, 'Please select at least one work location')
+  workLocation: workLocationArray.min(
+    1,
+    'Please select at least one work location'
+  )
 })
 
 /**

@@ -3,7 +3,7 @@ import { useStore } from '@tanstack/react-form';
 import {
   hairColorFormSchema,
   type HairColorFormValues,
-  HAIR_COLOR
+  HAIR_COLOR,
 } from '@packages/backend/convex/schemas/fields';
 
 import { ValidationModeForm } from '~/components/form/ValidationModeForm';
