@@ -1,18 +1,21 @@
-import { useRouter } from 'expo-router'
+import { useState } from 'react'
 import { useQuery } from 'convex/react'
 import { api } from '@packages/backend/convex/_generated/api'
+import { View } from 'react-native'
 
 import { TabScreenLayout } from '~/components/layouts/TabScreenLayout'
 import { Text } from '~/components/ui/text'
 import { HighlightGrid } from '~/components/highlights/HighlightGrid'
-import { View } from 'react-native'
+import { AddHighlightSheet } from '~/components/highlights/AddHighlightSheet'
+import { useSharedUser } from '~/contexts/SharedUserContext'
 
 export default function HighlightsScreen() {
-  const router = useRouter()
+  const { user } = useSharedUser()
   const highlights = useQuery(api.highlights.getMyHighlights)
+  const [isAddSheetOpen, setIsAddSheetOpen] = useState(false)
 
   const handleAddPress = () => {
-    router.push('/app/(modals)/add-highlight')
+    setIsAddSheetOpen(true)
   }
 
   return (
@@ -33,6 +36,12 @@ export default function HighlightsScreen() {
           isLoading={highlights === undefined}
         />
       </View>
+
+      <AddHighlightSheet
+        isOpen={isAddSheetOpen}
+        onOpenChange={setIsAddSheetOpen}
+        profileId={user?.activeDancerId ?? null}
+      />
     </TabScreenLayout>
   )
 }

@@ -1,83 +1,79 @@
-import { View, Pressable, ScrollView } from 'react-native';
-import { useQuery } from 'convex/react';
-import { api } from '@packages/backend/convex/_generated/api';
-import { Image } from 'expo-image';
-import { useState } from 'react';
-import { BottomSheetModalProvider } from '@gorhom/bottom-sheet';
+import { View, Pressable, ScrollView } from 'react-native'
+import { useQuery } from 'convex/react'
+import { api } from '@packages/backend/convex/_generated/api'
+import { Image } from 'expo-image'
+import { useState, useCallback } from 'react'
 
-import { Text } from '~/components/ui/text';
-import { Button } from '~/components/ui/button';
-import { ActivityIndicator } from '~/components/ui/activity-indicator';
-import { UploadPlaceholder } from '~/components/ui/upload-placeholder';
-import { BottomSheetPicker } from '~/components/ui/bottom-sheet-picker';
-import { useAddHighlight } from '~/hooks/useAddHighlight';
-import { useSharedUser } from '~/contexts/SharedUserContext';
-import { cn } from '~/lib/utils';
-import XIcon from '~/lib/icons/X';
-import ChevronLeftIcon from '~/lib/icons/ChevronLeft';
-import { Id } from '@packages/backend/convex/_generated/dataModel';
-import { PROJECT_TYPES, PROJECT_TITLE_MAP } from '@packages/backend/convex/schemas/projects';
+import { Sheet } from '~/components/ui/sheet'
+import { Text } from '~/components/ui/text'
+import { Button } from '~/components/ui/button'
+import { ActivityIndicator } from '~/components/ui/activity-indicator'
+import { UploadPlaceholder } from '~/components/ui/upload-placeholder'
+import { BottomSheetPicker } from '~/components/ui/bottom-sheet-picker'
+import { useAddHighlight } from '~/hooks/useAddHighlight'
+import { cn } from '~/lib/utils'
+import ChevronLeftIcon from '~/lib/icons/ChevronLeft'
+import { Id } from '@packages/backend/convex/_generated/dataModel'
+import { PROJECT_TYPES, PROJECT_TITLE_MAP } from '@packages/backend/convex/schemas/projects'
 
-export default function AddHighlightModal() {
-  const { user } = useSharedUser();
-  const profileId = user?.activeDancerId ?? null;
-  const [selectedProjectType, setSelectedProjectType] =
-    useState<(typeof PROJECT_TYPES)[number]>('tv-film');
+interface AddHighlightSheetProps {
+  isOpen: boolean
+  onOpenChange: (isOpen: boolean) => void
+  profileId: Id<'dancers'> | null
+}
 
-  const { models, actions } = useAddHighlight(profileId);
+export function AddHighlightSheet({ isOpen, onOpenChange, profileId }: AddHighlightSheetProps) {
+  const [selectedProjectType, setSelectedProjectType] = useState<typeof PROJECT_TYPES[number]>('tv-film')
+
+  const handleClose = useCallback(() => onOpenChange(false), [onOpenChange])
+  const { models, actions } = useAddHighlight(profileId, handleClose)
 
   // Create picker data from PROJECT_TYPES
-  const projectTypeData = PROJECT_TYPES.map((type) => ({
+  const projectTypeData = PROJECT_TYPES.map(type => ({
     label: PROJECT_TITLE_MAP[type],
-    value: type,
-  }));
+    value: type
+  }))
 
   const projects = useQuery(
     api.projects.getDancerProjectsByType,
     profileId ? { dancerId: profileId, type: selectedProjectType } : 'skip'
-  );
+  )
 
   // Determine button text and action
-  const buttonText = models.currentTab === 'select-project' ? 'Next' : 'Add Highlight';
+  const buttonText =
+    models.currentTab === 'select-project' ? 'Next' : 'Add Highlight'
   const buttonAction =
-    models.currentTab === 'select-project' ? actions.handleNextTab : actions.handleSubmit;
+    models.currentTab === 'select-project'
+      ? actions.handleNextTab
+      : actions.handleSubmit
   const buttonDisabled =
-    models.currentTab === 'select-project' ? !models.canProceedToNextTab : !models.canSubmit;
+    models.currentTab === 'select-project'
+      ? !models.canProceedToNextTab
+      : !models.canSubmit
 
   return (
-    <BottomSheetModalProvider>
-      <View className="flex-1 bg-black">
-        {/* Header */}
-        <View className="border-b border-border-tint px-4 pb-4 pt-16">
-          <View className="flex-row items-center justify-between">
-            {models.currentTab === 'add-cover' ? (
-              <Pressable onPress={actions.handlePrevTab} className="p-2">
-                <ChevronLeftIcon size={28} className="text-white" />
-              </Pressable>
-            ) : (
-              <View className="w-12" />
-            )}
-            <Text variant="header3" className="text-text-default">
-              Add Highlight
-            </Text>
-            <Pressable onPress={actions.handleClose} className="p-2">
-              <XIcon size={28} className="text-white" />
-            </Pressable>
-          </View>
-        </View>
-
+    <Sheet
+      isOpened={isOpen}
+      label="Add Highlight"
+      onIsOpenedChange={onOpenChange}
+      enableContentPanningGesture={false}>
+      <View className="h-[80vh]">
         {/* Tabs */}
         <View className="flex-row gap-4 border-b border-border-tint px-4">
           <Pressable
             onPress={() => models.currentTab === 'add-cover' && actions.handlePrevTab()}
             className={cn(
               'border-b-2 pb-4',
-              models.currentTab === 'select-project' ? 'border-border-high' : 'border-transparent'
+              models.currentTab === 'select-project'
+                ? 'border-border-high'
+                : 'border-transparent'
             )}>
             <Text
               variant="body"
               className={cn(
-                models.currentTab === 'select-project' ? 'text-text-default' : 'text-text-disabled'
+                models.currentTab === 'select-project'
+                  ? 'text-text-default'
+                  : 'text-text-disabled'
               )}>
               Select Project
             </Text>
@@ -85,16 +81,27 @@ export default function AddHighlightModal() {
           <View
             className={cn(
               'border-b-2 pb-4',
-              models.currentTab === 'add-cover' ? 'border-border-high' : 'border-transparent'
+              models.currentTab === 'add-cover'
+                ? 'border-border-high'
+                : 'border-transparent'
             )}>
             <Text
               variant="body"
               className={cn(
-                models.currentTab === 'add-cover' ? 'text-text-default' : 'text-text-disabled'
+                models.currentTab === 'add-cover'
+                  ? 'text-text-default'
+                  : 'text-text-disabled'
               )}>
               Add Cover
             </Text>
           </View>
+
+          {/* Back button in tab area for UX */}
+          {models.currentTab === 'add-cover' && (
+            <Pressable onPress={actions.handlePrevTab} className="absolute right-4 top-2">
+              <ChevronLeftIcon size={24} className="text-icon-default" />
+            </Pressable>
+          )}
         </View>
 
         {/* Content */}
@@ -126,14 +133,14 @@ export default function AddHighlightModal() {
                   </View>
                 ) : (
                   projects.map((project) => {
-                    const isSelected = models.selectedProjectId === project._id;
-                    const displayTitle = project.title || 'Untitled Project';
+                    const isSelected = models.selectedProjectId === project._id
+                    const displayTitle = project.title || 'Untitled Project'
                     const displaySubtitle =
                       project.studio ||
                       project.artists?.[0] ||
                       project.tourArtist ||
                       project.companyName ||
-                      '';
+                      ''
 
                     return (
                       <Pressable
@@ -172,7 +179,7 @@ export default function AddHighlightModal() {
                           )}
                         </View>
                       </Pressable>
-                    );
+                    )
                   })
                 )}
               </View>
@@ -217,7 +224,7 @@ export default function AddHighlightModal() {
         </View>
 
         {/* Bottom Button */}
-        <View className="border-t border-border-tint px-4 pb-12 pt-4">
+        <View className="border-t border-border-tint px-4 pb-4 pt-4">
           <Button onPress={buttonAction} disabled={buttonDisabled} className="w-full">
             <Text variant="header5" className="text-text-high">
               {buttonText}
@@ -225,6 +232,6 @@ export default function AddHighlightModal() {
           </Button>
         </View>
       </View>
-    </BottomSheetModalProvider>
-  );
+    </Sheet>
+  )
 }

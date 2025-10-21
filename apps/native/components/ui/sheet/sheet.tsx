@@ -13,6 +13,7 @@ import { Text } from '../text';
 
 import { cn } from '~/lib/cn';
 import X from '~/lib/icons/X';
+import { BlurView } from 'expo-blur';
 
 interface SheetProps extends Omit<BottomSheetModalProps, 'children'> {
   children?: React.ReactNode;
@@ -38,7 +39,13 @@ interface BottomSheetBackgroundProps {
 }
 
 const BottomSheetBackground = ({ style, className }: BottomSheetBackgroundProps) => {
-  return <View style={style} className={cn('rounded-t-xl bg-surface-default', className)} />;
+  return (
+    <View
+      style={style}
+      className={cn('overflow-hidden rounded-t-xl bg-surface-overlay', className)}>
+      <BlurView intensity={20} className="flex-1" />
+    </View>
+  );
 };
 
 interface BottomSheetHandleProps {
@@ -102,7 +109,7 @@ const SheetContent = forwardRef<SheetRef, SheetProps>(
           disappearsOnIndex={-1}
           appearsOnIndex={0}
           pressBehavior="close"
-          opacity={0.8}
+          opacity={0.05}
         />
       ),
       []

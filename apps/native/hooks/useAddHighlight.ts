@@ -2,15 +2,13 @@ import { useState, useCallback } from 'react'
 import { useMutation } from 'convex/react'
 import { api } from '@packages/backend/convex/_generated/api'
 import { Id } from '@packages/backend/convex/_generated/dataModel'
-import { useRouter } from 'expo-router'
 import { Alert } from 'react-native'
 import * as ImagePicker from 'expo-image-picker'
 import * as ImageManipulator from 'expo-image-manipulator'
 
 type TabType = 'select-project' | 'add-cover'
 
-export function useAddHighlight(profileId: Id<'dancers'> | null) {
-  const router = useRouter()
+export function useAddHighlight(profileId: Id<'dancers'> | null, onClose: () => void) {
   const [currentTab, setCurrentTab] = useState<TabType>('select-project')
   const [selectedProjectId, setSelectedProjectId] = useState<Id<'projects'> | null>(null)
   const [uploadedImageId, setUploadedImageId] = useState<Id<'_storage'> | null>(null)
@@ -170,18 +168,18 @@ export function useAddHighlight(profileId: Id<'dancers'> | null) {
         imageId: uploadedImageId
       })
 
-      // Close modal and navigate back
-      router.back()
+      // Close sheet
+      onClose()
     } catch (error) {
       console.error('Failed to add highlight:', error)
       const errorMessage = error instanceof Error ? error.message : 'Failed to add highlight'
       Alert.alert('Error', errorMessage)
     }
-  }, [canSubmit, profileId, selectedProjectId, uploadedImageId, addHighlight, router])
+  }, [canSubmit, profileId, selectedProjectId, uploadedImageId, addHighlight, onClose])
 
   const handleClose = useCallback(() => {
-    router.back()
-  }, [router])
+    onClose()
+  }, [onClose])
 
   return {
     models: {
