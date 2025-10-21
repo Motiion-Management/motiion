@@ -1,16 +1,16 @@
-import { api } from '@packages/backend/convex/_generated/api';
-import { useMutation, useQuery } from 'convex/react';
-import { useCallback, useState, useEffect } from 'react';
-import { Alert, View } from 'react-native';
-import Sortable from 'react-native-sortables';
+import { api } from '@packages/backend/convex/_generated/api'
+import { useMutation, useQuery } from 'convex/react'
+import { useCallback, useState, useEffect } from 'react'
+import { Alert, View } from 'react-native'
+import Sortable from 'react-native-sortables'
 
-import * as ImagePicker from 'expo-image-picker';
-import * as ImageManipulator from 'expo-image-manipulator';
+import * as ImagePicker from 'expo-image-picker'
+import * as ImageManipulator from 'expo-image-manipulator'
 
-import { ImagePreview } from './ImagePreview';
-import { ImageUploadCard } from './ImageUploadCard';
-import { ActivityIndicator } from '../ui/activity-indicator';
-import { Text } from '../ui/text';
+import { ImagePreview } from './ImagePreview'
+import { UploadPlaceholder } from './UploadPlaceholder'
+import { ActivityIndicator } from '../ui/activity-indicator'
+import { Text } from '../ui/text'
 
 interface MultiImageUploadProps {
   onImageCountChange?: (count: number) => void;
@@ -31,7 +31,7 @@ interface HeadshotWithUrl {
   position?: number;
 }
 
-export function MultiImageUploadOptimized({ onImageCountChange }: MultiImageUploadProps) {
+export function MultiImageUpload({ onImageCountChange }: MultiImageUploadProps) {
   const [uploadState, setUploadState] = useState<UploadState>({
     isUploading: false,
     progress: 0,
@@ -43,6 +43,7 @@ export function MultiImageUploadOptimized({ onImageCountChange }: MultiImageUplo
   // Convex mutations and queries
   const generateUploadUrl = useMutation(api.files.generateUploadUrl);
   const updateMyDancerProfile = useMutation(api.dancers.updateMyDancerProfile);
+  const deleteFile = useMutation(api.files.deleteFile);
 
   // Get headshots from profile
   const profile = useQuery(api.dancers.getMyDancerProfile, {});
@@ -229,34 +230,41 @@ export function MultiImageUploadOptimized({ onImageCountChange }: MultiImageUplo
 
   const handleRemoveImage = useCallback(
     async (storageId: string) => {
-      Alert.alert(
-        'Remove Image',
-        'Are you sure you want to remove this headshot?',
-        [
-          {
-            text: 'Cancel',
-            style: 'cancel',
-          },
-          {
-            text: 'Remove',
-            style: 'destructive',
-            onPress: async () => {
+      Alert.alert('Remove Image', 'Are you sure you want to remove this headshot?', [
+        {
+          text: 'Cancel',
+          style: 'cancel',
+        },
+        {
+          text: 'Remove',
+          style: 'destructive',
+          onPress: async () => {
+            try {
+              const currentHeadshots = profile?.headshots ?? [];
+              const updatedHeadshots = currentHeadshots.filter(
+                (h: any) => h.storageId !== storageId
+              );
+              await updateMyDancerProfile({ headshots: updatedHeadshots });
+
+              // Delete the actual file from storage
               try {
-                const currentHeadshots = profile?.headshots ?? [];
-                const updatedHeadshots = currentHeadshots.filter((h: any) => h.storageId !== storageId);
-                await updateMyDancerProfile({ headshots: updatedHeadshots });
-                if (onImageCountChange) {
-                  onImageCountChange(Math.max(0, headshotsWithUrls.length - 1));
-                }
+                await deleteFile({ storageId });
               } catch (error) {
-                console.error('Failed to remove image:', error);
+                console.error('Failed to delete file from storage:', error);
+                // Continue anyway since the reference is already removed
               }
-            },
+
+              if (onImageCountChange) {
+                onImageCountChange(Math.max(0, headshotsWithUrls.length - 1));
+              }
+            } catch (error) {
+              console.error('Failed to remove image:', error);
+            }
           },
-        ]
-      );
+        },
+      ]);
     },
-    [updateMyDancerProfile, profile, headshotsWithUrls.length, onImageCountChange]
+    [updateMyDancerProfile, deleteFile, profile, headshotsWithUrls.length, onImageCountChange]
   );
 
   // Derive first 4 headshots for this UI and remaining slots
@@ -392,11 +400,11 @@ export function MultiImageUploadOptimized({ onImageCountChange }: MultiImageUplo
                         uploadIdx += 1;
                         return (
                           <Sortable.Handle mode="fixed-order">
-                            <ImageUploadCard
-                              shape="secondary"
+                            <UploadPlaceholder
                               onPress={handleImageUpload}
                               isActive={isFirstUpload}
                               disabled={uploadState.isUploading || !uiCanAddMore}
+                              height={234}
                             />
                           </Sortable.Handle>
                         );

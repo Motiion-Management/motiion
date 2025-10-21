@@ -42,6 +42,16 @@ export const getUrls = authQuery({
   }
 })
 
+// Delete a file from storage
+export const deleteFile = authMutation({
+  args: { storageId: zid('_storage') },
+  returns: z.null(),
+  handler: async (ctx, { storageId }) => {
+    await ctx.storage.delete(storageId)
+    return null
+  }
+})
+
 export const ensureOnlyFive = internalAction({
   args: {
     files: zodToConvex(zFileUploadObjectArray) // other args...
