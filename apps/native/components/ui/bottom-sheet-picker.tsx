@@ -88,7 +88,7 @@ export function BottomSheetPicker<T = any>({
         stackBehavior="push"
         onIsOpenedChange={(isOpen) => {
           if (!isOpen) {
-            sheetState.close();
+            sheetState.close()
           }
         }}>
         <View className="px-4">

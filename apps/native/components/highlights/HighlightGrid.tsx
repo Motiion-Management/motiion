@@ -12,7 +12,6 @@ import { ActivityIndicator } from '../ui/activity-indicator'
 interface Highlight {
   _id: Id<'highlights'>
   _creationTime: number
-  userId: Id<'users'>
   profileId: Id<'dancers'>
   projectId: Id<'projects'>
   imageId: Id<'_storage'>
