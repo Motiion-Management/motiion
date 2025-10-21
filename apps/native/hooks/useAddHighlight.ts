@@ -194,6 +194,7 @@ export function useAddHighlight(profileId: Id<'dancers'> | null, onClose: () => 
     actions: {
       handleNextTab,
       handlePrevTab,
+      setCurrentTab,
       selectProject,
       handleImageUpload,
       handleSubmit,

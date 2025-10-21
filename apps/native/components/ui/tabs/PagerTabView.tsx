@@ -1,4 +1,4 @@
-import React, { useMemo, useRef, useState } from 'react';
+import React, { useMemo, useRef, useState, forwardRef, useImperativeHandle } from 'react';
 import { View } from 'react-native';
 import PagerView from 'react-native-pager-view';
 import { useSharedValue } from 'react-native-reanimated';
@@ -7,6 +7,10 @@ import { PillTabs } from './PillTabs';
 import { TextTabs } from './TextTabs';
 
 export type TabRoute = { key: string; title: string };
+
+export interface PagerTabViewRef {
+  setPage: (index: number) => void;
+}
 
 type TabsViewProps = {
   routes: TabRoute[];
@@ -27,7 +31,7 @@ type TabsViewProps = {
   contentClassName?: string;
 };
 
-export function PagerTabView({
+export const PagerTabView = forwardRef<PagerTabViewRef, TabsViewProps>(function PagerTabView({
   routes,
   renderScene,
   initialKey,
@@ -39,7 +43,7 @@ export function PagerTabView({
   tabStyle,
   tabContainerClassName,
   contentClassName,
-}: TabsViewProps) {
+}, ref) {
   const initialIndex = Math.max(0, initialKey ? routes.findIndex((r) => r.key === initialKey) : 0);
   const [activeIndex, setActiveIndex] = useState<number>(initialIndex);
   const indexDecimal = useSharedValue<number>(initialIndex);
@@ -64,6 +68,16 @@ export function PagerTabView({
     pagerRef.current?.setPage?.(index);
     onIndexChange?.(index, routes[index]?.key);
   };
+
+  // Expose setPage method via ref
+  useImperativeHandle(ref, () => ({
+    setPage: (index: number) => {
+      if (index === activeIndex) return;
+      setActiveIndex(index);
+      pagerRef.current?.setPage?.(index);
+      onIndexChange?.(index, routes[index]?.key);
+    }
+  }), [activeIndex, routes, onIndexChange]);
 
   // Determine which tab component to render
   const renderTabs = () => {
@@ -120,4 +134,4 @@ export function PagerTabView({
       </PagerView>
     </View>
   );
-}
+});
