@@ -21,9 +21,9 @@ interface HeadshotCarouselProps {
   onIndexChange?: (index: number) => void;
 }
 
-const SCREEN_HEIGHT_MODIFIER = 0.75;
+const SCREEN_HEIGHT_MODIFIER = 0.88;
 const IMAGE_HEIGHT = SCREEN_HEIGHT * SCREEN_HEIGHT_MODIFIER;
-const COLLAPSED_WIDTH = SCREEN_WIDTH - 24;
+const COLLAPSED_WIDTH = SCREEN_WIDTH - 12;
 const EXPANDED_WIDTH = SCREEN_WIDTH;
 export function HeadshotCarousel({
   headshotUrls,
@@ -94,12 +94,12 @@ export function HeadshotCarousel({
     // Fade out controls when sheet expands
     const opacity = interpolate(animatedIndex.value, [0, 1], [1, 0], Extrapolate.CLAMP);
 
-    const IMAGE_BOTTOM = insets.top + 48 + IMAGE_HEIGHT;
+    const IMAGE_BOTTOM = insets.top + IMAGE_HEIGHT;
     // Animate position to follow carousel bottom edge
     const top = interpolate(
       animatedIndex.value,
       [0, 1],
-      [IMAGE_BOTTOM - 24, IMAGE_BOTTOM],
+      [IMAGE_BOTTOM - 72, IMAGE_BOTTOM],
       Extrapolate.CLAMP
     );
 
@@ -121,7 +121,7 @@ export function HeadshotCarousel({
             // Create animated style for each image
             const cardStyle = useAnimatedStyle(() => {
               const index = animatedIndex?.value || 0;
-              const borderRadius = interpolate(index, [0, 1], [40, 0], Extrapolate.CLAMP);
+              const borderRadius = interpolate(index, [0, 1], [25, 0], Extrapolate.CLAMP);
               const width = animatedWidth.value;
               const height = animatedHeight.value;
 
@@ -166,9 +166,8 @@ export function HeadshotCarousel({
               {headshotUrls.map((_, index) => (
                 <View
                   key={index}
-                  className={`h-2 w-2 rounded-full ${
-                    index === currentIndex ? 'bg-white' : 'bg-white/30'
-                  }`}
+                  className={`h-2 w-2 rounded-full ${index === currentIndex ? 'bg-white' : 'bg-white/30'
+                    }`}
                 />
               ))}
             </View>

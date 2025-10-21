@@ -119,7 +119,7 @@ export default function AppLayout() {
         <Stack.Screen
           name="dancers/[id]"
           options={{
-            animation: 'default',
+            animation: 'fade',
           }}
         />
         <Stack.Screen
