@@ -1,18 +1,112 @@
  # Convex guidelines
 ## Function guidelines
-### New function syntax
-- ALWAYS use the new function syntax for Convex functions. For example:
+### CRITICAL: ALWAYS Use Zodvex Wrappers from util.ts
+- **NEVER import `query`, `mutation`, or `action` directly from `./_generated/server`**
+- **ALWAYS use the zodvex wrappers from `convex/util.ts`** - they provide Zod schema validation and type safety
+
+#### For Authenticated Functions:
+- Use `authQuery` for authenticated queries
+- Use `authMutation` for authenticated mutations
+- Use `authAction` for authenticated actions
+- These automatically provide `ctx.user` with the authenticated user
+- **Returns field is OPTIONAL**:
+  - Omit `returns` for most cases - TypeScript infers return types automatically
+  - Only use `returns` when you need to validate output data (e.g., complex data merges, external API responses)
+  - When used, `returns` MUST be a **Zod schema** (pull from reusable schemas in `convex/schemas/`)
+  - NEVER use Convex validators (`v.*`) in the `returns` field with zodvex wrappers
+- Example without returns (most common):
 ```typescript
-import { query } from "./_generated/server";
+import { authQuery } from "./util";
 import { v } from "convex/values";
-export const f = query({
+
+export const getMyData = authQuery({
     args: {},
-    returns: v.null(),
     handler: async (ctx, args) => {
-    // Function body
+        // ctx.user is automatically available and authenticated
+        const userId = ctx.user._id;
+        // Return value type is inferred automatically
+        return { userId, name: "example" };
     },
 });
 ```
+- Example with returns (when validating complex output):
+```typescript
+import { authQuery } from "./util";
+import { v } from "convex/values";
+import { z } from "zod";
+import { zProjects } from "./schemas/projects";
+
+export const getComplexData = authQuery({
+    args: {},
+    returns: z.array(zProjects), // Use Zod schema from reusable schemas
+    handler: async (ctx, args) => {
+        // Fetch data from external API or complex merge
+        const externalData = await fetchExternalAPI();
+        // Returns will be validated against the Zod schema
+        return externalData;
+    },
+});
+```
+
+#### For Unauthenticated/Public Functions:
+- Use `zq` (zodvex query) for public queries
+- Use `zm` (zodvex mutation) for public mutations
+- Use `za` (zodvex action) for public actions
+- These provide Zod schema validation without authentication
+- **Returns field is OPTIONAL** (same rules as authenticated functions):
+  - Omit `returns` for most cases - TypeScript infers return types automatically
+  - Only use `returns` when you need to validate output data
+  - When used, `returns` MUST be a **Zod schema** (not Convex validators)
+- Example:
+```typescript
+import { zq } from "./util";
+import { v } from "convex/values";
+
+export const getPublicData = zq({
+    args: {},
+    handler: async (ctx, args) => {
+        // Public query - no authentication required
+        // Return value type is inferred automatically
+        return { data: "example" };
+    },
+});
+```
+
+#### For Internal Functions:
+- Use `ziq` (zodvex internal query) for internal queries
+- Use `zim` (zodvex internal mutation) for internal mutations
+- Use `zia` (zodvex internal action) for internal actions
+- **Returns field is OPTIONAL** (same rules as authenticated functions):
+  - Omit `returns` for most cases - TypeScript infers return types automatically
+  - Only use `returns` when you need to validate output data
+  - When used, `returns` MUST be a **Zod schema** (not Convex validators)
+- Example:
+```typescript
+import { zim } from "./util";
+import { v } from "convex/values";
+
+export const internalUpdate = zim({
+    args: { userId: v.id("users") },
+    handler: async (ctx, args) => {
+        // Internal mutation - only callable from other Convex functions
+        // Return value type is inferred automatically
+        return null;
+    },
+});
+```
+
+### Function Syntax Summary
+| Use Case | Import | Example |
+|----------|--------|---------|
+| Authenticated query | `authQuery` | `authQuery({ ... })` |
+| Authenticated mutation | `authMutation` | `authMutation({ ... })` |
+| Authenticated action | `authAction` | `authAction({ ... })` |
+| Public query | `zq` | `zq({ ... })` |
+| Public mutation | `zm` | `zm({ ... })` |
+| Public action | `za` | `za({ ... })` |
+| Internal query | `ziq` | `ziq({ ... })` |
+| Internal mutation | `zim` | `zim({ ... })` |
+| Internal action | `zia` | `zia({ ... })` |
 
 ### Http endpoint syntax
 - HTTP endpoints are defined in `convex/http.ts` and require an `httpAction` decorator. For example:

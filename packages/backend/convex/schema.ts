@@ -6,6 +6,7 @@ import { FeaturedMembers } from './schemas/featuredMembers'
 import { Agencies } from './schemas/agencies'
 import { Projects } from './schemas/projects'
 import { Training } from './schemas/training'
+import { Highlights } from './schemas/highlights'
 import { typedV } from 'convex-helpers/validators'
 
 const schema = defineSchema(
@@ -39,6 +40,12 @@ const schema = defineSchema(
     training: Training.table
       .index('by_userId', ['userId'])
       .index('by_profileId', ['profileId']),
+
+    // highlights (career highlights for profiles)
+    highlights: Highlights.table
+      .index('by_userId', ['userId'])
+      .index('by_profileId', ['profileId'])
+      .index('by_position', ['position']),
 
     // agency
     agencies: Agencies.table.searchIndex('search_name', { searchField: 'name' })

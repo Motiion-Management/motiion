@@ -27,6 +27,7 @@ import type * as dancers from "../dancers.js";
 import type * as dev_resumeTest from "../dev/resumeTest.js";
 import type * as featuredMembers from "../featuredMembers.js";
 import type * as files from "../files.js";
+import type * as highlights from "../highlights.js";
 import type * as http from "../http.js";
 import type * as onboarding from "../onboarding.js";
 import type * as onboardingConfig from "../onboardingConfig.js";
@@ -51,6 +52,7 @@ import type * as schemas_fields_representation from "../schemas/fields/represent
 import type * as schemas_fields_sagAftraId from "../schemas/fields/sagAftraId.js";
 import type * as schemas_fields_sizing from "../schemas/fields/sizing.js";
 import type * as schemas_fields_workLocation from "../schemas/fields/workLocation.js";
+import type * as schemas_highlights from "../schemas/highlights.js";
 import type * as schemas_projects from "../schemas/projects.js";
 import type * as schemas_sizing from "../schemas/sizing.js";
 import type * as schemas_training from "../schemas/training.js";
@@ -85,6 +87,7 @@ declare const fullApi: ApiFromModules<{
   "dev/resumeTest": typeof dev_resumeTest;
   featuredMembers: typeof featuredMembers;
   files: typeof files;
+  highlights: typeof highlights;
   http: typeof http;
   onboarding: typeof onboarding;
   onboardingConfig: typeof onboardingConfig;
@@ -109,6 +112,7 @@ declare const fullApi: ApiFromModules<{
   "schemas/fields/sagAftraId": typeof schemas_fields_sagAftraId;
   "schemas/fields/sizing": typeof schemas_fields_sizing;
   "schemas/fields/workLocation": typeof schemas_fields_workLocation;
+  "schemas/highlights": typeof schemas_highlights;
   "schemas/projects": typeof schemas_projects;
   "schemas/sizing": typeof schemas_sizing;
   "schemas/training": typeof schemas_training;
