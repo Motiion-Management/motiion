@@ -90,7 +90,7 @@ export function ProfessionalExperienceSection() {
         <Text variant="header4" className="text-text-default">
           Professional Experience
         </Text>
-        <ArrowUpToLine className="text-text-default" />
+        <ArrowUpToLine className="text-text-default" size={20} />
       </View>
 
       {/* Pill Tabs */}

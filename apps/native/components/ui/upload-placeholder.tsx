@@ -1,18 +1,18 @@
-import { ComponentType, ReactNode } from 'react'
-import { Pressable, View } from 'react-native'
+import { ComponentType, ReactNode } from 'react';
+import { Pressable, View } from 'react-native';
 
-import ImageIcon from '~/lib/icons/Image'
-import PlusIcon from '~/lib/icons/Plus'
-import { cn } from '~/lib/utils'
+import ImageIcon from '~/lib/icons/Image';
+import PlusIcon from '~/lib/icons/Plus';
+import { cn } from '~/lib/utils';
 
 interface UploadPlaceholderProps {
-  onPress: () => void
-  className?: string
-  disabled?: boolean
-  isActive?: boolean
-  height?: number
-  icon?: ComponentType<{ size: number; className?: string }>
-  customContent?: ReactNode
+  onPress: () => void;
+  className?: string;
+  disabled?: boolean;
+  isActive?: boolean;
+  height?: number;
+  icon?: ComponentType<{ size: number; className?: string }>;
+  customContent?: ReactNode;
 }
 
 export function UploadPlaceholder({
@@ -24,14 +24,14 @@ export function UploadPlaceholder({
   icon,
   customContent,
 }: UploadPlaceholderProps) {
-  const IconComponent = icon ?? (isActive ? PlusIcon : ImageIcon)
+  const IconComponent = icon ?? (isActive ? PlusIcon : ImageIcon);
 
   return (
     <Pressable
       onPress={onPress}
       disabled={disabled}
       className={cn(
-        'rounded border border-dashed',
+        'rounded border',
         'flex items-center justify-center',
         'w-full',
         isActive
@@ -50,5 +50,5 @@ export function UploadPlaceholder({
         </View>
       )}
     </Pressable>
-  )
+  );
 }

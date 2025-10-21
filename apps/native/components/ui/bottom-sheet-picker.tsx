@@ -88,14 +88,14 @@ export function BottomSheetPicker<T = any>({
         stackBehavior="push"
         onIsOpenedChange={(isOpen) => {
           if (!isOpen) {
-            sheetState.close()
+            sheetState.close();
           }
         }}>
         <View className="px-4">
           <View className="mb-6 overflow-hidden rounded-lg border border-border-low">
             <View className="relative h-[178px]">
               {/* Highlight region */}
-              <View className="absolute left-0 right-0 top-1/2 h-14 -translate-y-1/2 border-b border-t border-border-accent bg-surface-high" />
+              <View className="absolute left-0 right-0 top-1/2 h-14 -translate-y-1/2 border-b border-t border-border-accent bg-surface-accent" />
 
               {/* Picker */}
               <View className="h-full items-center justify-center">

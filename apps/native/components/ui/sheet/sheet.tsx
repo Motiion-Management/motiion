@@ -43,7 +43,7 @@ const BottomSheetBackground = ({ style, className }: BottomSheetBackgroundProps)
     <View
       style={style}
       className={cn('overflow-hidden rounded-t-xl bg-surface-overlay', className)}>
-      <BlurView intensity={30} className="flex-1" />
+      <BlurView intensity={35} className="flex-1" />
     </View>
   );
 };
@@ -109,7 +109,7 @@ const SheetContent = forwardRef<SheetRef, SheetProps>(
           disappearsOnIndex={-1}
           appearsOnIndex={0}
           pressBehavior="close"
-          opacity={0.05}
+          opacity={0.6}
         />
       ),
       []

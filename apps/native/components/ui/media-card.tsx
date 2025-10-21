@@ -1,21 +1,21 @@
-import { ReactNode } from 'react'
-import { View } from 'react-native'
-import Sortable from 'react-native-sortables'
-import { LinearGradient } from 'expo-linear-gradient'
+import { ReactNode } from 'react';
+import { View } from 'react-native';
+import Sortable from 'react-native-sortables';
+import { LinearGradient } from 'expo-linear-gradient';
 
-import XIcon from '~/lib/icons/X'
-import { cn } from '~/lib/utils'
-import { Text } from './text'
+import XIcon from '~/lib/icons/X';
+import { cn } from '~/lib/utils';
+import { Text } from './text';
 
 interface MediaCardProps {
-  children: ReactNode
-  onRemove?: () => void
-  className?: string
-  removable?: boolean
+  children: ReactNode;
+  onRemove?: () => void;
+  className?: string;
+  removable?: boolean;
   // Overlay text options
-  title?: string
-  subtitle?: string
-  overlayGradient?: boolean
+  title?: string;
+  subtitle?: string;
+  overlayGradient?: boolean;
 }
 
 export function MediaCard({
@@ -27,7 +27,7 @@ export function MediaCard({
   subtitle,
   overlayGradient = true,
 }: MediaCardProps) {
-  const hasOverlay = title || subtitle
+  const hasOverlay = title || subtitle;
 
   return (
     <View className={cn('relative w-full', className)}>
@@ -46,7 +46,7 @@ export function MediaCard({
       {hasOverlay && (
         <View className="absolute bottom-0 left-0 right-0 gap-1 p-4">
           {subtitle && (
-            <Text variant="label" className="text-text-low uppercase">
+            <Text variant="label" className="uppercase text-text-low">
               {subtitle}
             </Text>
           )}
@@ -67,5 +67,5 @@ export function MediaCard({
         </View>
       )}
     </View>
-  )
+  );
 }
