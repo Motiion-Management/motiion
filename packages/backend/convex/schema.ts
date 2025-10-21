@@ -43,7 +43,6 @@ const schema = defineSchema(
 
     // highlights (career highlights for profiles)
     highlights: Highlights.table
-      .index('by_userId', ['userId'])
       .index('by_profileId', ['profileId'])
       .index('by_position', ['position']),
 

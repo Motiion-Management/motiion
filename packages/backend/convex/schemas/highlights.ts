@@ -6,9 +6,8 @@ import { Doc } from '../_generated/dataModel'
 // Highlights schema - career highlights for dancer/choreographer profiles
 // Each highlight references a project and has a custom cover photo
 export const highlights = {
-  // Owner references
-  userId: zid('users'),
-  profileId: zid('dancers'), // Currently dancers only, can extend to choreographers later
+  // Owner reference - belongs to a profile (dancer or choreographer)
+  profileId: zid('dancers'), // Currently dancers only, can extend to union type for choreographers later
 
   // Highlight data
   projectId: zid('projects'), // Reference to the project this highlights
@@ -29,7 +28,6 @@ export type HighlightDoc = Doc<'highlights'>
 
 // Helper type for creating a new highlight
 export const zCreateHighlightInput = zHighlights.omit({
-  userId: true,
   createdAt: true
 })
 

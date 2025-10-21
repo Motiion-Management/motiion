@@ -5,7 +5,8 @@ import { z } from 'zod'
 const MAX_HIGHLIGHTS = 10
 
 /**
- * Get current user's highlights with project data
+ * Get highlights for the current user's active dancer profile with project data.
+ * Highlights are profile-based (dancers.highlights or choreographers.highlights).
  */
 export const getMyHighlights = authQuery({
   args: {},
@@ -57,7 +58,8 @@ export const getMyHighlights = authQuery({
 })
 
 /**
- * Add a new highlight
+ * Add a new highlight to a profile.
+ * Validates that the profile belongs to the user and the project belongs to the profile.
  */
 export const addHighlight = authMutation({
   args: {
@@ -68,16 +70,16 @@ export const addHighlight = authMutation({
   handler: async (ctx, args) => {
     const user = ctx.user
 
-    // Verify profile belongs to user
+    // Verify profile exists and belongs to user
     const profile = await ctx.db.get(args.profileId)
     if (!profile || profile.userId !== user._id) {
       throw new ConvexError('Profile not found or unauthorized')
     }
 
-    // Verify project belongs to user
+    // Verify project exists and belongs to the profile
     const project = await ctx.db.get(args.projectId)
-    if (!project || project.userId !== user._id) {
-      throw new ConvexError('Project not found or unauthorized')
+    if (!project || project.profileId !== args.profileId) {
+      throw new ConvexError('Project not found or does not belong to this profile')
     }
 
     // Check max highlights limit
@@ -100,7 +102,6 @@ export const addHighlight = authMutation({
 
     // Create highlight
     const highlightId = await ctx.db.insert('highlights', {
-      userId: user._id,
       profileId: args.profileId,
       projectId: args.projectId,
       imageId: args.imageId,
@@ -113,7 +114,8 @@ export const addHighlight = authMutation({
 })
 
 /**
- * Remove a highlight
+ * Remove a highlight from a profile.
+ * Validates that the highlight's profile belongs to the user.
  */
 export const removeHighlight = authMutation({
   args: {
@@ -122,10 +124,15 @@ export const removeHighlight = authMutation({
   handler: async (ctx, args) => {
     const user = ctx.user
 
-    // Verify highlight belongs to user
+    // Verify highlight exists and belongs to one of user's profiles
     const highlight = await ctx.db.get(args.highlightId)
-    if (!highlight || highlight.userId !== user._id) {
-      throw new ConvexError('Highlight not found or unauthorized')
+    if (!highlight) {
+      throw new ConvexError('Highlight not found')
+    }
+
+    const profile = await ctx.db.get(highlight.profileId)
+    if (!profile || profile.userId !== user._id) {
+      throw new ConvexError('Unauthorized - highlight does not belong to your profile')
     }
 
     // Delete the highlight
@@ -151,7 +158,8 @@ export const removeHighlight = authMutation({
 })
 
 /**
- * Reorder highlights after drag and drop
+ * Reorder highlights for a profile after drag and drop.
+ * Validates that the profile belongs to the user.
  */
 export const reorderHighlights = authMutation({
   args: {
