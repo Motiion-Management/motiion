@@ -315,9 +315,23 @@ export function zodObjectToFormFields(
   // Get shape safely
   const shape = getObjectShape(schema);
   if (!shape) {
-    console.warn('Could not extract shape from schema');
+    console.warn('[zodObjectToFormFields] Could not extract shape from schema', {
+      typeName: getTypeName(schema),
+      instanceOfZodObject: schema instanceof z.ZodObject,
+      hasShape: 'shape' in schema,
+      parentName,
+      depth,
+    });
     return [];
   }
+
+  console.log('[zodObjectToFormFields] Extracted shape', {
+    typeName: getTypeName(schema),
+    fieldCount: Object.keys(shape).length,
+    fieldNames: Object.keys(shape),
+    parentName,
+    depth,
+  });
 
   const fields: FormFieldConfig[] = [];
 
@@ -395,11 +409,28 @@ export function convexSchemaToFormConfig(
       return [];
     }
 
-    const typeName = getTypeName(schema);
+    const originalTypeName = getTypeName(schema);
 
-    // Handle object schemas
-    if (typeName === 'ZodObject') {
-      let fields = zodObjectToFormFields(schema);
+    // Unwrap any wrapper schemas (passthrough, branded, etc.) to get the base type
+    const unwrapped = unwrapAll(schema);
+    const unwrappedTypeName = getTypeName(unwrapped);
+
+    // Debug logging to trace schema processing
+    console.log('[convexSchemaToFormConfig]', {
+      originalTypeName,
+      unwrappedTypeName,
+      hasShape: 'shape' in unwrapped,
+      instanceOfZodObject: unwrapped instanceof z.ZodObject,
+    });
+
+    // Handle object schemas - check unwrapped schema
+    if (unwrappedTypeName === 'ZodObject' || unwrapped instanceof z.ZodObject) {
+      let fields = zodObjectToFormFields(unwrapped);
+
+      console.log('[convexSchemaToFormConfig] Extracted fields:', {
+        count: fields.length,
+        fieldNames: fields.map(f => f.name),
+      });
 
       // Apply include/exclude filters
       if (options?.include) {
@@ -408,6 +439,13 @@ export function convexSchemaToFormConfig(
       if (options?.exclude) {
         fields = fields.filter((f) => !options.exclude!.includes(f.name));
       }
+
+      console.log('[convexSchemaToFormConfig] After filters:', {
+        count: fields.length,
+        fieldNames: fields.map(f => f.name),
+        include: options?.include,
+        exclude: options?.exclude,
+      });
 
       // Apply overrides
       if (options?.overrides) {

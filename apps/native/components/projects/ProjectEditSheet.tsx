@@ -175,14 +175,6 @@ export function ProjectEditSheet({
   // Render scene for each tab
   const renderScene = useCallback(
     (route: TabRoute) => {
-      console.log('[ProjectEditSheet] renderScene called', {
-        routeKey: route.key,
-        selectedType,
-        hasUiSchema: !!uiSchema,
-        hasMetadata: !!metadata,
-        hasForm: !!sharedForm,
-      })
-
       if (!selectedType) {
         // Show initial type selection
         return (
@@ -243,13 +235,6 @@ export function ProjectEditSheet({
     : !selectedType
 
   const title = selectedProject?._id ? 'Edit Project' : 'Add Project'
-
-  console.log('[ProjectEditSheet] Render', {
-    hasSelectedProject: !!selectedProject,
-    selectedType,
-    currentTab,
-    projectId: selectedProject?._id,
-  })
 
   return (
     <Sheet
