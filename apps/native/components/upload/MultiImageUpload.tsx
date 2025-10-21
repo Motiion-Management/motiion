@@ -8,7 +8,7 @@ import * as ImagePicker from 'expo-image-picker'
 import * as ImageManipulator from 'expo-image-manipulator'
 
 import { ImagePreview } from './ImagePreview'
-import { UploadPlaceholder } from './UploadPlaceholder'
+import { UploadPlaceholder } from '../ui/upload-placeholder'
 import { ActivityIndicator } from '../ui/activity-indicator'
 import { Text } from '../ui/text'
 

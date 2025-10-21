@@ -1,7 +1,7 @@
 import { View } from 'react-native'
 import { Image } from 'expo-image'
 
-import { MediaCard } from './MediaCard'
+import { MediaCard } from '../ui/media-card'
 
 interface ImagePreviewProps {
   imageUrl: string
