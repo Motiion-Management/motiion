@@ -1,87 +1,44 @@
 import React, { useState } from 'react';
-import { View, TouchableOpacity, ScrollView } from 'react-native';
+import { View } from 'react-native';
+import { useQuery } from 'convex/react';
 
 import { Text } from '~/components/ui/text';
 import ArrowUpToLine from '~/lib/icons/ArrowUpToLine';
-import { ExperienceListItem, type ExperienceItem } from './ExperienceListItem';
+import { ListItem } from '~/components/ui/list-item';
+import { TabbedView } from '~/components/ui/tabs/TabbedView';
+import { ProjectEditSheet } from '~/components/projects/ProjectEditSheet';
+import { api } from '@packages/backend/convex/_generated/api';
+import { type Id } from '@packages/backend/convex/_generated/dataModel';
 
-type ExperienceType = 'tv-film' | 'music-video' | 'live-performance';
-
-interface PillTabProps {
-  title: string;
-  active: boolean;
-  onPress: () => void;
-}
-
-function PillTab({ title, active, onPress }: PillTabProps) {
-  return (
-    <TouchableOpacity
-      onPress={onPress}
-      activeOpacity={0.7}
-      className={`rounded-[27px] px-4 py-1.5 ${
-        active ? 'bg-background-accent' : 'bg-surface-tint'
-      }`}>
-      <Text variant="bodySm" className="text-text-default">
-        {title}
-      </Text>
-    </TouchableOpacity>
-  );
-}
-
-// Mock data - replace with real data from backend
-const MOCK_EXPERIENCES: Record<ExperienceType, ExperienceItem[]> = {
-  'tv-film': [
-    {
-      id: '1',
-      studio: 'Netflix',
-      title: 'A Nonsense Christmas',
-    },
-    {
-      id: '2',
-      studio: 'Studio',
-      title: 'Project Title',
-    },
-    {
-      id: '3',
-      studio: 'Studio',
-      title: 'Project Title',
-    },
-    {
-      id: '4',
-      studio: 'Studio',
-      title: 'Project Title',
-    },
-  ],
-  'music-video': [
-    {
-      id: '5',
-      studio: 'Record Label',
-      title: 'Music Video Title',
-    },
-    {
-      id: '6',
-      studio: 'Record Label',
-      title: 'Music Video Title',
-    },
-  ],
-  'live-performance': [
-    {
-      id: '7',
-      studio: 'Venue',
-      title: 'Performance Title',
-    },
-    {
-      id: '8',
-      studio: 'Venue',
-      title: 'Performance Title',
-    },
-  ],
+// Map display tab names to project types
+const TAB_TO_TYPE_MAP: Record<string, string> = {
+  'Television/Film': 'tv-film',
+  'Music Videos': 'music-video',
+  'Live/Stage Performance': 'live-performance',
 };
 
-export function ProfessionalExperienceSection() {
-  const [activeTab, setActiveTab] = useState<ExperienceType>('tv-film');
+const TABS = ['Television/Film', 'Music Videos', 'Live/Stage Performance'];
 
-  const experiences = MOCK_EXPERIENCES[activeTab] || [];
+export function ProfessionalExperienceSection() {
+  const [isSheetOpen, setIsSheetOpen] = useState(false);
+  const [selectedProjectId, setSelectedProjectId] = useState<Id<'projects'> | undefined>(undefined);
+
+  // Fetch real projects from Convex
+  const myProjects = useQuery(api.projects.getMyProjects, {});
+
+  // Group projects by type for each tab
+  const getExperiencesForTab = (tabName: string) => {
+    if (!Array.isArray(myProjects)) return [];
+
+    const projectType = TAB_TO_TYPE_MAP[tabName];
+    return myProjects
+      .filter((project: any) => project.type === projectType)
+      .map((project: any) => ({
+        id: project._id,
+        organizer: project.production || project.venue || 'Unknown',
+        title: project.title || 'Untitled',
+      }));
+  };
 
   return (
     <View className="gap-6">
@@ -93,42 +50,41 @@ export function ProfessionalExperienceSection() {
         <ArrowUpToLine className="text-text-default" size={20} />
       </View>
 
-      {/* Pill Tabs */}
-      <ScrollView
-        horizontal
-        showsHorizontalScrollIndicator={false}
-        contentContainerClassName="gap-2">
-        <PillTab
-          title="Television/Film"
-          active={activeTab === 'tv-film'}
-          onPress={() => setActiveTab('tv-film')}
-        />
-        <PillTab
-          title="Music Videos"
-          active={activeTab === 'music-video'}
-          onPress={() => setActiveTab('music-video')}
-        />
-        <PillTab
-          title="Live/Stage Performance"
-          active={activeTab === 'live-performance'}
-          onPress={() => setActiveTab('live-performance')}
-        />
-      </ScrollView>
+      {/* Tabbed Content */}
+      <TabbedView tabs={TABS}>
+        {(activeTab) => {
+          const experiences = getExperiencesForTab(activeTab);
 
-      {/* Experience List */}
-      <View className="gap-0 py-2">
-        {experiences.map((item, index) => (
-          <ExperienceListItem
-            key={item.id}
-            item={item}
-            showDivider={index < experiences.length - 1}
-            onPress={() => {
-              // TODO: Navigate to project detail page
-              console.log('View project:', item.id);
-            }}
-          />
-        ))}
-      </View>
+          return (
+            <View className="gap-4 py-2">
+              {experiences.map((item) => (
+                <ListItem
+                  key={item.id}
+                  variant="Experience"
+                  organizer={item.organizer}
+                  title={item.title}
+                  onPress={() => {
+                    setSelectedProjectId(item.id as Id<'projects'>);
+                    setIsSheetOpen(true);
+                  }}
+                />
+              ))}
+            </View>
+          );
+        }}
+      </TabbedView>
+
+      {/* Project Edit Sheet */}
+      <ProjectEditSheet
+        isOpen={isSheetOpen}
+        onOpenChange={(open) => {
+          setIsSheetOpen(open);
+          if (!open) {
+            setSelectedProjectId(undefined);
+          }
+        }}
+        projectId={selectedProjectId}
+      />
     </View>
   );
 }
