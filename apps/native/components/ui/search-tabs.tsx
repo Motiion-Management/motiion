@@ -37,7 +37,7 @@ export function SearchTabs({ tabs, activeTab, onTabChange, className }: SearchTa
       <ScrollView
         horizontal
         showsHorizontalScrollIndicator={false}
-        contentContainerClassName="gap-2 px-4"
+        contentContainerClassName="gap-2"
         className="flex-row">
         {tabs.map((tab) => {
           return (

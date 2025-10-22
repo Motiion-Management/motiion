@@ -305,15 +305,17 @@ export default function AboutScreen() {
         left: 'back',
         middle: 'About',
       }}>
-      <TabbedView tabs={tabs} className="flex-1" contentClassName="flex-1 pt-6">
-        {(activeTab) => (
-          <ScrollView className="flex-1 px-4" showsVerticalScrollIndicator={false}>
-            {activeTab === 'Profile' && <ProfileFieldList fields={profileFields} />}
-            {activeTab === 'Attributes' && <ProfileFieldList fields={attributeFields} />}
-            {activeTab === 'Work Details' && <ProfileFieldList fields={workDetailsFields} />}
-          </ScrollView>
-        )}
-      </TabbedView>
+      <View className="flex-1 px-4">
+        <TabbedView tabs={tabs} className="flex-1" contentClassName="flex-1 pt-6">
+          {(activeTab) => (
+            <ScrollView className="flex-1" showsVerticalScrollIndicator={false}>
+              {activeTab === 'Profile' && <ProfileFieldList fields={profileFields} />}
+              {activeTab === 'Attributes' && <ProfileFieldList fields={attributeFields} />}
+              {activeTab === 'Work Details' && <ProfileFieldList fields={workDetailsFields} />}
+            </ScrollView>
+          )}
+        </TabbedView>
+      </View>
 
       {/* Edit Sheets */}
       <FieldEditSheet

@@ -3,6 +3,7 @@ import React, { useEffect, useRef } from 'react';
 import { ActivityIndicator, View } from 'react-native';
 import { useAuth } from '@clerk/clerk-expo';
 import { SharedUserProvider } from '~/contexts/SharedUserContext';
+import { SharedTransitionProvider } from '~/contexts/SharedTransitionContext';
 import { BackgroundGradientView } from '~/components/ui/background-gradient-view';
 import DevOnboardingTools from '~/components/dev/DevOnboardingTools';
 import { useOnboardingStatus } from '~/hooks/useOnboardingStatus';
@@ -143,5 +144,9 @@ export default function AppLayout() {
     return content;
   }
 
-  return <SharedUserProvider>{content}</SharedUserProvider>;
+  return (
+    <SharedUserProvider>
+      <SharedTransitionProvider>{content}</SharedTransitionProvider>
+    </SharedUserProvider>
+  );
 }

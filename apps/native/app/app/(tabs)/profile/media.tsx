@@ -15,20 +15,22 @@ export default function MediaScreen() {
         left: 'back',
         middle: 'Media',
       }}>
-      <TabbedView tabs={tabs} className="flex-1" contentClassName="flex-1 pt-6">
-        {(activeTab) => (
-          <ScrollView className="flex-1 px-4" showsVerticalScrollIndicator={false}>
-            {activeTab === 'Headshots' && <MultiImageUpload />}
-            {activeTab === 'Reels' && (
-              <View className="flex-1 items-center justify-center p-8">
-                <Text variant="body" className="text-center text-text-low">
-                  Coming soon
-                </Text>
-              </View>
-            )}
-          </ScrollView>
-        )}
-      </TabbedView>
+      <View className="flex-1 px-4">
+        <TabbedView tabs={tabs} className="flex-1" contentClassName="flex-1 pt-6">
+          {(activeTab) => (
+            <ScrollView className="flex-1" showsVerticalScrollIndicator={false}>
+              {activeTab === 'Headshots' && <MultiImageUpload />}
+              {activeTab === 'Reels' && (
+                <View className="flex-1 items-center justify-center p-8">
+                  <Text variant="body" className="text-center text-text-low">
+                    Coming soon
+                  </Text>
+                </View>
+              )}
+            </ScrollView>
+          )}
+        </TabbedView>
+      </View>
     </TabScreenLayout>
   );
 }
