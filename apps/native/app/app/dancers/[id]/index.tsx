@@ -18,14 +18,19 @@ import { ShareBottomSheet } from '~/components/dancer-profile/share/ShareBottomS
 import { QRCodeDialog } from '~/components/dancer-profile/qr';
 import { Icon } from '~/lib/icons/Icon';
 import { Button } from '~/components/ui/button';
+import { SharedHeadshotTransition } from '~/components/dancer-profile/SharedHeadshotTransition';
+import { useSharedTransition } from '~/contexts/SharedTransitionContext';
 
-function TopBar({ profileUrl }: { onExpandIntent: () => void; profileUrl: string }) {
+function TopBar({
+  profileUrl,
+  onClose,
+}: {
+  onExpandIntent: () => void
+  profileUrl: string
+  onClose: () => void
+}) {
   const handleClose = () => {
-    if (router.canGoBack()) {
-      router.back();
-    } else {
-      router.replace('/');
-    }
+    onClose();
   };
   return (
     <SafeAreaView
@@ -54,9 +59,11 @@ export default function DancerScreen() {
   const [shareSheetVisible, setShareSheetVisible] = useState(false);
   const [shareData, setShareData] = useState<{ imageUri: string; shareUrl: string } | null>(null);
   const [qrModalVisible, setQrModalVisible] = useState(false);
+  const { startExitTransition } = useSharedTransition();
 
   const profileShareCardRef = useRef<View>(null);
   const headshotShareCardRef = useRef<View>(null);
+  const headshotRef = useRef<View>(null);
 
   const {
     bottomSheetRef,
@@ -131,6 +138,15 @@ export default function DancerScreen() {
     }
   };
 
+  const handleClose = () => {
+    // For now, just navigate - we'll enhance with exit transition later
+    if (router.canGoBack()) {
+      router.back();
+    } else {
+      router.replace('/');
+    }
+  };
+
   if (profileData === undefined) {
     return null;
   }
@@ -159,17 +175,24 @@ export default function DancerScreen() {
   const profileUrl = `https://motiion.io/app/dancers/${id}`;
 
   return (
-    <View style={{ flex: 1 }}>
-      <HeadshotCarousel
-        animatedIndex={animatedIndex}
-        headshotUrls={profileData.headshotUrls}
-        initialIndex={0}
-        onClose={snapToDefault}
-        onPress={snapToDefault}
-        onIndexChange={setCurrentHeadshotIndex}
-      />
+    <SharedHeadshotTransition dancerId={id} headshotUrl={currentHeadshotUrl}>
+      <View style={{ flex: 1 }}>
+        <View ref={headshotRef} collapsable={false} style={{ flex: 1 }}>
+        <HeadshotCarousel
+          animatedIndex={animatedIndex}
+          headshotUrls={profileData.headshotUrls}
+          initialIndex={0}
+          onClose={snapToDefault}
+          onPress={snapToDefault}
+          onIndexChange={setCurrentHeadshotIndex}
+        />
+      </View>
 
-      <TopBar onExpandIntent={() => setQrModalVisible(true)} profileUrl={profileUrl} />
+      <TopBar
+        onExpandIntent={() => setQrModalVisible(true)}
+        profileUrl={profileUrl}
+        onClose={handleClose}
+      />
 
       <ProfileSheet
         bottomSheetRef={bottomSheetRef}
@@ -253,6 +276,7 @@ export default function DancerScreen() {
           onClose={() => setShareSheetVisible(false)}
         />
       )}
-    </View>
+      </View>
+    </SharedHeadshotTransition>
   );
 }
