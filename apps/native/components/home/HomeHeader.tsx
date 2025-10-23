@@ -71,32 +71,27 @@ export function HomeHeader({ onNotificationsPress }: HomeHeaderProps) {
     <View className="flex-row items-start justify-between px-4 pb-0">
       <View className="flex-row items-center gap-4">
         {/* Profile Avatar - Link to dancer profile */}
-        {dancerProfileId ? (
-          <Transition.Pressable
-            sharedBoundTag="dancer-avatar"
-            onPress={handleAvatarPress}
-            collapsable={false}>
-            <Avatar
-              alt={profile?.displayName || user?.email || 'User avatar'}
-              className="h-10 w-10">
-              {headshotUrl && (
-                <AvatarImage
-                  source={{ uri: headshotUrl }}
-                  asChild>
-                  <ExpoImage
-                    source={{ uri: headshotUrl }}
-                    style={{ width: '100%', height: '100%' }}
-                    contentFit="cover"
-                    cachePolicy="memory-disk"
-                    transition={0}
-                  />
-                </AvatarImage>
-              )}
-              <AvatarFallback>
-                <Text className="text-sm font-medium text-text-default">{getInitials()}</Text>
-              </AvatarFallback>
-            </Avatar>
-          </Transition.Pressable>
+        {dancerProfileId && headshotUrl ? (
+          <View className="rounded-full border border-border-tint" style={{ width: 40, height: 40 }}>
+            <Transition.Pressable
+              sharedBoundTag="dancer-avatar"
+              onPress={handleAvatarPress}
+              collapsable={false}
+              style={{
+                width: 40,
+                height: 40,
+                borderRadius: 20,
+                overflow: 'hidden',
+              }}>
+              <ExpoImage
+                source={{ uri: headshotUrl }}
+                style={{ width: 40, height: 40 }}
+                contentFit="cover"
+                cachePolicy="memory-disk"
+                transition={0}
+              />
+            </Transition.Pressable>
+          </View>
         ) : (
           <Avatar alt={profile?.displayName || user?.email || 'User avatar'} className="h-10 w-10">
             {headshotUrl && (

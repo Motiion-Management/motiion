@@ -125,7 +125,6 @@ export default function AppLayout() {
           name="dancers/[id]"
           options={{
             ...Transition.presets.SharedIGImage(),
-            animation: 'none', // Let preset handle animation
             gestureEnabled: false, // Disable swipe gestures (page has many gestures)
           }}
         />

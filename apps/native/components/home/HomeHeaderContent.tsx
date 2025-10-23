@@ -59,30 +59,37 @@ export function HomeHeaderLeft(_: TabHeaderSlot) {
       });
     };
 
-    return (
-      <Transition.Pressable
-        sharedBoundTag="dancer-avatar"
-        onPress={handleAvatarPress}
-        collapsable={false}>
-        <Avatar alt={profile?.displayName || user?.email || 'User avatar'} className="h-10 w-10">
-          {headshotUrl && (
-            <AvatarImage
+    if (headshotUrl) {
+      return (
+        <View className="rounded-full border border-border-tint" style={{ width: 40, height: 40 }}>
+          <Transition.Pressable
+            sharedBoundTag="dancer-avatar"
+            onPress={handleAvatarPress}
+            collapsable={false}
+            style={{
+              width: 40,
+              height: 40,
+              borderRadius: 20,
+              overflow: 'hidden',
+            }}>
+            <ExpoImage
               source={{ uri: headshotUrl }}
-              asChild>
-              <ExpoImage
-                source={{ uri: headshotUrl }}
-                style={{ width: '100%', height: '100%' }}
-                contentFit="cover"
-                cachePolicy="memory-disk"
-                transition={0}
-              />
-            </AvatarImage>
-          )}
-          <AvatarFallback>
-            <Text className="text-sm font-medium text-text-default">{getInitials()}</Text>
-          </AvatarFallback>
-        </Avatar>
-      </Transition.Pressable>
+              style={{ width: 40, height: 40 }}
+              contentFit="cover"
+              cachePolicy="memory-disk"
+              transition={0}
+            />
+          </Transition.Pressable>
+        </View>
+      );
+    }
+
+    return (
+      <Avatar alt={profile?.displayName || user?.email || 'User avatar'} className="h-10 w-10">
+        <AvatarFallback>
+          <Text className="text-sm font-medium text-text-default">{getInitials()}</Text>
+        </AvatarFallback>
+      </Avatar>
     );
   }
 

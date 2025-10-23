@@ -13,8 +13,6 @@ import Transition from 'react-native-screen-transitions';
 import { Image as ExpoImage } from 'expo-image';
 
 const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get('window');
-const TransitionAwareImage = Transition.createTransitionAwareComponent(ExpoImage);
-const AnimatedTransitionImage = Animated.createAnimatedComponent(TransitionAwareImage);
 const AnimatedExpoImage = Animated.createAnimatedComponent(ExpoImage);
 
 interface HeadshotCarouselProps {
@@ -134,16 +132,25 @@ export function HeadshotCarousel({
             if (isFirstImage) {
               return (
                 <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-                  <AnimatedTransitionImage
+                  <Transition.Pressable
                     sharedBoundTag="dancer-avatar"
+                    onPress={onPress || (() => {})}
                     collapsable={false}
-                    source={{ uri: item }}
-                    style={imageStyle}
-                    contentFit="cover"
-                    cachePolicy="memory-disk"
-                    transition={0}
-                    priority="high"
-                  />
+                    style={{
+                      width: COLLAPSED_WIDTH,
+                      height: IMAGE_HEIGHT,
+                      borderRadius: 25,
+                      overflow: 'hidden',
+                    }}>
+                    <ExpoImage
+                      source={{ uri: item }}
+                      style={{ width: '100%', height: '100%' }}
+                      contentFit="cover"
+                      cachePolicy="memory-disk"
+                      transition={0}
+                      priority="high"
+                    />
+                  </Transition.Pressable>
                 </View>
               );
             }
