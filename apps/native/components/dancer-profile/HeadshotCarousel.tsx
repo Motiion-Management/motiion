@@ -9,8 +9,13 @@ import Animated, {
   type SharedValue,
 } from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import Transition from 'react-native-screen-transitions';
+import { Image as ExpoImage } from 'expo-image';
 
 const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get('window');
+const TransitionAwareImage = Transition.createTransitionAwareComponent(ExpoImage);
+const AnimatedTransitionImage = Animated.createAnimatedComponent(TransitionAwareImage);
+const AnimatedExpoImage = Animated.createAnimatedComponent(ExpoImage);
 
 interface HeadshotCarouselProps {
   headshotUrls: Array<string>;
@@ -117,32 +122,41 @@ export function HeadshotCarousel({
           data={headshotUrls}
           defaultIndex={initialIndex}
           onSnapToItem={handleIndexChange}
-          renderItem={({ item }) => {
-            // Create animated style for each image
-            const cardStyle = useAnimatedStyle(() => {
-              const index = animatedIndex?.value || 0;
-              const borderRadius = interpolate(index, [0, 1], [25, 0], Extrapolate.CLAMP);
-              const width = animatedWidth.value;
-              const height = animatedHeight.value;
-
-              return {
-                width,
-                height,
-                borderRadius,
-                overflow: 'hidden',
-              };
-            });
+          renderItem={({ item, index }) => {
+            const isFirstImage = index === 0;
 
             const imageStyle = useAnimatedStyle(() => ({
               width: animatedWidth.value,
               height: animatedHeight.value,
+              borderRadius: interpolate(animatedIndex?.value || 0, [0, 1], [25, 0], Extrapolate.CLAMP),
             }));
+
+            if (isFirstImage) {
+              return (
+                <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+                  <AnimatedTransitionImage
+                    sharedBoundTag="dancer-avatar"
+                    collapsable={false}
+                    source={{ uri: item }}
+                    style={imageStyle}
+                    contentFit="cover"
+                    cachePolicy="memory-disk"
+                    transition={0}
+                    priority="high"
+                  />
+                </View>
+              );
+            }
 
             return (
               <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-                <Animated.View style={cardStyle}>
-                  <Animated.Image source={{ uri: item }} style={imageStyle} resizeMode="cover" />
-                </Animated.View>
+                <AnimatedExpoImage
+                  source={{ uri: item }}
+                  style={imageStyle}
+                  contentFit="cover"
+                  cachePolicy="memory-disk"
+                  transition={0}
+                />
               </View>
             );
           }}

@@ -1,13 +1,17 @@
-import { Href, Stack, usePathname, useRouter } from 'expo-router';
+import { Href, usePathname, useRouter, withLayoutContext } from 'expo-router';
 import React, { useEffect, useRef } from 'react';
 import { ActivityIndicator, View } from 'react-native';
 import { useAuth } from '@clerk/clerk-expo';
 import { SharedUserProvider } from '~/contexts/SharedUserContext';
-import { SharedTransitionProvider } from '~/contexts/SharedTransitionContext';
 import { BackgroundGradientView } from '~/components/ui/background-gradient-view';
 import DevOnboardingTools from '~/components/dev/DevOnboardingTools';
 import { useOnboardingStatus } from '~/hooks/useOnboardingStatus';
 import { useInitialOnboardingStatus } from '~/hooks/useInitialOnboardingStatus';
+import Transition, { createNativeStackNavigator } from 'react-native-screen-transitions';
+
+// Create custom Stack with screen-transitions support
+const { Navigator } = createNativeStackNavigator();
+const Stack = withLayoutContext(Navigator);
 
 /**
  * App layout - handles authentication with declarative redirects
@@ -120,7 +124,9 @@ export default function AppLayout() {
         <Stack.Screen
           name="dancers/[id]"
           options={{
-            animation: 'fade',
+            ...Transition.presets.SharedIGImage(),
+            animation: 'none', // Let preset handle animation
+            gestureEnabled: false, // Disable swipe gestures (page has many gestures)
           }}
         />
         <Stack.Screen
@@ -144,9 +150,5 @@ export default function AppLayout() {
     return content;
   }
 
-  return (
-    <SharedUserProvider>
-      <SharedTransitionProvider>{content}</SharedTransitionProvider>
-    </SharedUserProvider>
-  );
+  return <SharedUserProvider>{content}</SharedUserProvider>;
 }

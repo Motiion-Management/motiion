@@ -1,11 +1,13 @@
-import React, { useState, useRef } from 'react';
-import { View, Image, Share } from 'react-native';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
+import { View, Share } from 'react-native';
 import Animated from 'react-native-reanimated';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useLocalSearchParams, router, Redirect } from 'expo-router';
 import { useQuery } from 'convex/react';
 import { captureRef } from 'react-native-view-shot';
 import * as DropdownMenu from 'zeego/dropdown-menu';
+import Transition from 'react-native-screen-transitions';
+import { Image as ExpoImage } from 'expo-image';
 import { api } from '@packages/backend/convex/_generated/api';
 import { type Id } from '@packages/backend/convex/_generated/dataModel';
 import { ProjectCarousel } from '~/components/dancer-profile/ProjectCarousel';
@@ -18,19 +20,14 @@ import { ShareBottomSheet } from '~/components/dancer-profile/share/ShareBottomS
 import { QRCodeDialog } from '~/components/dancer-profile/qr';
 import { Icon } from '~/lib/icons/Icon';
 import { Button } from '~/components/ui/button';
-import { SharedHeadshotTransition } from '~/components/dancer-profile/SharedHeadshotTransition';
-import { useSharedTransition } from '~/contexts/SharedTransitionContext';
 
-function TopBar({
-  profileUrl,
-  onClose,
-}: {
-  onExpandIntent: () => void
-  profileUrl: string
-  onClose: () => void
-}) {
+function TopBar({ profileUrl }: { profileUrl: string }) {
   const handleClose = () => {
-    onClose();
+    if (router.canGoBack()) {
+      router.back();
+    } else {
+      router.replace('/');
+    }
   };
   return (
     <SafeAreaView
@@ -53,17 +50,20 @@ function TopBar({
 }
 
 export default function DancerScreen() {
-  const { id } = useLocalSearchParams<{ id: string }>();
-  const [headshotLoaded, setHeadshotLoaded] = useState(false);
+  const { id, headshot: initialHeadshotParam } = useLocalSearchParams<{
+    id: string
+    headshot?: string
+  }>();
+  const initialHeadshotUrl =
+    typeof initialHeadshotParam === 'string' && initialHeadshotParam.length > 0
+      ? initialHeadshotParam
+      : undefined;
   const [currentHeadshotIndex, setCurrentHeadshotIndex] = useState(0);
   const [shareSheetVisible, setShareSheetVisible] = useState(false);
   const [shareData, setShareData] = useState<{ imageUri: string; shareUrl: string } | null>(null);
-  const [qrModalVisible, setQrModalVisible] = useState(false);
-  const { startExitTransition } = useSharedTransition();
 
   const profileShareCardRef = useRef<View>(null);
   const headshotShareCardRef = useRef<View>(null);
-  const headshotRef = useRef<View>(null);
 
   const {
     bottomSheetRef,
@@ -72,15 +72,45 @@ export default function DancerScreen() {
     headerHeight,
     setHeaderHeight,
     snapToDefault,
-    snapToExpanded,
     toggle,
     animations,
   } = useProfileSheet();
+
+  useEffect(() => {
+    if (initialHeadshotUrl) {
+      ExpoImage.prefetch(initialHeadshotUrl).catch(() => {
+        // Ignore cache failures; we'll fall back to runtime loading.
+      });
+    }
+  }, [initialHeadshotUrl]);
 
   const profileData = useQuery(
     api.dancers.getDancerProfileWithDetails,
     id ? { dancerId: id as Id<'dancers'> } : 'skip'
   );
+
+  useEffect(() => {
+    if (!profileData?.headshotUrls?.length) return;
+
+    profileData.headshotUrls.forEach((url) => {
+      ExpoImage.prefetch(url).catch(() => {
+        // Ignore cache failures; runtime loading will still work.
+      });
+    });
+  }, [profileData?.headshotUrls]);
+
+  const headshotUrls = useMemo(() => {
+    if (profileData?.headshotUrls?.length) {
+      return profileData.headshotUrls;
+    }
+    return initialHeadshotUrl ? [initialHeadshotUrl] : [];
+  }, [profileData?.headshotUrls, initialHeadshotUrl]);
+
+  useEffect(() => {
+    if (currentHeadshotIndex >= headshotUrls.length && headshotUrls.length > 0) {
+      setCurrentHeadshotIndex(0);
+    }
+  }, [currentHeadshotIndex, headshotUrls.length]);
 
   const handleShareProfile = async () => {
     if (!id || !profileData || !profileShareCardRef.current) return;
@@ -138,134 +168,111 @@ export default function DancerScreen() {
     }
   };
 
-  const handleClose = () => {
-    // For now, just navigate - we'll enhance with exit transition later
-    if (router.canGoBack()) {
-      router.back();
-    } else {
-      router.replace('/');
-    }
-  };
-
-  if (profileData === undefined) {
-    return null;
-  }
-
   if (profileData === null) {
     return <Redirect href="/app/home" />;
   }
 
-  if (profileData.headshotUrls.length === 0) {
-    return null;
-  }
-
-  if (!headshotLoaded) {
-    return (
-      <View style={{ flex: 1 }}>
-        <Image
-          source={{ uri: profileData.headshotUrls[0] }}
-          onLoad={() => setHeadshotLoaded(true)}
-          style={{ width: 0, height: 0 }}
-        />
-      </View>
-    );
-  }
-
-  const currentHeadshotUrl = profileData.headshotUrls[currentHeadshotIndex];
+  const currentHeadshotUrl = headshotUrls[currentHeadshotIndex];
   const profileUrl = `https://motiion.io/app/dancers/${id}`;
+  const profileReady = Boolean(profileData && profileData.headshotUrls.length > 0);
 
   return (
-    <SharedHeadshotTransition dancerId={id} headshotUrl={currentHeadshotUrl}>
-      <View style={{ flex: 1 }}>
-        <View ref={headshotRef} collapsable={false} style={{ flex: 1 }}>
-        <HeadshotCarousel
-          animatedIndex={animatedIndex}
-          headshotUrls={profileData.headshotUrls}
-          initialIndex={0}
-          onClose={snapToDefault}
-          onPress={snapToDefault}
-          onIndexChange={setCurrentHeadshotIndex}
-        />
-      </View>
+    <View style={{ flex: 1 }}>
+      <Transition.MaskedView style={{ flex: 1 }}>
+        {headshotUrls.length > 0 ? (
+          <HeadshotCarousel
+            animatedIndex={animatedIndex}
+            headshotUrls={headshotUrls}
+            initialIndex={Math.min(currentHeadshotIndex, headshotUrls.length - 1)}
+            onClose={snapToDefault}
+            onPress={snapToDefault}
+            onIndexChange={setCurrentHeadshotIndex}
+          />
+        ) : (
+          <View style={{ flex: 1, backgroundColor: 'black' }} />
+        )}
 
-      <TopBar
-        onExpandIntent={() => setQrModalVisible(true)}
-        profileUrl={profileUrl}
-        onClose={handleClose}
-      />
+        <TopBar profileUrl={profileUrl} />
 
-      <ProfileSheet
-        bottomSheetRef={bottomSheetRef}
-        animatedIndex={animatedIndex}
-        snapPoints={snapPoints}
-        headerHeight={headerHeight}
-        onHeaderLayout={setHeaderHeight}
-        title={profileData.dancer.displayName || 'Dancer'}
-        subtitle={
-          profileData.dancer?.location?.city && profileData.dancer?.location?.state
-            ? `${profileData.dancer.location.city}, ${profileData.dancer.location.state}`
-            : undefined
-        }
-        leftButton={
-          <Button variant="secondary" size="icon" onPress={toggle}>
-            <View style={{ position: 'relative', width: 24, height: 24 }}>
-              <Animated.View style={[animations.arrowIcon, { position: 'absolute' }]}>
-                <Icon name="arrow.up.to.line" size={24} className="text-icon-default" />
-              </Animated.View>
-              <Animated.View style={[animations.personIcon, { position: 'absolute' }]}>
-                <Icon
-                  name="person.crop.square.on.square.angled.fill"
-                  size={24}
-                  className="text-icon-default"
-                />
-              </Animated.View>
-            </View>
-          </Button>
-        }
-        rightButton={
-          <DropdownMenu.Root>
-            <DropdownMenu.Trigger>
-              <Button variant="secondary" size="icon">
-                <Icon
-                  name="arrowshape.turn.up.right.fill"
-                  size={24}
-                  className="text-icon-default"
-                />
+        {profileReady && (
+          <ProfileSheet
+            bottomSheetRef={bottomSheetRef}
+            animatedIndex={animatedIndex}
+            snapPoints={snapPoints}
+            headerHeight={headerHeight}
+            onHeaderLayout={setHeaderHeight}
+            title={profileData.dancer.displayName || 'Dancer'}
+            subtitle={
+              profileData.dancer?.location?.city && profileData.dancer?.location?.state
+                ? `${profileData.dancer.location.city}, ${profileData.dancer.location.state}`
+                : undefined
+            }
+            leftButton={
+              <Button variant="secondary" size="icon" onPress={toggle}>
+                <View style={{ position: 'relative', width: 24, height: 24 }}>
+                  <Animated.View style={[animations.arrowIcon, { position: 'absolute' }]}>
+                    <Icon name="arrow.up.to.line" size={24} className="text-icon-default" />
+                  </Animated.View>
+                  <Animated.View style={[animations.personIcon, { position: 'absolute' }]}>
+                    <Icon
+                      name="person.crop.square.on.square.angled.fill"
+                      size={24}
+                      className="text-icon-default"
+                    />
+                  </Animated.View>
+                </View>
               </Button>
-            </DropdownMenu.Trigger>
-            <DropdownMenu.Content>
-              <DropdownMenu.Item key="profile-card" onSelect={handleShareProfile}>
-                <DropdownMenu.ItemTitle>Send Profile Card</DropdownMenu.ItemTitle>
-              </DropdownMenu.Item>
-              <DropdownMenu.Item key="headshot" onSelect={handleShareHeadshot}>
-                <DropdownMenu.ItemTitle>Send this Headshot</DropdownMenu.ItemTitle>
-              </DropdownMenu.Item>
-              <DropdownMenu.Item key="profile-link" onSelect={handleShareProfileLink}>
-                <DropdownMenu.ItemTitle>Share Profile Link</DropdownMenu.ItemTitle>
-              </DropdownMenu.Item>
-            </DropdownMenu.Content>
-          </DropdownMenu.Root>
-        }>
-        <ProjectCarousel projects={profileData.recentProjects} />
-        <ProfileDetailsSheet profileData={profileData} />
-      </ProfileSheet>
+            }
+            rightButton={
+              <DropdownMenu.Root>
+                <DropdownMenu.Trigger>
+                  <Button variant="secondary" size="icon">
+                    <Icon
+                      name="arrowshape.turn.up.right.fill"
+                      size={24}
+                      className="text-icon-default"
+                    />
+                  </Button>
+                </DropdownMenu.Trigger>
+                <DropdownMenu.Content>
+                  <DropdownMenu.Item key="profile-card" onSelect={handleShareProfile}>
+                    <DropdownMenu.ItemTitle>Send Profile Card</DropdownMenu.ItemTitle>
+                  </DropdownMenu.Item>
+                  <DropdownMenu.Item key="headshot" onSelect={handleShareHeadshot}>
+                    <DropdownMenu.ItemTitle>Send this Headshot</DropdownMenu.ItemTitle>
+                  </DropdownMenu.Item>
+                  <DropdownMenu.Item key="profile-link" onSelect={handleShareProfileLink}>
+                    <DropdownMenu.ItemTitle>Share Profile Link</DropdownMenu.ItemTitle>
+                  </DropdownMenu.Item>
+                </DropdownMenu.Content>
+              </DropdownMenu.Root>
+            }>
+            <ProjectCarousel projects={profileData.recentProjects} />
+            <ProfileDetailsSheet profileData={profileData} />
+          </ProfileSheet>
+        )}
+      </Transition.MaskedView>
 
       {/* Off-screen share cards for capture */}
-      <View
-        ref={profileShareCardRef}
-        collapsable={false}
-        pointerEvents="none"
-        style={{ position: 'absolute', left: -99999, top: -99999 }}>
-        <ProfileShareCard profileData={profileData} headshotUrl={currentHeadshotUrl} />
-      </View>
+      {profileReady && (
+        <View
+          ref={profileShareCardRef}
+          collapsable={false}
+          pointerEvents="none"
+          style={{ position: 'absolute', left: -99999, top: -99999 }}>
+          <ProfileShareCard profileData={profileData} headshotUrl={currentHeadshotUrl} />
+        </View>
+      )}
 
-      <View
-        ref={headshotShareCardRef}
-        collapsable={false}
-        pointerEvents="none"
-        style={{ position: 'absolute', left: -99999, top: -99999 }}>
-        <HeadshotShareCard headshotUrl={currentHeadshotUrl} />
-      </View>
+      {currentHeadshotUrl && (
+        <View
+          ref={headshotShareCardRef}
+          collapsable={false}
+          pointerEvents="none"
+          style={{ position: 'absolute', left: -99999, top: -99999 }}>
+          <HeadshotShareCard headshotUrl={currentHeadshotUrl} />
+        </View>
+      )}
 
       {/* Share Bottom Sheet */}
       {shareData && (
@@ -276,7 +283,6 @@ export default function DancerScreen() {
           onClose={() => setShareSheetVisible(false)}
         />
       )}
-      </View>
-    </SharedHeadshotTransition>
+    </View>
   );
 }

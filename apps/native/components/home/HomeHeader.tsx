@@ -1,7 +1,9 @@
-import React, { useRef } from 'react';
-import { View, TouchableOpacity } from 'react-native';
-import { router } from 'expo-router';
+import React, { useEffect } from 'react';
+import { View } from 'react-native';
+import { Link, router } from 'expo-router';
 import { useQuery } from 'convex/react';
+import Transition from 'react-native-screen-transitions';
+import { Image as ExpoImage } from 'expo-image';
 
 import { Text } from '~/components/ui/text';
 import { Avatar, AvatarFallback, AvatarImage } from '~/components/ui/avatar';
@@ -9,8 +11,6 @@ import { useUser } from '~/hooks/useUser';
 import { api } from '@packages/backend/convex/_generated/api';
 import Bell from '~/lib/icons/Bell';
 import { Button } from '../ui/button';
-import { useSharedTransition } from '~/contexts/SharedTransitionContext';
-import { type Id } from '@packages/backend/convex/_generated/dataModel';
 
 interface HomeHeaderProps {
   onSettingsPress?: () => void;
@@ -22,24 +22,29 @@ export function HomeHeader({ onNotificationsPress }: HomeHeaderProps) {
   const { user } = useUser();
   const profile = useQuery(api.dancers.getMyDancerProfile, {});
   const headshotUrl = useQuery(api.dancers.getMyDancerHeadshotUrl, {});
-  const { startTransition } = useSharedTransition();
-  const avatarRef = useRef<View>(null);
 
   const profileType = user?.activeProfileType || 'dancer';
   const displayName = profile?.displayName || user?.fullName || 'User';
-
   const profileTypeLabel = profileType.charAt(0).toUpperCase() + profileType.slice(1);
   const dancerProfileId = user?.activeDancerId;
 
-  const handleAvatarPress = () => {
-    if (!dancerProfileId || !avatarRef.current) return;
+  useEffect(() => {
+    if (headshotUrl) {
+      ExpoImage.prefetch(headshotUrl).catch(() => {
+        // Ignore cache failures; we fall back to runtime loading.
+      });
+    }
+  }, [headshotUrl]);
 
-    avatarRef.current.measure((x, y, width, height, pageX, pageY) => {
-      startTransition(
-        { x, y, width, height, pageX, pageY },
-        dancerProfileId as Id<'dancers'>
-      );
-      router.push(`/app/dancers/${dancerProfileId}`);
+  const handleAvatarPress = () => {
+    if (!dancerProfileId) return;
+
+    router.push({
+      pathname: '/app/dancers/[id]',
+      params: {
+        id: dancerProfileId,
+        ...(headshotUrl ? { headshot: headshotUrl } : {}),
+      },
     });
   };
 
@@ -67,21 +72,46 @@ export function HomeHeader({ onNotificationsPress }: HomeHeaderProps) {
       <View className="flex-row items-center gap-4">
         {/* Profile Avatar - Link to dancer profile */}
         {dancerProfileId ? (
-          <TouchableOpacity onPress={handleAvatarPress}>
-            <View ref={avatarRef} collapsable={false}>
-              <Avatar
-                alt={profile?.displayName || user?.email || 'User avatar'}
-                className="h-10 w-10">
-                {headshotUrl && <AvatarImage source={{ uri: headshotUrl }} />}
-                <AvatarFallback>
-                  <Text className="text-sm font-medium text-text-default">{getInitials()}</Text>
-                </AvatarFallback>
-              </Avatar>
-            </View>
-          </TouchableOpacity>
+          <Transition.Pressable
+            sharedBoundTag="dancer-avatar"
+            onPress={handleAvatarPress}
+            collapsable={false}>
+            <Avatar
+              alt={profile?.displayName || user?.email || 'User avatar'}
+              className="h-10 w-10">
+              {headshotUrl && (
+                <AvatarImage
+                  source={{ uri: headshotUrl }}
+                  asChild>
+                  <ExpoImage
+                    source={{ uri: headshotUrl }}
+                    style={{ width: '100%', height: '100%' }}
+                    contentFit="cover"
+                    cachePolicy="memory-disk"
+                    transition={0}
+                  />
+                </AvatarImage>
+              )}
+              <AvatarFallback>
+                <Text className="text-sm font-medium text-text-default">{getInitials()}</Text>
+              </AvatarFallback>
+            </Avatar>
+          </Transition.Pressable>
         ) : (
           <Avatar alt={profile?.displayName || user?.email || 'User avatar'} className="h-10 w-10">
-            {headshotUrl && <AvatarImage source={{ uri: headshotUrl }} />}
+            {headshotUrl && (
+              <AvatarImage
+                source={{ uri: headshotUrl }}
+                asChild>
+                <ExpoImage
+                  source={{ uri: headshotUrl }}
+                  style={{ width: '100%', height: '100%' }}
+                  contentFit="cover"
+                  cachePolicy="memory-disk"
+                  transition={0}
+                />
+              </AvatarImage>
+            )}
             <AvatarFallback>
               <Text className="text-sm font-medium text-text-default">{getInitials()}</Text>
             </AvatarFallback>

@@ -1,8 +1,10 @@
-import React from 'react';
-import { View, TouchableOpacity } from 'react-native';
-import { Link } from 'expo-router';
+import React, { useEffect } from 'react';
+import { View } from 'react-native';
+import { Link, router } from 'expo-router';
 import { useQuery } from 'convex/react';
 import Animated, { useAnimatedStyle, interpolate, Extrapolate } from 'react-native-reanimated';
+import Transition from 'react-native-screen-transitions';
+import { Image as ExpoImage } from 'expo-image';
 
 import { Text } from '~/components/ui/text';
 import { Avatar, AvatarFallback, AvatarImage } from '~/components/ui/avatar';
@@ -18,6 +20,14 @@ export function HomeHeaderLeft(_: TabHeaderSlot) {
   const profile = useQuery(api.dancers.getMyDancerProfile, {});
   const headshotUrl = useQuery(api.dancers.getMyDancerHeadshotUrl, {});
   const dancerProfileId = user?.activeDancerId;
+
+  useEffect(() => {
+    if (headshotUrl) {
+      ExpoImage.prefetch(headshotUrl).catch(() => {
+        // Ignore cache failures; runtime loading will still work.
+      });
+    }
+  }, [headshotUrl]);
 
   const getInitials = () => {
     if (!user) return '?';
@@ -39,23 +49,58 @@ export function HomeHeaderLeft(_: TabHeaderSlot) {
   };
 
   if (dancerProfileId) {
+    const handleAvatarPress = () => {
+      router.push({
+        pathname: '/app/dancers/[id]',
+        params: {
+          id: dancerProfileId,
+          ...(headshotUrl ? { headshot: headshotUrl } : {}),
+        },
+      });
+    };
+
     return (
-      <Link href={`/app/dancers/${dancerProfileId}`} asChild>
-        <TouchableOpacity>
-          <Avatar alt={profile?.displayName || user?.email || 'User avatar'} className="h-10 w-10">
-            {headshotUrl && <AvatarImage source={{ uri: headshotUrl }} />}
-            <AvatarFallback>
-              <Text className="text-sm font-medium text-text-default">{getInitials()}</Text>
-            </AvatarFallback>
-          </Avatar>
-        </TouchableOpacity>
-      </Link>
+      <Transition.Pressable
+        sharedBoundTag="dancer-avatar"
+        onPress={handleAvatarPress}
+        collapsable={false}>
+        <Avatar alt={profile?.displayName || user?.email || 'User avatar'} className="h-10 w-10">
+          {headshotUrl && (
+            <AvatarImage
+              source={{ uri: headshotUrl }}
+              asChild>
+              <ExpoImage
+                source={{ uri: headshotUrl }}
+                style={{ width: '100%', height: '100%' }}
+                contentFit="cover"
+                cachePolicy="memory-disk"
+                transition={0}
+              />
+            </AvatarImage>
+          )}
+          <AvatarFallback>
+            <Text className="text-sm font-medium text-text-default">{getInitials()}</Text>
+          </AvatarFallback>
+        </Avatar>
+      </Transition.Pressable>
     );
   }
 
   return (
     <Avatar alt={profile?.displayName || user?.email || 'User avatar'} className="h-10 w-10">
-      {headshotUrl && <AvatarImage source={{ uri: headshotUrl }} />}
+      {headshotUrl && (
+        <AvatarImage
+          source={{ uri: headshotUrl }}
+          asChild>
+          <ExpoImage
+            source={{ uri: headshotUrl }}
+            style={{ width: '100%', height: '100%' }}
+            contentFit="cover"
+            cachePolicy="memory-disk"
+            transition={0}
+          />
+        </AvatarImage>
+      )}
       <AvatarFallback>
         <Text className="text-sm font-medium text-text-default">{getInitials()}</Text>
       </AvatarFallback>
