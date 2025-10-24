@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { View } from 'react-native';
 import { useQuery } from 'convex/react';
 
@@ -9,6 +9,13 @@ import { TabbedView } from '~/components/ui/tabs/TabbedView';
 import { ProjectEditSheet } from '~/components/projects/ProjectEditSheet';
 import { api } from '@packages/backend/convex/_generated/api';
 import { type Id } from '@packages/backend/convex/_generated/dataModel';
+import { Button } from '../ui/button';
+import { Icon } from '~/lib/icons/Icon';
+import Animated, {
+  useSharedValue,
+  useAnimatedStyle,
+  withTiming,
+} from 'react-native-reanimated';
 
 // Map display tab names to project types
 const TAB_TO_TYPE_MAP: Record<string, string> = {
@@ -19,9 +26,28 @@ const TAB_TO_TYPE_MAP: Record<string, string> = {
 
 const TABS = ['Television/Film', 'Music Videos', 'Live/Stage Performance'];
 
-export function ProfessionalExperienceSection() {
+export function ProfessionalExperienceSection({
+  isHeaderOpen,
+  onHeaderChangeIntent,
+}: {
+  isHeaderOpen: boolean;
+  onHeaderChangeIntent: () => void;
+}) {
   const [isSheetOpen, setIsSheetOpen] = useState(false);
   const [selectedProjectId, setSelectedProjectId] = useState<Id<'projects'> | undefined>(undefined);
+
+  // Rotation animation for the button
+  const rotation = useSharedValue(0);
+
+  useEffect(() => {
+    rotation.value = withTiming(isHeaderOpen ? 0 : 180, { duration: 300 });
+  }, [isHeaderOpen]);
+
+  const animatedIconStyle = useAnimatedStyle(() => {
+    return {
+      transform: [{ rotate: `${rotation.value}deg` }],
+    };
+  });
 
   // Fetch real projects from Convex
   const myProjects = useQuery(api.projects.getMyProjects, {});
@@ -47,7 +73,11 @@ export function ProfessionalExperienceSection() {
         <Text variant="header4" className="text-text-default">
           Professional Experience
         </Text>
-        <ArrowUpToLine className="text-text-default" size={20} />
+        <Button onPress={onHeaderChangeIntent} variant="tertiary" size="icon">
+          <Animated.View style={animatedIconStyle}>
+            <ArrowUpToLine className="text-text-default" size={20} />
+          </Animated.View>
+        </Button>
       </View>
 
       {/* Tabbed Content */}
