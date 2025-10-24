@@ -6,6 +6,7 @@ import Animated, {
   interpolate,
   Extrapolate,
   useDerivedValue,
+  withSpring,
   type SharedValue,
 } from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -28,6 +29,67 @@ const SCREEN_HEIGHT_MODIFIER = 0.88;
 const IMAGE_HEIGHT = SCREEN_HEIGHT * SCREEN_HEIGHT_MODIFIER;
 const COLLAPSED_WIDTH = SCREEN_WIDTH - 12;
 const EXPANDED_WIDTH = SCREEN_WIDTH;
+
+// Memoized render item component for performance
+const HeadshotItem = React.memo<{
+  item: string;
+  index: number;
+  isFirst: boolean;
+  animatedIndex: SharedValue<number> | undefined;
+  animatedWidth: ReturnType<typeof useDerivedValue>;
+  animatedHeight: ReturnType<typeof useDerivedValue>;
+  onPress?: () => void;
+}>(({ item, index, isFirst, animatedIndex, animatedWidth, animatedHeight, onPress }) => {
+  const imageStyle = useAnimatedStyle(() => ({
+    width: animatedWidth.value,
+    height: animatedHeight.value,
+    borderRadius: interpolate(animatedIndex?.value || 0, [0, 1], [25, 0], Extrapolate.CLAMP),
+  }));
+
+  if (isFirst) {
+    return (
+      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+        <Transition.Pressable
+          sharedBoundTag="dancer-avatar"
+          onPress={onPress || (() => {})}
+          collapsable={false}
+          style={{
+            width: COLLAPSED_WIDTH,
+            height: IMAGE_HEIGHT,
+            borderRadius: 25,
+            overflow: 'hidden',
+          }}>
+          <ExpoImage
+            source={{ uri: item }}
+            style={{ width: '100%', height: '100%' }}
+            contentFit="cover"
+            cachePolicy="memory-disk"
+            transition={0}
+            priority="high"
+            placeholderContentFit="cover"
+          />
+        </Transition.Pressable>
+      </View>
+    );
+  }
+
+  return (
+    <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+      <AnimatedExpoImage
+        source={{ uri: item }}
+        style={imageStyle}
+        contentFit="cover"
+        cachePolicy="memory-disk"
+        transition={0}
+        priority={index < 3 ? 'high' : 'normal'}
+        placeholderContentFit="cover"
+      />
+    </View>
+  );
+});
+
+HeadshotItem.displayName = 'HeadshotItem';
+
 export function HeadshotCarousel({
   headshotUrls,
   initialIndex = 0,
@@ -78,7 +140,7 @@ export function HeadshotCarousel({
 
     return {
       top,
-      height,
+      height: withSpring(height, { damping: 20, stiffness: 150 }),
       width: SCREEN_WIDTH,
       position: 'absolute',
       left: 0,
@@ -106,7 +168,10 @@ export function HeadshotCarousel({
       Extrapolate.CLAMP
     );
 
-    return { opacity, top };
+    return {
+      opacity: withSpring(opacity, { damping: 20, stiffness: 150 }),
+      top: withSpring(top, { damping: 20, stiffness: 150 }),
+    };
   }, [animatedIndex]);
 
   if (headshotUrls.length === 0) return null;
@@ -120,53 +185,18 @@ export function HeadshotCarousel({
           data={headshotUrls}
           defaultIndex={initialIndex}
           onSnapToItem={handleIndexChange}
-          renderItem={({ item, index }) => {
-            const isFirstImage = index === 0;
-
-            const imageStyle = useAnimatedStyle(() => ({
-              width: animatedWidth.value,
-              height: animatedHeight.value,
-              borderRadius: interpolate(animatedIndex?.value || 0, [0, 1], [25, 0], Extrapolate.CLAMP),
-            }));
-
-            if (isFirstImage) {
-              return (
-                <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-                  <Transition.Pressable
-                    sharedBoundTag="dancer-avatar"
-                    onPress={onPress || (() => {})}
-                    collapsable={false}
-                    style={{
-                      width: COLLAPSED_WIDTH,
-                      height: IMAGE_HEIGHT,
-                      borderRadius: 25,
-                      overflow: 'hidden',
-                    }}>
-                    <ExpoImage
-                      source={{ uri: item }}
-                      style={{ width: '100%', height: '100%' }}
-                      contentFit="cover"
-                      cachePolicy="memory-disk"
-                      transition={0}
-                      priority="high"
-                    />
-                  </Transition.Pressable>
-                </View>
-              );
-            }
-
-            return (
-              <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-                <AnimatedExpoImage
-                  source={{ uri: item }}
-                  style={imageStyle}
-                  contentFit="cover"
-                  cachePolicy="memory-disk"
-                  transition={0}
-                />
-              </View>
-            );
-          }}
+          renderItem={({ item, index }) => (
+            <HeadshotItem
+              key={`${item}-${index}`}
+              item={item}
+              index={index}
+              isFirst={index === 0}
+              animatedIndex={animatedIndex}
+              animatedWidth={animatedWidth}
+              animatedHeight={animatedHeight}
+              onPress={onPress}
+            />
+          )}
         />
       </Animated.View>
 

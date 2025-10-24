@@ -1,10 +1,11 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { View, Share } from 'react-native';
-import Animated from 'react-native-reanimated';
+import Animated, { FadeIn, FadeOut } from 'react-native-reanimated';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useLocalSearchParams, router, Redirect } from 'expo-router';
 import { captureRef } from 'react-native-view-shot';
 import * as DropdownMenu from 'zeego/dropdown-menu';
+import * as Haptics from 'expo-haptics';
 import Transition from 'react-native-screen-transitions';
 import { Image as ExpoImage } from 'expo-image';
 import { type Id } from '@packages/backend/convex/_generated/dataModel';
@@ -30,22 +31,24 @@ function TopBar({ profileUrl }: { profileUrl: string }) {
     }
   };
   return (
-    <SafeAreaView
-      edges={['top', 'left', 'right']}
+    <Animated.View
+      entering={FadeIn.duration(200).delay(200)}
       style={{ position: 'absolute', top: 0, left: 0, right: 0 }}>
-      <View
-        style={{
-          flexDirection: 'row',
-          justifyContent: 'space-between',
-          paddingHorizontal: 16,
-          paddingTop: 0,
-        }}>
-        <Button onPress={handleClose} variant="tertiary">
-          <Icon name="xmark" size={20} className="text-icon-default" />
-        </Button>
-        <QRCodeDialog profileUrl={profileUrl} />
-      </View>
-    </SafeAreaView>
+      <SafeAreaView edges={['top', 'left', 'right']}>
+        <View
+          style={{
+            flexDirection: 'row',
+            justifyContent: 'space-between',
+            paddingHorizontal: 16,
+            paddingTop: 0,
+          }}>
+          <Button onPress={handleClose} variant="tertiary">
+            <Icon name="xmark" size={20} className="text-icon-default" />
+          </Button>
+          <QRCodeDialog profileUrl={profileUrl} />
+        </View>
+      </SafeAreaView>
+    </Animated.View>
   );
 }
 
@@ -75,6 +78,19 @@ export default function DancerScreen() {
     toggle,
     animations,
   } = useProfileSheet();
+
+  // Haptic feedback for transition
+  useEffect(() => {
+    // Light impact when screen mounts (transition starts)
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+
+    // Medium impact when transition completes (~400ms matches spring settle time)
+    const timer = setTimeout(() => {
+      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+    }, 400);
+
+    return () => clearTimeout(timer);
+  }, []);
 
   useEffect(() => {
     if (initialHeadshotUrl) {
@@ -245,7 +261,10 @@ export default function DancerScreen() {
             </DropdownMenu.Root>
           }>
           {profileQuery.isError ? (
-            <View className="flex-1 items-center justify-center px-6 py-12">
+            <Animated.View
+              entering={FadeIn.duration(300)}
+              exiting={FadeOut.duration(200)}
+              className="flex-1 items-center justify-center px-6 py-12">
               <Icon
                 name="exclamationmark.triangle.fill"
                 size={48}
@@ -267,18 +286,23 @@ export default function DancerScreen() {
                   <Text>Try Again</Text>
                 </Button>
               </View>
-            </View>
+            </Animated.View>
           ) : profileQuery.isPending && !profileQuery.isStable ? (
-            <View className="flex-1 items-center justify-center px-6 py-12">
+            <Animated.View
+              entering={FadeIn.duration(200)}
+              exiting={FadeOut.duration(200)}
+              className="flex-1 items-center justify-center px-6 py-12">
               <Text variant="body" className="text-center text-text-low">
                 Loading profile...
               </Text>
-            </View>
+            </Animated.View>
           ) : profileData ? (
-            <>
+            <Animated.View
+              entering={FadeIn.duration(300).delay(100)}
+              style={{ flex: 1 }}>
               <ProjectCarousel projects={profileData.recentProjects} />
               <ProfileDetailsSheet profileData={profileData} />
-            </>
+            </Animated.View>
           ) : null}
         </ProfileSheet>
       </Transition.MaskedView>

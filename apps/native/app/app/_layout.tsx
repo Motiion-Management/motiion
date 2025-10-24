@@ -125,6 +125,25 @@ export default function AppLayout() {
           name="dancers/[id]"
           options={{
             ...Transition.presets.SharedIGImage(),
+            transitionSpec: {
+              open: {
+                animation: 'spring',
+                config: {
+                  stiffness: 300,
+                  damping: 30,
+                  mass: 0.8,
+                  overshootClamping: false,
+                },
+              },
+              close: {
+                animation: 'spring',
+                config: {
+                  stiffness: 350,
+                  damping: 35,
+                  mass: 0.7,
+                },
+              },
+            },
             gestureEnabled: false, // Disable swipe gestures (page has many gestures)
           }}
         />
