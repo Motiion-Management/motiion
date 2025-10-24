@@ -3,13 +3,12 @@ import { View, Share } from 'react-native';
 import Animated from 'react-native-reanimated';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useLocalSearchParams, router, Redirect } from 'expo-router';
-import { useQuery } from 'convex/react';
 import { captureRef } from 'react-native-view-shot';
 import * as DropdownMenu from 'zeego/dropdown-menu';
 import Transition from 'react-native-screen-transitions';
 import { Image as ExpoImage } from 'expo-image';
-import { api } from '@packages/backend/convex/_generated/api';
 import { type Id } from '@packages/backend/convex/_generated/dataModel';
+import { useDancerProfileQuery } from '~/hooks/queries/useDancerProfileQuery';
 import { ProjectCarousel } from '~/components/dancer-profile/ProjectCarousel';
 import { HeadshotCarousel } from '~/components/dancer-profile/HeadshotCarousel';
 import { ProfileDetailsSheet } from '~/components/dancer-profile/ProfileDetailsSheet';
@@ -20,6 +19,7 @@ import { ShareBottomSheet } from '~/components/dancer-profile/share/ShareBottomS
 import { QRCodeDialog } from '~/components/dancer-profile/qr';
 import { Icon } from '~/lib/icons/Icon';
 import { Button } from '~/components/ui/button';
+import { Text } from '~/components/ui/text';
 
 function TopBar({ profileUrl }: { profileUrl: string }) {
   const handleClose = () => {
@@ -84,10 +84,8 @@ export default function DancerScreen() {
     }
   }, [initialHeadshotUrl]);
 
-  const profileData = useQuery(
-    api.dancers.getDancerProfileWithDetails,
-    id ? { dancerId: id as Id<'dancers'> } : 'skip'
-  );
+  const profileQuery = useDancerProfileQuery(id as Id<'dancers'>);
+  const profileData = profileQuery.data;
 
   useEffect(() => {
     if (!profileData?.headshotUrls?.length) return;
@@ -168,13 +166,13 @@ export default function DancerScreen() {
     }
   };
 
-  if (profileData === null) {
+  // Redirect if dancer doesn't exist (query resolved to null)
+  if (profileQuery.isStable && profileData === null) {
     return <Redirect href="/app/home" />;
   }
 
   const currentHeadshotUrl = headshotUrls[currentHeadshotIndex];
   const profileUrl = `https://motiion.io/app/dancers/${id}`;
-  const profileReady = Boolean(profileData && profileData.headshotUrls.length > 0);
 
   return (
     <View style={{ flex: 1 }}>
@@ -194,67 +192,99 @@ export default function DancerScreen() {
 
         <TopBar profileUrl={profileUrl} />
 
-        {profileReady && (
-          <ProfileSheet
-            bottomSheetRef={bottomSheetRef}
-            animatedIndex={animatedIndex}
-            snapPoints={snapPoints}
-            headerHeight={headerHeight}
-            onHeaderLayout={setHeaderHeight}
-            title={profileData.dancer.displayName || 'Dancer'}
-            subtitle={
-              profileData.dancer?.location?.city && profileData.dancer?.location?.state
-                ? `${profileData.dancer.location.city}, ${profileData.dancer.location.state}`
-                : undefined
-            }
-            leftButton={
-              <Button variant="secondary" size="icon" onPress={toggle}>
-                <View style={{ position: 'relative', width: 24, height: 24 }}>
-                  <Animated.View style={[animations.arrowIcon, { position: 'absolute' }]}>
-                    <Icon name="arrow.up.to.line" size={24} className="text-icon-default" />
-                  </Animated.View>
-                  <Animated.View style={[animations.personIcon, { position: 'absolute' }]}>
-                    <Icon
-                      name="person.crop.square.on.square.angled.fill"
-                      size={24}
-                      className="text-icon-default"
-                    />
-                  </Animated.View>
-                </View>
-              </Button>
-            }
-            rightButton={
-              <DropdownMenu.Root>
-                <DropdownMenu.Trigger>
-                  <Button variant="secondary" size="icon">
-                    <Icon
-                      name="arrowshape.turn.up.right.fill"
-                      size={24}
-                      className="text-icon-default"
-                    />
-                  </Button>
-                </DropdownMenu.Trigger>
-                <DropdownMenu.Content>
-                  <DropdownMenu.Item key="profile-card" onSelect={handleShareProfile}>
-                    <DropdownMenu.ItemTitle>Send Profile Card</DropdownMenu.ItemTitle>
-                  </DropdownMenu.Item>
-                  <DropdownMenu.Item key="headshot" onSelect={handleShareHeadshot}>
-                    <DropdownMenu.ItemTitle>Send this Headshot</DropdownMenu.ItemTitle>
-                  </DropdownMenu.Item>
-                  <DropdownMenu.Item key="profile-link" onSelect={handleShareProfileLink}>
-                    <DropdownMenu.ItemTitle>Share Profile Link</DropdownMenu.ItemTitle>
-                  </DropdownMenu.Item>
-                </DropdownMenu.Content>
-              </DropdownMenu.Root>
-            }>
-            <ProjectCarousel projects={profileData.recentProjects} />
-            <ProfileDetailsSheet profileData={profileData} />
-          </ProfileSheet>
-        )}
+        <ProfileSheet
+          bottomSheetRef={bottomSheetRef}
+          animatedIndex={animatedIndex}
+          snapPoints={snapPoints}
+          headerHeight={headerHeight}
+          onHeaderLayout={setHeaderHeight}
+          title={profileData?.dancer.displayName || 'Loading...'}
+          subtitle={
+            profileData?.dancer?.location?.city && profileData?.dancer?.location?.state
+              ? `${profileData.dancer.location.city}, ${profileData.dancer.location.state}`
+              : undefined
+          }
+          leftButton={
+            <Button variant="secondary" size="icon" onPress={toggle}>
+              <View style={{ position: 'relative', width: 24, height: 24 }}>
+                <Animated.View style={[animations.arrowIcon, { position: 'absolute' }]}>
+                  <Icon name="arrow.up.to.line" size={24} className="text-icon-default" />
+                </Animated.View>
+                <Animated.View style={[animations.personIcon, { position: 'absolute' }]}>
+                  <Icon
+                    name="person.crop.square.on.square.angled.fill"
+                    size={24}
+                    className="text-icon-default"
+                  />
+                </Animated.View>
+              </View>
+            </Button>
+          }
+          rightButton={
+            <DropdownMenu.Root>
+              <DropdownMenu.Trigger>
+                <Button variant="secondary" size="icon">
+                  <Icon
+                    name="arrowshape.turn.up.right.fill"
+                    size={24}
+                    className="text-icon-default"
+                  />
+                </Button>
+              </DropdownMenu.Trigger>
+              <DropdownMenu.Content>
+                <DropdownMenu.Item key="profile-card" onSelect={handleShareProfile}>
+                  <DropdownMenu.ItemTitle>Send Profile Card</DropdownMenu.ItemTitle>
+                </DropdownMenu.Item>
+                <DropdownMenu.Item key="headshot" onSelect={handleShareHeadshot}>
+                  <DropdownMenu.ItemTitle>Send this Headshot</DropdownMenu.ItemTitle>
+                </DropdownMenu.Item>
+                <DropdownMenu.Item key="profile-link" onSelect={handleShareProfileLink}>
+                  <DropdownMenu.ItemTitle>Share Profile Link</DropdownMenu.ItemTitle>
+                </DropdownMenu.Item>
+              </DropdownMenu.Content>
+            </DropdownMenu.Root>
+          }>
+          {profileQuery.isError ? (
+            <View className="flex-1 items-center justify-center px-6 py-12">
+              <Icon
+                name="exclamationmark.triangle.fill"
+                size={48}
+                className="text-icon-low mb-4"
+              />
+              <Text variant="header5" className="text-center mb-2">
+                Unable to Load Profile
+              </Text>
+              <Text variant="body" className="text-center text-text-low mb-6">
+                We couldn't load this dancer's profile. Please try again.
+              </Text>
+              <View className="flex-row gap-3">
+                <Button
+                  variant="secondary"
+                  onPress={() => (router.canGoBack() ? router.back() : router.replace('/app/home'))}>
+                  <Text>Go Back</Text>
+                </Button>
+                <Button variant="primary" onPress={() => profileQuery.refetch()}>
+                  <Text>Try Again</Text>
+                </Button>
+              </View>
+            </View>
+          ) : profileQuery.isPending && !profileQuery.isStable ? (
+            <View className="flex-1 items-center justify-center px-6 py-12">
+              <Text variant="body" className="text-center text-text-low">
+                Loading profile...
+              </Text>
+            </View>
+          ) : profileData ? (
+            <>
+              <ProjectCarousel projects={profileData.recentProjects} />
+              <ProfileDetailsSheet profileData={profileData} />
+            </>
+          ) : null}
+        </ProfileSheet>
       </Transition.MaskedView>
 
       {/* Off-screen share cards for capture */}
-      {profileReady && (
+      {profileData && (
         <View
           ref={profileShareCardRef}
           collapsable={false}

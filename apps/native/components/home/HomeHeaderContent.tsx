@@ -10,6 +10,8 @@ import { Text } from '~/components/ui/text';
 import { Avatar, AvatarFallback, AvatarImage } from '~/components/ui/avatar';
 import { useUser } from '~/hooks/useUser';
 import { api } from '@packages/backend/convex/_generated/api';
+import { dancerProfileQueryOptions } from '~/hooks/queries/dancerProfileQueries';
+import { useQueryClient } from '~/components/providers/ConvexClientProvider';
 import Bell from '~/lib/icons/Bell';
 import { Button } from '../ui/button';
 import { MotiionLogo } from '~/lib/icons/MotiionLogo';
@@ -20,6 +22,7 @@ export function HomeHeaderLeft(_: TabHeaderSlot) {
   const profile = useQuery(api.dancers.getMyDancerProfile, {});
   const headshotUrl = useQuery(api.dancers.getMyDancerHeadshotUrl, {});
   const dancerProfileId = user?.activeDancerId;
+  const queryClient = useQueryClient();
 
   useEffect(() => {
     if (headshotUrl) {
@@ -50,6 +53,9 @@ export function HomeHeaderLeft(_: TabHeaderSlot) {
 
   if (dancerProfileId) {
     const handleAvatarPress = () => {
+      // Prefetch dancer profile for instant navigation
+      queryClient.prefetchQuery(dancerProfileQueryOptions(dancerProfileId));
+
       router.push({
         pathname: '/app/dancers/[id]',
         params: {
@@ -65,6 +71,13 @@ export function HomeHeaderLeft(_: TabHeaderSlot) {
           <Transition.Pressable
             sharedBoundTag="dancer-avatar"
             onPress={handleAvatarPress}
+            onFocus={() => {
+              // Prefetch on focus for keyboard/accessibility users
+              queryClient.prefetchQuery(dancerProfileQueryOptions(dancerProfileId));
+            }}
+            accessible={true}
+            accessibilityRole="button"
+            accessibilityLabel={`View ${profile?.displayName || 'your'} profile`}
             collapsable={false}
             style={{
               width: 40,
