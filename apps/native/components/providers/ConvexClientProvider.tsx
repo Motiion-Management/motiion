@@ -19,6 +19,7 @@ const queryClient = new QueryClient({
       gcTime: 5 * 60 * 1000,     // 5 minutes - keeps subscription alive during navigation
       staleTime: 0,               // Irrelevant for Convex (data is always live via WebSocket)
       retry: false,               // Ignored by Convex adapter (uses own retry mechanism)
+      queryFn: convexQueryClient.queryFn(), // Required for convexQuery() helper to work
     }
   }
 });
