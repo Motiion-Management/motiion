@@ -1,14 +1,14 @@
-import React, { type ComponentType, type ReactNode, useRef, useCallback } from 'react';
-import { View } from 'react-native';
+import React, { type ComponentType, type ReactNode } from 'react';
+import { View, ScrollView } from 'react-native';
 import { router } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import Animated, {
   useSharedValue,
-  useAnimatedScrollHandler,
   useDerivedValue,
   useAnimatedStyle,
   interpolate,
   Extrapolate,
+  withTiming,
   type SharedValue,
 } from 'react-native-reanimated';
 import { BlurView } from 'expo-blur';
@@ -17,7 +17,9 @@ import { BackgroundGradientView } from '~/components/ui/background-gradient-view
 import { HeaderActionButton } from '~/components/ui/animated-scroll-header/HeaderActionButton';
 import { HeaderTitle } from '~/components/ui/animated-scroll-header/HeaderTitle';
 import { type IconProps } from '~/lib/icons/Icon';
-import { TabScrollContext } from './TabScrollContext';
+
+// Create animated ScrollView component
+const AnimatedScrollView = Animated.createAnimatedComponent(ScrollView);
 
 // Constants - standardized across all tab screens
 const HEADER_HEIGHT = 90;
@@ -49,9 +51,10 @@ export interface TabScreenLayoutHeaderProps {
 interface TabScreenLayoutProps {
   children: ReactNode;
   header?: TabScreenLayoutHeaderProps;
+  headerCollapsed?: boolean;
 }
 
-export function TabScreenLayout({ children, header }: TabScreenLayoutProps) {
+export function TabScreenLayout({ children, header, headerCollapsed = false }: TabScreenLayoutProps) {
   const { top: safeAreaTop, bottom: safeAreaBottom } = useSafeAreaInsets();
 
   // Extract header props
@@ -63,22 +66,16 @@ export function TabScreenLayout({ children, header }: TabScreenLayoutProps) {
     onBackPress = () => router.back(),
   } = header ?? {};
 
-  // Scroll animation logic
-  const scrollY = useSharedValue(0);
-  const scrollViewRef = useRef<Animated.ScrollView>(null);
+  // Header collapse progress (0 = expanded, 1 = collapsed)
+  const collapseProgress = useSharedValue(0);
 
-  const scrollHandler = useAnimatedScrollHandler({
-    onScroll: (event) => {
-      scrollY.value = event.contentOffset.y;
-    },
-  });
-
-  const scrollToOffset = useCallback((offset: number, animated: boolean = true) => {
-    scrollViewRef.current?.scrollTo({ y: offset, animated });
-  }, []);
+  // Update collapse progress when prop changes
+  React.useEffect(() => {
+    collapseProgress.value = withTiming(headerCollapsed ? 1 : 0, { duration: 300 });
+  }, [headerCollapsed]);
 
   const scrollProgress = useDerivedValue(() => {
-    return Math.min(Math.max(scrollY.value / SCROLL_THRESHOLD, 0), 1);
+    return collapseProgress.value;
   });
 
   const renderSlotComponent = (SlotComponent?: HeaderSlotComponent) => {
@@ -159,67 +156,62 @@ export function TabScreenLayout({ children, header }: TabScreenLayoutProps) {
 
   return (
     <BackgroundGradientView>
-      <TabScrollContext.Provider value={{ scrollY, scrollToOffset }}>
-        <View className="flex-1">
-          {/* Animated Header - Absolutely Positioned */}
+      <View className="flex-1">
+        {/* Animated Header - Absolutely Positioned */}
+        <Animated.View
+          style={[
+            headerContainerStyle,
+            borderStyle,
+            { position: 'absolute', top: 0, left: 0, right: 0, zIndex: 10 },
+          ]}>
+          {/* Blur background layer */}
           <Animated.View
-            style={[
-              headerContainerStyle,
-              borderStyle,
-              { position: 'absolute', top: 0, left: 0, right: 0, zIndex: 10 },
-            ]}>
-            {/* Blur background layer */}
-            <Animated.View
-              pointerEvents="none"
-              className="bg-background-nav"
-              style={[blurStyle, { position: 'absolute', top: 0, left: 0, right: 0, bottom: 0 }]}>
-              <BlurView intensity={20} className="flex-1" />
-            </Animated.View>
-
-            {/* Safe area spacer */}
-            <View style={{ height: safeAreaTop }} />
-
-            {/* Header content - centered in remaining space */}
-            <View className="flex-1 flex-row items-center justify-between px-4">
-              {/* Left slot */}
-              <View className="flex-row items-center gap-2" style={{ minWidth: SIDE_SLOT_MIN_WIDTH }}>
-                {leftItems.length > 0 ? (
-                  leftItems
-                ) : (
-                  <View style={{ width: SLOT_PLACEHOLDER_SIZE, height: SLOT_PLACEHOLDER_SIZE }} />
-                )}
-              </View>
-
-              {/* Middle slot */}
-              <View className="flex-1 items-center justify-center px-2">
-                {middleContent ?? <View style={{ height: SLOT_PLACEHOLDER_SIZE }} />}
-              </View>
-
-              {/* Right slot */}
-              <View
-                className="flex-row items-center justify-end gap-2"
-                style={{ minWidth: SIDE_SLOT_MIN_WIDTH }}>
-                {rightContent ?? (
-                  <View style={{ width: SLOT_PLACEHOLDER_SIZE, height: SLOT_PLACEHOLDER_SIZE }} />
-                )}
-              </View>
-            </View>
+            pointerEvents="none"
+            className="bg-background-nav"
+            style={[blurStyle, { position: 'absolute', top: 0, left: 0, right: 0, bottom: 0 }]}>
+            <BlurView intensity={20} className="flex-1" />
           </Animated.View>
 
-          {/* Scrollable Content */}
-          <Animated.ScrollView
-            ref={scrollViewRef}
-            onScroll={scrollHandler}
-            scrollEventThrottle={16}
-            showsVerticalScrollIndicator={false}
-            contentContainerStyle={{
-              paddingTop: HEADER_HEIGHT + safeAreaTop,
-              paddingBottom: safeAreaBottom + 120,
-            }}>
-            {children}
-          </Animated.ScrollView>
-        </View>
-      </TabScrollContext.Provider>
+          {/* Safe area spacer */}
+          <View style={{ height: safeAreaTop }} />
+
+          {/* Header content - centered in remaining space */}
+          <View className="flex-1 flex-row items-center justify-between px-4">
+            {/* Left slot */}
+            <View className="flex-row items-center gap-2" style={{ minWidth: SIDE_SLOT_MIN_WIDTH }}>
+              {leftItems.length > 0 ? (
+                leftItems
+              ) : (
+                <View style={{ width: SLOT_PLACEHOLDER_SIZE, height: SLOT_PLACEHOLDER_SIZE }} />
+              )}
+            </View>
+
+            {/* Middle slot */}
+            <View className="flex-1 items-center justify-center px-2">
+              {middleContent ?? <View style={{ height: SLOT_PLACEHOLDER_SIZE }} />}
+            </View>
+
+            {/* Right slot */}
+            <View
+              className="flex-row items-center justify-end gap-2"
+              style={{ minWidth: SIDE_SLOT_MIN_WIDTH }}>
+              {rightContent ?? (
+                <View style={{ width: SLOT_PLACEHOLDER_SIZE, height: SLOT_PLACEHOLDER_SIZE }} />
+              )}
+            </View>
+          </View>
+        </Animated.View>
+
+        {/* Scrollable Content */}
+        <AnimatedScrollView
+          showsVerticalScrollIndicator={false}
+          contentContainerStyle={{
+            paddingTop: HEADER_HEIGHT + safeAreaTop,
+            paddingBottom: safeAreaBottom,
+          }}>
+          {children}
+        </AnimatedScrollView>
+      </View>
     </BackgroundGradientView>
   );
 }

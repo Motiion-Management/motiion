@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { View } from 'react-native';
+import { View, ScrollView } from 'react-native';
 import { useQuery } from 'convex/react';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { Text } from '~/components/ui/text';
 import ArrowUpToLine from '~/lib/icons/ArrowUpToLine';
@@ -11,15 +10,7 @@ import { ProjectEditSheet } from '~/components/projects/ProjectEditSheet';
 import { api } from '@packages/backend/convex/_generated/api';
 import { type Id } from '@packages/backend/convex/_generated/dataModel';
 import { Button } from '../ui/button';
-import { Icon } from '~/lib/icons/Icon';
-import { useTabScroll } from '~/components/layouts/TabScrollContext';
-import Animated, {
-  useSharedValue,
-  useAnimatedStyle,
-  withTiming,
-  interpolate,
-  Extrapolate,
-} from 'react-native-reanimated';
+import Animated, { useSharedValue, useAnimatedStyle, withTiming } from 'react-native-reanimated';
 
 // Map display tab names to project types
 const TAB_TO_TYPE_MAP: Record<string, string> = {
@@ -30,57 +21,27 @@ const TAB_TO_TYPE_MAP: Record<string, string> = {
 
 const TABS = ['Television/Film', 'Music Videos', 'Live/Stage Performance'];
 
-// Layout constants
-const HEADER_HEIGHT_COLLAPSED = 60; // From TabScreenLayout
-const STICKY_THRESHOLD = 150; // ScrollY value where header should start sticking
-
 export function ProfessionalExperienceSection({
-  isHeaderOpen,
-  onHeaderChangeIntent,
+  isCardsOpen,
+  onToggle,
 }: {
-  isHeaderOpen: boolean;
-  onHeaderChangeIntent: () => void;
+  isCardsOpen: boolean;
+  onToggle: () => void;
 }) {
   const [isSheetOpen, setIsSheetOpen] = useState(false);
   const [selectedProjectId, setSelectedProjectId] = useState<Id<'projects'> | undefined>(undefined);
   const [activeTab, setActiveTab] = useState(TABS[0]);
 
-  const { scrollY } = useTabScroll();
-  const { top: safeAreaTop } = useSafeAreaInsets();
-
   // Rotation animation for the button
   const rotation = useSharedValue(0);
 
   useEffect(() => {
-    rotation.value = withTiming(isHeaderOpen ? 0 : 180, { duration: 300 });
-  }, [isHeaderOpen]);
+    rotation.value = withTiming(isCardsOpen ? 0 : 180, { duration: 300 });
+  }, [isCardsOpen]);
 
   const animatedIconStyle = useAnimatedStyle(() => {
     return {
       transform: [{ rotate: `${rotation.value}deg` }],
-    };
-  });
-
-  // Sticky positioning for the header section
-  const stickyHeaderStyle = useAnimatedStyle(() => {
-    const stickyOffset = HEADER_HEIGHT_COLLAPSED + safeAreaTop;
-    const shouldStick = scrollY.value >= STICKY_THRESHOLD;
-
-    if (shouldStick) {
-      return {
-        position: 'absolute',
-        top: stickyOffset,
-        left: 0,
-        right: 0,
-        zIndex: 5,
-        backgroundColor: '#000000',
-        paddingHorizontal: 16,
-      };
-    }
-
-    return {
-      position: 'relative',
-      paddingHorizontal: 0,
     };
   });
 
@@ -104,15 +65,15 @@ export function ProfessionalExperienceSection({
   const experiences = getExperiencesForTab(activeTab);
 
   return (
-    <View className="gap-6 px-4">
-      {/* Sticky Header Section */}
-      <Animated.View style={stickyHeaderStyle} className="gap-6">
+    <View className="flex-1 gap-6">
+      {/* Header Section */}
+      <View className="gap-6 pl-4">
         {/* Header */}
-        <View className="flex-row items-center justify-between">
+        <View className="flex-row items-center justify-between pr-4">
           <Text variant="header4" className="text-text-default">
             Professional Experience
           </Text>
-          <Button onPress={onHeaderChangeIntent} variant="tertiary" size="icon">
+          <Button onPress={onToggle} variant="tertiary" size="icon">
             <Animated.View style={animatedIconStyle}>
               <ArrowUpToLine className="text-text-default" size={20} />
             </Animated.View>
@@ -121,23 +82,25 @@ export function ProfessionalExperienceSection({
 
         {/* Tabs */}
         <SearchTabs tabs={TABS} activeTab={activeTab} onTabChange={setActiveTab} />
-      </Animated.View>
-
-      {/* Tab Content */}
-      <View className="gap-4 py-2">
-        {experiences.map((item) => (
-          <ListItem
-            key={item.id}
-            variant="Experience"
-            organizer={item.organizer}
-            title={item.title}
-            onPress={() => {
-              setSelectedProjectId(item.id as Id<'projects'>);
-              setIsSheetOpen(true);
-            }}
-          />
-        ))}
       </View>
+
+      {/* Scrollable Tab Content */}
+      <ScrollView className="px-4" showsVerticalScrollIndicator={false}>
+        <View className="gap-4 py-2 pb-32">
+          {experiences.map((item) => (
+            <ListItem
+              key={item.id}
+              variant="Experience"
+              organizer={item.organizer}
+              title={item.title}
+              onPress={() => {
+                setSelectedProjectId(item.id as Id<'projects'>);
+                setIsSheetOpen(true);
+              }}
+            />
+          ))}
+        </View>
+      </ScrollView>
 
       {/* Project Edit Sheet */}
       <ProjectEditSheet
