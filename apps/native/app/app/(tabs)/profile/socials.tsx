@@ -1,8 +1,9 @@
-import React from 'react';
-import { View } from 'react-native';
+import React from 'react'
+import { View, ScrollView } from 'react-native'
 
-import { TabScreenLayout } from '~/components/layouts/TabScreenLayout';
-import { Text } from '~/components/ui/text';
+import { Text } from '~/components/ui/text'
+import { TabScreenLayout } from '~/components/layouts/TabScreenLayout'
+import { SocialsForm } from '~/components/forms/onboarding/SocialsForm'
 
 export default function SocialsScreen() {
   return (
@@ -11,14 +12,23 @@ export default function SocialsScreen() {
         left: 'back',
         middle: 'Socials',
       }}>
-      <View className="flex-1 items-center justify-center p-4">
-        <Text variant="header4" className="text-text-default">
-          Socials
-        </Text>
-        <Text variant="body" className="mt-2 text-text-low">
-          Social media links will be displayed here
-        </Text>
+      <View className="flex-1 px-4">
+        <ScrollView showsVerticalScrollIndicator={false}>
+          {/* Description text */}
+          <Text variant="body" className="mb-8 text-text-low">
+            Add your social media links to share with casting directors and collaborators
+          </Text>
+
+          <View className="gap-8">
+            {/* Socials form - auto-saves on change */}
+            <SocialsForm
+              initialValues={{ socials: {} }}
+              onSubmit={async () => {}}
+              onValidChange={() => {}}
+            />
+          </View>
+        </ScrollView>
       </View>
     </TabScreenLayout>
-  );
+  )
 }

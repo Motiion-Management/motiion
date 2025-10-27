@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, ScrollView } from 'react-native';
+import { View, ScrollView, TouchableOpacity } from 'react-native';
 import {
   Accordion,
   AccordionContent,
@@ -7,7 +7,7 @@ import {
   AccordionTrigger,
 } from '~/components/ui/accordion';
 import { Text } from '~/components/ui/text';
-import { ProjectCarousel } from './ProjectCarousel';
+import { Icon } from '~/lib/icons/Icon';
 import { type DancerProfileData } from '@packages/backend/convex/dancers';
 import { TypecastDetails } from './TypecastDetails';
 
@@ -16,7 +16,7 @@ interface ProfileAboutTabProps {
 }
 
 export function ProfileAboutTab({ profileData }: ProfileAboutTabProps) {
-  const { dancer, recentProjects, agency } = profileData;
+  const { dancer, agency } = profileData;
   const workLocations = dancer.workLocation || [];
   const genres = dancer.genres || [];
   const representation = dancer.representation;
@@ -121,12 +121,60 @@ export function ProfileAboutTab({ profileData }: ProfileAboutTabProps) {
             </Text>
           </AccordionTrigger>
           <AccordionContent>
-            <View className="px-4">
-              <Text variant="body" className="text-text-low">
-                Social links will be displayed here
-              </Text>
-              {/* TODO: Implement social links display when links data is available */}
-            </View>
+            {dancer.links?.socials &&
+              Object.keys(dancer.links.socials).some(
+                (key) => dancer.links?.socials?.[key as keyof typeof dancer.links.socials]
+              ) ? (
+              <View className="flex-row flex-wrap gap-4 px-4">
+                {/* Note: Social media logo icons require custom SF Symbols */}
+                {dancer.links.socials.instagram && (
+                  <TouchableOpacity
+                    onPress={() => {
+                      /* TODO: Open link */
+                    }}>
+                    <Icon name={'logo.instagram' as any} size={32} className="text-icon-default" />
+                  </TouchableOpacity>
+                )}
+                {dancer.links.socials.youtube && (
+                  <TouchableOpacity
+                    onPress={() => {
+                      /* TODO: Open link */
+                    }}>
+                    <Icon name={'logo.youtube' as any} size={32} className="text-icon-default" />
+                  </TouchableOpacity>
+                )}
+                {dancer.links.socials.tiktok && (
+                  <TouchableOpacity
+                    onPress={() => {
+                      /* TODO: Open link */
+                    }}>
+                    <Icon name={'logo.tiktok' as any} size={32} className="text-icon-default" />
+                  </TouchableOpacity>
+                )}
+                {dancer.links.socials.whatsapp && (
+                  <TouchableOpacity
+                    onPress={() => {
+                      /* TODO: Open link */
+                    }}>
+                    <Icon name={'logo.whatsapp' as any} size={32} className="text-icon-default" />
+                  </TouchableOpacity>
+                )}
+                {dancer.links.socials.twitter && (
+                  <TouchableOpacity
+                    onPress={() => {
+                      /* TODO: Open link */
+                    }}>
+                    <Icon name={'logo.x' as any} size={32} className="text-icon-default" />
+                  </TouchableOpacity>
+                )}
+              </View>
+            ) : (
+              <View className="px-4">
+                <Text variant="body" className="text-text-low">
+                  No social links added yet
+                </Text>
+              </View>
+            )}
           </AccordionContent>
         </AccordionItem>
       </Accordion>

@@ -3,15 +3,25 @@ import * as z from 'zod'
 import { useStore } from '@tanstack/react-form'
 import { useConvex } from 'convex/react'
 import { api } from '@packages/backend/convex/_generated/api'
-import { representationFormSchema } from '@packages/backend/convex/schemas/fields/representation'
+import { type RepresentationFormValues } from '@packages/backend/convex/schemas/fields/representation'
 
 import { ValidationModeForm } from '~/components/form/ValidationModeForm'
 import { useAppForm } from '~/components/form/appForm'
 import type { FormHandle, FormProps } from '~/components/forms/onboarding/contracts'
 
+// Local schema for TanStack Form validation (compatible with form library)
+// Note: Using z.string() instead of zid() to avoid type compatibility issues
+const agentFormValidationSchema = z.object({
+  representation: z.object({
+    agencyId: z.string().optional(),
+    displayRep: z.boolean().optional(),
+    tipDismissed: z.boolean().optional(),
+  }).optional(),
+})
+
 // Backward compatibility export
-export const agentSchema = representationFormSchema
-export type AgentValues = z.infer<typeof representationFormSchema>
+export const agentSchema = agentFormValidationSchema
+export type AgentValues = RepresentationFormValues
 
 export const AgentForm = forwardRef<FormHandle, FormProps<AgentValues>>(function AgentForm(
   { initialValues, onSubmit, onValidChange },
@@ -21,7 +31,7 @@ export const AgentForm = forwardRef<FormHandle, FormProps<AgentValues>>(function
 
   const form = useAppForm({
     defaultValues: initialValues,
-    validators: { onChange: agentSchema },
+    validators: { onChange: agentFormValidationSchema as any },
     onSubmit: async ({ value }) => onSubmit(value),
   })
 

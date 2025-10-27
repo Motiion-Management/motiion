@@ -51,6 +51,7 @@ import type * as schemas_fields_location from "../schemas/fields/location.js";
 import type * as schemas_fields_representation from "../schemas/fields/representation.js";
 import type * as schemas_fields_sagAftraId from "../schemas/fields/sagAftraId.js";
 import type * as schemas_fields_sizing from "../schemas/fields/sizing.js";
+import type * as schemas_fields_socials from "../schemas/fields/socials.js";
 import type * as schemas_fields_workLocation from "../schemas/fields/workLocation.js";
 import type * as schemas_highlights from "../schemas/highlights.js";
 import type * as schemas_projects from "../schemas/projects.js";
@@ -111,6 +112,7 @@ declare const fullApi: ApiFromModules<{
   "schemas/fields/representation": typeof schemas_fields_representation;
   "schemas/fields/sagAftraId": typeof schemas_fields_sagAftraId;
   "schemas/fields/sizing": typeof schemas_fields_sizing;
+  "schemas/fields/socials": typeof schemas_fields_socials;
   "schemas/fields/workLocation": typeof schemas_fields_workLocation;
   "schemas/highlights": typeof schemas_highlights;
   "schemas/projects": typeof schemas_projects;
