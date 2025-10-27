@@ -1,12 +1,12 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { View, Share } from 'react-native';
-import Animated, { FadeIn, FadeOut } from 'react-native-reanimated';
+import Animated, { FadeIn, FadeOut, useAnimatedStyle } from 'react-native-reanimated';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useLocalSearchParams, router, Redirect } from 'expo-router';
 import { captureRef } from 'react-native-view-shot';
 import * as DropdownMenu from 'zeego/dropdown-menu';
 import * as Haptics from 'expo-haptics';
-import Transition from 'react-native-screen-transitions';
+import Transition, { useScreenAnimation } from 'react-native-screen-transitions';
 import { Image as ExpoImage } from 'expo-image';
 import { type Id } from '@packages/backend/convex/_generated/dataModel';
 import { useDancerProfileQuery } from '~/hooks/queries/useDancerProfileQuery';
@@ -21,6 +21,7 @@ import { QRCodeDialog } from '~/components/dancer-profile/qr';
 import { Icon } from '~/lib/icons/Icon';
 import { Button } from '~/components/ui/button';
 import { Text } from '~/components/ui/text';
+import { BackgroundGradientView } from '~/components/ui/background-gradient-view';
 
 function TopBar({ profileUrl }: { profileUrl: string }) {
   const handleClose = () => {
@@ -78,6 +79,17 @@ export default function DancerScreen() {
     toggle,
     animations,
   } = useProfileSheet();
+
+  // Get screen transition progress
+  const screenAnimation = useScreenAnimation();
+
+  // Animate gradient opacity based on screen transition progress
+  const gradientStyle = useAnimatedStyle(() => {
+    const progress = screenAnimation.value.current.progress;
+    return {
+      opacity: progress,
+    };
+  });
 
   // Haptic feedback for transition
   useEffect(() => {
@@ -192,6 +204,14 @@ export default function DancerScreen() {
 
   return (
     <View style={{ flex: 1 }}>
+      {/* Animated background gradient - synced with screen transition */}
+      <Animated.View
+        style={[{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0 }, gradientStyle]}>
+        <BackgroundGradientView>
+          <View />
+        </BackgroundGradientView>
+      </Animated.View>
+
       <Transition.MaskedView style={{ flex: 1 }}>
         {headshotUrls.length > 0 ? (
           <HeadshotCarousel
