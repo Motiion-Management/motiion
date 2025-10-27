@@ -1,13 +1,13 @@
-import React, { useState, useCallback } from 'react'
-import { TouchableOpacity, View } from 'react-native'
-import { cva, type VariantProps } from 'class-variance-authority'
+import React, { useState, useCallback } from 'react';
+import { TouchableOpacity, View } from 'react-native';
+import { cva, type VariantProps } from 'class-variance-authority';
 
-import { Text } from '~/components/ui/text'
-import { cn } from '~/lib/cn'
-import Check from '~/lib/icons/Check'
-import Plus from '~/lib/icons/Plus'
-import { type SocialPlatform, getSocialPlatformConfig } from '~/config/socialPlatforms'
-import { SocialEditSheet } from './SocialEditSheet'
+import { Text } from '~/components/ui/text';
+import { cn } from '~/lib/cn';
+import Check from '~/lib/icons/Check';
+import Plus from '~/lib/icons/Plus';
+import { type SocialPlatform, getSocialPlatformConfig } from '~/config/socialPlatforms';
+import { SocialEditSheet } from './SocialEditSheet';
 
 const socialCardVariants = cva(
   'w-full flex-row items-center justify-between rounded-full border px-5 py-4',
@@ -22,34 +22,34 @@ const socialCardVariants = cva(
       variant: 'default',
     },
   }
-)
+);
 
 interface SocialCardProps extends VariantProps<typeof socialCardVariants> {
-  platform: SocialPlatform
-  url?: string
-  onSave: (url: string) => Promise<void>
-  onDelete?: () => Promise<void>
-  className?: string
+  platform: SocialPlatform;
+  handle?: string;
+  onSave: (handle: string) => Promise<void>;
+  onDelete?: () => Promise<void>;
+  className?: string;
 }
 
 export function SocialCard({
   platform,
-  url,
+  handle,
   variant,
   onSave,
   onDelete,
   className,
 }: SocialCardProps) {
-  const [isSheetOpen, setIsSheetOpen] = useState(false)
-  const config = getSocialPlatformConfig(platform)
+  const [isSheetOpen, setIsSheetOpen] = useState(false);
+  const config = getSocialPlatformConfig(platform);
 
   const handlePress = useCallback(() => {
-    setIsSheetOpen(true)
-  }, [])
+    setIsSheetOpen(true);
+  }, []);
 
-  const hasSocial = !!url
-  const displayVariant = hasSocial ? 'completed' : variant || 'default'
-  const displayText = hasSocial ? config?.displayName : `Add ${config?.name}`
+  const hasSocial = !!handle;
+  const displayVariant = hasSocial ? 'completed' : variant || 'default';
+  const displayText = hasSocial ? handle : `Add ${config?.name}`;
 
   return (
     <>
@@ -76,10 +76,10 @@ export function SocialCard({
         isOpen={isSheetOpen}
         onOpenChange={setIsSheetOpen}
         platform={platform}
-        currentUrl={url}
+        currentHandle={handle}
         onSave={onSave}
         onDelete={onDelete}
       />
     </>
-  )
+  );
 }

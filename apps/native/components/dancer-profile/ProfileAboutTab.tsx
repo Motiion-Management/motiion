@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, ScrollView, TouchableOpacity } from 'react-native';
+import { View, ScrollView, TouchableOpacity, Linking } from 'react-native';
 import {
   Accordion,
   AccordionContent,
@@ -7,9 +7,16 @@ import {
   AccordionTrigger,
 } from '~/components/ui/accordion';
 import { Text } from '~/components/ui/text';
-import { Icon } from '~/lib/icons/Icon';
 import { type DancerProfileData } from '@packages/backend/convex/dancers';
 import { TypecastDetails } from './TypecastDetails';
+import { buildSocialUrl } from '~/config/socialPlatforms';
+import {
+  InstagramIcon,
+  YouTubeIcon,
+  TikTokIcon,
+  WhatsAppIcon,
+  TwitterIcon,
+} from '~/components/socials/icons';
 
 interface ProfileAboutTabProps {
   profileData: DancerProfileData;
@@ -29,6 +36,23 @@ export function ProfileAboutTab({ profileData }: ProfileAboutTabProps) {
   if (sagAftraId) {
     affiliations.push('SAG-AFTRA');
   }
+
+  const openSocialLink = async (
+    platform: 'instagram' | 'twitter' | 'tiktok' | 'youtube' | 'whatsapp',
+    handle: string
+  ) => {
+    try {
+      const url = buildSocialUrl(platform, handle);
+      const canOpen = await Linking.canOpenURL(url);
+      if (canOpen) {
+        await Linking.openURL(url);
+      } else {
+        console.warn(`Cannot open URL: ${url}`);
+      }
+    } catch (error) {
+      console.error('Failed to open social link:', error);
+    }
+  };
 
   return (
     <ScrollView className="flex-1" showsVerticalScrollIndicator={false}>
@@ -122,49 +146,43 @@ export function ProfileAboutTab({ profileData }: ProfileAboutTabProps) {
           </AccordionTrigger>
           <AccordionContent>
             {dancer.links?.socials &&
-              Object.keys(dancer.links.socials).some(
-                (key) => dancer.links?.socials?.[key as keyof typeof dancer.links.socials]
-              ) ? (
-              <View className="flex-row flex-wrap gap-4 px-4">
-                {/* Note: Social media logo icons require custom SF Symbols */}
-                {dancer.links.socials.instagram && (
+            Object.keys(dancer.links.socials).some(
+              (key) => dancer.links?.socials?.[key as keyof typeof dancer.links.socials]
+            ) ? (
+              <View className="flex-row gap-3 px-4">
+                {dancer.links?.socials?.instagram && (
                   <TouchableOpacity
-                    onPress={() => {
-                      /* TODO: Open link */
-                    }}>
-                    <Icon name={'logo.instagram' as any} size={32} className="text-icon-default" />
+                    onPress={() => openSocialLink('instagram', dancer.links?.socials?.instagram!)}
+                    className="h-12 w-12 items-center justify-center rounded-full bg-surface-tint">
+                    <InstagramIcon size={24} />
                   </TouchableOpacity>
                 )}
-                {dancer.links.socials.youtube && (
+                {dancer.links?.socials?.youtube && (
                   <TouchableOpacity
-                    onPress={() => {
-                      /* TODO: Open link */
-                    }}>
-                    <Icon name={'logo.youtube' as any} size={32} className="text-icon-default" />
+                    onPress={() => openSocialLink('youtube', dancer.links?.socials?.youtube!)}
+                    className="h-12 w-12 items-center justify-center rounded-full bg-surface-tint">
+                    <YouTubeIcon size={24} />
                   </TouchableOpacity>
                 )}
-                {dancer.links.socials.tiktok && (
+                {dancer.links?.socials?.tiktok && (
                   <TouchableOpacity
-                    onPress={() => {
-                      /* TODO: Open link */
-                    }}>
-                    <Icon name={'logo.tiktok' as any} size={32} className="text-icon-default" />
+                    onPress={() => openSocialLink('tiktok', dancer.links?.socials?.tiktok!)}
+                    className="h-12 w-12 items-center justify-center rounded-full bg-surface-tint">
+                    <TikTokIcon size={24} />
                   </TouchableOpacity>
                 )}
-                {dancer.links.socials.whatsapp && (
+                {dancer.links?.socials?.whatsapp && (
                   <TouchableOpacity
-                    onPress={() => {
-                      /* TODO: Open link */
-                    }}>
-                    <Icon name={'logo.whatsapp' as any} size={32} className="text-icon-default" />
+                    onPress={() => openSocialLink('whatsapp', dancer.links?.socials?.whatsapp!)}
+                    className="h-12 w-12 items-center justify-center rounded-full bg-surface-tint">
+                    <WhatsAppIcon size={24} />
                   </TouchableOpacity>
                 )}
-                {dancer.links.socials.twitter && (
+                {dancer.links?.socials?.twitter && (
                   <TouchableOpacity
-                    onPress={() => {
-                      /* TODO: Open link */
-                    }}>
-                    <Icon name={'logo.x' as any} size={32} className="text-icon-default" />
+                    onPress={() => openSocialLink('twitter', dancer.links?.socials?.twitter!)}
+                    className="h-12 w-12 items-center justify-center rounded-full bg-surface-tint">
+                    <TwitterIcon size={24} />
                   </TouchableOpacity>
                 )}
               </View>

@@ -1,25 +1,25 @@
-import React from 'react'
-import { View, ScrollView } from 'react-native'
-import { useQuery, useMutation } from 'convex/react'
-import { api } from '@packages/backend/convex/_generated/api'
+import React from 'react';
+import { View, ScrollView } from 'react-native';
+import { useQuery, useMutation } from 'convex/react';
+import { api } from '@packages/backend/convex/_generated/api';
 
-import { Text } from '~/components/ui/text'
-import { TabScreenLayout } from '~/components/layouts/TabScreenLayout'
-import { AgentForm, type AgentValues } from '~/components/forms/onboarding/AgentForm'
+import { Text } from '~/components/ui/text';
+import { TabScreenLayout } from '~/components/layouts/TabScreenLayout';
+import { AgentForm, type AgentValues } from '~/components/forms/onboarding/AgentForm';
 
 export default function AgentScreen() {
-  const dancerProfile = useQuery(api.dancers.getMyDancerProfile, {})
-  const updateDancerProfile = useMutation(api.dancers.updateMyDancerProfile)
+  const dancerProfile = useQuery(api.dancers.getMyDancerProfile, {});
+  const updateDancerProfile = useMutation(api.dancers.updateMyDancerProfile);
 
   const handleSave = async (values: AgentValues) => {
     try {
       await updateDancerProfile({
         representation: values.representation,
-      })
+      });
     } catch (error) {
-      console.error('Failed to save agent information:', error)
+      console.error('Failed to save agent information:', error);
     }
-  }
+  };
 
   return (
     <TabScreenLayout
@@ -47,5 +47,5 @@ export default function AgentScreen() {
         </ScrollView>
       </View>
     </TabScreenLayout>
-  )
+  );
 }

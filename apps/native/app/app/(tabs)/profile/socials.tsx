@@ -1,9 +1,9 @@
-import React from 'react'
-import { View, ScrollView } from 'react-native'
+import React from 'react';
+import { View, ScrollView } from 'react-native';
 
-import { Text } from '~/components/ui/text'
-import { TabScreenLayout } from '~/components/layouts/TabScreenLayout'
-import { SocialsForm } from '~/components/forms/onboarding/SocialsForm'
+import { Text } from '~/components/ui/text';
+import { TabScreenLayout } from '~/components/layouts/TabScreenLayout';
+import { SocialsForm } from '~/components/forms/onboarding/SocialsForm';
 
 export default function SocialsScreen() {
   return (
@@ -30,5 +30,5 @@ export default function SocialsScreen() {
         </ScrollView>
       </View>
     </TabScreenLayout>
-  )
+  );
 }
