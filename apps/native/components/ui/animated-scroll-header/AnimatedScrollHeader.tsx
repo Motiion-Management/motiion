@@ -1,18 +1,9 @@
-import React, { createContext, useContext, type ReactNode } from 'react';
+import React, { type ReactNode } from 'react';
 import { useAnimatedScrollHeader } from './useAnimatedScrollHeader';
-import type { AnimatedScrollHeaderConfig, AnimatedScrollHeaderContextValue } from './types';
+import type { AnimatedScrollHeaderConfig } from './types';
+import { AnimatedScrollHeaderContext } from './context';
 import { Header } from './Header';
 import { ScrollView } from './ScrollView';
-
-const AnimatedScrollHeaderContext = createContext<AnimatedScrollHeaderContextValue | null>(null);
-
-export function useAnimatedScrollHeaderContext() {
-  const context = useContext(AnimatedScrollHeaderContext);
-  if (!context) {
-    throw new Error('useAnimatedScrollHeaderContext must be used within AnimatedScrollHeader');
-  }
-  return context;
-}
 
 interface AnimatedScrollHeaderProps extends AnimatedScrollHeaderConfig {
   children: ReactNode;
