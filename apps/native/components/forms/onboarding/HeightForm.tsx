@@ -1,13 +1,15 @@
 import React, { forwardRef, useEffect, useImperativeHandle, useMemo, useState } from 'react';
 import { View } from 'react-native';
+import { heightFormSchema, type HeightFormValues } from '@packages/backend/convex/schemas/fields';
 
 import { HeightPicker, HeightValue } from '~/components/ui/height-picker';
 import { Text } from '~/components/ui/text';
 import type { FormHandle, FormProps } from '~/components/forms/onboarding/contracts';
 
-export interface HeightValues {
-  height: HeightValue;
-}
+// Backward compatibility export
+export const heightSchema = heightFormSchema;
+
+export type HeightValues = HeightFormValues;
 
 export const HeightForm = forwardRef<FormHandle, FormProps<HeightValues>>(function HeightForm(
   { initialValues, onSubmit, onValidChange },

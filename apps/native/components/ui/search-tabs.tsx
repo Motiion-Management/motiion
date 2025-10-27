@@ -11,33 +11,43 @@ interface SearchTabsProps {
   className?: string;
 }
 
+interface PillTabProps {
+  title: string;
+  active: boolean;
+  onPress: () => void;
+}
+
+function PillTab({ title, active, onPress }: PillTabProps) {
+  return (
+    <TouchableOpacity
+      onPress={onPress}
+      activeOpacity={0.7}
+      className={`rounded-[27px] px-4 py-1.5 ${
+        active ? 'bg-background-accent' : 'bg-surface-tint'
+      }`}>
+      <Text variant="bodySm" className="text-text-default">
+        {title}
+      </Text>
+    </TouchableOpacity>
+  );
+}
+
 export function SearchTabs({ tabs, activeTab, onTabChange, className }: SearchTabsProps) {
   return (
     <View className={cn('w-full', className)}>
       <ScrollView
         horizontal
         showsHorizontalScrollIndicator={false}
-        contentContainerClassName="gap-2 px-4"
+        contentContainerClassName="ml-4 gap-2"
         className="flex-row">
         {tabs.map((tab) => {
-          const isActive = tab === activeTab;
           return (
-            <TouchableOpacity
+            <PillTab
               key={tab}
+              title={tab}
+              active={activeTab === tab}
               onPress={() => onTabChange(tab)}
-              activeOpacity={0.7}
-              className={cn(
-                'rounded-[27px] border px-4 py-2',
-                isActive
-                  ? 'border-border-accent bg-background-accent'
-                  : 'border-transparent bg-surface-tint'
-              )}>
-              <Text
-                variant="bodySm"
-                className={cn(isActive ? 'font-medium text-text-high' : 'text-text-low')}>
-                {tab}
-              </Text>
-            </TouchableOpacity>
+            />
           );
         })}
       </ScrollView>

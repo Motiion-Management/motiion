@@ -11,8 +11,7 @@
     { "path": "./apps/web" },
     { "path": "./packages/backend" },
     { "path": "./packages/web-ui" },
-    { "path": "./packages/primatives" },
-    { "path": "./packages/zodvex" }
+    { "path": "./packages/primatives" }
   ],
   "files": []
 }

@@ -25,10 +25,12 @@ export const getUrl = authQuery({
 // Get URLs for multiple storage IDs
 export const getUrls = authQuery({
   args: { storageIds: z.array(zid('_storage')) },
-  returns: z.array(z.object({
-    storageId: zid('_storage'),
-    url: z.string().nullable()
-  })),
+  returns: z.array(
+    z.object({
+      storageId: zid('_storage'),
+      url: z.string().nullable()
+    })
+  ),
   handler: async (ctx, { storageIds }) => {
     const urls = await Promise.all(
       storageIds.map(async (storageId) => ({
@@ -37,6 +39,16 @@ export const getUrls = authQuery({
       }))
     )
     return urls
+  }
+})
+
+// Delete a file from storage
+export const deleteFile = authMutation({
+  args: { storageId: zid('_storage') },
+  returns: z.null(),
+  handler: async (ctx, { storageId }) => {
+    await ctx.storage.delete(storageId)
+    return null
   }
 })
 

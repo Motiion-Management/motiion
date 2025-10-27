@@ -8,7 +8,7 @@ import * as ImagePicker from 'expo-image-picker';
 import * as ImageManipulator from 'expo-image-manipulator';
 
 import { ImagePreview } from './ImagePreview';
-import { ImageUploadCard } from './ImageUploadCard';
+import { UploadPlaceholder } from '../ui/upload-placeholder';
 import { ActivityIndicator } from '../ui/activity-indicator';
 import { Text } from '../ui/text';
 
@@ -31,7 +31,7 @@ interface HeadshotWithUrl {
   position?: number;
 }
 
-export function MultiImageUploadOptimized({ onImageCountChange }: MultiImageUploadProps) {
+export function MultiImageUpload({ onImageCountChange }: MultiImageUploadProps) {
   const [uploadState, setUploadState] = useState<UploadState>({
     isUploading: false,
     progress: 0,
@@ -43,6 +43,7 @@ export function MultiImageUploadOptimized({ onImageCountChange }: MultiImageUplo
   // Convex mutations and queries
   const generateUploadUrl = useMutation(api.files.generateUploadUrl);
   const updateMyDancerProfile = useMutation(api.dancers.updateMyDancerProfile);
+  const deleteFile = useMutation(api.files.deleteFile);
 
   // Get headshots from profile
   const profile = useQuery(api.dancers.getMyDancerProfile, {});
@@ -76,12 +77,12 @@ export function MultiImageUploadOptimized({ onImageCountChange }: MultiImageUplo
     }
   }, [headshotsMetadata, getHeadshotUrls]);
 
-  const canAddMore = headshotsWithUrls.length < 5;
+  const canAddMore = headshotsWithUrls.length < 4;
 
   const imagePickerOptions = {
     mediaTypes: ImagePicker.MediaTypeOptions.Images,
     allowsMultipleSelection: true,
-    selectionLimit: 3 - headshotsWithUrls.length,
+    selectionLimit: 4 - headshotsWithUrls.length,
     quality: 1, // Keep original quality; we compress in optimizer
   };
 
@@ -175,7 +176,7 @@ export function MultiImageUploadOptimized({ onImageCountChange }: MultiImageUplo
         // Save all headshots at once by appending to existing headshots
         const currentHeadshots = profile?.headshots ?? [];
         await updateMyDancerProfile({
-          headshots: [...currentHeadshots, ...headshots]
+          headshots: [...currentHeadshots, ...headshots],
         });
 
         setUploadState({ isUploading: false, progress: 100, error: null });
@@ -189,12 +190,18 @@ export function MultiImageUploadOptimized({ onImageCountChange }: MultiImageUplo
         setUploadState({ isUploading: false, progress: 0, error: errorMessage });
       }
     },
-    [generateUploadUrl, updateMyDancerProfile, profile, headshotsWithUrls.length, onImageCountChange]
+    [
+      generateUploadUrl,
+      updateMyDancerProfile,
+      profile,
+      headshotsWithUrls.length,
+      onImageCountChange,
+    ]
   );
 
   const handleImageUpload = useCallback(async () => {
-    // Check UI limit of 3 images for this screen
-    if (headshotsWithUrls.length >= 3) return;
+    // Check UI limit of 4 images for this screen
+    if (headshotsWithUrls.length >= 4) return;
     if (!canAddMore) return;
 
     // Show image source selector with proper upload flow
@@ -223,23 +230,46 @@ export function MultiImageUploadOptimized({ onImageCountChange }: MultiImageUplo
 
   const handleRemoveImage = useCallback(
     async (storageId: string) => {
-      try {
-        const currentHeadshots = profile?.headshots ?? [];
-        const updatedHeadshots = currentHeadshots.filter((h: any) => h.storageId !== storageId);
-        await updateMyDancerProfile({ headshots: updatedHeadshots });
-        if (onImageCountChange) {
-          onImageCountChange(Math.max(0, headshotsWithUrls.length - 1));
-        }
-      } catch (error) {
-        console.error('Failed to remove image:', error);
-      }
+      Alert.alert('Remove Image', 'Are you sure you want to remove this headshot?', [
+        {
+          text: 'Cancel',
+          style: 'cancel',
+        },
+        {
+          text: 'Remove',
+          style: 'destructive',
+          onPress: async () => {
+            try {
+              const currentHeadshots = profile?.headshots ?? [];
+              const updatedHeadshots = currentHeadshots.filter(
+                (h: any) => h.storageId !== storageId
+              );
+              await updateMyDancerProfile({ headshots: updatedHeadshots });
+
+              // Delete the actual file from storage
+              try {
+                await deleteFile({ storageId });
+              } catch (error) {
+                console.error('Failed to delete file from storage:', error);
+                // Continue anyway since the reference is already removed
+              }
+
+              if (onImageCountChange) {
+                onImageCountChange(Math.max(0, headshotsWithUrls.length - 1));
+              }
+            } catch (error) {
+              console.error('Failed to remove image:', error);
+            }
+          },
+        },
+      ]);
     },
-    [updateMyDancerProfile, profile, headshotsWithUrls.length, onImageCountChange]
+    [updateMyDancerProfile, deleteFile, profile, headshotsWithUrls.length, onImageCountChange]
   );
 
-  // Derive first 3 headshots for this UI and remaining slots
-  const sortableHeadshots = headshotsWithUrls.slice(0, 3);
-  const remainingSlots = Math.max(0, 3 - sortableHeadshots.length);
+  // Derive first 4 headshots for this UI and remaining slots
+  const sortableHeadshots = headshotsWithUrls.slice(0, 4);
+  const remainingSlots = Math.max(0, 4 - sortableHeadshots.length);
   const uiCanAddMore = remainingSlots > 0 && canAddMore;
 
   const handleDragEnd = useCallback(
@@ -269,28 +299,28 @@ export function MultiImageUploadOptimized({ onImageCountChange }: MultiImageUplo
         .map((i) => i.payload);
 
       const prev = headshots;
-      // Optimistic local update (first 3 only)
+      // Optimistic local update (first 4 only)
       setHeadshotsWithUrls((current) => {
-        const tail = current.slice(3);
+        const tail = current.slice(4);
         const updatedFirst = nextHeadshots.map((item, idx) => ({ ...item, position: idx }));
         return [...updatedFirst, ...tail];
       });
 
       // Persist; rollback on failure
       const currentHeadshots = profile?.headshots ?? [];
-      const tail = currentHeadshots.slice(3);
+      const tail = currentHeadshots.slice(4);
       const reorderedHeadshots = [
         ...nextHeadshots.map((h, idx) => ({
           storageId: h.storageId,
           uploadDate: h.uploadDate || new Date().toISOString(),
           title: h.title,
-          position: idx
+          position: idx,
         })),
-        ...tail
+        ...tail,
       ];
       updateMyDancerProfile({ headshots: reorderedHeadshots as any }).catch(() => {
         setHeadshotsWithUrls((current) => {
-          const tail = current.slice(3);
+          const tail = current.slice(4);
           const updatedFirst = prev.map((item, idx) => ({ ...item, position: idx }));
           return [...updatedFirst, ...tail];
         });
@@ -310,7 +340,7 @@ export function MultiImageUploadOptimized({ onImageCountChange }: MultiImageUplo
   }
 
   return (
-    <View className="flex-1 gap-4">
+    <View className="flex-1 gap-4 py-4">
       {/* Sortable uploaded images */}
       <View onLayout={(e) => setContainerWidth(e.nativeEvent.layout.width)} className="w-full">
         {containerWidth != null && (
@@ -346,8 +376,7 @@ export function MultiImageUploadOptimized({ onImageCountChange }: MultiImageUplo
 
               let uploadIdx = 0;
               return allItems.map((item, index) => {
-                const primary = index === 0;
-                const itemWidth = primary ? containerWidth : (containerWidth - 16) / 2;
+                const itemWidth = (containerWidth - 16) / 2;
                 return (
                   <View
                     key={item.key}
@@ -369,15 +398,13 @@ export function MultiImageUploadOptimized({ onImageCountChange }: MultiImageUplo
                       (() => {
                         const isFirstUpload = uploadIdx === 0;
                         uploadIdx += 1;
-                        const shape =
-                          headshots.length === 0 && isFirstUpload ? 'primary' : 'secondary';
                         return (
                           <Sortable.Handle mode="fixed-order">
-                            <ImageUploadCard
-                              shape={shape}
+                            <UploadPlaceholder
                               onPress={handleImageUpload}
                               isActive={isFirstUpload}
                               disabled={uploadState.isUploading || !uiCanAddMore}
+                              height={234}
                             />
                           </Sortable.Handle>
                         );

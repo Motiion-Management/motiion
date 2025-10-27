@@ -1,4 +1,4 @@
-import { Href, Stack, usePathname, useRouter } from 'expo-router';
+import { Href, usePathname, useRouter, withLayoutContext } from 'expo-router';
 import React, { useEffect, useRef } from 'react';
 import { ActivityIndicator, View } from 'react-native';
 import { useAuth } from '@clerk/clerk-expo';
@@ -7,6 +7,11 @@ import { BackgroundGradientView } from '~/components/ui/background-gradient-view
 import DevOnboardingTools from '~/components/dev/DevOnboardingTools';
 import { useOnboardingStatus } from '~/hooks/useOnboardingStatus';
 import { useInitialOnboardingStatus } from '~/hooks/useInitialOnboardingStatus';
+import Transition, { createNativeStackNavigator } from 'react-native-screen-transitions';
+
+// Create custom Stack with screen-transitions support
+const { Navigator } = createNativeStackNavigator();
+const Stack = withLayoutContext(Navigator);
 
 /**
  * App layout - handles authentication with declarative redirects
@@ -119,7 +124,27 @@ export default function AppLayout() {
         <Stack.Screen
           name="dancers/[id]"
           options={{
-            animation: 'default',
+            ...Transition.presets.SharedIGImage(),
+            transitionSpec: {
+              open: {
+                animation: 'spring',
+                config: {
+                  stiffness: 300,
+                  damping: 30,
+                  mass: 0.8,
+                  overshootClamping: false,
+                },
+              },
+              close: {
+                animation: 'spring',
+                config: {
+                  stiffness: 350,
+                  damping: 35,
+                  mass: 0.7,
+                },
+              },
+            },
+            gestureEnabled: false, // Disable swipe gestures (page has many gestures)
           }}
         />
         <Stack.Screen
@@ -130,7 +155,7 @@ export default function AppLayout() {
         />
       </Stack>
       {/* Dev-only floating tools for onboarding iteration */}
-      {/* <DevOnboardingTools /> */}
+      <DevOnboardingTools />
       {!isLoaded && (
         <View className="absolute inset-0 items-center justify-center">
           <ActivityIndicator size="large" />

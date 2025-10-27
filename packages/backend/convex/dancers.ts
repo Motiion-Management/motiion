@@ -100,14 +100,13 @@ export type DancerProfileData = {
   recentProjects: Array<any>
   allProjects: Array<any>
   training: Array<any>
-  agency: (typeof Agencies.zDoc._output) | null
+  agency: typeof Agencies.zDoc._output | null
   isOwnProfile: boolean
 }
 
 // Get the active dancer profile for the authenticated user
 export const getMyDancerProfile = authQuery({
   args: {},
-  returns: Dancers.zDoc.nullable(),
   handler: async (ctx) => {
     if (!ctx.user) return null
 

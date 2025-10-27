@@ -2,14 +2,23 @@ import React, { forwardRef, useEffect, useImperativeHandle } from 'react';
 import { View } from 'react-native';
 import { useMutation } from 'convex/react';
 import { api } from '@packages/backend/convex/_generated/api';
+import {
+  locationFormSchema,
+  type LocationFormValues,
+} from '@packages/backend/convex/schemas/fields';
 
 import { LocationPicker, type PlaceKitLocation } from '~/components/ui/location-picker-placekit';
 import { useLocationForm } from '~/hooks/useLocationForm';
 import type { FormHandle, FormProps } from '~/components/forms/onboarding/contracts';
 
+// This form uses LocationPicker which handles location selection via PlaceKit
+// The shared locationFormSchema is available for backend validation
 export interface LocationValues {
   primaryLocation: PlaceKitLocation | null;
 }
+
+// Backward compatibility export
+export const locationSchema = locationFormSchema;
 
 export const LocationForm = forwardRef<FormHandle, FormProps<LocationValues>>(function LocationForm(
   { initialValues, onSubmit, onValidChange },

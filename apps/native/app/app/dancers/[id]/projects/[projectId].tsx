@@ -6,10 +6,9 @@ import { api } from '@packages/backend/convex/_generated/api';
 import { type Id } from '@packages/backend/convex/_generated/dataModel';
 
 import { Text } from '~/components/ui/text';
-import { TabView, type TabRoute } from '~/components/ui/tabs/TabView';
+import { PagerTabView, type TabRoute } from '~/components/ui/tabs/PagerTabView';
 import { PictureCard } from '~/components/ui/picture-card';
 import { ListActivity } from '~/components/ui/list-activity';
-import { ListItem } from '~/components/ui/list-item';
 import { Avatar, AvatarFallback } from '~/components/ui/avatar';
 import { Button } from '~/components/ui/button';
 import { getInitials, getRoleLabel, getCategoryInfo, formatProjectDate } from '~/lib/project-utils';
@@ -95,7 +94,7 @@ export default function ProjectDetailScreen() {
           </View>
 
           {/* Tabs */}
-          <TabView
+          <PagerTabView
             routes={tabs}
             renderScene={renderScene}
             initialKey="team"

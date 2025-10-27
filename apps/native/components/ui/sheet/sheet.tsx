@@ -13,12 +13,13 @@ import { Text } from '../text';
 
 import { cn } from '~/lib/cn';
 import X from '~/lib/icons/X';
+import { BlurView } from 'expo-blur';
 
-interface SheetProps extends BottomSheetModalProps {
+interface SheetProps extends Omit<BottomSheetModalProps, 'children'> {
+  children?: React.ReactNode;
   label?: string;
   isOpened: boolean;
   onIsOpenedChange: (isOpen: boolean) => void;
-  children: React.ReactNode;
   className?: string;
   backgroundClassName?: string;
   handleClassName?: string;
@@ -38,7 +39,13 @@ interface BottomSheetBackgroundProps {
 }
 
 const BottomSheetBackground = ({ style, className }: BottomSheetBackgroundProps) => {
-  return <View style={style} className={cn('rounded-t-xl bg-surface-default', className)} />;
+  return (
+    <View
+      style={style}
+      className={cn('overflow-hidden rounded-t-xl bg-surface-overlay', className)}>
+      <BlurView intensity={35} className="flex-1" />
+    </View>
+  );
 };
 
 interface BottomSheetHandleProps {
@@ -68,6 +75,7 @@ const SheetContent = forwardRef<SheetRef, SheetProps>(
       handleIndicatorStyle,
       enableCustomHandle = true,
       borderRadius = 'xl',
+      enableDynamicSizing = true,
       ...rest
     },
     ref
@@ -101,7 +109,7 @@ const SheetContent = forwardRef<SheetRef, SheetProps>(
           disappearsOnIndex={-1}
           appearsOnIndex={0}
           pressBehavior="close"
-          opacity={0.8}
+          opacity={0.6}
         />
       ),
       []
@@ -130,7 +138,7 @@ const SheetContent = forwardRef<SheetRef, SheetProps>(
       <BottomSheetModal
         ref={bottomSheetModalRef}
         index={0}
-        enableDynamicSizing
+        enableDynamicSizing={enableDynamicSizing}
         keyboardBehavior="interactive"
         keyboardBlurBehavior="restore"
         android_keyboardInputMode="adjustResize"
@@ -141,8 +149,10 @@ const SheetContent = forwardRef<SheetRef, SheetProps>(
         handleIndicatorStyle={!enableCustomHandle ? handleIndicatorStyle : undefined}
         enablePanDownToClose
         {...rest}>
-        <BottomSheetView>
-          <SafeAreaView edges={['bottom']} className={className}>
+        <BottomSheetView className={enableDynamicSizing ? '' : 'h-full'}>
+          <SafeAreaView
+            edges={['bottom']}
+            className={cn(!enableDynamicSizing && 'flex-1', className)}>
             <View className="flex-row items-center justify-between px-4 pb-4">
               <Text variant="header4" className="text-text-default">
                 {label}

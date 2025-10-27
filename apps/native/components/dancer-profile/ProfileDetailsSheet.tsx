@@ -1,6 +1,6 @@
 import React from 'react';
 import { View } from 'react-native';
-import { TabView, type TabRoute } from '~/components/ui/tabs/TabView';
+import { PagerTabView, type TabRoute } from '~/components/ui/tabs/PagerTabView';
 import { ProfileAboutTab } from './ProfileAboutTab';
 import { ProfileResumeTab } from './ProfileResumeTab';
 import { ProfileVisualsTab } from './ProfileVisualsTab';
@@ -32,7 +32,7 @@ export function ProfileDetailsSheet({ profileData }: ProfileDetailsSheetProps) {
 
   return (
     <View className="min-h-[45vh]">
-      <TabView
+      <PagerTabView
         routes={tabs}
         renderScene={renderScene}
         initialKey="resume"

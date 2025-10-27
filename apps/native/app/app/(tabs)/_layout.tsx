@@ -32,10 +32,10 @@ const CustomTabButton = React.forwardRef<View, CustomTabButtonProps>(
   }
 );
 
-const CustomTabTrigger = ({ route: route, ...rest }: CustomTabButtonProps) => {
+const CustomTabTrigger = ({ route: route, IconComponent, ...rest }: CustomTabButtonProps) => {
   return (
     <TabTrigger name={route} asChild>
-      <CustomTabButton route={route} {...rest} />
+      <CustomTabButton route={route} IconComponent={IconComponent} {...(rest as any)} />
     </TabTrigger>
   );
 };

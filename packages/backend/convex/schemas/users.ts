@@ -2,6 +2,7 @@ import { zid } from 'zodvex'
 import { zodTable, zodToConvex } from 'zodvex'
 import { z } from 'zod'
 import { zFileUploadObjectArray } from './base'
+import { socialsDbField } from './fields/socials'
 import { Doc } from '../_generated/dataModel'
 
 // Profile type definitions
@@ -25,15 +26,7 @@ export const zResume = z.object(resume)
 
 export const links = {
   reel: z.string().optional(),
-  socials: z
-    .object({
-      instagram: z.string().optional(),
-      facebook: z.string().optional(),
-      twitter: z.string().optional(),
-      linkedin: z.string().optional(),
-      tiktok: z.string().optional()
-    })
-    .optional(),
+  socials: socialsDbField,
   other: z.array(z.object({ label: z.string(), url: z.string() })).optional()
 }
 export const zLinks = z.object(links)

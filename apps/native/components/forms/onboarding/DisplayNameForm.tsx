@@ -1,21 +1,18 @@
 import React, { forwardRef, useEffect, useImperativeHandle } from 'react';
-import * as z from 'zod';
 import { View } from 'react-native';
 import { useStore } from '@tanstack/react-form';
 
 import { useAppForm } from '~/components/form/appForm';
 import { ValidationModeForm } from '~/components/form/ValidationModeForm';
 import type { FormHandle, FormProps } from '~/components/forms/onboarding/contracts';
+import {
+  displayNameFormSchema,
+  type DisplayNameFormValues,
+} from '@packages/backend/convex/schemas/fields';
 
-export const displayNameSchema = z.object({
-  displayName: z
-    .string()
-    .min(1, { message: 'Preferred name is required' })
-    .min(2, { message: 'Preferred name must be at least 2 characters' })
-    .max(50, { message: 'Preferred name must be less than 50 characters' }),
-});
-
-export type DisplayNameValues = z.infer<typeof displayNameSchema>;
+// Re-export for backwards compatibility
+export const displayNameSchema = displayNameFormSchema;
+export type DisplayNameValues = DisplayNameFormValues;
 
 export const DisplayNameForm = forwardRef<FormHandle, FormProps<DisplayNameValues>>(
   function DisplayNameForm({ initialValues, onSubmit, onDirtyChange, onValidChange }, ref) {

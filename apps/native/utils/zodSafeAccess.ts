@@ -165,19 +165,32 @@ export function hasDatetimeCheck(schema: z.ZodTypeAny): boolean {
 
 /**
  * Safely get the shape from a Zod object schema
+ * Uses Zod v4 compatible patterns from zodvex
  */
 export function getObjectShape(schema: z.ZodTypeAny): Record<string, z.ZodTypeAny> | null {
-  const typeName = getTypeName(schema);
-  if (typeName !== 'ZodObject' && typeName !== 'ZodInterface') return null;
-
   try {
-    // Try standard Zod shape property
-    if ('shape' in schema && typeof schema.shape === 'object') {
+    // Primary approach: Use instanceof check + direct .shape access (matches zodvex pattern)
+    if (schema instanceof z.ZodObject) {
+      return schema.shape;
+    }
+
+    // Handle wrapped schemas (passthrough, etc.) by checking _def.innerType
+    const def = (schema as any)._def;
+    if (def?.innerType && def.innerType instanceof z.ZodObject) {
+      return def.innerType.shape;
+    }
+
+    // Fallback: Direct shape property access
+    if (
+      schema &&
+      typeof schema === 'object' &&
+      'shape' in schema &&
+      typeof schema.shape === 'object'
+    ) {
       return schema.shape as Record<string, z.ZodTypeAny>;
     }
 
-    // Try _def.shape as function
-    const def = (schema as any)._def;
+    // Last resort: Try _def.shape as function (for edge cases)
     if (def && typeof def.shape === 'function') {
       const shape = def.shape();
       if (shape && typeof shape === 'object') {
@@ -185,11 +198,17 @@ export function getObjectShape(schema: z.ZodTypeAny): Record<string, z.ZodTypeAn
       }
     }
 
-    // Try _def.shape as object
+    // Last resort: Try _def.shape as object
     if (def && typeof def.shape === 'object') {
       return def.shape;
     }
 
+    console.warn('Could not extract shape from schema:', {
+      hasShape: 'shape' in schema,
+      instanceOfZodObject: schema instanceof z.ZodObject,
+      typeName: getTypeName(schema),
+      defKeys: def ? Object.keys(def) : [],
+    });
     return null;
   } catch (error) {
     console.warn('Failed to extract shape from ZodObject:', error);

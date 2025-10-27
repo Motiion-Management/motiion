@@ -5,11 +5,11 @@ Launch Optimization Roadmap
   - ✓ Re-test reload to confirm no regressions.
 - Phase 1: Kill redundant auth loading loops (✅ complete)
   - ✓ Refine useAuthenticated so RootIndex only blocks on Convex auth.
-  - ✓ Keep /app/app/_layout.tsx mounted while auth/onboarding redirects run in effects.
+  - ✓ Keep /app/app/\_layout.tsx mounted while auth/onboarding redirects run in effects.
   - ✓ Memoize SharedUserProvider values to eliminate grey flashes when the user query rehydrates.
   - ✓ Verification: reload + tab navigation confirmed stable.
 - Phase 2: Onboarding routing polish (🚧 in progress)
-  - ✓ Surface useOnboardingStatus inside /app/app/_layout.tsx to short-circuit routing when onboarding status is known.
+  - ✓ Surface useOnboardingStatus inside /app/app/\_layout.tsx to short-circuit routing when onboarding status is known.
   - ✓ Add safety net effect once Convex reports updated onboarding status.
   - ☐ Ensure onboarding screens remain functional via deep link without redirect loops.
     - ✓ Capture current redirect behavior in `app/app/onboarding/*` screens; note every `router.replace`/`router.push` and their guards.

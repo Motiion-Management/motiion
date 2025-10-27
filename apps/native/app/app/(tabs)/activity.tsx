@@ -1,46 +1,41 @@
-import * as React from 'react';
-import { View, ScrollView } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import React from 'react';
+import { View } from 'react-native';
 
-import { BackgroundGradientView } from '~/components/ui/background-gradient-view';
-import { HomeHeader } from '~/components/home';
+import { TabScreenLayout, type TabHeaderSlot } from '~/components/layouts/TabScreenLayout';
 import { Text } from '~/components/ui/text';
+import { HeaderActionButton } from '~/components/ui/animated-scroll-header';
 
-export default function HomeScreen() {
-  const handleSettingsPress = () => {
-    // TODO: Navigate to settings
-    console.log('Settings pressed');
-  };
-
-  const handleNotificationsPress = () => {
-    // TODO: Navigate to notifications
-    console.log('Notifications pressed');
-  };
-
-  const handleProfilePress = () => {
-    // TODO: Navigate to profile
-    console.log('Profile pressed');
-  };
-
+function ActivityHeaderLeft({ scrollProgress }: TabHeaderSlot) {
   return (
-    <BackgroundGradientView>
-      <SafeAreaView className="flex-1">
-        {/* Header */}
-        <HomeHeader
-          onSettingsPress={handleSettingsPress}
-          onNotificationsPress={handleNotificationsPress}
-          onProfilePress={handleProfilePress}
-        />
+    <HeaderActionButton
+      scrollProgress={scrollProgress}
+      iconName="list.dash"
+      onPress={() => console.log('Filter list')}
+    />
+  );
+}
 
-        {/* Scrollable content */}
-        <ScrollView
-          className="flex-1 px-4"
-          showsVerticalScrollIndicator={false}
-          contentContainerStyle={{ paddingTop: 24, paddingBottom: 32 }}>
-          {/* Recently Added Section */}
-          <Text>Activity Screen</Text>
-        </ScrollView>
-      </SafeAreaView>
-    </BackgroundGradientView>
+function ActivityHeaderRight({ scrollProgress }: TabHeaderSlot) {
+  return (
+    <HeaderActionButton
+      scrollProgress={scrollProgress}
+      iconName="calendar.badge.clock"
+      onPress={() => console.log('Schedule')}
+    />
+  );
+}
+
+export default function ActivityScreen() {
+  return (
+    <TabScreenLayout
+      header={{
+        left: ActivityHeaderLeft,
+        middle: 'Activity',
+        right: ActivityHeaderRight,
+      }}>
+      <View className="gap-8 px-4">
+        <Text>Activity Screen</Text>
+      </View>
+    </TabScreenLayout>
   );
 }

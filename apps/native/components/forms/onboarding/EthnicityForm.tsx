@@ -1,17 +1,19 @@
 import React, { forwardRef, useEffect, useImperativeHandle } from 'react';
-import * as z from 'zod';
 import { useStore } from '@tanstack/react-form';
+import {
+  ethnicityFormSchema,
+  type EthnicityFormValues,
+  ETHNICITY,
+} from '@packages/backend/convex/schemas/fields';
 
-import { ETHNICITY } from '@packages/backend/convex/schemas/attributes';
 import { ValidationModeForm } from '~/components/form/ValidationModeForm';
 import { useAppForm } from '~/components/form/appForm';
 import type { FormHandle, FormProps } from '~/components/forms/onboarding/contracts';
 
-export const ethnicitySchema = z.object({
-  ethnicity: z.array(z.enum(ETHNICITY)).min(1, 'Please select at least one ethnicity'),
-});
+// Backward compatibility export
+export const ethnicitySchema = ethnicityFormSchema;
 
-export type EthnicityValues = z.infer<typeof ethnicitySchema>;
+export type EthnicityValues = EthnicityFormValues;
 
 export const EthnicityForm = forwardRef<FormHandle, FormProps<EthnicityValues>>(
   function EthnicityForm({ initialValues, onSubmit, onValidChange }, ref) {

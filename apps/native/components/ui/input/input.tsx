@@ -158,7 +158,7 @@ const Input = React.forwardRef<InputRef, InputProps>(
           className="relative z-20">
           <View
             className={cn(
-              'flex-row items-center border border-border-default bg-surface-high px-6',
+              'flex-row items-center border border-border-default bg-surface-tint px-6',
               borderRadiusVariant === 'full' ? 'rounded-full' : 'rounded-t-[29px]'
             )}>
             {!!leftView && leftView}

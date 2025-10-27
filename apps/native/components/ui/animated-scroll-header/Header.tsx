@@ -77,7 +77,9 @@ export function Header({ left, middle, right }: HeaderProps) {
         {left && <View className="flex-row items-center">{renderSlot(left)}</View>}
 
         {/* Middle slot */}
-        {middle && <View className="flex-row items-center justify-center">{renderSlot(middle)}</View>}
+        {middle && (
+          <View className="flex-row items-center justify-center">{renderSlot(middle)}</View>
+        )}
 
         {/* Right slot */}
         {right && <View className="flex-row items-center">{renderSlot(right)}</View>}

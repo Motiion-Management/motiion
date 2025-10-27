@@ -87,6 +87,7 @@ pnpm clean        # Clean build artifacts
 - **Database schemas**: `packages/backend/convex/schema.ts`
 - **Server functions**: `packages/backend/convex/` (organized by domain)
 - **Native UI components**: `apps/native/components/nativewindui/`
+- **Sheet/Modal components**: `apps/native/components/ui/sheet/` - ALWAYS use this for bottom sheets
 
 ### Environment Setup
 

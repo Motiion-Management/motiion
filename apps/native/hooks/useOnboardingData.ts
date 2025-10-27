@@ -25,13 +25,17 @@ export function useOnboardingData() {
   );
 
   // Combine loading states
-  const isLoading = userLoading || (user?.activeProfileType === 'dancer' && dancerProfile === undefined) || (user?.activeProfileType === 'choreographer' && choreographerProfile === undefined);
+  const isLoading =
+    userLoading ||
+    (user?.activeProfileType === 'dancer' && dancerProfile === undefined) ||
+    (user?.activeProfileType === 'choreographer' && choreographerProfile === undefined);
 
   // Combine data with profile
   const data: OnboardingData = useMemo(
     () => ({
       user,
-      profile: (dancerProfile as DancerDoc | null) || (choreographerProfile as ChoreographerDoc | null)
+      profile:
+        (dancerProfile as DancerDoc | null) || (choreographerProfile as ChoreographerDoc | null),
     }),
     [user, dancerProfile, choreographerProfile]
   );

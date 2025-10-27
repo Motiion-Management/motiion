@@ -2,10 +2,18 @@ import { zid } from 'zodvex'
 import { zodTable } from 'zodvex'
 import { z } from 'zod'
 import { Doc } from '../_generated/dataModel'
-import { zFileUploadObjectArray, zLocation } from './base'
+import { zFileUploadObjectArray } from './base'
 import { attributesPlainObject } from './attributes'
-import { sizingPlainObject } from './sizing'
-import { zRepresentation, zResume, zLinks } from './users'
+import { zResume, zLinks } from './users'
+import {
+  displayNameDbField,
+  headshotsDbField,
+  representationDbField,
+  locationDbField,
+  sizingDbField,
+  workLocationDbField,
+  sagAftraIdDbField
+} from './fields'
 
 // Dancer-specific schema
 export const dancers = {
@@ -17,7 +25,7 @@ export const dancers = {
   createdAt: z.string(), // ISO date string
 
   // Profile-level identity
-  displayName: z.string().optional(),
+  displayName: displayNameDbField,
 
   // Onboarding state (per profile)
   onboardingCompleted: z.boolean().optional(),
@@ -31,13 +39,13 @@ export const dancers = {
   favoriteChoreographers: z.array(zid('choreographers')).optional(),
 
   // Profile data (migrated from users table)
-  headshots: zFileUploadObjectArray.optional(),
-  representation: zRepresentation.optional(),
+  headshots: headshotsDbField,
+  representation: representationDbField,
   representationStatus: z
     .enum(['represented', 'seeking', 'independent'])
     .optional(),
   attributes: z.object(attributesPlainObject).optional(),
-  sizing: z.object(sizingPlainObject).optional(),
+  sizing: sizingDbField,
   resume: zResume.optional(), // Will be deprecated in Phase 2
 
   // Flattened resume fields (replacing nested resume structure)
@@ -49,13 +57,13 @@ export const dancers = {
   links: zLinks.optional(),
 
   // Dancer-specific fields
-  sagAftraId: z.string().optional(),
+  sagAftraId: sagAftraIdDbField,
   training: z.array(zid('training')).optional(),
-  workLocation: z.array(z.string()).optional(), // Work location preferences
+  workLocation: workLocationDbField, // Work location preferences
 
   // Search and discovery
   searchPattern: z.string().optional(), // For text search
-  location: zLocation.optional(), // For proximity search
+  location: locationDbField, // For proximity search
 
   // Profile completeness
   profileCompleteness: z.number().default(0), // 0-100 percentage

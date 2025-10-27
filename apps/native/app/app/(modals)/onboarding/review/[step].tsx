@@ -34,10 +34,6 @@ export default function ReviewEditModal() {
     return def.getInitialValues(data);
   }, [def, data, isLoading]);
 
-  const handleClose = () => {
-    router.back();
-  };
-
   const handleSubmit = async (values: any) => {
     try {
       setIsSubmitting(true);

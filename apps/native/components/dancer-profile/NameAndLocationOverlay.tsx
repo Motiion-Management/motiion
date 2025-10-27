@@ -1,15 +1,15 @@
-import React from 'react'
-import { View } from 'react-native'
-import { Text } from '~/components/ui/text'
-import { type Doc } from '@packages/backend/convex/_generated/dataModel'
+import React from 'react';
+import { View } from 'react-native';
+import { Text } from '~/components/ui/text';
+import { type Doc } from '@packages/backend/convex/_generated/dataModel';
 
 interface NameAndLocationOverlayProps {
-  dancer: Doc<'dancers'>
+  dancer: Doc<'dancers'>;
 }
 
 export function NameAndLocationOverlay({ dancer }: NameAndLocationOverlayProps) {
-  const displayName = dancer.displayName || 'Dancer'
-  const workLocation = dancer.workLocation?.[0] || null
+  const displayName = dancer.displayName || 'Dancer';
+  const workLocation = dancer.workLocation?.[0] || null;
 
   return (
     <View
@@ -17,7 +17,7 @@ export function NameAndLocationOverlay({ dancer }: NameAndLocationOverlayProps) 
         position: 'absolute',
         bottom: 137,
         left: 20,
-        width: 188
+        width: 188,
       }}>
       {/* Name */}
       <Text
@@ -25,7 +25,7 @@ export function NameAndLocationOverlay({ dancer }: NameAndLocationOverlayProps) 
           fontSize: 24,
           fontWeight: '600',
           color: 'white',
-          marginBottom: 4
+          marginBottom: 4,
         }}>
         {displayName}
       </Text>
@@ -36,11 +36,11 @@ export function NameAndLocationOverlay({ dancer }: NameAndLocationOverlayProps) 
           style={{
             fontSize: 16,
             color: 'white',
-            opacity: 0.9
+            opacity: 0.9,
           }}>
           {workLocation}
         </Text>
       )}
     </View>
-  )
+  );
 }

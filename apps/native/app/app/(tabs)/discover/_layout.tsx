@@ -1,24 +1,24 @@
 import { Stack } from 'expo-router';
 
-export default function SearchLayout() {
+import { BackgroundGradientView } from '~/components/ui/background-gradient-view';
+
+export default function DiscoverLayout() {
   return (
-    <Stack>
-      <Stack.Screen
-        name="index"
-        options={{
-          title: 'Search',
+    <BackgroundGradientView>
+      <Stack
+        screenOptions={{
+          headerShown: false,
           contentStyle: {
             backgroundColor: 'transparent',
           },
-          headerTitleStyle: { color: 'transparent' },
-          headerStyle: { backgroundColor: 'transparent' },
-          headerSearchBarOptions: {
-            placement: 'automatic',
-            placeholder: 'Search',
-            onChangeText: () => {},
-          },
-        }}
-      />
-    </Stack>
+        }}>
+        <Stack.Screen
+          name="index"
+          options={{
+            title: 'Discover',
+          }}
+        />
+      </Stack>
+    </BackgroundGradientView>
   );
 }

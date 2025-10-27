@@ -1,4 +1,3 @@
-export { HomeHeader } from './HomeHeader';
 export { HomeHeaderLeft, HomeHeaderMiddle, HomeHeaderRight } from './HomeHeaderContent';
 export { RecentlyAddedSection } from './RecentlyAddedSection';
 export { BookedOutDatesSection } from './BookedOutDatesSection';

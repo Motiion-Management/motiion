@@ -165,7 +165,7 @@ export const getMyTraining = authQuery({
   returns: z.array(zTrainingFormDoc),
   handler: async (ctx) => {
     // Get training from profile
-    let trainingIds: any[] = []
+    let trainingIds
 
     if (
       ctx.user?.activeProfileType &&
@@ -186,14 +186,14 @@ export const getMyTraining = authQuery({
         // TODO: Handle choreographer profiles in dedicated task
         const dancerProfile = profile as Doc<'dancers'>
         if (dancerProfile.training) {
-          trainingIds = dancerProfile.training as any
+          trainingIds = dancerProfile.training
         }
       }
     }
 
     if (!Array.isArray(trainingIds) || trainingIds.length === 0) return []
 
-    const training = (await getAll(ctx.db, trainingIds)) as Doc<'training'>[]
+    const training = await getAll(ctx.db, trainingIds)
     return training
       .filter(notEmpty)
       .sort(
@@ -286,6 +286,8 @@ export const getUserPublicTraining = zq({
         (a, b) =>
           ((a.orderIndex as number) || 0) - ((b.orderIndex as number) || 0)
       )
-      .map(({ orderIndex, userId, profileType, profileId, ...rest }) => rest) as any
+      .map(
+        ({ orderIndex, userId, profileType, profileId, ...rest }) => rest
+      ) as any
   }
 })

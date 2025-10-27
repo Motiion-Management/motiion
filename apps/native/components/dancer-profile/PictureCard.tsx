@@ -1,16 +1,16 @@
-import React from 'react'
-import { ImageBackground, View, TouchableOpacity, type ViewStyle } from 'react-native'
-import { GestureDetector, Gesture } from 'react-native-gesture-handler'
-import Animated from 'react-native-reanimated'
-import { cn } from '~/lib/utils'
+import React from 'react';
+import { ImageBackground, View, TouchableOpacity, type ViewStyle } from 'react-native';
+import { GestureDetector, Gesture } from 'react-native-gesture-handler';
+import Animated from 'react-native-reanimated';
+import { cn } from '~/lib/utils';
 
 interface PictureCardProps {
-  imageUrl: string | null
-  children?: React.ReactNode
-  onPress?: () => void
-  onSwipeDown?: () => void
-  style?: ViewStyle
-  className?: string
+  imageUrl: string | null;
+  children?: React.ReactNode;
+  onPress?: () => void;
+  onSwipeDown?: () => void;
+  style?: ViewStyle;
+  className?: string;
 }
 
 export function PictureCard({
@@ -19,15 +19,14 @@ export function PictureCard({
   onPress,
   onSwipeDown,
   style,
-  className
+  className,
 }: PictureCardProps) {
   // Gesture for swipe down
-  const swipeGesture = Gesture.Pan()
-    .onEnd((event) => {
-      if (event.velocityY > 500 && onSwipeDown) {
-        onSwipeDown()
-      }
-    })
+  const swipeGesture = Gesture.Pan().onEnd((event) => {
+    if (event.velocityY > 500 && onSwipeDown) {
+      onSwipeDown();
+    }
+  });
 
   const content = (
     <View
@@ -37,25 +36,20 @@ export function PictureCard({
           height: 601,
           marginLeft: -23,
           borderRadius: 12,
-          overflow: 'hidden'
+          overflow: 'hidden',
         },
-        style
+        style,
       ]}
       className={cn('shadow-lg', className)}>
       {imageUrl ? (
-        <ImageBackground
-          source={{ uri: imageUrl }}
-          style={{ flex: 1 }}
-          resizeMode="cover">
+        <ImageBackground source={{ uri: imageUrl }} style={{ flex: 1 }} resizeMode="cover">
           {children}
         </ImageBackground>
       ) : (
-        <View className="flex-1 bg-surface-high items-center justify-center">
-          {children}
-        </View>
+        <View className="flex-1 items-center justify-center bg-surface-high">{children}</View>
       )}
     </View>
-  )
+  );
 
   if (onSwipeDown) {
     return (
@@ -70,7 +64,7 @@ export function PictureCard({
           )}
         </Animated.View>
       </GestureDetector>
-    )
+    );
   }
 
   if (onPress) {
@@ -78,8 +72,8 @@ export function PictureCard({
       <TouchableOpacity onPress={onPress} activeOpacity={0.95}>
         {content}
       </TouchableOpacity>
-    )
+    );
   }
 
-  return content
+  return content;
 }

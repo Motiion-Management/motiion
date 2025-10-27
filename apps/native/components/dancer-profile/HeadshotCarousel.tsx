@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Dimensions, TouchableOpacity } from 'react-native';
+import { View, Dimensions, TouchableOpacity, type ImageStyle } from 'react-native';
 import Carousel from 'react-native-reanimated-carousel';
 import Animated, {
   useAnimatedStyle,
@@ -9,8 +9,11 @@ import Animated, {
   type SharedValue,
 } from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import Transition from 'react-native-screen-transitions';
+import { Image as ExpoImage } from 'expo-image';
 
 const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get('window');
+const AnimatedExpoImage = Animated.createAnimatedComponent(ExpoImage);
 
 interface HeadshotCarouselProps {
   headshotUrls: Array<string>;
@@ -21,10 +24,71 @@ interface HeadshotCarouselProps {
   onIndexChange?: (index: number) => void;
 }
 
-const SCREEN_HEIGHT_MODIFIER = 0.75;
+const SCREEN_HEIGHT_MODIFIER = 0.88;
 const IMAGE_HEIGHT = SCREEN_HEIGHT * SCREEN_HEIGHT_MODIFIER;
-const COLLAPSED_WIDTH = SCREEN_WIDTH - 24;
+const COLLAPSED_WIDTH = SCREEN_WIDTH - 12;
 const EXPANDED_WIDTH = SCREEN_WIDTH;
+
+// Memoized render item component for performance
+const HeadshotItem = React.memo<{
+  item: string;
+  index: number;
+  isFirst: boolean;
+  animatedIndex: SharedValue<number> | undefined;
+  animatedWidth: SharedValue<number>;
+  animatedHeight: SharedValue<number>;
+  onPress?: () => void;
+}>(({ item, index, isFirst, animatedIndex, animatedWidth, animatedHeight, onPress }) => {
+  const imageStyle = useAnimatedStyle<ImageStyle>(() => ({
+    width: animatedWidth.value,
+    height: animatedHeight.value,
+    borderRadius: interpolate(animatedIndex?.value || 0, [0, 1], [25, 0], Extrapolate.CLAMP),
+  }));
+
+  if (isFirst) {
+    return (
+      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+        <Transition.Pressable
+          sharedBoundTag="dancer-avatar"
+          onPress={onPress || (() => {})}
+          collapsable={false}
+          style={{
+            width: COLLAPSED_WIDTH,
+            height: IMAGE_HEIGHT,
+            borderRadius: 25,
+            overflow: 'hidden',
+          }}>
+          <ExpoImage
+            source={{ uri: item }}
+            style={{ width: '100%', height: '100%' }}
+            contentFit="cover"
+            cachePolicy="memory-disk"
+            transition={0}
+            priority="high"
+            placeholderContentFit="cover"
+          />
+        </Transition.Pressable>
+      </View>
+    );
+  }
+
+  return (
+    <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+      <AnimatedExpoImage
+        source={{ uri: item }}
+        style={imageStyle}
+        contentFit="cover"
+        cachePolicy="memory-disk"
+        transition={0}
+        priority={index < 3 ? 'high' : 'normal'}
+        placeholderContentFit="cover"
+      />
+    </View>
+  );
+});
+
+HeadshotItem.displayName = 'HeadshotItem';
+
 export function HeadshotCarousel({
   headshotUrls,
   initialIndex = 0,
@@ -41,7 +105,7 @@ export function HeadshotCarousel({
   };
 
   // Derive the animated height value
-  const animatedHeight = useDerivedValue(() => {
+  const animatedHeight = useDerivedValue<number>(() => {
     if (!animatedIndex) {
       return IMAGE_HEIGHT;
     }
@@ -55,12 +119,17 @@ export function HeadshotCarousel({
     );
   }, [animatedIndex]);
 
-  const animatedWidth = useDerivedValue(() => {
+  const animatedWidth = useDerivedValue<number>(() => {
     if (!animatedIndex) {
       return COLLAPSED_WIDTH;
     }
 
-    return interpolate(animatedIndex.value, [0, 1], [COLLAPSED_WIDTH, EXPANDED_WIDTH], Extrapolate.CLAMP);
+    return interpolate(
+      animatedIndex.value,
+      [0, 1],
+      [COLLAPSED_WIDTH, EXPANDED_WIDTH],
+      Extrapolate.CLAMP
+    );
   }, [animatedIndex]);
 
   const containerStyle = useAnimatedStyle(() => {
@@ -89,16 +158,19 @@ export function HeadshotCarousel({
     // Fade out controls when sheet expands
     const opacity = interpolate(animatedIndex.value, [0, 1], [1, 0], Extrapolate.CLAMP);
 
-    const IMAGE_BOTTOM = insets.top + 48 + IMAGE_HEIGHT;
+    const IMAGE_BOTTOM = insets.top + IMAGE_HEIGHT;
     // Animate position to follow carousel bottom edge
     const top = interpolate(
       animatedIndex.value,
       [0, 1],
-      [IMAGE_BOTTOM - 24, IMAGE_BOTTOM],
+      [IMAGE_BOTTOM - 72, IMAGE_BOTTOM],
       Extrapolate.CLAMP
     );
 
-    return { opacity, top };
+    return {
+      opacity,
+      top,
+    };
   }, [animatedIndex]);
 
   if (headshotUrls.length === 0) return null;
@@ -112,35 +184,18 @@ export function HeadshotCarousel({
           data={headshotUrls}
           defaultIndex={initialIndex}
           onSnapToItem={handleIndexChange}
-          renderItem={({ item }) => {
-            // Create animated style for each image
-            const cardStyle = useAnimatedStyle(() => {
-              const index = animatedIndex?.value || 0;
-              const borderRadius = interpolate(index, [0, 1], [40, 0], Extrapolate.CLAMP);
-              const width = animatedWidth.value;
-              const height = animatedHeight.value;
-
-              return {
-                width,
-                height,
-                borderRadius,
-                overflow: 'hidden',
-              };
-            });
-
-            const imageStyle = useAnimatedStyle(() => ({
-              width: animatedWidth.value,
-              height: animatedHeight.value,
-            }));
-
-            return (
-              <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-                <Animated.View style={cardStyle}>
-                  <Animated.Image source={{ uri: item }} style={imageStyle} resizeMode="cover" />
-                </Animated.View>
-              </View>
-            );
-          }}
+          renderItem={({ item, index }) => (
+            <HeadshotItem
+              key={`${item}-${index}`}
+              item={item}
+              index={index}
+              isFirst={index === 0}
+              animatedIndex={animatedIndex}
+              animatedWidth={animatedWidth}
+              animatedHeight={animatedHeight}
+              onPress={onPress}
+            />
+          )}
         />
       </Animated.View>
 

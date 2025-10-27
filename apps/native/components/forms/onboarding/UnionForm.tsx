@@ -1,16 +1,25 @@
 import React, { forwardRef, useEffect, useImperativeHandle } from 'react';
 import * as z from 'zod';
 import { useStore } from '@tanstack/react-form';
+import {
+  sagAftraIdFormSchema,
+  type SagAftraIdFormValues,
+} from '@packages/backend/convex/schemas/fields';
 
 import { ValidationModeForm } from '~/components/form/ValidationModeForm';
 import { useAppForm } from '~/components/form/appForm';
 import type { FormHandle, FormProps } from '~/components/forms/onboarding/contracts';
 
+// Note: This form validates optional sagAftraId, while shared schema requires it
+// Using a local schema that makes it optional for this specific use case
 export const unionSchema = z.object({
   sagAftraId: z.string().optional(),
 });
 
 export type UnionValues = z.infer<typeof unionSchema>;
+
+// Export shared schema for reference
+export { sagAftraIdFormSchema };
 
 export const UnionForm = forwardRef<FormHandle, FormProps<UnionValues>>(function UnionForm(
   { initialValues, onSubmit, onValidChange },

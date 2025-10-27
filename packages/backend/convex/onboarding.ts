@@ -35,8 +35,7 @@ export const completeOnboarding: RegisteredMutation<
     }
 
     // Get active profile ID
-    const activeProfileId =
-      user.activeDancerId || user.activeChoreographerId
+    const activeProfileId = user.activeDancerId || user.activeChoreographerId
     if (!activeProfileId) {
       throw new ConvexError('No active profile found')
     }
@@ -74,8 +73,7 @@ export const resetOnboarding: RegisteredMutation<
     }
 
     // Get active profile ID
-    const activeProfileId =
-      user.activeDancerId || user.activeChoreographerId
+    const activeProfileId = user.activeDancerId || user.activeChoreographerId
     if (!activeProfileId) {
       throw new ConvexError('No active profile found')
     }
@@ -117,8 +115,7 @@ export const setOnboardingStep = zm({
     }
 
     // Get active profile ID
-    const activeProfileId =
-      user.activeDancerId || user.activeChoreographerId
+    const activeProfileId = user.activeDancerId || user.activeChoreographerId
     if (!activeProfileId) {
       throw new ConvexError('No active profile found')
     }
@@ -164,8 +161,7 @@ export const getOnboardingRedirect = query({
 
     // Get active profile for onboarding status (with fallback to user for backward compatibility)
     let profile = null
-    const activeProfileId =
-      user.activeDancerId || user.activeChoreographerId
+    const activeProfileId = user.activeDancerId || user.activeChoreographerId
     if (activeProfileId) {
       profile = await ctx.db.get(activeProfileId)
     }
@@ -177,9 +173,7 @@ export const getOnboardingRedirect = query({
     }
 
     // Get current step from profile
-    const step =
-      (profile?.currentOnboardingStep as STEP) ||
-      'profile-type'
+    const step = (profile?.currentOnboardingStep as STEP) || 'profile-type'
     const redirectPath = STEP_ROUTES[step]
     return { shouldRedirect: true, redirectPath }
   }
@@ -230,8 +224,7 @@ export const updateOnboardingStatus = mutation({
     const newStep = status.nextIncompleteStep || 'review'
 
     // Get active profile ID
-    const activeProfileId =
-      user.activeDancerId || user.activeChoreographerId
+    const activeProfileId = user.activeDancerId || user.activeChoreographerId
     if (!activeProfileId) {
       throw new ConvexError('No active profile found')
     }

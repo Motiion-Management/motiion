@@ -1,6 +1,6 @@
-import React from 'react'
-import { View } from 'react-native'
-import { Text } from '~/components/ui/text'
+import React from 'react';
+import { View } from 'react-native';
+import { Text } from '~/components/ui/text';
 
 export function ProfileVisualsTab() {
   return (
@@ -10,5 +10,5 @@ export function ProfileVisualsTab() {
       </Text>
       {/* TODO: Implement media gallery for performance videos and other visual content */}
     </View>
-  )
+  );
 }

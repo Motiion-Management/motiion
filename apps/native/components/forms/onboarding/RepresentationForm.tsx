@@ -6,13 +6,20 @@ import { ValidationModeForm } from '~/components/form/ValidationModeForm';
 import { useAppForm } from '~/components/form/appForm';
 import type { FormHandle, FormProps } from '~/components/forms/onboarding/contracts';
 
-export const representationSchema = z.object({
+// This form handles representationStatus specifically (a simpler onboarding question)
+// The full representation object (with agency selection) would be a separate, more complex form
+// The shared representationFormSchema from @packages/backend is available for future agency selection forms
+const representationStatusSchema = z.object({
   representationStatus: z.enum(['represented', 'seeking', 'independent'], {
     message: 'Please select your representation status',
   }),
 });
 
-export type RepresentationValues = z.infer<typeof representationSchema>;
+// Backward compatibility exports
+export const representationSchema = representationStatusSchema;
+export type RepresentationValues = z.infer<typeof representationStatusSchema>;
+
+// Note: The shared RepresentationFormValues type from backend is available for future use
 
 const options = [
   { value: 'represented', label: "Yes, I'm represented" },

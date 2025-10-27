@@ -1,18 +1,13 @@
-import type { ViewRef } from '@rn-primitives/types'
-import * as React from 'react'
-import {
-  View,
-  type ViewProps,
-  TouchableOpacity,
-  type TouchableOpacityProps,
-} from 'react-native'
-import { Image, type ImageSource } from 'expo-image'
+import type { ViewRef } from '@rn-primitives/types';
+import * as React from 'react';
+import { View, type ViewProps, TouchableOpacity, type TouchableOpacityProps } from 'react-native';
+import { Image, type ImageSource } from 'expo-image';
 
-import { Text } from '~/components/ui/text'
-import { Icon } from '~/lib/icons/Icon'
-import { cn } from '~/lib/utils'
+import { Text } from '~/components/ui/text';
+import { Icon } from '~/lib/icons/Icon';
+import { cn } from '~/lib/utils';
 
-type ListItemVariant = 'Profile' | 'Experience' | 'Activity'
+type ListItemVariant = 'Profile' | 'Experience' | 'Activity';
 
 type NativeViewProps = Pick<
   ViewProps,
@@ -23,7 +18,7 @@ type NativeViewProps = Pick<
   | 'className'
   | 'style'
   | 'testID'
->
+>;
 
 type NativeTouchableProps = Pick<
   TouchableOpacityProps,
@@ -40,35 +35,37 @@ type NativeTouchableProps = Pick<
   | 'onPressIn'
   | 'onPressOut'
   | 'pressRetentionOffset'
->
+>;
 
 interface BaseListItemProps extends NativeViewProps, NativeTouchableProps {
-  variant: ListItemVariant
-  onPress?: TouchableOpacityProps['onPress']
+  variant: ListItemVariant;
+  onPress?: TouchableOpacityProps['onPress'];
 }
 
 interface ProfileListItemProps extends BaseListItemProps {
-  variant: 'Profile'
-  label: string
-  avatarUrl?: string
-  name: string
+  variant: 'Profile';
+  label: string;
+  avatarUrl?: string;
+  name: string;
 }
 
 interface ExperienceListItemProps extends BaseListItemProps {
-  variant: 'Experience'
-  image?: ImageSource
-  organizer: string
-  title: string
+  variant: 'Experience';
+  image?: ImageSource;
+  organizer?: string;
+  label?: string;
+  title?: string;
+  preview?: React.ReactNode;
 }
 
 interface ActivityListItemProps extends BaseListItemProps {
-  variant: 'Activity'
-  category: string
-  activityType?: 'Session' | 'Class' | 'Job'
-  activityLabel: string
+  variant: 'Activity';
+  category: string;
+  activityType?: 'Session' | 'Class' | 'Job';
+  activityLabel: string;
 }
 
-type ListItemProps = ProfileListItemProps | ExperienceListItemProps | ActivityListItemProps
+type ListItemProps = ProfileListItemProps | ExperienceListItemProps | ActivityListItemProps;
 
 export const ListItem = React.forwardRef<ViewRef, ListItemProps>(
   (
@@ -106,7 +103,7 @@ export const ListItem = React.forwardRef<ViewRef, ListItemProps>(
       accessibilityHint,
       accessibilityLabel,
       accessibilityRole,
-    }
+    };
 
     const touchableProps: NativeTouchableProps = {
       activeOpacity,
@@ -122,15 +119,21 @@ export const ListItem = React.forwardRef<ViewRef, ListItemProps>(
       onPressIn,
       onPressOut,
       pressRetentionOffset,
-    }
+    };
 
     const resolvedTouchableProps: NativeTouchableProps = {
       ...touchableProps,
       activeOpacity: activeOpacity ?? 0.7,
-    }
+    };
     const Content = () => {
       if (variant === 'Experience') {
-        const { image, organizer, title } = variantProps as ExperienceListItemProps
+        const {
+          image,
+          label = '',
+          organizer = label,
+          title,
+          preview,
+        } = variantProps as ExperienceListItemProps;
         return (
           <View className="flex-col gap-4">
             <View className="flex-row gap-4">
@@ -140,26 +143,32 @@ export const ListItem = React.forwardRef<ViewRef, ListItemProps>(
                 </View>
               )}
               <View className="flex-1 flex-row items-center justify-between">
-                <View className="flex-col gap-1">
+                <View className="flex-1 flex-col gap-1">
                   <Text variant="labelSm" className="uppercase text-text-low">
                     {organizer}
                   </Text>
-                  <Text variant="body" className="text-text-default">
-                    {title}
-                  </Text>
+                  {preview ? (
+                    <View>{preview}</View>
+                  ) : (
+                    <Text variant="body" className="text-text-default">
+                      {title}
+                    </Text>
+                  )}
                 </View>
-                <View className="h-7 w-7 items-center justify-center">
-                  <Icon name="chevron.right" size={20} className="text-icon-default" />
-                </View>
+                {onPress && (
+                  <View className="h-7 w-7 items-center justify-center">
+                    <Icon name="chevron.right" size={20} className="text-icon-default" />
+                  </View>
+                )}
               </View>
             </View>
             <View className="h-px w-full bg-border-tint" />
           </View>
-        )
+        );
       }
 
       if (variant === 'Profile') {
-        const { label, avatarUrl, name } = variantProps as ProfileListItemProps
+        const { label, avatarUrl, name } = variantProps as ProfileListItemProps;
         return (
           <View className="flex-col">
             <Text variant="labelSm" className="mb-1 uppercase text-text-low">
@@ -170,7 +179,11 @@ export const ListItem = React.forwardRef<ViewRef, ListItemProps>(
               <View className="flex-row items-center gap-2">
                 {avatarUrl ? (
                   <View className="h-8 w-8 overflow-hidden rounded-full border border-border-tint">
-                    <Image source={{ uri: avatarUrl }} contentFit="cover" style={{ width: 32, height: 32 }} />
+                    <Image
+                      source={{ uri: avatarUrl }}
+                      contentFit="cover"
+                      style={{ width: 32, height: 32 }}
+                    />
                   </View>
                 ) : (
                   <View className="h-8 w-8 items-center justify-center rounded-full border border-border-tint bg-surface-high">
@@ -184,17 +197,22 @@ export const ListItem = React.forwardRef<ViewRef, ListItemProps>(
               <Icon name="xmark" size={24} className="text-icon-low" />
             </View>
           </View>
-        )
+        );
       }
 
       if (variant === 'Activity') {
-        const { category, activityType = 'Job', activityLabel } =
-          variantProps as ActivityListItemProps
+        const {
+          category,
+          activityType = 'Job',
+          activityLabel,
+        } = variantProps as ActivityListItemProps;
 
         const activityColor =
-          activityType === 'Session' ? 'text-[#cc00be]' :
-          activityType === 'Class' ? 'text-[#00cc55]' :
-          'text-[#4fcfcf]'
+          activityType === 'Session'
+            ? 'text-[#cc00be]'
+            : activityType === 'Class'
+              ? 'text-[#00cc55]'
+              : 'text-[#4fcfcf]';
 
         return (
           <View className="flex-col">
@@ -214,11 +232,11 @@ export const ListItem = React.forwardRef<ViewRef, ListItemProps>(
               </View>
             </View>
           </View>
-        )
+        );
       }
 
-      return null
-    }
+      return null;
+    };
 
     if (onPress) {
       return (
@@ -230,7 +248,7 @@ export const ListItem = React.forwardRef<ViewRef, ListItemProps>(
           {...resolvedTouchableProps}>
           <Content />
         </TouchableOpacity>
-      )
+      );
     }
 
     return (
@@ -242,8 +260,8 @@ export const ListItem = React.forwardRef<ViewRef, ListItemProps>(
         {...(onFocus ? { onFocus } : {})}>
         <Content />
       </View>
-    )
+    );
   }
-)
+);
 
-ListItem.displayName = 'ListItem'
+ListItem.displayName = 'ListItem';

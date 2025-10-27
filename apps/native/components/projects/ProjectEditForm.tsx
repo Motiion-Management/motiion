@@ -8,13 +8,12 @@ import React, {
   useEffect,
 } from 'react';
 import { View, Platform, Alert } from 'react-native';
-import PagerView from 'react-native-pager-view';
 import { KeyboardAwareScrollView, KeyboardStickyView } from 'react-native-keyboard-controller';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { ConvexDynamicForm } from '~/components/form/ConvexDynamicForm';
 import { Button } from '~/components/ui/button';
 import { Text } from '~/components/ui/text';
-import { Tabs } from '~/components/ui/tabs/tabs';
+import { PagerTabView, type TabRoute, type PagerTabViewRef } from '~/components/ui/tabs';
 import { type ProjectType, type Project } from '~/types/projects';
 import { type Id } from '@packages/backend/convex/_generated/dataModel';
 import {
@@ -36,9 +35,9 @@ const BOTTOM_OFFSET_CUSHION = 8;
 const HAPTIC_MEDIUM = Haptics.ImpactFeedbackStyle.Medium;
 const HAPTIC_LIGHT = Haptics.ImpactFeedbackStyle.Light;
 
-const TABS = [
-  { key: 'details', label: 'Details' },
-  { key: 'team', label: 'Team' },
+const TABS: TabRoute[] = [
+  { key: 'details', title: 'Details' },
+  { key: 'team', title: 'Team' },
 ];
 
 interface ProjectEditFormProps {
@@ -71,14 +70,15 @@ export const ProjectEditForm = forwardRef<ProjectEditFormHandle, ProjectEditForm
     const initialUiState = { activeTab: 'details', actionsHeight: 0, isSaving: false };
     const [uiState, setUiState] = useState(initialUiState);
 
-    const pagerRef = useRef<React.ElementRef<typeof PagerView> | null>(null);
+    const pagerRef = useRef<PagerTabViewRef>(null);
     const bottomSafeInset = insets.bottom || 0;
+    // Calculate bottom offset for KeyboardAwareScrollView to prevent content from hiding behind sticky footer
     const bottomCompensation = uiState.actionsHeight + bottomSafeInset + BOTTOM_OFFSET_CUSHION;
 
     const handleNext = useCallback(async () => {
       if (uiState.activeTab === 'details') {
         setUiState((prev) => ({ ...prev, activeTab: 'team' }));
-        pagerRef.current?.setPage?.(1);
+        pagerRef.current?.setPage(1);
         try {
           await Haptics.impactAsync(HAPTIC_MEDIUM);
         } catch {
@@ -155,98 +155,64 @@ export const ProjectEditForm = forwardRef<ProjectEditFormHandle, ProjectEditForm
       return selectedType ? undefined : ['type'];
     }, [selectedType]);
 
-    const handleTabChange = useCallback(
-      (tab: string) => {
-        if (tab === uiState.activeTab) return;
-        if (!selectedType && tab === 'team') return;
-        setUiState((prev) => ({ ...prev, activeTab: tab }));
-        pagerRef.current?.setPage?.(tab === 'team' ? 1 : 0);
+    const renderScene = useCallback(
+      (route: TabRoute) => {
+        const isDetailsTab = route.key === 'details';
+        const groups = isDetailsTab ? ['details', 'basic', 'dates', 'media'] : ['team'];
+
+        return (
+          <KeyboardAwareScrollView
+            style={{ flex: 1 }}
+            bounces={false}
+            disableScrollOnKeyboardHide
+            contentInsetAdjustmentBehavior="never"
+            keyboardDismissMode="interactive"
+            keyboardShouldPersistTaps="handled"
+            bottomOffset={bottomCompensation}
+            showsVerticalScrollIndicator={false}
+            contentContainerClassName="px-4 pb-4 pt-6">
+            {uiSchema && (
+              <ConvexDynamicForm
+                key={route.key}
+                schema={uiSchema}
+                metadata={metadata}
+                groups={groups}
+                exclude={['private']}
+                debounceMs={300}
+                form={sharedForm}
+              />
+            )}
+          </KeyboardAwareScrollView>
+        );
       },
-      [uiState.activeTab, selectedType]
+      [bottomCompensation, uiSchema, metadata, sharedForm]
     );
 
     useImperativeHandle(ref, () => ({ submit: () => sharedForm.handleSubmit() }));
 
     return (
       <View className="flex-1">
-        <Tabs
-          tabs={TABS}
-          activeTab={uiState.activeTab}
-          onTabChange={handleTabChange}
-          disabledKeys={!selectedType ? ['team'] : []}
-        />
-
         {selectedType ? (
-          <PagerView
+          <PagerTabView
             ref={pagerRef}
-            initialPage={0}
-            style={{ flex: 1 }}
-            scrollEnabled={true}
-            onPageSelected={async (e) => {
-              const idx = e.nativeEvent.position ?? 0;
-              const nextTab = idx === 1 ? 'team' : 'details';
-              if (nextTab !== uiState.activeTab)
+            routes={TABS}
+            renderScene={renderScene}
+            initialKey="details"
+            tabStyle="text"
+            tabContainerClassName="border-b border-border-tint px-4"
+            disabledKeys={[]}
+            onIndexChange={async (index, key) => {
+              const nextTab = key as 'details' | 'team';
+              if (nextTab !== uiState.activeTab) {
                 setUiState((prev) => ({ ...prev, activeTab: nextTab }));
+              }
               try {
                 await Haptics.impactAsync(HAPTIC_LIGHT);
               } catch {
                 // no-op
               }
-            }}>
-            <View key="details" className="flex-1">
-              <KeyboardAwareScrollView
-                bounces={false}
-                disableScrollOnKeyboardHide
-                contentInsetAdjustmentBehavior="never"
-                keyboardDismissMode="interactive"
-                keyboardShouldPersistTaps="handled"
-                bottomOffset={bottomCompensation}
-                showsVerticalScrollIndicator={false}>
-                <View className="flex-1 pt-2">
-                  <View className="px-4 pb-4 pt-4">
-                    {uiSchema && (
-                      <ConvexDynamicForm
-                        key={`details`}
-                        schema={uiSchema}
-                        metadata={metadata}
-                        groups={['details', 'basic', 'dates', 'media']}
-                        exclude={['private']}
-                        debounceMs={300}
-                        form={sharedForm}
-                      />
-                    )}
-                  </View>
-                </View>
-              </KeyboardAwareScrollView>
-            </View>
-
-            <View key="team" className="flex-1">
-              <KeyboardAwareScrollView
-                bounces={false}
-                disableScrollOnKeyboardHide
-                contentInsetAdjustmentBehavior="never"
-                keyboardDismissMode="interactive"
-                keyboardShouldPersistTaps="handled"
-                bottomOffset={bottomCompensation}
-                showsVerticalScrollIndicator={false}>
-                <View className="flex-1 pt-2">
-                  <View className="px-4 pb-4 pt-4">
-                    {uiSchema && (
-                      <ConvexDynamicForm
-                        key={`team`}
-                        schema={uiSchema}
-                        metadata={metadata}
-                        groups={['team']}
-                        exclude={['private']}
-                        debounceMs={300}
-                        form={sharedForm}
-                      />
-                    )}
-                  </View>
-                </View>
-              </KeyboardAwareScrollView>
-            </View>
-          </PagerView>
+            }}
+          />
         ) : (
           <View className="flex-1">
             <KeyboardAwareScrollView
@@ -256,27 +222,25 @@ export const ProjectEditForm = forwardRef<ProjectEditFormHandle, ProjectEditForm
               keyboardDismissMode="interactive"
               keyboardShouldPersistTaps="handled"
               bottomOffset={bottomCompensation}
-              showsVerticalScrollIndicator={false}>
-              <View className="flex-1 pt-2">
-                <View className="px-4 pb-4 pt-4">
-                  {uiSchema && (
-                    <ConvexDynamicForm
-                      key={`details-initial`}
-                      schema={uiSchema}
-                      metadata={metadata}
-                      groups={['details', 'basic', 'dates', 'media']}
-                      include={detailsInclude}
-                      exclude={['private']}
-                      debounceMs={300}
-                      form={sharedForm}
-                    />
-                  )}
-                </View>
-              </View>
+              showsVerticalScrollIndicator={false}
+              contentContainerClassName="px-4 pb-4 pt-6">
+              {uiSchema && (
+                <ConvexDynamicForm
+                  key={`details-initial`}
+                  schema={uiSchema}
+                  metadata={metadata}
+                  groups={['details', 'basic', 'dates', 'media']}
+                  include={detailsInclude}
+                  exclude={['private']}
+                  debounceMs={300}
+                  form={sharedForm}
+                />
+              )}
             </KeyboardAwareScrollView>
           </View>
         )}
 
+        {/* Sticky footer with keyboard avoidance - moves with keyboard for better UX with form inputs */}
         {showActions && (
           <KeyboardStickyView
             offset={{
@@ -284,8 +248,9 @@ export const ProjectEditForm = forwardRef<ProjectEditFormHandle, ProjectEditForm
               opened: Platform.select({ ios: insets.bottom, default: insets.bottom }),
             }}>
             <View
-              className="gap-2 border-t border-t-border-low bg-surface-default px-4 pb-8 pt-4"
+              className="gap-2 border-t border-t-border-low px-4 pb-8 pt-4"
               onLayout={(e) => {
+                // Track footer height for bottomCompensation calculation
                 const height = e.nativeEvent?.layout?.height ?? 0;
                 setUiState((prev) => ({ ...prev, actionsHeight: height }));
               }}>

@@ -2,7 +2,6 @@ import { ConvexError } from 'convex/values'
 // Convex exposes a pagination validator in convex/values, but zCustomQuery expects Zod.
 // Define a Zod equivalent for args typing here.
 import { z } from 'zod'
-import { filter } from 'convex-helpers/server/filter'
 import {
   authMutation,
   authQuery,
@@ -18,8 +17,6 @@ import { getAll } from 'convex-helpers/server/relationships'
 import { UserDoc, Users, zUsers } from '../schemas/users'
 import { zPaginated } from 'zodvex'
 import { NEW_USER_DEFAULTS, formatFullName } from './helpers'
-import { AgencyDoc } from '../agencies'
-import type { Doc } from '../_generated/dataModel'
 
 // Public read
 export const read = zq({
@@ -288,7 +285,8 @@ export const addFavoriteUser = authMutation({
       throw new ConvexError('User not found')
     }
 
-    const myProfileId = ctx.user.activeDancerId || ctx.user.activeChoreographerId
+    const myProfileId =
+      ctx.user.activeDancerId || ctx.user.activeChoreographerId
     if (!myProfileId) {
       throw new ConvexError('No active profile')
     }
@@ -311,7 +309,10 @@ export const addFavoriteUser = authMutation({
       const existing = (myProfile as any).favoriteChoreographers || []
       if (!existing.includes(favoriteUser.activeChoreographerId)) {
         await ctx.db.patch(myProfileId, {
-          favoriteChoreographers: [...existing, favoriteUser.activeChoreographerId]
+          favoriteChoreographers: [
+            ...existing,
+            favoriteUser.activeChoreographerId
+          ]
         })
       }
     }
@@ -332,7 +333,8 @@ export const removeFavoriteUser = authMutation({
       throw new ConvexError('User not found')
     }
 
-    const myProfileId = ctx.user.activeDancerId || ctx.user.activeChoreographerId
+    const myProfileId =
+      ctx.user.activeDancerId || ctx.user.activeChoreographerId
     if (!myProfileId) {
       throw new ConvexError('No active profile')
     }
@@ -346,13 +348,17 @@ export const removeFavoriteUser = authMutation({
     if (favoriteUser.activeDancerId) {
       const existing = (myProfile as any).favoriteDancers || []
       await ctx.db.patch(myProfileId, {
-        favoriteDancers: existing.filter((id: any) => id !== favoriteUser.activeDancerId)
+        favoriteDancers: existing.filter(
+          (id: any) => id !== favoriteUser.activeDancerId
+        )
       })
     }
     if (favoriteUser.activeChoreographerId) {
       const existing = (myProfile as any).favoriteChoreographers || []
       await ctx.db.patch(myProfileId, {
-        favoriteChoreographers: existing.filter((id: any) => id !== favoriteUser.activeChoreographerId)
+        favoriteChoreographers: existing.filter(
+          (id: any) => id !== favoriteUser.activeChoreographerId
+        )
       })
     }
   }
@@ -376,13 +382,15 @@ export const getFavoriteUsersForCarousel = authQuery({
     let favoriteUserIds: any[] = []
 
     if (ctx.user?.activeDancerId || ctx.user?.activeChoreographerId) {
-      const profileId = ctx.user.activeDancerId || ctx.user.activeChoreographerId
+      const profileId =
+        ctx.user.activeDancerId || ctx.user.activeChoreographerId
       if (profileId) {
         const profile = await ctx.db.get(profileId)
         if (profile) {
           // Collect all favorite profile IDs (both dancers and choreographers)
           const favoriteDancers = (profile as any).favoriteDancers || []
-          const favoriteChoreographers = (profile as any).favoriteChoreographers || []
+          const favoriteChoreographers =
+            (profile as any).favoriteChoreographers || []
 
           // Get the user IDs for these profiles
           const allProfileIds = [...favoriteDancers, ...favoriteChoreographers]
@@ -462,7 +470,10 @@ export const isFavoriteUser = authQuery({
     // Get all favorite profile IDs
     const favoriteDancers = (profile as any).favoriteDancers || []
     const favoriteChoreographers = (profile as any).favoriteChoreographers || []
-    const allFavoriteProfileIds = [...favoriteDancers, ...favoriteChoreographers]
+    const allFavoriteProfileIds = [
+      ...favoriteDancers,
+      ...favoriteChoreographers
+    ]
 
     // Check if any favorite profile belongs to this user
     for (const favProfileId of allFavoriteProfileIds) {

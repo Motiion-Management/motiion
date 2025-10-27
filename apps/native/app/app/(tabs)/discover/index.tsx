@@ -1,46 +1,42 @@
-import * as React from 'react';
-import { View, ScrollView } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import React from 'react';
+import { View } from 'react-native';
 
-import { BackgroundGradientView } from '~/components/ui/background-gradient-view';
-import { HomeHeader } from '~/components/home';
+import { TabScreenLayout, type TabHeaderSlot } from '~/components/layouts/TabScreenLayout';
 import { Text } from '~/components/ui/text';
 
-export default function HomeScreen() {
-  const handleSettingsPress = () => {
-    // TODO: Navigate to settings
-    console.log('Settings pressed');
-  };
+import { HeaderActionButton } from '~/components/ui/animated-scroll-header';
 
-  const handleNotificationsPress = () => {
-    // TODO: Navigate to notifications
-    console.log('Notifications pressed');
-  };
-
-  const handleProfilePress = () => {
-    // TODO: Navigate to profile
-    console.log('Profile pressed');
-  };
-
+function DiscoverHeaderLeft({ scrollProgress }: TabHeaderSlot) {
   return (
-    <BackgroundGradientView>
-      <SafeAreaView className="flex-1">
-        {/* Header */}
-        <HomeHeader
-          onSettingsPress={handleSettingsPress}
-          onNotificationsPress={handleNotificationsPress}
-          onProfilePress={handleProfilePress}
-        />
+    <HeaderActionButton
+      scrollProgress={scrollProgress}
+      iconName="bookmark"
+      onPress={() => console.log('Saved')}
+    />
+  );
+}
 
-        {/* Scrollable content */}
-        <ScrollView
-          className="flex-1 px-4"
-          showsVerticalScrollIndicator={false}
-          contentContainerStyle={{ paddingTop: 24, paddingBottom: 32 }}>
-          {/* Recently Added Section */}
-          <Text>Discover Screen</Text>
-        </ScrollView>
-      </SafeAreaView>
-    </BackgroundGradientView>
+function DiscoverHeaderRight({ scrollProgress }: TabHeaderSlot) {
+  return (
+    <HeaderActionButton
+      scrollProgress={scrollProgress}
+      iconName="magnifyingglass"
+      onPress={() => console.log('Search')}
+    />
+  );
+}
+
+export default function DiscoverScreen() {
+  return (
+    <TabScreenLayout
+      header={{
+        left: DiscoverHeaderLeft,
+        middle: 'Discover',
+        right: DiscoverHeaderRight,
+      }}>
+      <View className="gap-8 px-4">
+        <Text>Discover Screen</Text>
+      </View>
+    </TabScreenLayout>
   );
 }

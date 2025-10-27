@@ -30,7 +30,15 @@ type Props = {
   alignment?: 'left' | 'center';
 };
 
-export function TabBar({ focusedTab, indexDecimal, onTabPress, tabNames, activeIndex, variant = 'default', alignment = 'left' }: Props) {
+export function TabBar({
+  focusedTab,
+  indexDecimal,
+  onTabPress,
+  tabNames,
+  activeIndex,
+  variant = 'default',
+  alignment = 'left',
+}: Props) {
   const { width: tabWidth } = useWindowDimensions();
 
   const listAnimatedRef = useAnimatedRef<FlatList>();
@@ -120,7 +128,8 @@ export function TabBar({ focusedTab, indexDecimal, onTabPress, tabNames, activeI
               return value;
             });
           }}>
-          <Text className={`text-xs font-semibold ${isActive ? 'text-text-high' : 'text-text-low'}`}>
+          <Text
+            className={`text-xs font-semibold ${isActive ? 'text-text-high' : 'text-text-low'}`}>
             {item}
           </Text>
         </Pressable>
@@ -171,7 +180,7 @@ export function TabBar({ focusedTab, indexDecimal, onTabPress, tabNames, activeI
   return (
     <View className="pb-2">
       {variant === 'pill' ? (
-        <View className="border border-border-low bg-surface-tint rounded-[20px] p-1">
+        <View className="rounded-[20px] border border-border-low bg-surface-tint p-1">
           {flatList}
         </View>
       ) : (

@@ -1,15 +1,15 @@
-import React from 'react'
-import { ScrollView, View, ImageBackground, TouchableOpacity } from 'react-native'
-import { LinearGradient } from 'expo-linear-gradient'
-import { Text } from '~/components/ui/text'
-import { getProjectDisplayTitle } from '~/config/projectTypes'
+import React from 'react';
+import { ScrollView, View, ImageBackground, TouchableOpacity } from 'react-native';
+import { LinearGradient } from 'expo-linear-gradient';
+import { Text } from '~/components/ui/text';
+import { getProjectDisplayTitle } from '~/config/projectTypes';
 
 interface ProjectCarouselProps {
-  projects: Array<any>
+  projects: Array<any>;
 }
 
 export function ProjectCarousel({ projects }: ProjectCarouselProps) {
-  if (projects.length === 0) return null
+  if (projects.length === 0) return null;
 
   return (
     <ScrollView
@@ -20,17 +20,17 @@ export function ProjectCarousel({ projects }: ProjectCarouselProps) {
         <ProjectCard key={project._id || index} project={project} />
       ))}
     </ScrollView>
-  )
+  );
 }
 
 function ProjectCard({ project }: { project: any }) {
-  const title = getProjectDisplayTitle(project)
-  const subtitle = getProjectSubtitle(project)
-  const label = getProjectLabel(project.type)
+  const title = getProjectDisplayTitle(project);
+  const subtitle = getProjectSubtitle(project);
+  const label = getProjectLabel(project.type);
 
   // TODO: Get actual project images from storage
   // For now using placeholder
-  const imageUrl = null
+  const imageUrl = null;
 
   return (
     <TouchableOpacity activeOpacity={0.9}>
@@ -39,14 +39,11 @@ function ProjectCard({ project }: { project: any }) {
           width: 177,
           height: 234,
           borderRadius: 8,
-          overflow: 'hidden'
+          overflow: 'hidden',
         }}
         className="bg-surface-high shadow-md">
         {imageUrl ? (
-          <ImageBackground
-            source={{ uri: imageUrl }}
-            style={{ flex: 1 }}
-            resizeMode="cover">
+          <ImageBackground source={{ uri: imageUrl }} style={{ flex: 1 }} resizeMode="cover">
             <ProjectCardOverlay label={label} title={title} subtitle={subtitle} />
           </ImageBackground>
         ) : (
@@ -56,30 +53,28 @@ function ProjectCard({ project }: { project: any }) {
         )}
       </View>
     </TouchableOpacity>
-  )
+  );
 }
 
 function ProjectCardOverlay({
   label,
   title,
-  subtitle
+  subtitle,
 }: {
-  label: string
-  title: string
-  subtitle?: string
+  label: string;
+  title: string;
+  subtitle?: string;
 }) {
   return (
     <View className="flex-1 justify-end">
-      <LinearGradient
-        colors={['transparent', 'rgba(0,0,0,0.8)']}
-        style={{ padding: 16 }}>
+      <LinearGradient colors={['transparent', 'rgba(0,0,0,0.8)']} style={{ padding: 16 }}>
         <Text
           style={{
             fontSize: 10,
             fontWeight: '600',
             color: 'rgba(255,255,255,0.7)',
             letterSpacing: 1,
-            marginBottom: 4
+            marginBottom: 4,
           }}>
           {label}
         </Text>
@@ -88,7 +83,7 @@ function ProjectCardOverlay({
             fontSize: 18,
             fontWeight: '600',
             color: 'white',
-            marginBottom: 4
+            marginBottom: 4,
           }}
           numberOfLines={2}>
           {title}
@@ -97,7 +92,7 @@ function ProjectCardOverlay({
           <Text
             style={{
               fontSize: 10,
-              color: 'rgba(255,255,255,0.8)'
+              color: 'rgba(255,255,255,0.8)',
             }}
             numberOfLines={1}>
             {subtitle}
@@ -105,28 +100,28 @@ function ProjectCardOverlay({
         )}
       </LinearGradient>
     </View>
-  )
+  );
 }
 
 function getProjectLabel(type: string): string {
   switch (type) {
     case 'tv-film':
-      return 'TV/FILM'
+      return 'TV/FILM';
     case 'music-video':
-      return 'MUSIC VIDEO'
+      return 'MUSIC VIDEO';
     case 'live-performance':
-      return 'LIVE PERFORMANCE'
+      return 'LIVE PERFORMANCE';
     case 'commercial':
-      return 'COMMERCIAL'
+      return 'COMMERCIAL';
     default:
-      return 'PROJECT'
+      return 'PROJECT';
   }
 }
 
 function getProjectSubtitle(project: any): string | undefined {
-  if (project.type === 'tv-film') return project.studio
-  if (project.type === 'music-video') return project.artists?.join(', ')
-  if (project.type === 'live-performance') return project.tourArtist || project.venue
-  if (project.type === 'commercial') return project.companyName
-  return undefined
+  if (project.type === 'tv-film') return project.studio;
+  if (project.type === 'music-video') return project.artists?.join(', ');
+  if (project.type === 'live-performance') return project.tourArtist || project.venue;
+  if (project.type === 'commercial') return project.companyName;
+  return undefined;
 }

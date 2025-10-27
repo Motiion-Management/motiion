@@ -1,26 +1,30 @@
-import React from 'react';
-import { View } from 'react-native';
+import React, { useState, useEffect } from 'react';
 import { useLocalSearchParams, router } from 'expo-router';
-import { Button } from '~/components/ui/button';
-import X from '~/lib/icons/X';
-import { ProjectEditForm } from '~/components/projects/ProjectEditForm';
+import { ProjectEditSheet } from '~/components/projects/ProjectEditSheet';
+import { type Id } from '@packages/backend/convex/_generated/dataModel';
 
 export default function ExperienceEditModalScreen() {
   const { id } = useLocalSearchParams<{ id?: string }>();
+  const [isOpen, setIsOpen] = useState(true);
   const isNew = !id || id === 'new';
 
-  return (
-    <View className="flex-1 bg-surface-default pt-6">
-      <View className="absolute right-2 top-2 z-10">
-        <Button size="icon" variant="tertiary" onPress={() => router.back()}>
-          <X size={24} className="text-icon-default" />
-        </Button>
-      </View>
+  // Auto-open when mounted
+  useEffect(() => {
+    setIsOpen(true);
+  }, []);
 
-      <ProjectEditForm
-        onComplete={() => router.back()}
-        projectId={isNew ? undefined : (id as any)}
-      />
-    </View>
+  const handleOpenChange = (open: boolean) => {
+    setIsOpen(open);
+    if (!open) {
+      router.back();
+    }
+  };
+
+  return (
+    <ProjectEditSheet
+      isOpen={isOpen}
+      onOpenChange={handleOpenChange}
+      projectId={isNew ? undefined : (id as Id<'projects'>)}
+    />
   );
 }

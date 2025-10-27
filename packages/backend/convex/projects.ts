@@ -1,12 +1,80 @@
-import { zq, authMutation, authQuery, zid } from './util'
+import { zq, authMutation, authQuery, zid, getUserOrThrow } from './util'
+import * as ConvexBase from './_generated/server'
 import { z } from 'zod'
-import { Doc } from './_generated/dataModel'
+import { DataModel, Doc } from './_generated/dataModel'
 import { ConvexError } from 'convex/values'
 
 // Import schema from schemas folder
-import { Projects, projects, ProjectFormDoc, zProjectsDoc, zProjectsClientDoc, PROJECT_TYPES } from './schemas/projects'
+import {
+  Projects,
+  projects,
+  ProjectFormDoc,
+  zProjectsDoc,
+  zProjectsClientDoc,
+  PROJECT_TYPES
+} from './schemas/projects'
 
 const zProjectDoc = Projects.zDoc
+
+import { Triggers } from 'convex-helpers/server/triggers'
+
+import {
+  Rules,
+  wrapDatabaseReader,
+  wrapDatabaseWriter
+} from 'convex-helpers/server/rowLevelSecurity'
+import { customCtx, zCustomMutationBuilder, zCustomQueryBuilder } from 'zodvex'
+
+// convex helpers trigger
+export const triggers = new Triggers<DataModel>()
+
+// convex helpers rls config
+async function rlsRules(ctx: ConvexBase.QueryCtx) {
+  const user = await getUserOrThrow(ctx)
+  return {
+    rules: {} satisfies Rules<ConvexBase.QueryCtx, DataModel>,
+    user
+  }
+}
+
+// custom function
+export const protectedQuery = zCustomQueryBuilder(
+  ConvexBase.query,
+  customCtx(async (ctx) => {
+    const { rules, user } = await rlsRules(ctx)
+    return {
+      db: wrapDatabaseReader(ctx, ctx.db, rules),
+      user
+    }
+  })
+)
+
+// Works. I get the correct type
+export type ProtectedQueryCtx = CustomCtx<typeof protectedQuery>
+
+// custom function wrapped with the triggers and rls config
+export const protectedMutation = zCustomMutationBuilder(
+  ConvexBase.mutation,
+  customCtx(async (ctx) => {
+    const withTriggersCtx = triggers.wrapDB(ctx)
+    const { rules, user } = await rlsRules(withTriggersCtx)
+    return {
+      ...withTriggersCtx,
+      db: wrapDatabaseWriter(withTriggersCtx, withTriggersCtx.db, rules),
+      user
+    }
+  })
+)
+
+// Helper to extract the convex ctx type from the custom functions
+type CustomCtx<T> = T extends (config: infer Config) => any
+  ? Config extends { handler: (ctx: infer Ctx, ...args: any[]) => any }
+    ? Ctx
+    : never
+  : never
+
+// becomes any
+export type ProtectedMutationCtx = CustomCtx<typeof protectedMutation>
 
 // Public read
 export const read = zq({
