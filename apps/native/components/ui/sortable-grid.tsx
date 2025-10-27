@@ -1,17 +1,17 @@
-import { ReactNode, useState } from 'react'
-import { View } from 'react-native'
-import Sortable from 'react-native-sortables'
+import { ReactNode, useState } from 'react';
+import { View } from 'react-native';
+import Sortable from 'react-native-sortables';
 
 interface SortableGridProps<T> {
-  items: T[]
-  itemKey: (item: T) => string
-  renderItem: (item: T, index: number, width: number) => ReactNode
-  columns?: number
-  gap?: number
-  itemHeight: number
-  sortEnabled?: boolean
-  onReorder?: (items: T[]) => void
-  onReorderFailed?: () => void
+  items: T[];
+  itemKey: (item: T) => string;
+  renderItem: (item: T, index: number, width: number) => ReactNode;
+  columns?: number;
+  gap?: number;
+  itemHeight: number;
+  sortEnabled?: boolean;
+  onReorder?: (items: T[]) => void;
+  onReorderFailed?: () => void;
 }
 
 export function SortableGrid<T>({
@@ -25,25 +25,22 @@ export function SortableGrid<T>({
   onReorder,
   onReorderFailed,
 }: SortableGridProps<T>) {
-  const [containerWidth, setContainerWidth] = useState<number | null>(null)
+  const [containerWidth, setContainerWidth] = useState<number | null>(null);
 
   const handleDragEnd = ({ order }: { order: <U>(data: U[]) => U[] }) => {
-    if (!onReorder) return
+    if (!onReorder) return;
 
-    const reordered = order(items)
-    onReorder(reordered)
-  }
+    const reordered = order(items);
+    onReorder(reordered);
+  };
 
   if (containerWidth === null) {
     return (
-      <View
-        onLayout={(e) => setContainerWidth(e.nativeEvent.layout.width)}
-        className="w-full"
-      />
-    )
+      <View onLayout={(e) => setContainerWidth(e.nativeEvent.layout.width)} className="w-full" />
+    );
   }
 
-  const itemWidth = (containerWidth - gap * (columns - 1)) / columns
+  const itemWidth = (containerWidth - gap * (columns - 1)) / columns;
 
   return (
     <View onLayout={(e) => setContainerWidth(e.nativeEvent.layout.width)} className="w-full">
@@ -71,5 +68,5 @@ export function SortableGrid<T>({
         ))}
       </Sortable.Flex>
     </View>
-  )
+  );
 }

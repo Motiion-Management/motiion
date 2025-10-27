@@ -217,8 +217,9 @@ export function HeadshotCarousel({
               {headshotUrls.map((_, index) => (
                 <View
                   key={index}
-                  className={`h-2 w-2 rounded-full ${index === currentIndex ? 'bg-white' : 'bg-white/30'
-                    }`}
+                  className={`h-2 w-2 rounded-full ${
+                    index === currentIndex ? 'bg-white' : 'bg-white/30'
+                  }`}
                 />
               ))}
             </View>

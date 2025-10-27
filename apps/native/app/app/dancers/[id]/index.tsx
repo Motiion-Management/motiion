@@ -54,8 +54,8 @@ function TopBar({ profileUrl }: { profileUrl: string }) {
 
 export default function DancerScreen() {
   const { id, headshot: initialHeadshotParam } = useLocalSearchParams<{
-    id: string
-    headshot?: string
+    id: string;
+    headshot?: string;
   }>();
   const initialHeadshotUrl =
     typeof initialHeadshotParam === 'string' && initialHeadshotParam.length > 0
@@ -265,21 +265,19 @@ export default function DancerScreen() {
               entering={FadeIn.duration(300)}
               exiting={FadeOut.duration(200)}
               className="flex-1 items-center justify-center px-6 py-12">
-              <Icon
-                name="exclamationmark.triangle.fill"
-                size={48}
-                className="text-icon-low mb-4"
-              />
-              <Text variant="header5" className="text-center mb-2">
+              <Icon name="exclamationmark.triangle.fill" size={48} className="mb-4 text-icon-low" />
+              <Text variant="header5" className="mb-2 text-center">
                 Unable to Load Profile
               </Text>
-              <Text variant="body" className="text-center text-text-low mb-6">
+              <Text variant="body" className="mb-6 text-center text-text-low">
                 We couldn't load this dancer's profile. Please try again.
               </Text>
               <View className="flex-row gap-3">
                 <Button
                   variant="secondary"
-                  onPress={() => (router.canGoBack() ? router.back() : router.replace('/app/home'))}>
+                  onPress={() =>
+                    router.canGoBack() ? router.back() : router.replace('/app/home')
+                  }>
                   <Text>Go Back</Text>
                 </Button>
                 <Button variant="primary" onPress={() => profileQuery.refetch()}>
@@ -297,9 +295,7 @@ export default function DancerScreen() {
               </Text>
             </Animated.View>
           ) : profileData ? (
-            <Animated.View
-              entering={FadeIn.duration(300).delay(100)}
-              style={{ flex: 1 }}>
+            <Animated.View entering={FadeIn.duration(300).delay(100)} style={{ flex: 1 }}>
               <ProjectCarousel projects={profileData.recentProjects} />
               <ProfileDetailsSheet profileData={profileData} />
             </Animated.View>

@@ -429,7 +429,7 @@ export function convexSchemaToFormConfig(
 
       console.log('[convexSchemaToFormConfig] Extracted fields:', {
         count: fields.length,
-        fieldNames: fields.map(f => f.name),
+        fieldNames: fields.map((f) => f.name),
       });
 
       // Apply include/exclude filters
@@ -442,7 +442,7 @@ export function convexSchemaToFormConfig(
 
       console.log('[convexSchemaToFormConfig] After filters:', {
         count: fields.length,
-        fieldNames: fields.map(f => f.name),
+        fieldNames: fields.map((f) => f.name),
         include: options?.include,
         exclude: options?.exclude,
       });

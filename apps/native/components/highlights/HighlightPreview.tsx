@@ -1,14 +1,14 @@
-import { View } from 'react-native'
-import { Image } from 'expo-image'
+import { View } from 'react-native';
+import { Image } from 'expo-image';
 
-import { MediaCard } from '../ui/media-card'
+import { MediaCard } from '../ui/media-card';
 
 interface HighlightPreviewProps {
-  imageUrl: string | null
-  title: string
-  subtitle: string
-  onRemove: () => void
-  height?: number
+  imageUrl: string | null;
+  title: string;
+  subtitle: string;
+  onRemove: () => void;
+  height?: number;
 }
 
 export function HighlightPreview({
@@ -16,7 +16,7 @@ export function HighlightPreview({
   title,
   subtitle,
   onRemove,
-  height = 234
+  height = 234,
 }: HighlightPreviewProps) {
   return (
     <MediaCard onRemove={onRemove} title={title} subtitle={subtitle}>
@@ -27,7 +27,7 @@ export function HighlightPreview({
             contentFit="cover"
             style={{ width: '100%', height }}
             onError={(error) => {
-              console.error('Failed to load highlight image:', error)
+              console.error('Failed to load highlight image:', error);
             }}
             transition={150}
           />
@@ -39,5 +39,5 @@ export function HighlightPreview({
         )}
       </View>
     </MediaCard>
-  )
+  );
 }

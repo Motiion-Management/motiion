@@ -1,52 +1,48 @@
-import { useState, useCallback } from 'react'
-import { View, Alert } from 'react-native'
-import Sortable from 'react-native-sortables'
-import { useMutation } from 'convex/react'
-import { api } from '@packages/backend/convex/_generated/api'
-import { Id } from '@packages/backend/convex/_generated/dataModel'
+import { useState, useCallback } from 'react';
+import { View, Alert } from 'react-native';
+import Sortable from 'react-native-sortables';
+import { useMutation } from 'convex/react';
+import { api } from '@packages/backend/convex/_generated/api';
+import { Id } from '@packages/backend/convex/_generated/dataModel';
 
-import { HighlightPreview } from './HighlightPreview'
-import { UploadPlaceholder } from '../ui/upload-placeholder'
-import { ActivityIndicator } from '../ui/activity-indicator'
+import { HighlightPreview } from './HighlightPreview';
+import { UploadPlaceholder } from '../ui/upload-placeholder';
+import { ActivityIndicator } from '../ui/activity-indicator';
 
 interface Highlight {
-  _id: Id<'highlights'>
-  _creationTime: number
-  profileId: Id<'dancers'>
-  projectId: Id<'projects'>
-  imageId: Id<'_storage'>
-  position: number
-  createdAt: string
+  _id: Id<'highlights'>;
+  _creationTime: number;
+  profileId: Id<'dancers'>;
+  projectId: Id<'projects'>;
+  imageId: Id<'_storage'>;
+  position: number;
+  createdAt: string;
   project: {
-    _id: Id<'projects'>
-    title?: string
-    studio?: string
-    artists?: string[]
-    tourArtist?: string
-    companyName?: string
-    type: string
-  } | null
-  imageUrl: string | null
+    _id: Id<'projects'>;
+    title?: string;
+    studio?: string;
+    artists?: string[];
+    tourArtist?: string;
+    companyName?: string;
+    type: string;
+  } | null;
+  imageUrl: string | null;
 }
 
 interface HighlightGridProps {
-  highlights: Highlight[]
-  onAddPress: () => void
-  isLoading?: boolean
+  highlights: Highlight[];
+  onAddPress: () => void;
+  isLoading?: boolean;
 }
 
-const MAX_HIGHLIGHTS = 10
+const MAX_HIGHLIGHTS = 10;
 
-export function HighlightGrid({
-  highlights,
-  onAddPress,
-  isLoading = false
-}: HighlightGridProps) {
-  const [containerWidth, setContainerWidth] = useState<number | null>(null)
-  const removeHighlight = useMutation(api.highlights.removeHighlight)
-  const reorderHighlights = useMutation(api.highlights.reorderHighlights)
+export function HighlightGrid({ highlights, onAddPress, isLoading = false }: HighlightGridProps) {
+  const [containerWidth, setContainerWidth] = useState<number | null>(null);
+  const removeHighlight = useMutation(api.highlights.removeHighlight);
+  const reorderHighlights = useMutation(api.highlights.reorderHighlights);
 
-  const canAddMore = highlights.length < MAX_HIGHLIGHTS
+  const canAddMore = highlights.length < MAX_HIGHLIGHTS;
 
   const handleRemoveImage = useCallback(
     async (highlightId: Id<'highlights'>) => {
@@ -56,92 +52,92 @@ export function HighlightGrid({
         [
           {
             text: 'Cancel',
-            style: 'cancel'
+            style: 'cancel',
           },
           {
             text: 'Remove',
             style: 'destructive',
             onPress: async () => {
               try {
-                await removeHighlight({ highlightId })
+                await removeHighlight({ highlightId });
               } catch (error) {
-                console.error('Failed to remove highlight:', error)
-                Alert.alert('Error', 'Failed to remove highlight. Please try again.')
+                console.error('Failed to remove highlight:', error);
+                Alert.alert('Error', 'Failed to remove highlight. Please try again.');
               }
-            }
-          }
+            },
+          },
         ]
-      )
+      );
     },
     [removeHighlight]
-  )
+  );
 
   const handleDragEnd = useCallback(
     ({ order }: { order: <T>(data: T[]) => T[] }) => {
-      if (highlights.length === 0 || !highlights[0].profileId) return
+      if (highlights.length === 0 || !highlights[0].profileId) return;
 
-      const profileId = highlights[0].profileId
+      const profileId = highlights[0].profileId;
 
       // Build combined list (highlights + upload placeholders) in current visual order
-      const remainingSlots = Math.max(0, MAX_HIGHLIGHTS - highlights.length)
+      const remainingSlots = Math.max(0, MAX_HIGHLIGHTS - highlights.length);
       const uploads = Array.from({ length: remainingSlots }).map((_, i) => ({
         type: 'upload' as const,
-        key: `upload-${i}`
-      }))
+        key: `upload-${i}`,
+      }));
 
       const items = [
         ...highlights.map((h) => ({
           type: 'highlight' as const,
           key: `h-${h._id}`,
-          payload: h
+          payload: h,
         })),
-        ...uploads
-      ]
+        ...uploads,
+      ];
 
       // Let Sortable compute new child order, then filter back to highlights only
-      const reordered = order(items)
+      const reordered = order(items);
       const nextHighlights = reordered
         .filter(
           (i: any): i is { type: 'highlight'; key: string; payload: Highlight } =>
             i.type === 'highlight'
         )
-        .map((i) => i.payload)
+        .map((i) => i.payload);
 
       // Extract IDs in new order
-      const highlightIds = nextHighlights.map((h) => h._id)
+      const highlightIds = nextHighlights.map((h) => h._id);
 
       // Call mutation to update order
       reorderHighlights({ profileId, highlightIds }).catch((error) => {
-        console.error('Failed to reorder highlights:', error)
-        Alert.alert('Error', 'Failed to update highlight order. Please try again.')
-      })
+        console.error('Failed to reorder highlights:', error);
+        Alert.alert('Error', 'Failed to update highlight order. Please try again.');
+      });
     },
     [highlights, reorderHighlights]
-  )
+  );
 
   // Helper to get display text for a highlight
   const getHighlightText = (highlight: Highlight) => {
     if (!highlight.project) {
-      return { title: 'Untitled Project', subtitle: '' }
+      return { title: 'Untitled Project', subtitle: '' };
     }
 
-    const { project } = highlight
-    let title = project.title || 'Untitled Project'
-    let subtitle = ''
+    const { project } = highlight;
+    let title = project.title || 'Untitled Project';
+    let subtitle = '';
 
     // Determine subtitle based on project type
     if (project.studio) {
-      subtitle = project.studio
+      subtitle = project.studio;
     } else if (project.artists && project.artists.length > 0) {
-      subtitle = project.artists[0]
+      subtitle = project.artists[0];
     } else if (project.tourArtist) {
-      subtitle = project.tourArtist
+      subtitle = project.tourArtist;
     } else if (project.companyName) {
-      subtitle = project.companyName
+      subtitle = project.companyName;
     }
 
-    return { title, subtitle }
-  }
+    return { title, subtitle };
+  };
 
   // Show skeleton while initial data is loading
   if (isLoading) {
@@ -149,7 +145,7 @@ export function HighlightGrid({
       <View className="flex-1 items-center justify-center py-8">
         <ActivityIndicator size="large" />
       </View>
-    )
+    );
   }
 
   return (
@@ -172,22 +168,22 @@ export function HighlightGrid({
             inactiveItemOpacity={0.8}
             dragActivationDelay={150}>
             {(() => {
-              const remainingSlots = Math.max(0, MAX_HIGHLIGHTS - highlights.length)
+              const remainingSlots = Math.max(0, MAX_HIGHLIGHTS - highlights.length);
               const uploads = Array.from({ length: remainingSlots }).map((_, i) => ({
                 type: 'upload' as const,
-                key: `upload-${i}`
-              }))
+                key: `upload-${i}`,
+              }));
               const allItems = [
                 ...highlights.map((h) => ({
                   type: 'highlight' as const,
                   key: `h-${h._id}`,
-                  payload: h
+                  payload: h,
                 })),
-                ...uploads
-              ]
+                ...uploads,
+              ];
 
-              let uploadIdx = 0
-              const itemWidth = (containerWidth - 16) / 2
+              let uploadIdx = 0;
+              const itemWidth = (containerWidth - 16) / 2;
 
               return allItems.map((item) => {
                 return (
@@ -198,7 +194,7 @@ export function HighlightGrid({
                       <Sortable.Handle mode="draggable">
                         {item.payload.imageUrl ? (
                           (() => {
-                            const { title, subtitle } = getHighlightText(item.payload)
+                            const { title, subtitle } = getHighlightText(item.payload);
                             return (
                               <HighlightPreview
                                 imageUrl={item.payload.imageUrl}
@@ -206,7 +202,7 @@ export function HighlightGrid({
                                 subtitle={subtitle}
                                 onRemove={() => handleRemoveImage(item.payload._id)}
                               />
-                            )
+                            );
                           })()
                         ) : (
                           <View className="bg-bg-surface h-[234px] w-full items-center justify-center rounded">
@@ -216,8 +212,8 @@ export function HighlightGrid({
                       </Sortable.Handle>
                     ) : (
                       (() => {
-                        const isFirstUpload = uploadIdx === 0
-                        uploadIdx += 1
+                        const isFirstUpload = uploadIdx === 0;
+                        uploadIdx += 1;
                         return (
                           <Sortable.Handle mode="fixed-order">
                             <UploadPlaceholder
@@ -227,16 +223,16 @@ export function HighlightGrid({
                               height={234}
                             />
                           </Sortable.Handle>
-                        )
+                        );
                       })()
                     )}
                   </View>
-                )
-              })
+                );
+              });
             })()}
           </Sortable.Flex>
         )}
       </View>
     </View>
-  )
+  );
 }

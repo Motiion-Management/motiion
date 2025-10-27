@@ -181,7 +181,12 @@ export function getObjectShape(schema: z.ZodTypeAny): Record<string, z.ZodTypeAn
     }
 
     // Fallback: Direct shape property access
-    if (schema && typeof schema === 'object' && 'shape' in schema && typeof schema.shape === 'object') {
+    if (
+      schema &&
+      typeof schema === 'object' &&
+      'shape' in schema &&
+      typeof schema.shape === 'object'
+    ) {
       return schema.shape as Record<string, z.ZodTypeAny>;
     }
 
@@ -202,7 +207,7 @@ export function getObjectShape(schema: z.ZodTypeAny): Record<string, z.ZodTypeAn
       hasShape: 'shape' in schema,
       instanceOfZodObject: schema instanceof z.ZodObject,
       typeName: getTypeName(schema),
-      defKeys: def ? Object.keys(def) : []
+      defKeys: def ? Object.keys(def) : [],
     });
     return null;
   } catch (error) {

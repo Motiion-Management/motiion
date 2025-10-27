@@ -6,7 +6,11 @@ import { resourceCache } from '@clerk/clerk-expo/resource-cache';
 
 import { ConvexReactClient } from 'convex/react';
 import { ConvexProviderWithClerk } from 'convex/react-clerk';
-import { QueryClient, QueryClientProvider, useQueryClient as useTanstackQueryClient } from '@tanstack/react-query';
+import {
+  QueryClient,
+  QueryClientProvider,
+  useQueryClient as useTanstackQueryClient,
+} from '@tanstack/react-query';
 import { ConvexQueryClient } from '@convex-dev/react-query';
 
 import { AuthErrorBoundary } from '~/components/auth/AuthErrorBoundary';
@@ -16,12 +20,12 @@ const convexQueryClient = new ConvexQueryClient(convex);
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
-      gcTime: 5 * 60 * 1000,     // 5 minutes - keeps subscription alive during navigation
-      staleTime: 0,               // Irrelevant for Convex (data is always live via WebSocket)
-      retry: false,               // Ignored by Convex adapter (uses own retry mechanism)
+      gcTime: 5 * 60 * 1000, // 5 minutes - keeps subscription alive during navigation
+      staleTime: 0, // Irrelevant for Convex (data is always live via WebSocket)
+      retry: false, // Ignored by Convex adapter (uses own retry mechanism)
       queryFn: convexQueryClient.queryFn(), // Required for convexQuery() helper to work
-    }
-  }
+    },
+  },
 });
 
 // Connect ConvexQueryClient to TanStack QueryClient

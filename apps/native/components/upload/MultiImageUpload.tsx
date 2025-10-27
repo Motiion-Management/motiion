@@ -1,16 +1,16 @@
-import { api } from '@packages/backend/convex/_generated/api'
-import { useMutation, useQuery } from 'convex/react'
-import { useCallback, useState, useEffect } from 'react'
-import { Alert, View } from 'react-native'
-import Sortable from 'react-native-sortables'
+import { api } from '@packages/backend/convex/_generated/api';
+import { useMutation, useQuery } from 'convex/react';
+import { useCallback, useState, useEffect } from 'react';
+import { Alert, View } from 'react-native';
+import Sortable from 'react-native-sortables';
 
-import * as ImagePicker from 'expo-image-picker'
-import * as ImageManipulator from 'expo-image-manipulator'
+import * as ImagePicker from 'expo-image-picker';
+import * as ImageManipulator from 'expo-image-manipulator';
 
-import { ImagePreview } from './ImagePreview'
-import { UploadPlaceholder } from '../ui/upload-placeholder'
-import { ActivityIndicator } from '../ui/activity-indicator'
-import { Text } from '../ui/text'
+import { ImagePreview } from './ImagePreview';
+import { UploadPlaceholder } from '../ui/upload-placeholder';
+import { ActivityIndicator } from '../ui/activity-indicator';
+import { Text } from '../ui/text';
 
 interface MultiImageUploadProps {
   onImageCountChange?: (count: number) => void;

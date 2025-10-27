@@ -31,19 +31,22 @@ type TabsViewProps = {
   contentClassName?: string;
 };
 
-export const PagerTabView = forwardRef<PagerTabViewRef, TabsViewProps>(function PagerTabView({
-  routes,
-  renderScene,
-  initialKey,
-  onIndexChange,
-  disabledKeys = [],
-  className,
-  variant = 'default',
-  alignment = 'left',
-  tabStyle,
-  tabContainerClassName,
-  contentClassName,
-}, ref) {
+export const PagerTabView = forwardRef<PagerTabViewRef, TabsViewProps>(function PagerTabView(
+  {
+    routes,
+    renderScene,
+    initialKey,
+    onIndexChange,
+    disabledKeys = [],
+    className,
+    variant = 'default',
+    alignment = 'left',
+    tabStyle,
+    tabContainerClassName,
+    contentClassName,
+  },
+  ref
+) {
   const initialIndex = Math.max(0, initialKey ? routes.findIndex((r) => r.key === initialKey) : 0);
   const [activeIndex, setActiveIndex] = useState<number>(initialIndex);
   const indexDecimal = useSharedValue<number>(initialIndex);
@@ -70,14 +73,18 @@ export const PagerTabView = forwardRef<PagerTabViewRef, TabsViewProps>(function 
   };
 
   // Expose setPage method via ref
-  useImperativeHandle(ref, () => ({
-    setPage: (index: number) => {
-      if (index === activeIndex) return;
-      setActiveIndex(index);
-      pagerRef.current?.setPage?.(index);
-      onIndexChange?.(index, routes[index]?.key);
-    }
-  }), [activeIndex, routes, onIndexChange]);
+  useImperativeHandle(
+    ref,
+    () => ({
+      setPage: (index: number) => {
+        if (index === activeIndex) return;
+        setActiveIndex(index);
+        pagerRef.current?.setPage?.(index);
+        onIndexChange?.(index, routes[index]?.key);
+      },
+    }),
+    [activeIndex, routes, onIndexChange]
+  );
 
   // Determine which tab component to render
   const renderTabs = () => {

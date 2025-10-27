@@ -1,7 +1,7 @@
-import { useQuery } from '@tanstack/react-query'
-import { type Id } from '@packages/backend/convex/_generated/dataModel'
-import { dancerProfileQueryOptions } from './dancerProfileQueries'
-import { useStableTanstackData } from './useStableTanstackData'
+import { useQuery } from '@tanstack/react-query';
+import { type Id } from '@packages/backend/convex/_generated/dataModel';
+import { dancerProfileQueryOptions } from './dancerProfileQueries';
+import { useStableTanstackData } from './useStableTanstackData';
 
 /**
  * Hook to fetch dancer profile data with details using TanStack Query + Convex adapter.
@@ -40,6 +40,6 @@ import { useStableTanstackData } from './useStableTanstackData'
  * ```
  */
 export function useDancerProfileQuery(dancerId: Id<'dancers'>) {
-  const query = useQuery(dancerProfileQueryOptions(dancerId))
-  return useStableTanstackData(query)
+  const query = useQuery(dancerProfileQueryOptions(dancerId));
+  return useStableTanstackData(query);
 }

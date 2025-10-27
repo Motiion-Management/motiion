@@ -1,5 +1,5 @@
-import { useRef } from 'react'
-import { type UseQueryResult } from '@tanstack/react-query'
+import { useRef } from 'react';
+import { type UseQueryResult } from '@tanstack/react-query';
 
 /**
  * Wraps a TanStack Query result to provide stable data that never becomes undefined.
@@ -28,16 +28,16 @@ import { type UseQueryResult } from '@tanstack/react-query'
  * ```
  */
 export function useStableTanstackData<TData>(query: UseQueryResult<TData>) {
-  const stableRef = useRef<TData | undefined>(undefined)
+  const stableRef = useRef<TData | undefined>(undefined);
 
   // Update stable data when query returns new data
   if (query.data !== undefined) {
-    stableRef.current = query.data
+    stableRef.current = query.data;
   }
 
   return {
     ...query,
     data: stableRef.current,
     isStable: stableRef.current !== undefined,
-  }
+  };
 }

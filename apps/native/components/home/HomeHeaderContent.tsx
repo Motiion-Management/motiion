@@ -109,9 +109,7 @@ export function HomeHeaderLeft(_: TabHeaderSlot) {
   return (
     <Avatar alt={profile?.displayName || user?.email || 'User avatar'} className="h-10 w-10">
       {headshotUrl && (
-        <AvatarImage
-          source={{ uri: headshotUrl }}
-          asChild>
+        <AvatarImage source={{ uri: headshotUrl }} asChild>
           <ExpoImage
             source={{ uri: headshotUrl }}
             style={{ width: '100%', height: '100%' }}

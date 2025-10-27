@@ -172,8 +172,16 @@ export default function AboutScreen() {
         value: ethnicity?.join(', '),
         onPress: () => setEditingField('ethnicity'),
       },
-      { label: 'HAIR COLOR', value: hairColor ?? undefined, onPress: () => setEditingField('hairColor') },
-      { label: 'EYE COLOR', value: eyeColor ?? undefined, onPress: () => setEditingField('eyeColor') },
+      {
+        label: 'HAIR COLOR',
+        value: hairColor ?? undefined,
+        onPress: () => setEditingField('hairColor'),
+      },
+      {
+        label: 'EYE COLOR',
+        value: eyeColor ?? undefined,
+        onPress: () => setEditingField('eyeColor'),
+      },
       { label: 'GENDER', value: gender ?? undefined, onPress: () => setEditingField('gender') },
     ],
     [height, ethnicity, hairColor, eyeColor, gender]

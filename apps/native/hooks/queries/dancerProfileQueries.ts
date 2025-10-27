@@ -1,6 +1,6 @@
-import { convexQuery } from '@convex-dev/react-query'
-import { api } from '@packages/backend/convex/_generated/api'
-import { type Id } from '@packages/backend/convex/_generated/dataModel'
+import { convexQuery } from '@convex-dev/react-query';
+import { api } from '@packages/backend/convex/_generated/api';
+import { type Id } from '@packages/backend/convex/_generated/dataModel';
 
 /**
  * Query options factory for dancer profile data with details.
@@ -19,5 +19,5 @@ export function dancerProfileQueryOptions(dancerId: Id<'dancers'>) {
     ...convexQuery(api.dancers.getDancerProfileWithDetails, { dancerId }),
     placeholderData: (previousData: any) => previousData,
     gcTime: 5 * 60 * 1000, // 5 minutes
-  }
+  };
 }
