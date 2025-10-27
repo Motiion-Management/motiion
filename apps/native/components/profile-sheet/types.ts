@@ -61,6 +61,9 @@ export interface ProfileSheetProps {
   leftButton?: React.ReactNode;
   rightButton?: React.ReactNode;
 
+  // Action buttons (shown above header when expanded)
+  actionButtons?: React.ReactNode;
+
   // Content
   children: React.ReactNode;
 

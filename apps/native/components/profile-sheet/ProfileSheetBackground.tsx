@@ -8,11 +8,11 @@ export function ProfileSheetBackground({
   headerHeight,
 }: ProfileSheetBackgroundProps) {
   const backgroundStyle = useAnimatedStyle(() => {
-    // Horizontal margins: 12px at index 0 → 0px at index 1
+    // Horizontal margins: 8px at index 0 (30%) → 0px at index 1 (70%)
     const marginHorizontal = interpolate(animatedIndex.value, [0, 1], [8, 0], Extrapolate.CLAMP);
     const marginTop = interpolate(animatedIndex.value, [0, 1], [6, 0], Extrapolate.CLAMP);
 
-    // Height: dynamic based on header content → full height at index 1
+    // Height: dynamic based on header content at 30% → full height at 70%
     const height = interpolate(
       animatedIndex.value,
       [0, 1],
@@ -20,11 +20,11 @@ export function ProfileSheetBackground({
       Extrapolate.CLAMP
     );
 
-    // Top border radius: half of header height (fully rounds pill) → rounded-3xl (24px)
+    // Top border radius: half of header height (fully rounds pill) → rounded-3xl (34px for larger sheet)
     const borderTopRadius = interpolate(
       animatedIndex.value,
       [0, 1],
-      [headerHeight / 2, 24],
+      [headerHeight / 2, 34],
       Extrapolate.CLAMP
     );
 

@@ -1,7 +1,6 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { View, Share } from 'react-native';
 import Animated, { FadeIn, FadeOut, useAnimatedStyle } from 'react-native-reanimated';
-import { SafeAreaView } from 'react-native-safe-area-context';
 import { useLocalSearchParams, router, Redirect } from 'expo-router';
 import { captureRef } from 'react-native-view-shot';
 import * as DropdownMenu from 'zeego/dropdown-menu';
@@ -10,6 +9,7 @@ import Transition, { useScreenAnimation } from 'react-native-screen-transitions'
 import { Image as ExpoImage } from 'expo-image';
 import { type Id } from '@packages/backend/convex/_generated/dataModel';
 import { useDancerProfileQuery } from '~/hooks/queries/useDancerProfileQuery';
+import { useUser } from '~/hooks/useUser';
 import { ProjectCarousel } from '~/components/dancer-profile/ProjectCarousel';
 import { HeadshotCarousel } from '~/components/dancer-profile/HeadshotCarousel';
 import { ProfileDetailsSheet } from '~/components/dancer-profile/ProfileDetailsSheet';
@@ -18,40 +18,15 @@ import { ProfileShareCard } from '~/components/dancer-profile/share/ProfileShare
 import { HeadshotShareCard } from '~/components/dancer-profile/share/HeadshotShareCard';
 import { ShareBottomSheet } from '~/components/dancer-profile/share/ShareBottomSheet';
 import { QRCodeDialog } from '~/components/dancer-profile/qr';
+import {
+  OwnProfileActions,
+  DancerViewingDancerActions,
+  ChoreographerViewingDancerActions,
+} from '~/components/dancer-profile/action-buttons';
 import { Icon } from '~/lib/icons/Icon';
 import { Button } from '~/components/ui/button';
 import { Text } from '~/components/ui/text';
 import { BackgroundGradientView } from '~/components/ui/background-gradient-view';
-
-function TopBar({ profileUrl }: { profileUrl: string }) {
-  const handleClose = () => {
-    if (router.canGoBack()) {
-      router.back();
-    } else {
-      router.replace('/');
-    }
-  };
-  return (
-    <Animated.View
-      entering={FadeIn.duration(200).delay(200)}
-      style={{ position: 'absolute', top: 0, left: 0, right: 0 }}>
-      <SafeAreaView edges={['top', 'left', 'right']}>
-        <View
-          style={{
-            flexDirection: 'row',
-            justifyContent: 'space-between',
-            paddingHorizontal: 16,
-            paddingTop: 0,
-          }}>
-          <Button onPress={handleClose} variant="tertiary">
-            <Icon name="xmark" size={20} className="text-icon-default" />
-          </Button>
-          <QRCodeDialog profileUrl={profileUrl} />
-        </View>
-      </SafeAreaView>
-    </Animated.View>
-  );
-}
 
 export default function DancerScreen() {
   const { id, headshot: initialHeadshotParam } = useLocalSearchParams<{
@@ -65,9 +40,12 @@ export default function DancerScreen() {
   const [currentHeadshotIndex, setCurrentHeadshotIndex] = useState(0);
   const [shareSheetVisible, setShareSheetVisible] = useState(false);
   const [shareData, setShareData] = useState<{ imageUri: string; shareUrl: string } | null>(null);
+  const [qrDialogVisible, setQRDialogVisible] = useState(false);
 
   const profileShareCardRef = useRef<View>(null);
   const headshotShareCardRef = useRef<View>(null);
+
+  const { user: currentUser } = useUser();
 
   const {
     bottomSheetRef,
@@ -114,6 +92,62 @@ export default function DancerScreen() {
 
   const profileQuery = useDancerProfileQuery(id as Id<'dancers'>);
   const profileData = profileQuery.data;
+
+  // Determine if viewing own profile
+  const isOwnProfile = currentUser?._id === profileData?.dancer.userId;
+
+  // Action button handlers
+  const handleQRCodePress = () => {
+    setQRDialogVisible(true);
+  };
+
+  const handleAddPress = () => {
+    // TODO: Implement add to list functionality
+    console.log('Add pressed');
+  };
+
+  const handleFavoritePress = () => {
+    // TODO: Implement favorite functionality
+    console.log('Favorite pressed');
+  };
+
+  const handleBookPress = () => {
+    // TODO: Implement booking functionality
+    console.log('Book pressed');
+  };
+
+  const handleRequestPress = () => {
+    // TODO: Implement request functionality
+    console.log('Request pressed');
+  };
+
+  // Determine which action buttons to show
+  const actionButtons = useMemo(() => {
+    if (isOwnProfile) {
+      return <OwnProfileActions onQRCodePress={handleQRCodePress} />;
+    }
+
+    // For now, show dancer viewing dancer actions for all non-self views
+    // TODO: Determine if current user is choreographer and show ChoreographerViewingDancerActions
+    const isChoreographer = false; // currentUser?.userType === 'choreographer';
+
+    if (isChoreographer) {
+      return (
+        <ChoreographerViewingDancerActions
+          onBookPress={handleBookPress}
+          onAddPress={handleAddPress}
+          onRequestPress={handleRequestPress}
+        />
+      );
+    }
+
+    return (
+      <DancerViewingDancerActions
+        onAddPress={handleAddPress}
+        onFavoritePress={handleFavoritePress}
+      />
+    );
+  }, [isOwnProfile, currentUser]);
 
   useEffect(() => {
     if (!profileData?.headshotUrls?.length) return;
@@ -226,8 +260,6 @@ export default function DancerScreen() {
           <View style={{ flex: 1, backgroundColor: 'black' }} />
         )}
 
-        <TopBar profileUrl={profileUrl} />
-
         <ProfileSheet
           bottomSheetRef={bottomSheetRef}
           animatedIndex={animatedIndex}
@@ -240,6 +272,7 @@ export default function DancerScreen() {
               ? `${profileData.dancer.location.city}, ${profileData.dancer.location.state}`
               : undefined
           }
+          actionButtons={actionButtons}
           leftButton={
             <Button variant="secondary" size="icon" onPress={toggle}>
               <View style={{ position: 'relative', width: 24, height: 24 }}>
@@ -353,6 +386,9 @@ export default function DancerScreen() {
           onClose={() => setShareSheetVisible(false)}
         />
       )}
+
+      {/* QR Code Dialog */}
+      <QRCodeDialog profileUrl={profileUrl} />
     </View>
   );
 }
