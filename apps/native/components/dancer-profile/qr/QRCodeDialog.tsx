@@ -9,9 +9,11 @@ import { Button } from '~/components/ui/button';
 
 interface QRCodeDialogProps {
   profileUrl: string;
+  open?: boolean;
+  onOpenChange?: (open: boolean) => void;
 }
 
-export function QRCodeDialog({ profileUrl }: QRCodeDialogProps) {
+export function QRCodeDialog({ profileUrl, open, onOpenChange }: QRCodeDialogProps) {
   const tabs: Array<TabRoute> = [
     { key: 'scan', title: 'Scan Code' },
     { key: 'mycode', title: 'My Code' },
@@ -28,13 +30,18 @@ export function QRCodeDialog({ profileUrl }: QRCodeDialogProps) {
     }
   };
 
+  const isControlled = open !== undefined;
+
   return (
-    <Dialog>
-      <DialogTrigger asChild>
-        <Button variant="tertiary">
-          <Icon name="qrcode" size={28} className="text-icon-default" />
-        </Button>
-      </DialogTrigger>
+    <Dialog open={open} onOpenChange={onOpenChange}>
+      {/* Only render trigger button if dialog is not controlled externally */}
+      {!isControlled && (
+        <DialogTrigger asChild>
+          <Button variant="tertiary">
+            <Icon name="qrcode" size={28} className="text-icon-default" />
+          </Button>
+        </DialogTrigger>
+      )}
 
       <DialogContent>
         <View className="h-[36vh] w-[75vw]">

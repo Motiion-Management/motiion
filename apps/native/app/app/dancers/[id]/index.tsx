@@ -104,7 +104,8 @@ export default function DancerScreen() {
 
   // Action button handlers
   const handleQRCodePress = () => {
-    setQRDialogVisible(true);
+    snapToDefault(); // Collapse sheet to 30%
+    setQRDialogVisible(true); // Then open QR dialog
   };
 
   const handleAddPress = () => {
@@ -420,8 +421,12 @@ export default function DancerScreen() {
         />
       )}
 
-      {/* QR Code Dialog */}
-      <QRCodeDialog profileUrl={profileUrl} />
+      {/* QR Code Dialog - Controlled */}
+      <QRCodeDialog
+        profileUrl={profileUrl}
+        open={qrDialogVisible}
+        onOpenChange={setQRDialogVisible}
+      />
     </View>
   );
 }
