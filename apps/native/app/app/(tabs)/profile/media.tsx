@@ -15,7 +15,7 @@ export default function MediaScreen() {
         left: 'back',
         middle: 'Media',
       }}>
-      <View className="flex-1 px-4">
+      <View className="flex-1">
         <TabbedView tabs={tabs} className="flex-1" contentClassName="flex-1 pt-6">
           {(activeTab) => (
             <ScrollView className="flex-1" showsVerticalScrollIndicator={false}>

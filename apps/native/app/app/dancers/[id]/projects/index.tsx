@@ -65,7 +65,7 @@ export default function ProjectsScreen() {
   return (
     <View className="flex-1 gap-6 bg-background-gradient-filled py-6">
       {/* Search Tabs */}
-      <SearchTabs tabs={tabs} activeTab={getActiveTabLabel()} onTabChange={handleTabChange} className="px-4" />
+      <SearchTabs tabs={tabs} activeTab={getActiveTabLabel()} onTabChange={handleTabChange} />
 
       {/* Search Input */}
       <Input

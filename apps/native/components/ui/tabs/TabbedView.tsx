@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { View } from 'react-native';
 import { SearchTabs } from '~/components/ui/search-tabs';
+import { cn } from '~/lib/cn';
 
 interface TabbedViewProps {
   tabs: string[];
@@ -34,7 +35,7 @@ export function TabbedView({
   return (
     <View className={className}>
       <SearchTabs tabs={tabs} activeTab={activeTab} onTabChange={handleTabChange} />
-      <View className={contentClassName}>{children(activeTab)}</View>
+      <View className={cn('px-4', contentClassName)}>{children(activeTab)}</View>
     </View>
   );
 }
