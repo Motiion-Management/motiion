@@ -6,7 +6,6 @@ import Animated, {
   interpolate,
   Extrapolate,
   useDerivedValue,
-  withSpring,
   type SharedValue,
 } from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -140,7 +139,7 @@ export function HeadshotCarousel({
 
     return {
       top,
-      height: withSpring(height, { damping: 20, stiffness: 150 }),
+      height,
       width: SCREEN_WIDTH,
       position: 'absolute',
       left: 0,
@@ -169,8 +168,8 @@ export function HeadshotCarousel({
     );
 
     return {
-      opacity: withSpring(opacity, { damping: 20, stiffness: 150 }),
-      top: withSpring(top, { damping: 20, stiffness: 150 }),
+      opacity,
+      top,
     };
   }, [animatedIndex]);
 
