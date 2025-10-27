@@ -4,7 +4,7 @@ export const HAIR_COLOR = ['Black', 'Blonde', 'Brown', 'Red', 'Other'] as const
 
 export const hairColorFormSchema = z.object({
   hairColor: z.enum(HAIR_COLOR, {
-    errorMap: () => ({ message: 'Please select a hair color' })
+    message: 'Please select a hair color'
   })
 })
 

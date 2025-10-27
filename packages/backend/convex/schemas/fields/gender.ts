@@ -4,7 +4,7 @@ export const GENDER = ['Male', 'Female', 'Non-binary'] as const
 
 export const genderFormSchema = z.object({
   gender: z.enum(GENDER, {
-    errorMap: () => ({ message: 'Please select a gender' })
+    message: 'Please select a gender'
   })
 })
 

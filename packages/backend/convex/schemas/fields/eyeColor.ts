@@ -11,7 +11,7 @@ export const EYE_COLOR = [
 
 export const eyeColorFormSchema = z.object({
   eyeColor: z.enum(EYE_COLOR, {
-    errorMap: () => ({ message: 'Please select an eye color' })
+    message: 'Please select an eye color'
   })
 })
 
