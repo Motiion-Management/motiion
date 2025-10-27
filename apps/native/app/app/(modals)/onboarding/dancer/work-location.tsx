@@ -23,7 +23,7 @@ export default function DancerWorkLocationScreen() {
       // Convert PlaceKitLocation array to string array
       const workLocationStrings = values.locations
         .filter((loc): loc is PlaceKitLocation => loc !== null)
-        .map((loc) => loc.name);
+        .map((loc) => `${loc.city}, ${loc.state}`);
 
       await updateDancerProfile({ workLocation: workLocationStrings });
       router.back();
@@ -39,14 +39,16 @@ export default function DancerWorkLocationScreen() {
   // Convert workLocation strings to PlaceKitLocation objects for the form
   // Note: This is a simplified conversion - full location data would need to be stored
   const initialLocations: (PlaceKitLocation | null)[] = dancerProfile?.workLocation?.map(
-    (locationName) => ({
-      name: locationName,
-      city: locationName,
-      administrative: '',
-      country: '',
-      lat: 0,
-      lng: 0,
-    })
+    (locationName) => {
+      // Parse "City, State" format
+      const parts = locationName.split(', ');
+      return {
+        city: parts[0] || locationName,
+        state: parts[1] || '',
+        stateCode: parts[1] || '',
+        country: 'US',
+      };
+    }
   ) || [null];
 
   return (

@@ -16,7 +16,6 @@ const zChoreographerDocOrNull = zodDocOrNull('choreographers', zChoreographers)
 
 // Get the active choreographer profile for the authenticated user
 export const getMyChoreographerProfile = authQuery({
-  returns: zChoreographerDocOrNull,
   handler: async (ctx) => {
     if (!ctx.user) return null
 

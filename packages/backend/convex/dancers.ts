@@ -107,7 +107,6 @@ export type DancerProfileData = {
 // Get the active dancer profile for the authenticated user
 export const getMyDancerProfile = authQuery({
   args: {},
-  returns: Dancers.zDoc.nullable(),
   handler: async (ctx) => {
     if (!ctx.user) return null
 

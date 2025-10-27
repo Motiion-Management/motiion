@@ -1,7 +1,7 @@
 import React from 'react';
 import { View } from 'react-native';
 
-import { MediaCard } from '~/components/ui/media-card';
+import { MediaCard } from '~/components/ui/media-card/media-card';
 
 interface QuickActionsSectionProps {
   onSearchPress?: () => void;

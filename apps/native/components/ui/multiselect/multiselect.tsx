@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { View } from 'react-native';
+import { View, Pressable } from 'react-native';
 
 import { SelectionCard } from '~/components/ui/selection-card';
 import { cn } from '~/lib/utils';
@@ -52,7 +52,7 @@ export interface MultiselectItemProps {
   description?: string;
 }
 
-const MultiselectItem = React.forwardRef<React.ElementRef<typeof View>, MultiselectItemProps>(
+const MultiselectItem = React.forwardRef<React.ElementRef<typeof Pressable>, MultiselectItemProps>(
   ({ value, label, description }, ref) => {
     const { values, onValueChange, disabled } = useMultiselectContext();
 

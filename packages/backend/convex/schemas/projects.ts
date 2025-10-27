@@ -12,6 +12,8 @@ export const PROJECT_TYPES = [
   'commercial'
 ] as const
 
+export type ProjectType = (typeof PROJECT_TYPES)[number]
+
 export const PROJECT_TITLE_MAP: Record<(typeof PROJECT_TYPES)[number], string> =
   {
     'tv-film': 'Television & Film',

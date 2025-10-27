@@ -12,7 +12,7 @@ import type { FormHandle, FormProps } from '~/components/forms/onboarding/contra
 
 // Note: This form validates optional sagAftraId, while shared schema requires it
 // Using a local schema that makes it optional for this specific use case
-const unionSchema = z.object({
+export const unionSchema = z.object({
   sagAftraId: z.string().optional(),
 });
 

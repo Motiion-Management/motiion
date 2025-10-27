@@ -24,12 +24,12 @@ export default function DancerLocationScreen() {
 
       // Convert PlaceKitLocation to location object
       const location = {
-        name: values.primaryLocation.name,
+        name: values.primaryLocation.city,
         country: values.primaryLocation.country || '',
-        state: values.primaryLocation.administrative || '',
-        city: values.primaryLocation.city || values.primaryLocation.name,
-        zipCode: values.primaryLocation.zipcode,
-        address: values.primaryLocation.name,
+        state: values.primaryLocation.state || '',
+        city: values.primaryLocation.city,
+        zipCode: undefined,
+        address: `${values.primaryLocation.city}, ${values.primaryLocation.state}`,
       };
 
       await updateDancerProfile({ location });
@@ -46,13 +46,10 @@ export default function DancerLocationScreen() {
   // Convert location object to PlaceKitLocation for the form
   const initialLocation: PlaceKitLocation | null = dancerProfile?.location
     ? {
-        name: dancerProfile.location.name || dancerProfile.location.city,
         city: dancerProfile.location.city,
-        administrative: dancerProfile.location.state,
+        state: dancerProfile.location.state,
+        stateCode: dancerProfile.location.state,
         country: dancerProfile.location.country,
-        zipcode: dancerProfile.location.zipCode,
-        lat: 0, // Would need to store/retrieve these if needed
-        lng: 0,
       }
     : null;
 

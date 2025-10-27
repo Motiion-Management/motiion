@@ -100,10 +100,9 @@ export function ProjectEditSheet({
   // Sync form with loaded project data
   useEffect(() => {
     if (selectedProject) {
-      sharedForm.update((state) => ({
-        ...state,
-        values: selectedProject,
-      }))
+      sharedForm.update({
+        defaultValues: selectedProject,
+      })
     }
   }, [selectedProject, sharedForm])
 

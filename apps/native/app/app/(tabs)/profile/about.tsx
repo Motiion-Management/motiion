@@ -172,9 +172,9 @@ export default function AboutScreen() {
         value: ethnicity?.join(', '),
         onPress: () => setEditingField('ethnicity'),
       },
-      { label: 'HAIR COLOR', value: hairColor, onPress: () => setEditingField('hairColor') },
-      { label: 'EYE COLOR', value: eyeColor, onPress: () => setEditingField('eyeColor') },
-      { label: 'GENDER', value: gender, onPress: () => setEditingField('gender') },
+      { label: 'HAIR COLOR', value: hairColor ?? undefined, onPress: () => setEditingField('hairColor') },
+      { label: 'EYE COLOR', value: eyeColor ?? undefined, onPress: () => setEditingField('eyeColor') },
+      { label: 'GENDER', value: gender ?? undefined, onPress: () => setEditingField('gender') },
     ],
     [height, ethnicity, hairColor, eyeColor, gender]
   );
@@ -376,7 +376,7 @@ export default function AboutScreen() {
             onSave={() => hairColorFormRef.current?.submit()}>
             <HairColorForm
               ref={hairColorFormRef}
-              initialValues={{ hairColor: hairColor || '' }}
+              initialValues={{ hairColor: hairColor ?? undefined }}
               onSubmit={handleSaveHairColor}
               onValidChange={setCanSubmit}
             />
@@ -391,7 +391,7 @@ export default function AboutScreen() {
             onSave={() => eyeColorFormRef.current?.submit()}>
             <EyeColorForm
               ref={eyeColorFormRef}
-              initialValues={{ eyeColor: eyeColor || '' }}
+              initialValues={{ eyeColor: eyeColor ?? undefined }}
               onSubmit={handleSaveEyeColor}
               onValidChange={setCanSubmit}
             />
@@ -406,7 +406,7 @@ export default function AboutScreen() {
             onSave={() => genderFormRef.current?.submit()}>
             <GenderForm
               ref={genderFormRef}
-              initialValues={{ gender: gender || '' }}
+              initialValues={{ gender: gender ?? undefined }}
               onSubmit={handleSaveGender}
               onValidChange={setCanSubmit}
             />

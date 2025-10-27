@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Dimensions, TouchableOpacity } from 'react-native';
+import { View, Dimensions, TouchableOpacity, type ImageStyle } from 'react-native';
 import Carousel from 'react-native-reanimated-carousel';
 import Animated, {
   useAnimatedStyle,
@@ -36,11 +36,11 @@ const HeadshotItem = React.memo<{
   index: number;
   isFirst: boolean;
   animatedIndex: SharedValue<number> | undefined;
-  animatedWidth: ReturnType<typeof useDerivedValue>;
-  animatedHeight: ReturnType<typeof useDerivedValue>;
+  animatedWidth: SharedValue<number>;
+  animatedHeight: SharedValue<number>;
   onPress?: () => void;
 }>(({ item, index, isFirst, animatedIndex, animatedWidth, animatedHeight, onPress }) => {
-  const imageStyle = useAnimatedStyle(() => ({
+  const imageStyle = useAnimatedStyle<ImageStyle>(() => ({
     width: animatedWidth.value,
     height: animatedHeight.value,
     borderRadius: interpolate(animatedIndex?.value || 0, [0, 1], [25, 0], Extrapolate.CLAMP),
@@ -106,7 +106,7 @@ export function HeadshotCarousel({
   };
 
   // Derive the animated height value
-  const animatedHeight = useDerivedValue(() => {
+  const animatedHeight = useDerivedValue<number>(() => {
     if (!animatedIndex) {
       return IMAGE_HEIGHT;
     }
@@ -120,7 +120,7 @@ export function HeadshotCarousel({
     );
   }, [animatedIndex]);
 
-  const animatedWidth = useDerivedValue(() => {
+  const animatedWidth = useDerivedValue<number>(() => {
     if (!animatedIndex) {
       return COLLAPSED_WIDTH;
     }
