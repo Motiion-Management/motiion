@@ -1,8 +1,9 @@
-import React from 'react';
-import { View } from 'react-native';
+import React from 'react'
+import { View, ScrollView } from 'react-native'
 
-import { TabScreenLayout } from '~/components/layouts/TabScreenLayout';
-import { Text } from '~/components/ui/text';
+import { Text } from '~/components/ui/text'
+import { TabScreenLayout } from '~/components/layouts/TabScreenLayout'
+import { TrainingForm } from '~/components/forms/onboarding/TrainingForm'
 
 export default function TrainingScreen() {
   return (
@@ -11,14 +12,21 @@ export default function TrainingScreen() {
         left: 'back',
         middle: 'Training',
       }}>
-      <View className="flex-1 items-center justify-center p-4">
-        <Text variant="header4" className="text-text-default">
-          Training
-        </Text>
-        <Text variant="body" className="mt-2 text-text-low">
-          Training history will be displayed here
-        </Text>
+      <View className="flex-1 px-4">
+        <ScrollView showsVerticalScrollIndicator={false}>
+          {/* Description text */}
+          <Text variant="body" className="mb-8 text-text-low">
+            Add your training
+          </Text>
+
+          {/* Training form - self-contained with TrainingCards */}
+          <TrainingForm
+            initialValues={{}}
+            onSubmit={async () => {}}
+            onValidChange={() => {}}
+          />
+        </ScrollView>
       </View>
     </TabScreenLayout>
-  );
+  )
 }
