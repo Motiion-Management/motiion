@@ -1,6 +1,12 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { View, Share } from 'react-native';
-import Animated, { FadeIn, FadeOut, useAnimatedStyle } from 'react-native-reanimated';
+import Animated, {
+  FadeIn,
+  FadeOut,
+  useAnimatedStyle,
+  interpolate,
+  Extrapolate,
+} from 'react-native-reanimated';
 import { useLocalSearchParams, router, Redirect } from 'expo-router';
 import { captureRef } from 'react-native-view-shot';
 import * as DropdownMenu from 'zeego/dropdown-menu';
@@ -149,6 +155,18 @@ export default function DancerScreen() {
     );
   }, [isOwnProfile, currentUser]);
 
+  // Animated style for action buttons - synced with bottom sheet
+  const actionButtonsStyle = useAnimatedStyle(() => {
+    const opacity = interpolate(animatedIndex.value, [0, 0.5, 1], [0, 0, 1], Extrapolate.CLAMP);
+    const translateY = interpolate(animatedIndex.value, [0, 1], [20, 0], Extrapolate.CLAMP);
+
+    return {
+      opacity,
+      transform: [{ translateY }],
+      pointerEvents: animatedIndex.value > 0.5 ? ('auto' as const) : ('none' as const),
+    };
+  });
+
   useEffect(() => {
     if (!profileData?.headshotUrls?.length) return;
 
@@ -260,6 +278,22 @@ export default function DancerScreen() {
           <View style={{ flex: 1, backgroundColor: 'black' }} />
         )}
 
+        {/* Action buttons - positioned in top 30% overlay area */}
+        <Animated.View
+          style={[
+            actionButtonsStyle,
+            {
+              position: 'absolute',
+              top: '15%',
+              left: 0,
+              right: 0,
+              zIndex: 5,
+              alignItems: 'center',
+            },
+          ]}>
+          {actionButtons}
+        </Animated.View>
+
         <ProfileSheet
           bottomSheetRef={bottomSheetRef}
           animatedIndex={animatedIndex}
@@ -272,7 +306,6 @@ export default function DancerScreen() {
               ? `${profileData.dancer.location.city}, ${profileData.dancer.location.state}`
               : undefined
           }
-          actionButtons={actionButtons}
           leftButton={
             <Button variant="secondary" size="icon" onPress={toggle}>
               <View style={{ position: 'relative', width: 24, height: 24 }}>

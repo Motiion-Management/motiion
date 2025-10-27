@@ -19,23 +19,10 @@ export function ProfileSheet({
   subtitle,
   leftButton,
   rightButton,
-  actionButtons,
   children,
   enableBackdrop = true,
   enableOverDrag = false,
 }: ProfileSheetProps) {
-  // Animation for action buttons - only visible when expanded (index 1)
-  const actionButtonsStyle = useAnimatedStyle(() => {
-    const opacity = interpolate(animatedIndex.value, [0, 0.5, 1], [0, 0, 1], Extrapolate.CLAMP);
-    const translateY = interpolate(animatedIndex.value, [0, 1], [20, 0], Extrapolate.CLAMP);
-
-    return {
-      opacity,
-      transform: [{ translateY }],
-      pointerEvents: animatedIndex.value > 0.5 ? ('auto' as const) : ('none' as const),
-    };
-  });
-
   return (
     <BottomSheet
       ref={bottomSheetRef}
@@ -61,25 +48,6 @@ export function ProfileSheet({
       <BottomSheetView
         className="h-[90vh] pb-10"
         style={{ flex: 1, backgroundColor: 'transparent', position: 'relative' }}>
-        {/* Action buttons - shown above header when expanded */}
-        {actionButtons && (
-          <Animated.View
-            style={[
-              actionButtonsStyle,
-              {
-                position: 'absolute',
-                top: -120,
-                left: 0,
-                right: 0,
-                zIndex: 10,
-                alignItems: 'center',
-                justifyContent: 'center',
-              },
-            ]}>
-            {actionButtons}
-          </Animated.View>
-        )}
-
         <View className="flex-1">
           <ProfileSheetHeader
             title={title}
