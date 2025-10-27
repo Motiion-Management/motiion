@@ -13,7 +13,7 @@ export function useProfileSheet(config?: UseProfileSheetConfig): UseProfileSheet
 
   const bottomSheetRef = useRef<BottomSheet>(null);
   const animatedIndex = useSharedValue(initialIndex);
-  const snapPoints = useMemo(() => customSnapPoints || ['30%', '70%'], [customSnapPoints]);
+  const snapPoints = useMemo(() => customSnapPoints || ['11%', '70%'], [customSnapPoints]);
   const [headerHeight, setHeaderHeight] = useState(defaultHeaderHeight);
 
   // Navigation methods
@@ -21,9 +21,9 @@ export function useProfileSheet(config?: UseProfileSheetConfig): UseProfileSheet
   const snapToExpanded = () => bottomSheetRef.current?.snapToIndex(1);
   const toggle = () => {
     // Toggle between default (0 = 30%) and expanded (1 = 70%)
-    const targetIndex = animatedIndex.value >= 0.5 ? 0 : 1
-    bottomSheetRef.current?.snapToIndex(targetIndex)
-  }
+    const targetIndex = animatedIndex.value >= 0.5 ? 0 : 1;
+    bottomSheetRef.current?.snapToIndex(targetIndex);
+  };
 
   // Animated styles for toggle button icons
   const arrowIconStyle = useAnimatedStyle(() => {
