@@ -54,7 +54,11 @@ interface TabScreenLayoutProps {
   headerCollapsed?: boolean;
 }
 
-export function TabScreenLayout({ children, header, headerCollapsed = false }: TabScreenLayoutProps) {
+export function TabScreenLayout({
+  children,
+  header,
+  headerCollapsed = false,
+}: TabScreenLayoutProps) {
   const { top: safeAreaTop, bottom: safeAreaBottom } = useSafeAreaInsets();
 
   // Extract header props

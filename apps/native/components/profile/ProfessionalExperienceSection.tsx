@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, ScrollView } from 'react-native';
+import { View } from 'react-native';
 import { useQuery } from 'convex/react';
 
 import { Text } from '~/components/ui/text';
@@ -21,17 +21,24 @@ const TAB_TO_TYPE_MAP: Record<string, string> = {
 
 const TABS = ['Television/Film', 'Music Videos', 'Live/Stage Performance'];
 
-export function ProfessionalExperienceSection({
+interface ExperienceItem {
+  id: string;
+  organizer: string;
+  title: string;
+}
+
+// Header component (title + button + tabs)
+export function ProfessionalExperienceHeader({
   isCardsOpen,
   onToggle,
+  activeTab,
+  onTabChange,
 }: {
   isCardsOpen: boolean;
   onToggle: () => void;
+  activeTab: string;
+  onTabChange: (tab: string) => void;
 }) {
-  const [isSheetOpen, setIsSheetOpen] = useState(false);
-  const [selectedProjectId, setSelectedProjectId] = useState<Id<'projects'> | undefined>(undefined);
-  const [activeTab, setActiveTab] = useState(TABS[0]);
-
   // Rotation animation for the button
   const rotation = useSharedValue(0);
 
@@ -45,11 +52,60 @@ export function ProfessionalExperienceSection({
     };
   });
 
+  return (
+    <View className="gap-3 py-6">
+      {/* Header */}
+      <View className="flex-row items-center justify-between px-4">
+        <Text variant="header4" className="text-text-default">
+          Professional Experience
+        </Text>
+        <Button onPress={onToggle} variant="tertiary" size="icon">
+          <Animated.View style={animatedIconStyle}>
+            <ArrowUpToLine className="text-text-default" size={20} />
+          </Animated.View>
+        </Button>
+      </View>
+
+      {/* Tabs */}
+      <SearchTabs tabs={TABS} activeTab={activeTab} onTabChange={onTabChange} />
+    </View>
+  );
+}
+
+// List component (scrollable experience items)
+export function ProfessionalExperienceList({
+  experiences,
+  onItemPress,
+}: {
+  experiences: ExperienceItem[];
+  onItemPress: (id: string) => void;
+}) {
+  return (
+    <View className="gap-4 px-4 py-2 pb-32">
+      {experiences.map((item) => (
+        <ListItem
+          key={item.id}
+          variant="Experience"
+          organizer={item.organizer}
+          title={item.title}
+          onPress={() => onItemPress(item.id)}
+        />
+      ))}
+    </View>
+  );
+}
+
+// Hook to manage professional experience data and state
+export function useProfessionalExperience() {
+  const [isSheetOpen, setIsSheetOpen] = useState(false);
+  const [selectedProjectId, setSelectedProjectId] = useState<Id<'projects'> | undefined>(undefined);
+  const [activeTab, setActiveTab] = useState(TABS[0]);
+
   // Fetch real projects from Convex
   const myProjects = useQuery(api.projects.getMyProjects, {});
 
   // Group projects by type for each tab
-  const getExperiencesForTab = (tabName: string) => {
+  const getExperiencesForTab = (tabName: string): ExperienceItem[] => {
     if (!Array.isArray(myProjects)) return [];
 
     const projectType = TAB_TO_TYPE_MAP[tabName];
@@ -64,55 +120,41 @@ export function ProfessionalExperienceSection({
 
   const experiences = getExperiencesForTab(activeTab);
 
-  return (
-    <View className="flex-1 gap-6">
-      {/* Header Section */}
-      <View className="gap-6 pl-4">
-        {/* Header */}
-        <View className="flex-row items-center justify-between pr-4">
-          <Text variant="header4" className="text-text-default">
-            Professional Experience
-          </Text>
-          <Button onPress={onToggle} variant="tertiary" size="icon">
-            <Animated.View style={animatedIconStyle}>
-              <ArrowUpToLine className="text-text-default" size={20} />
-            </Animated.View>
-          </Button>
-        </View>
+  const handleItemPress = (id: string) => {
+    setSelectedProjectId(id as Id<'projects'>);
+    setIsSheetOpen(true);
+  };
 
-        {/* Tabs */}
-        <SearchTabs tabs={TABS} activeTab={activeTab} onTabChange={setActiveTab} />
-      </View>
+  const handleSheetClose = (open: boolean) => {
+    setIsSheetOpen(open);
+    if (!open) {
+      setSelectedProjectId(undefined);
+    }
+  };
 
-      {/* Scrollable Tab Content */}
-      <ScrollView className="px-4" showsVerticalScrollIndicator={false}>
-        <View className="gap-4 py-2 pb-32">
-          {experiences.map((item) => (
-            <ListItem
-              key={item.id}
-              variant="Experience"
-              organizer={item.organizer}
-              title={item.title}
-              onPress={() => {
-                setSelectedProjectId(item.id as Id<'projects'>);
-                setIsSheetOpen(true);
-              }}
-            />
-          ))}
-        </View>
-      </ScrollView>
-
-      {/* Project Edit Sheet */}
-      <ProjectEditSheet
-        isOpen={isSheetOpen}
-        onOpenChange={(open) => {
-          setIsSheetOpen(open);
-          if (!open) {
-            setSelectedProjectId(undefined);
-          }
-        }}
-        projectId={selectedProjectId}
-      />
-    </View>
-  );
+  return {
+    activeTab,
+    setActiveTab,
+    experiences,
+    handleItemPress,
+    isSheetOpen,
+    selectedProjectId,
+    handleSheetClose,
+  };
 }
+
+// Sheet component for editing projects
+export function ProfessionalExperienceSheet({
+  isOpen,
+  onOpenChange,
+  projectId,
+}: {
+  isOpen: boolean;
+  onOpenChange: (open: boolean) => void;
+  projectId?: Id<'projects'>;
+}) {
+  return <ProjectEditSheet isOpen={isOpen} onOpenChange={onOpenChange} projectId={projectId} />;
+}
+
+// Export TABS constant for external use
+export { TABS as PROFESSIONAL_EXPERIENCE_TABS };

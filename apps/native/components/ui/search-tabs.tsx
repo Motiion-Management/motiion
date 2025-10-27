@@ -22,8 +22,9 @@ function PillTab({ title, active, onPress }: PillTabProps) {
     <TouchableOpacity
       onPress={onPress}
       activeOpacity={0.7}
-      className={`rounded-[27px] px-4 py-1.5 ${active ? 'bg-background-accent' : 'bg-surface-tint'
-        }`}>
+      className={`rounded-[27px] px-4 py-1.5 ${
+        active ? 'bg-background-accent' : 'bg-surface-tint'
+      }`}>
       <Text variant="bodySm" className="text-text-default">
         {title}
       </Text>
@@ -37,7 +38,7 @@ export function SearchTabs({ tabs, activeTab, onTabChange, className }: SearchTa
       <ScrollView
         horizontal
         showsHorizontalScrollIndicator={false}
-        contentContainerClassName="gap-2"
+        contentContainerClassName="ml-4 gap-2"
         className="flex-row">
         {tabs.map((tab) => {
           return (
