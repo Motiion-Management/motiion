@@ -26,7 +26,7 @@ import { Text } from '~/components/ui/text';
 import { BackgroundGradientView } from '~/components/ui/background-gradient-view';
 import { MotiionLogo } from '~/lib/icons/MotiionLogo';
 
-function TopBar({ profileUrl }: { profileUrl: string }) {
+function TopBar() {
   const handleClose = () => {
     if (router.canGoBack()) {
       router.back();
@@ -222,8 +222,8 @@ export default function DancerScreen() {
           <View style={{ flex: 1, backgroundColor: 'black' }} />
         )}
 
+        <TopBar />
         {/* Action buttons - positioned in top 30% overlay area */}
-        <TopBar profileUrl={profileUrl} />
         <DancerProfileActions config={config} actions={actions} animatedIndex={animatedIndex} />
 
         <ProfileSheet

@@ -35,7 +35,15 @@ export function ProfileSheet({
       handleComponent={() => <ProfileSheetHandle animatedIndex={animatedIndex} />}
       backdropComponent={
         enableBackdrop
-          ? (props) => <BottomSheetBackdrop {...props} appearsOnIndex={1} disappearsOnIndex={0} />
+          ? (props) => (
+              <BottomSheetBackdrop
+                {...props}
+                appearsOnIndex={1}
+                disappearsOnIndex={0}
+                pressBehavior="collapse"
+                opacity={0.6}
+              />
+            )
           : undefined
       }
       backgroundComponent={() => (

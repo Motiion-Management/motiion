@@ -1,5 +1,6 @@
 import React from 'react';
 import Animated, { useAnimatedStyle, interpolate, Extrapolate } from 'react-native-reanimated';
+import { BlurView } from 'expo-blur';
 import { type ProfileSheetBackgroundProps } from './types';
 
 export function ProfileSheetBackground({
@@ -46,6 +47,24 @@ export function ProfileSheetBackground({
     };
   });
 
+  // Extract border radius values for BlurView
+  const blurViewStyle = useAnimatedStyle(() => {
+    const borderTopRadius = interpolate(
+      animatedIndex.value,
+      [0, 1],
+      [headerHeight / 2, 34],
+      Extrapolate.CLAMP
+    );
+    const borderBottomRadius = headerHeight / 2;
+
+    return {
+      borderTopLeftRadius: borderTopRadius,
+      borderTopRightRadius: borderTopRadius,
+      borderBottomLeftRadius: borderBottomRadius,
+      borderBottomRightRadius: borderBottomRadius,
+    };
+  });
+
   return (
     <Animated.View
       style={[
@@ -59,9 +78,12 @@ export function ProfileSheetBackground({
           shadowOffset: { width: 0, height: -2 },
           shadowRadius: 8,
           elevation: 5,
+          overflow: 'hidden',
         },
-      ]}
-      className="bg-background-nav"
-    />
+      ]}>
+      <Animated.View style={[blurViewStyle, { flex: 1 }]} className="bg-surface-overlay">
+        <BlurView intensity={35} style={{ flex: 1 }} />
+      </Animated.View>
+    </Animated.View>
   );
 }
