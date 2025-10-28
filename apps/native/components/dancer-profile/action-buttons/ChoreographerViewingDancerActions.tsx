@@ -32,7 +32,7 @@ export function ChoreographerViewingDancerActions({
       {/* Add Button */}
       <View className="items-center gap-2">
         <Button
-          variant="tertiary"
+          variant="secondary"
           size="icon"
           onPress={onAddPress}
           className="h-[58px] w-[58px] rounded-[46px] shadow-md">
@@ -44,7 +44,7 @@ export function ChoreographerViewingDancerActions({
       {/* Request Button */}
       <View className="items-center gap-2">
         <Button
-          variant="tertiary"
+          variant="secondary"
           size="icon"
           onPress={onRequestPress}
           className="h-[58px] w-[58px] rounded-[46px] shadow-md">

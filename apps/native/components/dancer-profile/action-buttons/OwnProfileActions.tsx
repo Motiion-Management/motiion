@@ -14,7 +14,7 @@ export function OwnProfileActions({ onQRCodePress }: OwnProfileActionsProps) {
       {/* QR Code Button */}
       <View className="items-center gap-2">
         <Button
-          variant="tertiary"
+          variant="secondary"
           size="icon"
           onPress={onQRCodePress}
           className="h-[58px] w-[58px] rounded-[46px] shadow-md">
