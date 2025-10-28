@@ -16,7 +16,7 @@ export function DancerViewingDancerActions({
   isFavorited = false,
 }: DancerViewingDancerActionsProps) {
   return (
-    <View className="flex-row gap-6 items-center justify-center">
+    <>
       {/* Add Button */}
       <View className="items-center gap-2">
         <Button
@@ -26,9 +26,7 @@ export function DancerViewingDancerActions({
           className="h-[58px] w-[58px] rounded-[46px] shadow-md">
           <Icon name="plus" size={28} className="text-icon-default" />
         </Button>
-        <Text className="text-[10px] font-medium tracking-[0.6px] uppercase text-white">
-          Add
-        </Text>
+        <Text className="text-[10px] font-medium uppercase tracking-[0.6px] text-white">Add</Text>
       </View>
 
       {/* Favorite Button */}
@@ -44,10 +42,10 @@ export function DancerViewingDancerActions({
             className="text-icon-default"
           />
         </Button>
-        <Text className="text-[10px] font-medium tracking-[0.6px] uppercase text-white">
+        <Text className="text-[10px] font-medium uppercase tracking-[0.6px] text-white">
           Favorite
         </Text>
       </View>
-    </View>
+    </>
   );
 }

@@ -10,7 +10,7 @@ interface OwnProfileActionsProps {
 
 export function OwnProfileActions({ onQRCodePress }: OwnProfileActionsProps) {
   return (
-    <View className="flex-row gap-6 items-center justify-center">
+    <>
       {/* QR Code Button */}
       <View className="items-center gap-2">
         <Button
@@ -20,10 +20,8 @@ export function OwnProfileActions({ onQRCodePress }: OwnProfileActionsProps) {
           className="h-[58px] w-[58px] rounded-[46px] shadow-md">
           <Icon name="qrcode" size={28} className="text-icon-default" />
         </Button>
-        <Text className="text-[10px] font-medium tracking-[0.6px] uppercase text-white">
-          Code
-        </Text>
+        <Text className="text-[10px] font-medium uppercase tracking-[0.6px] text-white">Code</Text>
       </View>
-    </View>
+    </>
   );
 }

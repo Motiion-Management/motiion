@@ -23,6 +23,20 @@ export function ProfileSheet({
   enableBackdrop = true,
   enableOverDrag = false,
 }: ProfileSheetProps) {
+  // Animated style for BottomSheetView height - matches background height animation
+  const contentStyle = useAnimatedStyle(() => {
+    const height = interpolate(
+      animatedIndex.value,
+      [0, 1],
+      [headerHeight, SCREEN_HEIGHT],
+      Extrapolate.CLAMP
+    );
+
+    return {
+      height,
+    };
+  });
+
   return (
     <BottomSheet
       ref={bottomSheetRef}
@@ -36,14 +50,14 @@ export function ProfileSheet({
       backdropComponent={
         enableBackdrop
           ? (props) => (
-              <BottomSheetBackdrop
-                {...props}
-                appearsOnIndex={1}
-                disappearsOnIndex={0}
-                pressBehavior="collapse"
-                opacity={0.6}
-              />
-            )
+            <BottomSheetBackdrop
+              {...props}
+              appearsOnIndex={1}
+              disappearsOnIndex={0}
+              pressBehavior="collapse"
+              opacity={0.6}
+            />
+          )
           : undefined
       }
       backgroundComponent={() => (
@@ -53,19 +67,28 @@ export function ProfileSheet({
           headerHeight={headerHeight}
         />
       )}>
-      <BottomSheetView
-        className="h-[90vh] pb-10"
-        style={{ flex: 1, backgroundColor: 'transparent', position: 'relative' }}>
-        <View className="flex-1">
-          <ProfileSheetHeader
-            title={title}
-            subtitle={subtitle}
-            leftButton={leftButton}
-            rightButton={rightButton}
-            onLayout={onHeaderLayout}
-          />
-          {children}
-        </View>
+      <BottomSheetView>
+        <Animated.View
+          style={[
+            contentStyle,
+            {
+              flex: 1,
+              backgroundColor: 'transparent',
+              position: 'relative',
+              overflow: 'hidden',
+            },
+          ]}>
+          <View className="flex-1">
+            <ProfileSheetHeader
+              title={title}
+              subtitle={subtitle}
+              leftButton={leftButton}
+              rightButton={rightButton}
+              onLayout={onHeaderLayout}
+            />
+            {children}
+          </View>
+        </Animated.View>
       </BottomSheetView>
     </BottomSheet>
   );
