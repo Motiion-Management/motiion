@@ -166,7 +166,7 @@ export function HeadshotCarousel({
     const top = interpolate(
       animatedIndex.value,
       [0, 1],
-      [IMAGE_BOTTOM - 72, IMAGE_BOTTOM],
+      [IMAGE_BOTTOM - 100, IMAGE_BOTTOM],
       Extrapolate.CLAMP
     );
 
