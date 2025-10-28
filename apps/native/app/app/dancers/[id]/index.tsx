@@ -1,10 +1,7 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { View } from 'react-native';
-import Animated, {
-  FadeIn,
-  FadeOut,
-  useAnimatedStyle,
-} from 'react-native-reanimated';
+import Animated, { FadeIn, FadeOut, useAnimatedStyle } from 'react-native-reanimated';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { useLocalSearchParams, router, Redirect } from 'expo-router';
 import * as Haptics from 'expo-haptics';
 import Transition, { useScreenAnimation } from 'react-native-screen-transitions';
@@ -27,6 +24,40 @@ import { Icon } from '~/lib/icons/Icon';
 import { Button } from '~/components/ui/button';
 import { Text } from '~/components/ui/text';
 import { BackgroundGradientView } from '~/components/ui/background-gradient-view';
+import { MotiionLogo } from '~/lib/icons/MotiionLogo';
+
+function TopBar({ profileUrl }: { profileUrl: string }) {
+  const handleClose = () => {
+    if (router.canGoBack()) {
+      router.back();
+    } else {
+      router.replace('/');
+    }
+  };
+  return (
+    <Animated.View
+      entering={FadeIn.duration(200).delay(200)}
+      style={{ position: 'absolute', top: 0, left: 0, right: 0 }}>
+      <SafeAreaView edges={['top', 'left', 'right']}>
+        <View
+          style={{
+            flexDirection: 'row',
+            // justifyContent: 'space-between',
+            alignItems: 'center',
+            paddingHorizontal: 16,
+            paddingTop: 0,
+          }}>
+          <Button onPress={handleClose} variant="tertiary">
+            <Icon name="xmark" size={20} className="text-icon-default" />
+          </Button>
+          <View className="mr-12 flex-1 items-center">
+            <MotiionLogo />
+          </View>
+        </View>
+      </SafeAreaView>
+    </Animated.View>
+  );
+}
 
 export default function DancerScreen() {
   const { id, headshot: initialHeadshotParam } = useLocalSearchParams<{
@@ -149,7 +180,6 @@ export default function DancerScreen() {
     }
   }, [currentHeadshotIndex, headshotUrls.length]);
 
-
   // Redirect if dancer doesn't exist (query resolved to null)
   if (profileQuery.isStable && profileData === null) {
     return <Redirect href="/app/home" />;
@@ -193,6 +223,7 @@ export default function DancerScreen() {
         )}
 
         {/* Action buttons - positioned in top 30% overlay area */}
+        <TopBar profileUrl={profileUrl} />
         <DancerProfileActions config={config} actions={actions} animatedIndex={animatedIndex} />
 
         <ProfileSheet
