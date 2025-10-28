@@ -24,7 +24,7 @@ interface HeadshotCarouselProps {
   onIndexChange?: (index: number) => void;
 }
 
-const SCREEN_HEIGHT_MODIFIER = 0.88;
+const SCREEN_HEIGHT_MODIFIER = 0.865;
 const IMAGE_HEIGHT = SCREEN_HEIGHT * SCREEN_HEIGHT_MODIFIER;
 const COLLAPSED_WIDTH = SCREEN_WIDTH - 12;
 const EXPANDED_WIDTH = SCREEN_WIDTH;
@@ -42,7 +42,7 @@ const HeadshotItem = React.memo<{
   const imageStyle = useAnimatedStyle<ImageStyle>(() => ({
     width: animatedWidth.value,
     height: animatedHeight.value,
-    borderRadius: interpolate(animatedIndex?.value || 0, [0, 1], [25, 0], Extrapolate.CLAMP),
+    borderTopRadius: interpolate(animatedIndex?.value || 0, [0, 1], [25, 0], Extrapolate.CLAMP),
   }));
 
   if (isFirst) {
@@ -50,12 +50,15 @@ const HeadshotItem = React.memo<{
       <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
         <Transition.Pressable
           sharedBoundTag="dancer-avatar"
-          onPress={onPress || (() => {})}
+          onPress={onPress || (() => { })}
           collapsable={false}
           style={{
             width: COLLAPSED_WIDTH,
             height: IMAGE_HEIGHT,
-            borderRadius: 25,
+            borderTopLeftRadius: 28,
+            borderTopRightRadius: 28,
+            borderBottomLeftRadius: 50,
+            borderBottomRightRadius: 50,
             overflow: 'hidden',
           }}>
           <ExpoImage
@@ -216,9 +219,8 @@ export function HeadshotCarousel({
               {headshotUrls.map((_, index) => (
                 <View
                   key={index}
-                  className={`h-2 w-2 rounded-full ${
-                    index === currentIndex ? 'bg-white' : 'bg-white/30'
-                  }`}
+                  className={`h-2 w-2 rounded-full ${index === currentIndex ? 'bg-white' : 'bg-white/30'
+                    }`}
                 />
               ))}
             </View>

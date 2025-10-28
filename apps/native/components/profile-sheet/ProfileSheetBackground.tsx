@@ -21,15 +21,13 @@ export function ProfileSheetBackground({
       Extrapolate.CLAMP
     );
 
-    // Top border radius: half of header height (fully rounds pill) → rounded-3xl (34px for larger sheet)
+    // Border radius: pill shape at collapsed → rounded corners at expanded
     const borderTopRadius = interpolate(
       animatedIndex.value,
       [0, 1],
       [headerHeight / 2, 34],
       Extrapolate.CLAMP
     );
-
-    // Bottom border radius: half of header height (matches top for consistent pill shape)
     const borderBottomRadius = headerHeight / 2;
 
     // Shadow opacity: visible at index 0, fades out at index 1
@@ -47,43 +45,19 @@ export function ProfileSheetBackground({
     };
   });
 
-  // Extract border radius values for BlurView
-  const blurViewStyle = useAnimatedStyle(() => {
-    const borderTopRadius = interpolate(
-      animatedIndex.value,
-      [0, 1],
-      [headerHeight / 2, 34],
-      Extrapolate.CLAMP
-    );
-    const borderBottomRadius = headerHeight / 2;
-
-    return {
-      borderTopLeftRadius: borderTopRadius,
-      borderTopRightRadius: borderTopRadius,
-      borderBottomLeftRadius: borderBottomRadius,
-      borderBottomRightRadius: borderBottomRadius,
-    };
-  });
-
   return (
     <Animated.View
+      className="absolute left-0 right-0 top-0 overflow-hidden bg-surface-overlay"
       style={[
         backgroundStyle,
         {
-          position: 'absolute',
-          top: 0,
-          left: 0,
-          right: 0,
           shadowColor: '#000',
           shadowOffset: { width: 0, height: -2 },
           shadowRadius: 8,
           elevation: 5,
-          overflow: 'hidden',
         },
       ]}>
-      <Animated.View style={[blurViewStyle, { flex: 1 }]} className="bg-surface-overlay">
-        <BlurView intensity={35} style={{ flex: 1 }} />
-      </Animated.View>
+      <BlurView intensity={35} className="flex-1" />
     </Animated.View>
   );
 }

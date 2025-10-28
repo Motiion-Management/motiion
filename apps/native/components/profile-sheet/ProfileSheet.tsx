@@ -23,7 +23,7 @@ export function ProfileSheet({
   enableBackdrop = true,
   enableOverDrag = false,
 }: ProfileSheetProps) {
-  // Animated style for BottomSheetView height - matches background height animation
+  // Animated style for content height and border radius
   const contentStyle = useAnimatedStyle(() => {
     const height = interpolate(
       animatedIndex.value,
@@ -32,8 +32,21 @@ export function ProfileSheet({
       Extrapolate.CLAMP
     );
 
+    // Border radius: pill shape at collapsed → rounded corners at expanded
+    const borderTopRadius = interpolate(
+      animatedIndex.value,
+      [0, 1],
+      [headerHeight / 2, 34],
+      Extrapolate.CLAMP
+    );
+    const borderBottomRadius = headerHeight / 2;
+
     return {
       height,
+      borderTopLeftRadius: borderTopRadius,
+      borderTopRightRadius: borderTopRadius,
+      borderBottomLeftRadius: borderBottomRadius,
+      borderBottomRightRadius: borderBottomRadius,
     };
   });
 
