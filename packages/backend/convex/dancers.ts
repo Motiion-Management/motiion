@@ -509,6 +509,64 @@ export const removeFavoriteChoreographer = zAuthMutation({
   }
 })
 
+// List dancers for discover page (paginated)
+export const listDiscoverDancers = zq({
+  args: {
+    limit: z.number().optional().default(5),
+    cursor: z.string().nullable().optional()
+  },
+  returns: z.object({
+    dancers: z.array(
+      z.object({
+        _id: zid('dancers'),
+        _creationTime: z.number(),
+        displayName: z.string(),
+        userId: zid('users'),
+        headshotUrl: z.string().nullable()
+      })
+    ),
+    continueCursor: z.string().nullable(),
+    isDone: z.boolean()
+  }),
+  handler: async (ctx, { limit, cursor }) => {
+    // Query dancers ordered by creation time (most recent first)
+    let query = ctx.db.query('dancers').order('desc')
+
+    // Apply pagination with cursor handling
+    const paginationOpts = cursor ? { cursor, numItems: limit } : { numItems: limit }
+    const result = await query.paginate(paginationOpts as any)
+
+    // Resolve headshot URLs for each dancer
+    const dancers = await Promise.all(
+      result.page.map(async (dancer) => {
+        let headshotUrl: string | null = null
+
+        // Get first headshot URL if available
+        if (dancer.headshots && Array.isArray(dancer.headshots) && dancer.headshots.length > 0) {
+          const firstHeadshot = dancer.headshots[0]
+          if (firstHeadshot?.storageId) {
+            headshotUrl = await ctx.storage.getUrl(firstHeadshot.storageId)
+          }
+        }
+
+        return {
+          _id: dancer._id,
+          _creationTime: dancer._creationTime,
+          displayName: dancer.displayName || 'Dancer',
+          userId: dancer.userId,
+          headshotUrl
+        }
+      })
+    )
+
+    return {
+      dancers,
+      continueCursor: result.continueCursor,
+      isDone: result.isDone
+    }
+  }
+})
+
 // Helper function to generate search pattern
 function generateSearchPattern(data: any): string {
   const parts = []
