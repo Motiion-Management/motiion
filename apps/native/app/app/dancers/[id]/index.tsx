@@ -275,7 +275,11 @@ export default function DancerScreen() {
             </Animated.View>
           ) : profileData ? (
             <Animated.View entering={FadeIn.duration(300).delay(100)} style={{ flex: 1 }}>
-              <ProfileDetailsSheet profileData={profileData} />
+              <ProfileDetailsSheet
+                profileData={profileData}
+                animatedIndex={animatedIndex}
+                headerHeight={headerHeight}
+              />
             </Animated.View>
           ) : null}
         </ProfileSheet>

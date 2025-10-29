@@ -42,7 +42,7 @@ export function ProfileResumeTab({ profileData }: ProfileResumeTabProps) {
       )}
 
       {/* Grid cards */}
-      <View className="gap-4 pb-4 px-4">
+      <View className="gap-4 px-4 pb-4">
         {/* Row 1: TV/Film & Music Videos */}
         <View className="flex-row gap-4">
           <SectionCard

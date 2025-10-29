@@ -7,13 +7,14 @@ import {
 } from 'react-native-reanimated';
 import type BottomSheet from '@gorhom/bottom-sheet';
 import { type UseProfileSheetConfig, type UseProfileSheetReturn } from './types';
+import { PROFILE_SHEET_EXPANDED_HEIGHT } from './constants';
 
 export function useProfileSheet(config?: UseProfileSheetConfig): UseProfileSheetReturn {
   const { initialIndex = 0, snapPoints: customSnapPoints, defaultHeaderHeight = 80 } = config || {};
 
   const bottomSheetRef = useRef<BottomSheet>(null);
   const animatedIndex = useSharedValue(initialIndex);
-  const snapPoints = useMemo(() => customSnapPoints || ['15%', '70%'], [customSnapPoints]);
+  const snapPoints = useMemo(() => customSnapPoints || ['15%', `${PROFILE_SHEET_EXPANDED_HEIGHT}%`], [customSnapPoints]);
   const [headerHeight, setHeaderHeight] = useState(defaultHeaderHeight);
 
   // Navigation methods

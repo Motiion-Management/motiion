@@ -1,16 +1,22 @@
-import React from 'react';
-import { View } from 'react-native';
+import React, { useMemo } from 'react';
+import { View, Dimensions } from 'react-native';
+import { type SharedValue } from 'react-native-reanimated';
 import { PagerTabView, type TabRoute } from '~/components/ui/tabs/PagerTabView';
 import { ProfileAboutTab } from './ProfileAboutTab';
 import { ProfileResumeTab } from './ProfileResumeTab';
 import { ProfileVisualsTab } from './ProfileVisualsTab';
 import { type DancerProfileData } from '@packages/backend/convex/dancers';
+import { PROFILE_SHEET_EXPANDED_HEIGHT } from '~/components/profile-sheet/constants';
+
+const { height: SCREEN_HEIGHT } = Dimensions.get('window');
 
 interface ProfileDetailsSheetProps {
   profileData: DancerProfileData;
+  animatedIndex: SharedValue<number>;
+  headerHeight: number;
 }
 
-export function ProfileDetailsSheet({ profileData }: ProfileDetailsSheetProps) {
+export function ProfileDetailsSheet({ profileData, animatedIndex, headerHeight }: ProfileDetailsSheetProps) {
   const tabs: Array<TabRoute> = [
     { key: 'about', title: 'About' },
     { key: 'resume', title: 'Resume' },
@@ -30,8 +36,14 @@ export function ProfileDetailsSheet({ profileData }: ProfileDetailsSheetProps) {
     }
   };
 
+  // Calculate available height for content: (screen height × expanded %) - header height
+  const contentHeight = useMemo(
+    () => SCREEN_HEIGHT * (PROFILE_SHEET_EXPANDED_HEIGHT / 100) - headerHeight,
+    [headerHeight]
+  );
+
   return (
-    <View className="min-h-[45vh]">
+    <View style={{ height: contentHeight }}>
       <PagerTabView
         routes={tabs}
         renderScene={renderScene}

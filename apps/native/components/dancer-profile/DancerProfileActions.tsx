@@ -8,6 +8,7 @@ import {
   ChoreographerViewingDancerActions,
 } from '~/components/dancer-profile/action-buttons';
 import { type DancerViewConfig, type DancerViewActions } from '~/hooks/useDancerView';
+import { PROFILE_SHEET_EXPANDED_HEIGHT } from '~/components/profile-sheet/constants';
 
 export interface DancerProfileActionsProps {
   config: DancerViewConfig;
@@ -69,7 +70,7 @@ export function DancerProfileActions(props: DancerProfileActionsProps) {
         animatedStyle,
         {
           position: 'absolute',
-          top: '15%',
+          top: `${(100 - PROFILE_SHEET_EXPANDED_HEIGHT) / 2}%`,
           left: 0,
           right: 0,
           zIndex: 5,
