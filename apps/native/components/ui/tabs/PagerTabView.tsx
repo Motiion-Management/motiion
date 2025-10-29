@@ -1,5 +1,7 @@
 import React, { useMemo, useRef, useState, forwardRef, useImperativeHandle } from 'react';
 import { View } from 'react-native';
+import { LinearGradient } from 'expo-linear-gradient';
+import { BlurView } from 'expo-blur';
 import PagerView from 'react-native-pager-view';
 import { useSharedValue } from 'react-native-reanimated';
 import { TabBar } from './TabBar';
@@ -116,7 +118,7 @@ export const PagerTabView = forwardRef<PagerTabViewRef, TabsViewProps>(function 
 
   return (
     <View className={className} style={{ flex: 1 }}>
-      <View className={tabContainerClassName}>{renderTabs()}</View>
+      {/* Content layer - full height */}
       <PagerView
         ref={pagerRef}
         initialPage={initialIndex}
@@ -139,6 +141,30 @@ export const PagerTabView = forwardRef<PagerTabViewRef, TabsViewProps>(function 
           </View>
         ))}
       </PagerView>
+
+      {/* Overlay layer - tabs with fade/blur effect */}
+      <View
+        style={{
+          position: 'absolute',
+          top: 0,
+          left: 0,
+          right: 0,
+          zIndex: 10,
+          backgroundColor: 'transparent',
+        }}>
+        {/* Blur background */}
+
+        <LinearGradient
+          colors={['rgba(0, 0, 0, 0.4)', 'rgba(0, 0, 0, 0)']}
+          style={{ height: 40, marginTop: -8, position: 'absolute', top: 0, width: '100%' }}
+          pointerEvents="none"
+        />
+
+        {/* Tab container */}
+        <View className={tabContainerClassName}>{renderTabs()}</View>
+
+        {/* Fade gradient at bottom of tabs */}
+      </View>
     </View>
   );
 });

@@ -16,7 +16,11 @@ interface ProfileDetailsSheetProps {
   headerHeight: number;
 }
 
-export function ProfileDetailsSheet({ profileData, animatedIndex, headerHeight }: ProfileDetailsSheetProps) {
+export function ProfileDetailsSheet({
+  profileData,
+  animatedIndex,
+  headerHeight,
+}: ProfileDetailsSheetProps) {
   const tabs: Array<TabRoute> = [
     { key: 'about', title: 'About' },
     { key: 'resume', title: 'Resume' },
@@ -43,14 +47,13 @@ export function ProfileDetailsSheet({ profileData, animatedIndex, headerHeight }
   );
 
   return (
-    <View style={{ height: contentHeight }}>
+    <View style={{ height: contentHeight, backgroundColor: 'transparent' }}>
       <PagerTabView
         routes={tabs}
         renderScene={renderScene}
         initialKey="resume"
         tabStyle="pill"
-        tabContainerClassName="px-4 pb-6"
-        // contentClassName="bg-surface-high"
+        tabContainerClassName="px-4 pb-6 pt-4"
       />
     </View>
   );

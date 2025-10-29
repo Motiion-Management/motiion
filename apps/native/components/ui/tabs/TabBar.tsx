@@ -117,9 +117,8 @@ export function TabBar({
           accessibilityLabel={item}
           onPress={onPress}
           onLongPress={onLongPress}
-          className={`flex h-8 items-center justify-center rounded-2xl px-4 py-2 ${
-            isActive ? 'bg-button-surface-default' : 'bg-transparent'
-          }`}
+          className={`flex h-8 items-center justify-center rounded-2xl px-4 py-2 ${isActive ? 'bg-button-surface-default' : 'bg-transparent'
+            }`}
           onLayout={(event) => {
             const { width } = event.nativeEvent.layout;
             tabWidths.modify((value) => {

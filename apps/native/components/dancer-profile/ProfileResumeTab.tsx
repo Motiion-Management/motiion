@@ -1,5 +1,6 @@
 import React from 'react';
 import { ScrollView, View } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { router } from 'expo-router';
 import { SectionCard } from '~/components/ui/section-card';
 import { ProjectCarousel } from './ProjectCarousel';
@@ -11,6 +12,7 @@ interface ProfileResumeTabProps {
 
 export function ProfileResumeTab({ profileData }: ProfileResumeTabProps) {
   const { dancer, allProjects } = profileData;
+  const insets = useSafeAreaInsets();
 
   // Count projects by type
   const tvFilmCount = allProjects.filter((p) => p.type === 'tv-film').length;
@@ -33,7 +35,13 @@ export function ProfileResumeTab({ profileData }: ProfileResumeTabProps) {
   };
 
   return (
-    <ScrollView className="flex-1" showsVerticalScrollIndicator={false}>
+    <ScrollView
+      className="flex-1"
+      showsVerticalScrollIndicator={false}
+      contentContainerStyle={{
+        paddingTop: 96, // Tab overlay height + spacing
+        paddingBottom: Math.max(insets.bottom, 60), // Safe area or minimum padding
+      }}>
       {/* Project carousel at top */}
       {allProjects.length > 0 && (
         <View className="mb-4">
@@ -42,7 +50,7 @@ export function ProfileResumeTab({ profileData }: ProfileResumeTabProps) {
       )}
 
       {/* Grid cards */}
-      <View className="gap-4 px-4 pb-4">
+      <View className="gap-4 px-4">
         {/* Row 1: TV/Film & Music Videos */}
         <View className="flex-row gap-4">
           <SectionCard
