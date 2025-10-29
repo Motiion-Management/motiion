@@ -2,6 +2,7 @@ import React from 'react';
 import { ScrollView, View } from 'react-native';
 import { router } from 'expo-router';
 import { SectionCard } from '~/components/ui/section-card';
+import { ProjectCarousel } from './ProjectCarousel';
 import { type DancerProfileData } from '@packages/backend/convex/dancers';
 
 interface ProfileResumeTabProps {
@@ -32,8 +33,16 @@ export function ProfileResumeTab({ profileData }: ProfileResumeTabProps) {
   };
 
   return (
-    <ScrollView className="flex-1 px-4" showsVerticalScrollIndicator={false}>
-      <View className="gap-4 pb-4">
+    <ScrollView className="flex-1" showsVerticalScrollIndicator={false}>
+      {/* Project carousel at top */}
+      {allProjects.length > 0 && (
+        <View className="mb-4">
+          <ProjectCarousel projects={allProjects} />
+        </View>
+      )}
+
+      {/* Grid cards */}
+      <View className="gap-4 pb-4 px-4">
         {/* Row 1: TV/Film & Music Videos */}
         <View className="flex-row gap-4">
           <SectionCard

@@ -10,7 +10,6 @@ import { type Id } from '@packages/backend/convex/_generated/dataModel';
 import { useDancerProfileQuery } from '~/hooks/queries/useDancerProfileQuery';
 import { useDancerView } from '~/hooks/useDancerView';
 import { useProfileShare } from '~/hooks/useProfileShare';
-import { ProjectCarousel } from '~/components/dancer-profile/ProjectCarousel';
 import { HeadshotCarousel } from '~/components/dancer-profile/HeadshotCarousel';
 import { ProfileDetailsSheet } from '~/components/dancer-profile/ProfileDetailsSheet';
 import { ProfileSheet, useProfileSheet } from '~/components/profile-sheet';
@@ -276,7 +275,6 @@ export default function DancerScreen() {
             </Animated.View>
           ) : profileData ? (
             <Animated.View entering={FadeIn.duration(300).delay(100)} style={{ flex: 1 }}>
-              <ProjectCarousel projects={profileData.recentProjects} />
               <ProfileDetailsSheet profileData={profileData} />
             </Animated.View>
           ) : null}
