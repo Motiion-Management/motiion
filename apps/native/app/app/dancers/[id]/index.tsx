@@ -1,6 +1,12 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { View } from 'react-native';
-import Animated, { FadeIn, FadeOut, useAnimatedStyle } from 'react-native-reanimated';
+import Animated, {
+  FadeIn,
+  FadeOut,
+  useAnimatedStyle,
+  interpolate,
+  Extrapolate,
+} from 'react-native-reanimated';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useLocalSearchParams, router, Redirect } from 'expo-router';
 import * as Haptics from 'expo-haptics';
@@ -25,7 +31,7 @@ import { Text } from '~/components/ui/text';
 import { BackgroundGradientView } from '~/components/ui/background-gradient-view';
 import { MotiionLogo } from '~/lib/icons/MotiionLogo';
 
-function TopBar() {
+function TopBar({ animatedIndex }: { animatedIndex: Animated.SharedValue<number> }) {
   const handleClose = () => {
     if (router.canGoBack()) {
       router.back();
@@ -33,10 +39,16 @@ function TopBar() {
       router.replace('/');
     }
   };
+
+  const animatedStyle = useAnimatedStyle(() => {
+    const opacity = interpolate(animatedIndex.value, [0, 1], [1, 0], Extrapolate.CLAMP);
+    return { opacity };
+  });
+
   return (
     <Animated.View
       entering={FadeIn.duration(200).delay(200)}
-      style={{ position: 'absolute', top: 0, left: 0, right: 0 }}>
+      style={[{ position: 'absolute', top: 0, left: 0, right: 0 }, animatedStyle]}>
       <SafeAreaView edges={['top', 'left', 'right']}>
         <View
           style={{
@@ -221,7 +233,7 @@ export default function DancerScreen() {
           <View style={{ flex: 1, backgroundColor: 'black' }} />
         )}
 
-        <TopBar />
+        <TopBar animatedIndex={animatedIndex} />
         {/* Action buttons - positioned in top 30% overlay area */}
         <DancerProfileActions config={config} actions={actions} animatedIndex={animatedIndex} />
 

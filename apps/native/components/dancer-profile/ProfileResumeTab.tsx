@@ -41,11 +41,7 @@ export function ProfileResumeTab({ profileData }: ProfileResumeTabProps) {
         Highlights
       </Text>
       {/* Project carousel at top */}
-      {allProjects.length > 0 && (
-        <View className="mb-4">
-          <ProjectCarousel projects={allProjects} />
-        </View>
-      )}
+      {allProjects.length > 0 && <ProjectCarousel projects={allProjects} />}
 
       <Separator className="-mx-4 w-[110%] bg-border-tint" />
       <Text variant="header5" className="px-4 text-text-low">
