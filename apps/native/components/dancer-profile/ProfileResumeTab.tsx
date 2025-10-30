@@ -4,6 +4,8 @@ import { router } from 'expo-router';
 import { SectionCard } from '~/components/ui/section-card';
 import { ProjectCarousel } from './ProjectCarousel';
 import { type DancerProfileData } from '@packages/backend/convex/dancers';
+import { Separator } from '../ui/separator';
+import { Text } from '../ui/text';
 
 interface ProfileResumeTabProps {
   profileData: DancerProfileData;
@@ -33,7 +35,11 @@ export function ProfileResumeTab({ profileData }: ProfileResumeTabProps) {
   };
 
   return (
-    <>
+    <View className="gap-8">
+      <Separator className="-mx-4 w-[110%] bg-border-tint" />
+      <Text variant="header5" className="px-4 text-text-low">
+        Highlights
+      </Text>
       {/* Project carousel at top */}
       {allProjects.length > 0 && (
         <View className="mb-4">
@@ -41,6 +47,10 @@ export function ProfileResumeTab({ profileData }: ProfileResumeTabProps) {
         </View>
       )}
 
+      <Separator className="-mx-4 w-[110%] bg-border-tint" />
+      <Text variant="header5" className="px-4 text-text-low">
+        Experience
+      </Text>
       {/* Grid cards */}
       <View className="gap-4 px-4">
         {/* Row 1: TV/Film & Music Videos */}
@@ -91,6 +101,6 @@ export function ProfileResumeTab({ profileData }: ProfileResumeTabProps) {
           />
         </View>
       </View>
-    </>
+    </View>
   );
 }
