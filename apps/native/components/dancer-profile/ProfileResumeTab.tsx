@@ -1,8 +1,6 @@
 import React from 'react';
 import { View } from 'react-native';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { router } from 'expo-router';
-import { ScrollShadow } from '~/components/ui/scroll-shadow';
 import { SectionCard } from '~/components/ui/section-card';
 import { ProjectCarousel } from './ProjectCarousel';
 import { type DancerProfileData } from '@packages/backend/convex/dancers';
@@ -13,7 +11,6 @@ interface ProfileResumeTabProps {
 
 export function ProfileResumeTab({ profileData }: ProfileResumeTabProps) {
   const { dancer, allProjects } = profileData;
-  const insets = useSafeAreaInsets();
 
   // Count projects by type
   const tvFilmCount = allProjects.filter((p) => p.type === 'tv-film').length;
@@ -36,13 +33,7 @@ export function ProfileResumeTab({ profileData }: ProfileResumeTabProps) {
   };
 
   return (
-    <ScrollShadow
-      showsVerticalScrollIndicator={false}
-      contentContainerStyle={{
-        paddingTop: 30, // Just the gradient size
-        paddingBottom: Math.max(insets.bottom, 60), // Safe area or minimum padding
-      }}
-      size={40}>
+    <>
       {/* Project carousel at top */}
       {allProjects.length > 0 && (
         <View className="mb-4">
@@ -100,6 +91,6 @@ export function ProfileResumeTab({ profileData }: ProfileResumeTabProps) {
           />
         </View>
       </View>
-    </ScrollShadow>
+    </>
   );
 }
