@@ -6,6 +6,7 @@ import Animated, {
   useAnimatedStyle,
   interpolate,
   Extrapolate,
+  type SharedValue,
 } from 'react-native-reanimated';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useLocalSearchParams, router, Redirect } from 'expo-router';
@@ -31,7 +32,7 @@ import { Text } from '~/components/ui/text';
 import { BackgroundGradientView } from '~/components/ui/background-gradient-view';
 import { MotiionLogo } from '~/lib/icons/MotiionLogo';
 
-function TopBar({ animatedIndex }: { animatedIndex: Animated.SharedValue<number> }) {
+function TopBar({ animatedIndex }: { animatedIndex: SharedValue<number> }) {
   const handleClose = () => {
     if (router.canGoBack()) {
       router.back();

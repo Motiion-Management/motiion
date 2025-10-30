@@ -70,7 +70,7 @@ export function DancerProfileActions(props: DancerProfileActionsProps) {
         animatedStyle,
         {
           position: 'absolute',
-          top: `${(100 - PROFILE_SHEET_EXPANDED_HEIGHT) / 2}%`,
+          top: `${(97 - PROFILE_SHEET_EXPANDED_HEIGHT) / 2}%`,
           left: 0,
           right: 0,
           zIndex: 5,
