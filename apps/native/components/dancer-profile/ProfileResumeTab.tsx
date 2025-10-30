@@ -12,7 +12,7 @@ interface ProfileResumeTabProps {
 }
 
 export function ProfileResumeTab({ profileData }: ProfileResumeTabProps) {
-  const { dancer, allProjects } = profileData;
+  const { dancer, allProjects, highlights } = profileData;
 
   // Count projects by type
   const tvFilmCount = allProjects.filter((p) => p.type === 'tv-film').length;
@@ -36,12 +36,22 @@ export function ProfileResumeTab({ profileData }: ProfileResumeTabProps) {
 
   return (
     <View className="gap-8">
-      <Separator className="-mx-4 w-[110%] bg-border-tint" />
-      <Text variant="header5" className="px-4 text-text-low">
-        Highlights
-      </Text>
-      {/* Project carousel at top */}
-      {allProjects.length > 0 && <ProjectCarousel projects={allProjects} />}
+      {highlights && highlights.length > 0 && (
+        <>
+          <Separator className="-mx-4 w-[110%] bg-border-tint" />
+          <Text variant="header5" className="px-4 text-text-low">
+            Highlights
+          </Text>
+          <ProjectCarousel
+            projects={highlights
+              .map(h => h.project ? {
+                ...h.project,
+                imageUrl: h.imageUrl
+              } : null)
+              .filter((p): p is NonNullable<typeof p> => p !== null)}
+          />
+        </>
+      )}
 
       <Separator className="-mx-4 w-[110%] bg-border-tint" />
       <Text variant="header5" className="px-4 text-text-low">

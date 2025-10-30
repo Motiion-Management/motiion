@@ -28,9 +28,8 @@ function ProjectCard({ project }: { project: any }) {
   const subtitle = getProjectSubtitle(project);
   const label = getProjectLabel(project.type);
 
-  // TODO: Get actual project images from storage
-  // For now using placeholder
-  const imageUrl = null;
+  // Get image URL from project (passed from highlights)
+  const imageUrl = project.imageUrl || null;
 
   return (
     <TouchableOpacity activeOpacity={0.9}>
