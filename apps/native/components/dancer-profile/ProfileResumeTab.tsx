@@ -27,7 +27,24 @@ export function ProfileResumeTab({ profileData }: ProfileResumeTabProps) {
   const trainingCount = dancer.training?.length || 0;
 
   const handleCategoryPress = (category: string) => {
-    // Navigate to projects screen with category filter
+    // Route to dedicated pages for training and skills
+    if (category === 'training') {
+      router.push({
+        pathname: '/app/dancers/[id]/training',
+        params: { id: dancer._id },
+      });
+      return;
+    }
+
+    if (category === 'skills') {
+      router.push({
+        pathname: '/app/dancers/[id]/skills',
+        params: { id: dancer._id },
+      });
+      return;
+    }
+
+    // Navigate to projects screen with category filter for project types
     router.push({
       pathname: '/app/dancers/[id]/projects',
       params: { id: dancer._id, category },
