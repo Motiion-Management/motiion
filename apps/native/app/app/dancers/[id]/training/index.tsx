@@ -1,6 +1,6 @@
 import React, { useState, useMemo } from 'react';
 import { View, ScrollView } from 'react-native';
-import { useLocalSearchParams } from 'expo-router';
+import { useLocalSearchParams, router } from 'expo-router';
 import { useQuery } from 'convex/react';
 import { api } from '@packages/backend/convex/_generated/api';
 import { type Id } from '@packages/backend/convex/_generated/dataModel';
@@ -26,11 +26,11 @@ export default function TrainingScreen() {
 
     const query = searchQuery.toLowerCase();
     return profileData.training.filter((item: any) => {
-      const school = item.school?.toLowerCase() || '';
-      const program = item.program?.toLowerCase() || '';
+      const institution = item.institution?.toLowerCase() || '';
       const degree = item.degree?.toLowerCase() || '';
+      const instructors = item.instructors?.join(' ').toLowerCase() || '';
 
-      return school.includes(query) || program.includes(query) || degree.includes(query);
+      return institution.includes(query) || degree.includes(query) || instructors.includes(query);
     });
   }, [profileData?.training, searchQuery]);
 
@@ -64,16 +64,19 @@ export default function TrainingScreen() {
               </Text>
             </View>
           ) : (
-            filteredTraining.map((training: any, index: number) => {
-              const organizer = training.school || 'Unknown Institution';
-              const title = training.program || training.degree || 'Training Program';
+            filteredTraining.map((training: any) => {
+              const organizer = training.institution || 'Unknown Institution';
+              const title = training.degree || 'Training Program';
 
               return (
                 <ListItem
-                  key={`${training.school}-${index}`}
+                  key={training._id}
                   variant="Experience"
                   organizer={organizer}
                   title={title}
+                  onPress={() => {
+                    router.push(`./training/${training._id}`);
+                  }}
                 />
               );
             })

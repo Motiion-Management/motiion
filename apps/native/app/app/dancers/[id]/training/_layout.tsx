@@ -47,9 +47,7 @@ const TrainingHeader = ({ route }: { route: any }) => {
           </Text>
         </View>
 
-        <Button onPress={handleNavigateToProfile} variant="tertiary">
-          <Icon name="person.text.rectangle.fill" size={28} className="text-icon-default" />
-        </Button>
+        <View style={{ width: 40, height: 40 }} />
       </View>
     </SafeAreaView>
   );
@@ -60,10 +58,17 @@ export default function TrainingLayout() {
     <Stack
       screenOptions={{
         headerShown: false,
-        contentStyle: { backgroundColor: 'transparent' },
+        contentStyle: { backgroundColor: '#0A0A0A' }, // surface-default
       }}>
       <Stack.Screen
         name="index"
+        options={{
+          headerShown: true,
+          header: (props) => <TrainingHeader route={props.route} />,
+        }}
+      />
+      <Stack.Screen
+        name="[trainingId]"
         options={{
           headerShown: true,
           header: (props) => <TrainingHeader route={props.route} />,
