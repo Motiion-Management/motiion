@@ -90,8 +90,6 @@ export default function DancerScreen() {
     headerHeight,
     setHeaderHeight,
     snapToDefault,
-    toggle,
-    animations,
   } = useProfileSheet();
 
   // Get screen transition progress

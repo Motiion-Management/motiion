@@ -11,7 +11,6 @@ export function ProfileSheetBackground({
   const backgroundStyle = useAnimatedStyle(() => {
     // Horizontal margins: 8px at index 0 (30%) → 0px at index 1 (70%)
     const marginHorizontal = interpolate(animatedIndex.value, [0, 1], [8, 0], Extrapolate.CLAMP);
-    const marginTop = interpolate(animatedIndex.value, [0, 1], [6, 0], Extrapolate.CLAMP);
 
     // Height: dynamic based on header content at 30% → full height at 70%
     const height = interpolate(
@@ -34,7 +33,7 @@ export function ProfileSheetBackground({
     const shadowOpacity = interpolate(animatedIndex.value, [0, 1], [0.15, 0], Extrapolate.CLAMP);
 
     return {
-      marginTop,
+      marginTop: 0,
       marginHorizontal,
       height,
       borderTopLeftRadius: borderTopRadius,

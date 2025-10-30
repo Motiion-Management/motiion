@@ -26,6 +26,9 @@ export function ProfileSheet({
 }: ProfileSheetProps) {
   // Animated style for content height and border radius
   const contentStyle = useAnimatedStyle(() => {
+    // Match the background's margin animations to keep content in sync
+    const marginHorizontal = interpolate(animatedIndex.value, [0, 1], [8, 0], Extrapolate.CLAMP);
+
     const height = interpolate(
       animatedIndex.value,
       [0, 1],
@@ -43,6 +46,9 @@ export function ProfileSheet({
     const borderBottomRadius = headerHeight / 2;
 
     return {
+      paddingTop: 24,
+      marginTop: -24,
+      marginHorizontal,
       height,
       borderTopLeftRadius: borderTopRadius,
       borderTopRightRadius: borderTopRadius,
@@ -64,14 +70,14 @@ export function ProfileSheet({
       backdropComponent={
         enableBackdrop
           ? (props) => (
-              <BottomSheetBackdrop
-                {...props}
-                appearsOnIndex={1}
-                disappearsOnIndex={0}
-                pressBehavior="collapse"
-                opacity={0.6}
-              />
-            )
+            <BottomSheetBackdrop
+              {...props}
+              appearsOnIndex={1}
+              disappearsOnIndex={0}
+              pressBehavior="collapse"
+              opacity={0.6}
+            />
+          )
           : undefined
       }
       backgroundComponent={() => (
@@ -86,23 +92,20 @@ export function ProfileSheet({
           style={[
             contentStyle,
             {
-              flex: 1,
               backgroundColor: 'transparent',
               position: 'relative',
               overflow: 'hidden',
             },
           ]}>
-          <View className="flex-1">
-            <ProfileSheetHeader
-              title={title}
-              subtitle={subtitle}
-              agencyLogoUrl={agencyLogoUrl}
-              leftButton={leftButton}
-              rightButton={rightButton}
-              onLayout={onHeaderLayout}
-            />
-            {children}
-          </View>
+          <ProfileSheetHeader
+            title={title}
+            subtitle={subtitle}
+            agencyLogoUrl={agencyLogoUrl}
+            leftButton={leftButton}
+            rightButton={rightButton}
+            onLayout={onHeaderLayout}
+          />
+          {children}
         </Animated.View>
       </BottomSheetView>
     </BottomSheet>

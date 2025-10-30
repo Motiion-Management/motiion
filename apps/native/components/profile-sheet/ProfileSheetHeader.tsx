@@ -23,10 +23,10 @@ export function ProfileSheetHeader({
   return (
     <View
       id="profile-sheet-header"
-      className="z-10 mb-4 px-8 pb-4"
+      className="z-10 px-8 pb-12"
       onLayout={(event) => {
         const measuredHeight = event.nativeEvent.layout.height;
-        onLayout(measuredHeight + 16);
+        onLayout(measuredHeight);
       }}>
       <View className="flex-row items-center justify-between">
         {/* Left: Avatar with agency logo or Motiion logo */}
@@ -50,7 +50,11 @@ export function ProfileSheetHeader({
         {/* Center-left: Title and subtitle */}
         <View className="ml-4 flex-1">
           <Text variant="header4">{title}</Text>
-          {subtitle && <Text variant="bodySm" className="text-text-low">{subtitle}</Text>}
+          {subtitle && (
+            <Text variant="bodySm" className="text-text-low">
+              {subtitle}
+            </Text>
+          )}
         </View>
 
         {/* Right: Share button */}
