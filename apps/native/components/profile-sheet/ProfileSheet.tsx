@@ -17,6 +17,7 @@ export function ProfileSheet({
   onHeaderLayout,
   title,
   subtitle,
+  agencyLogoUrl,
   leftButton,
   rightButton,
   children,
@@ -95,6 +96,7 @@ export function ProfileSheet({
             <ProfileSheetHeader
               title={title}
               subtitle={subtitle}
+              agencyLogoUrl={agencyLogoUrl}
               leftButton={leftButton}
               rightButton={rightButton}
               onLayout={onHeaderLayout}

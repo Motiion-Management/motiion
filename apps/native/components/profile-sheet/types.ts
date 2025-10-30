@@ -32,6 +32,7 @@ export interface UseProfileSheetReturn {
 export interface ProfileSheetHeaderProps {
   title: string;
   subtitle?: string;
+  agencyLogoUrl?: string | null;
   leftButton?: React.ReactNode;
   rightButton?: React.ReactNode;
   onLayout: (height: number) => void;
@@ -58,6 +59,7 @@ export interface ProfileSheetProps {
   // Header config
   title: string;
   subtitle?: string;
+  agencyLogoUrl?: string | null;
   leftButton?: React.ReactNode;
   rightButton?: React.ReactNode;
 

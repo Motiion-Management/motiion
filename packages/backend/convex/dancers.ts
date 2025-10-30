@@ -34,7 +34,7 @@ export const getDancerProfileWithDetails = zq({
       recentProjects: z.array(z.any()),
       allProjects: z.array(z.any()),
       training: z.array(z.any()),
-      agency: Agencies.zDoc.nullable(),
+      agency: Agencies.zDoc.extend({ logoUrl: z.string().nullable() }).nullable(),
       isOwnProfile: z.boolean()
     })
     .nullable(),
@@ -62,7 +62,18 @@ export const getDancerProfileWithDetails = zq({
     // Get agency information if represented
     let agency = null
     if (dancer.representation?.agencyId) {
-      agency = await ctx.db.get(dancer.representation.agencyId)
+      const agencyDoc = await ctx.db.get(dancer.representation.agencyId)
+      if (agencyDoc) {
+        // Convert logo storage ID to URL if present
+        let logoUrl = null
+        if (agencyDoc.logo) {
+          logoUrl = await ctx.storage.getUrl(agencyDoc.logo)
+        }
+        agency = {
+          ...agencyDoc,
+          logoUrl
+        }
+      }
     }
 
     // Get all projects for this profile
@@ -100,7 +111,7 @@ export type DancerProfileData = {
   recentProjects: Array<any>
   allProjects: Array<any>
   training: Array<any>
-  agency: typeof Agencies.zDoc._output | null
+  agency: (typeof Agencies.zDoc._output & { logoUrl: string | null }) | null
   isOwnProfile: boolean
 }
 

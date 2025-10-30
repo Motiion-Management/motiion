@@ -203,8 +203,6 @@ export default function DancerScreen() {
   // Get header buttons from DancerProfileHeader
   const headerButtons = DancerProfileHeader({
     config,
-    toggle,
-    animations,
     onShareProfile: shareProfile,
     onShareHeadshot: shareHeadshot,
     onShareProfileLink: shareProfileLink,
@@ -250,7 +248,7 @@ export default function DancerScreen() {
               ? `${profileData.dancer.location.city}, ${profileData.dancer.location.state}`
               : undefined
           }
-          leftButton={headerButtons.leftButton}
+          agencyLogoUrl={profileData?.agency?.logoUrl}
           rightButton={headerButtons.rightButton}>
           {profileQuery.isError ? (
             <Animated.View
