@@ -66,6 +66,7 @@ export function ProfileResumeTab({ profileData }: ProfileResumeTabProps) {
                 imageUrl: h.imageUrl
               } : null)
               .filter((p): p is NonNullable<typeof p> => p !== null)}
+            dancerId={dancer._id}
           />
         </>
       )}
