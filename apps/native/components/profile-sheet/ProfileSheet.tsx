@@ -63,14 +63,14 @@ export function ProfileSheet({
       backdropComponent={
         enableBackdrop
           ? (props) => (
-            <BottomSheetBackdrop
-              {...props}
-              appearsOnIndex={1}
-              disappearsOnIndex={0}
-              pressBehavior="collapse"
-              opacity={0.6}
-            />
-          )
+              <BottomSheetBackdrop
+                {...props}
+                appearsOnIndex={1}
+                disappearsOnIndex={0}
+                pressBehavior="collapse"
+                opacity={0.6}
+              />
+            )
           : undefined
       }
       backgroundComponent={() => (

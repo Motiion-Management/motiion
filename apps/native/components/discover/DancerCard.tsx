@@ -1,14 +1,14 @@
-import React from 'react'
-import { View, Pressable } from 'react-native'
-import { Image } from 'expo-image'
-import { LinearGradient } from 'expo-linear-gradient'
-import { router } from 'expo-router'
-import { Text } from '~/components/ui/text'
-import { Icon } from '~/lib/icons/Icon'
-import type { DancerCardData } from '~/hooks/queries/useDancersListQuery'
+import React from 'react';
+import { View, Pressable } from 'react-native';
+import { Image } from 'expo-image';
+import { LinearGradient } from 'expo-linear-gradient';
+import { router } from 'expo-router';
+import { Text } from '~/components/ui/text';
+import { Icon } from '~/lib/icons/Icon';
+import type { DancerCardData } from '~/hooks/queries/useDancersListQuery';
 
 export interface DancerCardProps {
-  dancer: DancerCardData
+  dancer: DancerCardData;
 }
 
 /**
@@ -23,8 +23,8 @@ export function DancerCard({ dancer }: DancerCardProps) {
         id: dancer._id,
         ...(dancer.headshotUrl && { headshot: dancer.headshotUrl }),
       },
-    })
-  }
+    });
+  };
 
   return (
     <Pressable
@@ -76,7 +76,8 @@ export function DancerCard({ dancer }: DancerCardProps) {
           paddingBottom: 16,
           justifyContent: 'flex-end',
         }}>
-        <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-end' }}>
+        <View
+          style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-end' }}>
           {/* Text content */}
           <View style={{ gap: 8, flex: 1 }}>
             <Text
@@ -122,5 +123,5 @@ export function DancerCard({ dancer }: DancerCardProps) {
         </View>
       </LinearGradient>
     </Pressable>
-  )
+  );
 }

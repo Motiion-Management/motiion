@@ -1,24 +1,24 @@
-import React from 'react'
-import { View } from 'react-native'
-import Animated, { type AnimatedStyle } from 'react-native-reanimated'
-import type { ViewStyle } from 'react-native'
-import * as DropdownMenu from 'zeego/dropdown-menu'
-import { Button } from '~/components/ui/button'
-import { Icon } from '~/lib/icons/Icon'
-import { type DancerViewConfig } from '~/hooks/useDancerView'
+import React from 'react';
+import { View } from 'react-native';
+import Animated, { type AnimatedStyle } from 'react-native-reanimated';
+import type { ViewStyle } from 'react-native';
+import * as DropdownMenu from 'zeego/dropdown-menu';
+import { Button } from '~/components/ui/button';
+import { Icon } from '~/lib/icons/Icon';
+import { type DancerViewConfig } from '~/hooks/useDancerView';
 
 export interface ProfileHeaderAnimations {
-  arrowIcon: AnimatedStyle<ViewStyle>
-  personIcon: AnimatedStyle<ViewStyle>
+  arrowIcon: AnimatedStyle<ViewStyle>;
+  personIcon: AnimatedStyle<ViewStyle>;
 }
 
 export interface DancerProfileHeaderProps {
-  config: DancerViewConfig
-  toggle: () => void
-  animations: ProfileHeaderAnimations
-  onShareProfile: () => void
-  onShareHeadshot: () => void
-  onShareProfileLink: () => void
+  config: DancerViewConfig;
+  toggle: () => void;
+  animations: ProfileHeaderAnimations;
+  onShareProfile: () => void;
+  onShareHeadshot: () => void;
+  onShareProfileLink: () => void;
 }
 
 /**
@@ -26,7 +26,7 @@ export interface DancerProfileHeaderProps {
  * Adapts share menu options based on view permissions
  */
 export function DancerProfileHeader(props: DancerProfileHeaderProps) {
-  const { config, toggle, animations, onShareProfile, onShareHeadshot, onShareProfileLink } = props
+  const { config, toggle, animations, onShareProfile, onShareHeadshot, onShareProfileLink } = props;
 
   return {
     leftButton: (
@@ -65,5 +65,5 @@ export function DancerProfileHeader(props: DancerProfileHeaderProps) {
         </DropdownMenu.Content>
       </DropdownMenu.Root>
     ) : null,
-  }
+  };
 }

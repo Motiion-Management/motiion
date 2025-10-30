@@ -1,7 +1,8 @@
 import React from 'react';
-import { ScrollView, View } from 'react-native';
+import { View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { router } from 'expo-router';
+import { ScrollShadow } from '~/components/ui/scroll-shadow';
 import { SectionCard } from '~/components/ui/section-card';
 import { ProjectCarousel } from './ProjectCarousel';
 import { type DancerProfileData } from '@packages/backend/convex/dancers';
@@ -35,13 +36,13 @@ export function ProfileResumeTab({ profileData }: ProfileResumeTabProps) {
   };
 
   return (
-    <ScrollView
-      className="flex-1"
+    <ScrollShadow
       showsVerticalScrollIndicator={false}
       contentContainerStyle={{
-        paddingTop: 96, // Tab overlay height + spacing
+        paddingTop: 30, // Just the gradient size
         paddingBottom: Math.max(insets.bottom, 60), // Safe area or minimum padding
-      }}>
+      }}
+      size={40}>
       {/* Project carousel at top */}
       {allProjects.length > 0 && (
         <View className="mb-4">
@@ -99,6 +100,6 @@ export function ProfileResumeTab({ profileData }: ProfileResumeTabProps) {
           />
         </View>
       </View>
-    </ScrollView>
+    </ScrollShadow>
   );
 }

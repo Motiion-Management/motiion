@@ -11,7 +11,7 @@ export const socialsObject = z.object({
   youtube: z.string().optional(),
   whatsapp: z.string().optional(),
   facebook: z.string().optional(),
-  linkedin: z.string().optional(),
+  linkedin: z.string().optional()
 })
 
 /**
@@ -19,7 +19,7 @@ export const socialsObject = z.object({
  * Validates social media links
  */
 export const socialsFormSchema = z.object({
-  socials: socialsObject.optional(),
+  socials: socialsObject.optional()
 })
 
 /**

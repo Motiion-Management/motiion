@@ -50,7 +50,7 @@ const HeadshotItem = React.memo<{
       <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
         <Transition.Pressable
           sharedBoundTag="dancer-avatar"
-          onPress={onPress || (() => { })}
+          onPress={onPress || (() => {})}
           collapsable={false}
           style={{
             width: COLLAPSED_WIDTH,
@@ -219,8 +219,9 @@ export function HeadshotCarousel({
               {headshotUrls.map((_, index) => (
                 <View
                   key={index}
-                  className={`h-2 w-2 rounded-full ${index === currentIndex ? 'bg-white' : 'bg-white/30'
-                    }`}
+                  className={`h-2 w-2 rounded-full ${
+                    index === currentIndex ? 'bg-white' : 'bg-white/30'
+                  }`}
                 />
               ))}
             </View>

@@ -47,13 +47,13 @@ export function ProfileDetailsSheet({
   );
 
   return (
-    <View style={{ height: contentHeight, backgroundColor: 'transparent' }}>
+    <View style={{ height: contentHeight }}>
       <PagerTabView
         routes={tabs}
         renderScene={renderScene}
         initialKey="resume"
         tabStyle="pill"
-        tabContainerClassName="px-4 pb-6 pt-4"
+        tabContainerClassName="px-4 "
       />
     </View>
   );

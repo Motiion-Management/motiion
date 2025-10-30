@@ -88,21 +88,31 @@ export default function DiscoverScreen() {
             <Text style={{ marginTop: 16, opacity: 0.6 }}>Loading dancers...</Text>
           </View>
         ) : isError ? (
-          <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', paddingHorizontal: 24 }}>
+          <View
+            style={{
+              flex: 1,
+              justifyContent: 'center',
+              alignItems: 'center',
+              paddingHorizontal: 24,
+            }}>
             <Text variant="header5" style={{ marginBottom: 8, textAlign: 'center' }}>
               Unable to Load Dancers
             </Text>
             <Text style={{ marginBottom: 16, opacity: 0.6, textAlign: 'center' }}>
               {error?.message || 'Something went wrong. Please try again.'}
             </Text>
-            <Text
-              onPress={() => refetch()}
-              style={{ color: '#007AFF', fontWeight: '600' }}>
+            <Text onPress={() => refetch()} style={{ color: '#007AFF', fontWeight: '600' }}>
               Try Again
             </Text>
           </View>
         ) : !data?.dancers || data.dancers.length === 0 ? (
-          <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', paddingHorizontal: 24 }}>
+          <View
+            style={{
+              flex: 1,
+              justifyContent: 'center',
+              alignItems: 'center',
+              paddingHorizontal: 24,
+            }}>
             <Text variant="header5" style={{ marginBottom: 8, textAlign: 'center' }}>
               No Dancers Yet
             </Text>

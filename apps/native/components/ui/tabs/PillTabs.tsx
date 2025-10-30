@@ -10,7 +10,7 @@ type PillTabsProps = {
 
 export function PillTabs({ tabs, activeIndex, onTabPress }: PillTabsProps) {
   return (
-    <View className="flex-row rounded-[20px] border border-border-low bg-transparent p-1">
+    <View className="flex-row rounded-[20px] border border-border-low bg-surface-tint p-1">
       {tabs.map((tab, index) => {
         const isActive = index === activeIndex;
         return (

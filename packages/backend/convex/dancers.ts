@@ -533,7 +533,9 @@ export const listDiscoverDancers = zq({
     let query = ctx.db.query('dancers').order('desc')
 
     // Apply pagination with cursor handling
-    const paginationOpts = cursor ? { cursor, numItems: limit } : { numItems: limit }
+    const paginationOpts = cursor
+      ? { cursor, numItems: limit }
+      : { numItems: limit }
     const result = await query.paginate(paginationOpts as any)
 
     // Resolve headshot URLs for each dancer
@@ -542,7 +544,11 @@ export const listDiscoverDancers = zq({
         let headshotUrl: string | null = null
 
         // Get first headshot URL if available
-        if (dancer.headshots && Array.isArray(dancer.headshots) && dancer.headshots.length > 0) {
+        if (
+          dancer.headshots &&
+          Array.isArray(dancer.headshots) &&
+          dancer.headshots.length > 0
+        ) {
           const firstHeadshot = dancer.headshots[0]
           if (firstHeadshot?.storageId) {
             headshotUrl = await ctx.storage.getUrl(firstHeadshot.storageId)

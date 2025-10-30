@@ -1,42 +1,42 @@
-import { useCallback, useMemo } from 'react'
-import { type Id } from '@packages/backend/convex/_generated/dataModel'
-import { useUser } from '~/hooks/useUser'
+import { useCallback, useMemo } from 'react';
+import { type Id } from '@packages/backend/convex/_generated/dataModel';
+import { useUser } from '~/hooks/useUser';
 
-export type DancerViewType = 'own' | 'dancerViewingDancer' | 'choreographerViewingDancer' | 'guest'
+export type DancerViewType = 'own' | 'dancerViewingDancer' | 'choreographerViewingDancer' | 'guest';
 
 export interface DancerViewConfig {
-  viewType: DancerViewType
-  canShare: boolean
-  canEdit: boolean
-  showQRCode: boolean
-  showAddToList: boolean
-  showFavorite: boolean
-  showBook: boolean
-  showRequest: boolean
+  viewType: DancerViewType;
+  canShare: boolean;
+  canEdit: boolean;
+  showQRCode: boolean;
+  showAddToList: boolean;
+  showFavorite: boolean;
+  showBook: boolean;
+  showRequest: boolean;
 }
 
 export interface DancerViewActions {
-  onQRCodePress: () => void
-  onAddPress: () => void
-  onFavoritePress: () => void
-  onBookPress: () => void
-  onRequestPress: () => void
+  onQRCodePress: () => void;
+  onAddPress: () => void;
+  onFavoritePress: () => void;
+  onBookPress: () => void;
+  onRequestPress: () => void;
 }
 
 export interface UseDancerViewResult {
-  config: DancerViewConfig
-  actions: DancerViewActions
-  isLoading: boolean
+  config: DancerViewConfig;
+  actions: DancerViewActions;
+  isLoading: boolean;
 }
 
 export interface UseDancerViewOptions {
-  targetDancerId: Id<'dancers'>
-  targetUserId: Id<'users'> | undefined
-  onQRCodePress?: () => void
-  onAddPress?: () => void
-  onFavoritePress?: () => void
-  onBookPress?: () => void
-  onRequestPress?: () => void
+  targetDancerId: Id<'dancers'>;
+  targetUserId: Id<'users'> | undefined;
+  onQRCodePress?: () => void;
+  onAddPress?: () => void;
+  onFavoritePress?: () => void;
+  onBookPress?: () => void;
+  onRequestPress?: () => void;
 }
 
 /**
@@ -52,30 +52,30 @@ export function useDancerView(options: UseDancerViewOptions): UseDancerViewResul
     onFavoritePress,
     onBookPress,
     onRequestPress,
-  } = options
+  } = options;
 
-  const { user: currentUser, isLoading } = useUser()
+  const { user: currentUser, isLoading } = useUser();
 
   // Determine view type
   const viewType = useMemo((): DancerViewType => {
     // If not authenticated, treat as guest
     if (!currentUser) {
-      return 'guest'
+      return 'guest';
     }
 
     // If viewing own profile
     if (currentUser._id === targetUserId) {
-      return 'own'
+      return 'own';
     }
 
     // If current user is a choreographer viewing a dancer
     if (currentUser.activeProfileType === 'choreographer') {
-      return 'choreographerViewingDancer'
+      return 'choreographerViewingDancer';
     }
 
     // Default: dancer viewing another dancer
-    return 'dancerViewingDancer'
-  }, [currentUser, targetUserId])
+    return 'dancerViewingDancer';
+  }, [currentUser, targetUserId]);
 
   // Build configuration based on view type
   const config = useMemo((): DancerViewConfig => {
@@ -90,7 +90,7 @@ export function useDancerView(options: UseDancerViewOptions): UseDancerViewResul
           showFavorite: false,
           showBook: false,
           showRequest: false,
-        }
+        };
 
       case 'choreographerViewingDancer':
         return {
@@ -102,7 +102,7 @@ export function useDancerView(options: UseDancerViewOptions): UseDancerViewResul
           showFavorite: false,
           showBook: true,
           showRequest: true,
-        }
+        };
 
       case 'dancerViewingDancer':
         return {
@@ -114,7 +114,7 @@ export function useDancerView(options: UseDancerViewOptions): UseDancerViewResul
           showFavorite: true,
           showBook: false,
           showRequest: false,
-        }
+        };
 
       case 'guest':
       default:
@@ -127,35 +127,35 @@ export function useDancerView(options: UseDancerViewOptions): UseDancerViewResul
           showFavorite: false,
           showBook: false,
           showRequest: false,
-        }
+        };
     }
-  }, [viewType])
+  }, [viewType]);
 
   // Memoized action handlers
   const handleQRCodePress = useCallback(() => {
-    if (!config.showQRCode) return
-    onQRCodePress?.()
-  }, [config.showQRCode, onQRCodePress])
+    if (!config.showQRCode) return;
+    onQRCodePress?.();
+  }, [config.showQRCode, onQRCodePress]);
 
   const handleAddPress = useCallback(() => {
-    if (!config.showAddToList) return
-    onAddPress?.()
-  }, [config.showAddToList, onAddPress])
+    if (!config.showAddToList) return;
+    onAddPress?.();
+  }, [config.showAddToList, onAddPress]);
 
   const handleFavoritePress = useCallback(() => {
-    if (!config.showFavorite) return
-    onFavoritePress?.()
-  }, [config.showFavorite, onFavoritePress])
+    if (!config.showFavorite) return;
+    onFavoritePress?.();
+  }, [config.showFavorite, onFavoritePress]);
 
   const handleBookPress = useCallback(() => {
-    if (!config.showBook) return
-    onBookPress?.()
-  }, [config.showBook, onBookPress])
+    if (!config.showBook) return;
+    onBookPress?.();
+  }, [config.showBook, onBookPress]);
 
   const handleRequestPress = useCallback(() => {
-    if (!config.showRequest) return
-    onRequestPress?.()
-  }, [config.showRequest, onRequestPress])
+    if (!config.showRequest) return;
+    onRequestPress?.();
+  }, [config.showRequest, onRequestPress]);
 
   const actions = useMemo(
     (): DancerViewActions => ({
@@ -166,11 +166,11 @@ export function useDancerView(options: UseDancerViewOptions): UseDancerViewResul
       onRequestPress: handleRequestPress,
     }),
     [handleQRCodePress, handleAddPress, handleFavoritePress, handleBookPress, handleRequestPress]
-  )
+  );
 
   return {
     config,
     actions,
     isLoading,
-  }
+  };
 }

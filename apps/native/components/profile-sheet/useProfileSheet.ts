@@ -14,7 +14,10 @@ export function useProfileSheet(config?: UseProfileSheetConfig): UseProfileSheet
 
   const bottomSheetRef = useRef<BottomSheet>(null);
   const animatedIndex = useSharedValue(initialIndex);
-  const snapPoints = useMemo(() => customSnapPoints || ['15%', `${PROFILE_SHEET_EXPANDED_HEIGHT}%`], [customSnapPoints]);
+  const snapPoints = useMemo(
+    () => customSnapPoints || ['15%', `${PROFILE_SHEET_EXPANDED_HEIGHT}%`],
+    [customSnapPoints]
+  );
   const [headerHeight, setHeaderHeight] = useState(defaultHeaderHeight);
 
   // Navigation methods
