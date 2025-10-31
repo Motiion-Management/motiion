@@ -18,14 +18,14 @@ interface SectionCardConfig {
   title: string;
   icon: React.ReactNode;
   route:
-    | '/app/(tabs)/profile/about'
-    | '/app/(tabs)/profile/media'
-    | '/app/(tabs)/profile/highlights'
-    | '/app/(tabs)/profile/sizes'
-    | '/app/(tabs)/profile/socials'
-    | '/app/(tabs)/profile/agent'
-    | '/app/(tabs)/profile/skills'
-    | '/app/(tabs)/profile/training';
+  | '/app/(tabs)/profile/about'
+  | '/app/(tabs)/profile/media'
+  | '/app/(tabs)/profile/highlights'
+  | '/app/(tabs)/profile/sizes'
+  | '/app/(tabs)/profile/socials'
+  | '/app/(tabs)/profile/agent'
+  | '/app/(tabs)/profile/skills'
+  | '/app/(tabs)/profile/training';
 }
 
 const PAGE_1_CARDS: SectionCardConfig[] = [
@@ -85,9 +85,8 @@ function DotIndicator({ totalPages, activePage }: DotIndicatorProps) {
       {Array.from({ length: totalPages }).map((_, index) => (
         <View
           key={index}
-          className={`h-2 w-2 rounded-full ${
-            index === activePage ? 'bg-background-accent' : 'bg-surface-tint'
-          }`}
+          className={`h-2 w-2 rounded-full ${index === activePage ? 'bg-background-accent' : 'bg-surface-tint'
+            }`}
         />
       ))}
     </View>
@@ -134,7 +133,7 @@ export function SectionCardPager() {
 
   return (
     <View className="gap-6">
-      <View className="h-[196px]">
+      <View className="h-[25vh]">
         <PagerView
           style={{ flex: 1 }}
           initialPage={0}
