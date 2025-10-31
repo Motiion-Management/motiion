@@ -7,6 +7,7 @@ import { TabBar } from './TabBar';
 import { PillTabs } from './PillTabs';
 import { TextTabs } from './TextTabs';
 import { ScrollShadow } from '~/components/ui/scroll-shadow';
+import { cn } from '~/lib/cn';
 
 export type TabRoute = { key: string; title: string };
 
@@ -118,8 +119,8 @@ export const PagerTabView = forwardRef<PagerTabViewRef, TabsViewProps>(function 
   };
 
   return (
-    <View className={className} style={{ flex: 1 }}>
-      <View className={tabContainerClassName}>{renderTabs()}</View>
+    <View className={cn('flex-1', className)}>
+      <View className={cn('z-10', tabContainerClassName)}>{renderTabs()}</View>
       <PagerView
         ref={pagerRef}
         initialPage={initialIndex}

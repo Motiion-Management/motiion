@@ -9,19 +9,25 @@ on:
 jobs:
   fingerprint:
     type: fingerprint
+    environment: development
+    env:
+      APP_VARIANT: development
 
   get_ios_build:
     type: get-build
     needs: [fingerprint]
     params:
-      platform: ios
       fingerprint_hash: ${{ needs.fingerprint.outputs.ios_fingerprint_hash }}
       profile: development
+      wait_for_in_progress: true
 
   build_ios:
     type: build
     needs: [get_ios_build]
     if: ${{ !needs.get_ios_build.outputs.build_id }}
+    environment: development
+    env:
+      APP_VARIANT: development
     params:
       platform: ios
       profile: development
@@ -30,6 +36,9 @@ jobs:
     type: update
     needs: [get_ios_build]
     if: ${{ needs.get_ios_build.outputs.build_id }}
+    environment: development
+    env:
+      APP_VARIANT: development
     params:
       branch: development
       platform: ios

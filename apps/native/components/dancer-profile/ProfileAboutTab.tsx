@@ -23,11 +23,11 @@ function ChipsSection({ items, label }: { items?: string[]; label: string }) {
     return null;
   }
   return (
-    <View className="gap-4">
+    <View>
       <Text variant="labelSm" className="uppercase text-text-low">
         {label}
       </Text>
-      <Chips items={items} variant="filter" />
+      <Chips items={items} variant="filter" className="mt-3" />
     </View>
   );
 }
@@ -47,6 +47,15 @@ export function ProfileAboutTab({ profileData }: ProfileAboutTabProps) {
     affiliations.push('SAG-AFTRA');
   }
 
+  const hasChipSections =
+    workLocations.length > 0 || genres.length > 0 || affiliations.length > 0;
+
+  const hasSocials =
+    dancer.links?.socials &&
+    Object.keys(dancer.links.socials).some(
+      (key) => dancer.links?.socials?.[key as keyof typeof dancer.links.socials]
+    );
+
   const openSocialLink = async (
     platform: 'instagram' | 'twitter' | 'tiktok' | 'youtube' | 'whatsapp',
     handle: string
@@ -65,22 +74,19 @@ export function ProfileAboutTab({ profileData }: ProfileAboutTabProps) {
   };
 
   return (
-    <View className="flex-1 gap-8 px-4">
+    <View className="flex-1 gap-6 px-4">
       <TypecastDetails dancer={dancer} />
 
-      <Separator className="-mx-4 w-[110%] bg-border-tint" />
+      {hasChipSections && <Separator className="-mx-4 w-[110%] bg-border-tint" />}
 
       <ChipsSection items={workLocations} label="Work Locations" />
       <ChipsSection items={genres} label="Genres" />
       <ChipsSection items={affiliations} label="Affiliations" />
 
-      <Separator className="-mx-4 w-[110%] bg-border-tint" />
+      {hasSocials && <Separator className="-mx-4 w-[110%] bg-border-tint" />}
 
       {/* Socials Section */}
-      {dancer.links?.socials &&
-        Object.keys(dancer.links.socials).some(
-          (key) => dancer.links?.socials?.[key as keyof typeof dancer.links.socials]
-        ) ? (
+      {hasSocials ? (
         <View className="flex-row justify-center gap-4">
           {dancer.links?.socials?.instagram && (
             <TouchableOpacity

@@ -60,13 +60,16 @@ export function ScrollShadow({
   }, []);
 
   return (
-    <View style={[{ flex: 1 }, style]} onLayout={handleContainerLayout}>
+    <View style={[{ flex: 1 }, style]} onLayout={handleContainerLayout} pointerEvents="box-none">
       <MaskedView
         style={{ flex: 1 }}
+        pointerEvents="box-none"
         maskElement={
           <LinearGradient colors={maskColors} locations={locations} style={{ flex: 1 }} />
         }>
-        <ScrollView {...scrollViewProps}>{children}</ScrollView>
+        <ScrollView {...scrollViewProps} pointerEvents="auto">
+          {children}
+        </ScrollView>
       </MaskedView>
     </View>
   );

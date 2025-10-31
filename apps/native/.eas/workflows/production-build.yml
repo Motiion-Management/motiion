@@ -9,13 +9,15 @@ jobs:
   # Calculate the fingerprint for the current code state
   fingerprint:
     type: fingerprint
+    environment: production
+    env:
+      APP_VARIANT: production
 
   # Check if a build already exists with this fingerprint
   get_ios_build:
     type: get-build
     needs: [fingerprint]
     params:
-      platform: ios
       fingerprint_hash: ${{ needs.fingerprint.outputs.ios_fingerprint_hash }}
       profile: production
 
@@ -24,6 +26,9 @@ jobs:
     type: build
     needs: [get_ios_build]
     if: ${{ !needs.get_ios_build.outputs.build_id }}
+    environment: production
+    env:
+      APP_VARIANT: production
     params:
       platform: ios
       profile: production
@@ -40,6 +45,9 @@ jobs:
     type: update
     needs: [get_ios_build]
     if: ${{ needs.get_ios_build.outputs.build_id }}
+    environment: production
+    env:
+      APP_VARIANT: production
     params:
       branch: production
       platform: ios
