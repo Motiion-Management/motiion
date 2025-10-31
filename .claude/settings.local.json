@@ -73,7 +73,8 @@
       "WebFetch(domain:raw.githubusercontent.com)",
       "Read(//Users/jshebert/Downloads/**)",
       "WebFetch(domain:reactnativereusables.com)",
-      "mcp__figma-dev-mode-mcp-server__get_design_context"
+      "mcp__figma-dev-mode-mcp-server__get_design_context",
+      "Bash(eas branch:list:*)"
     ]
   },
   "enableAllProjectMcpServers": true

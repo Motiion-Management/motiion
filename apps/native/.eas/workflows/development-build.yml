@@ -1,0 +1,46 @@
+name: Development Build
+
+on:
+  pull_request:
+    branches:
+      - main
+    types: [opened, synchronize, reopened]
+  push:
+    branches:
+      - 'chore/**'
+      - 'feat/**'
+      - 'fix/**'
+
+jobs:
+  # Calculate the fingerprint for the current code state
+  fingerprint:
+    type: fingerprint
+    params:
+      platform: ios
+
+  # Check if a build already exists with this fingerprint
+  get_ios_build:
+    type: get_build
+    needs: fingerprint
+    params:
+      platform: ios
+      profile: development
+      runtime_version: ${ jobs.fingerprint.outputs.fingerprint }
+
+  # Create a new build ONLY if no existing build was found
+  build_ios:
+    type: build
+    needs: [fingerprint, get_ios_build]
+    if: ${ !needs.get_ios_build.outputs.build_id }
+    params:
+      platform: ios
+      profile: development
+
+  # Publish an OTA update ONLY if an existing build was found
+  publish_update:
+    type: update
+    needs: [fingerprint, get_ios_build]
+    if: ${ needs.get_ios_build.outputs.build_id }
+    params:
+      platform: ios
+      branch: development
