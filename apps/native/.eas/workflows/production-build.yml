@@ -33,7 +33,7 @@ jobs:
   # Submit the build to App Store ONLY if a new build was created
   submit_ios:
     type: submit
-    needs: build_ios
+    needs: [build_ios]
     if: ${ needs.build_ios.outputs.build_id }
     params:
       platform: ios
@@ -46,4 +46,4 @@ jobs:
     if: ${ needs.get_ios_build.outputs.build_id }
     params:
       platform: ios
-      branch: production
+      channel: production
