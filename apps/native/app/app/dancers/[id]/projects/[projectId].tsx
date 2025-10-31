@@ -32,14 +32,43 @@ export default function ProjectDetailScreen() {
 
   const categoryInfo = getCategoryInfo(project);
 
-  // Determine which tabs to show
-  const tabs: Array<TabRoute> = [
-    { key: 'team', title: 'Team' },
-    { key: 'details', title: 'Details' },
-  ];
+  // Helper functions to check if tabs have content
+  const hasTeamContent = () => {
+    const teamFields = [
+      project.mainTalent,
+      project.choreographers,
+      project.associateChoreographers,
+      project.directors,
+    ];
+    return teamFields.some((field) => field && field.length > 0);
+  };
 
-  // Only show Link tab if project has a link
-  if (project.link) {
+  const hasDetailsContent = () => {
+    const details = [
+      formatProjectDate(project.startDate),
+      formatProjectDate(project.endDate),
+      project.duration,
+      project.productionCompany,
+    ];
+    return details.some((detail) => detail && detail !== '-');
+  };
+
+  const hasLinkContent = () => {
+    return !!project.link;
+  };
+
+  // Build tabs array with only tabs that have content
+  const tabs: Array<TabRoute> = [];
+
+  if (hasTeamContent()) {
+    tabs.push({ key: 'team', title: 'Team' });
+  }
+
+  if (hasDetailsContent()) {
+    tabs.push({ key: 'details', title: 'Details' });
+  }
+
+  if (hasLinkContent()) {
     tabs.push({ key: 'link', title: 'Link' });
   }
 
@@ -58,51 +87,66 @@ export default function ProjectDetailScreen() {
 
   return (
     <View className="flex-1 bg-background-gradient-filled">
-      <ScrollView className="flex-1" showsVerticalScrollIndicator={false}>
-        <View className="gap-8 px-6 py-6">
-          {/* Title */}
-          <Text variant="header3" className="text-text-default">
-            {project.title || 'Untitled Project'}
-          </Text>
+      <View className="gap-8 px-6 py-6">
+        {/* Title */}
+        <Text variant="header3" className="text-text-default">
+          {project.title || 'Untitled Project'}
+        </Text>
 
-          {/* Main Details */}
-          <View className="flex-row gap-6">
-            {/* Picture Card */}
-            <PictureCard className="w-[146px]" />
+        {/* Main Details */}
+        <View className="flex-row gap-6">
+          {/* Picture Card */}
+          <PictureCard className="w-[146px]" />
 
-            {/* Details Stack */}
-            <View className="flex-1 gap-6">
-              {/* Category */}
-              <ListActivity
-                category={categoryInfo.category}
-                activityLabel={categoryInfo.subcategory}
-              />
+          {/* Details Stack */}
+          <View className="flex-1 gap-6">
+            {/* Category */}
+            <ListActivity
+              category={categoryInfo.category}
+              activityLabel={categoryInfo.subcategory}
+            />
 
-              {/* Role */}
-              {project.roles && project.roles.length > 0 && (
-                <View className="gap-4">
-                  <Text variant="labelSm" className="uppercase text-text-low">
-                    Role
-                  </Text>
-                  <View className="h-px w-full bg-border-tint" />
-                  <Text variant="body" className="text-text-default">
-                    {project.roles.join(', ')}
-                  </Text>
-                </View>
-              )}
-            </View>
+            {/* Role */}
+            {project.roles && project.roles.length > 0 && (
+              <View className="gap-4">
+                <Text variant="labelSm" className="uppercase text-text-low">
+                  Role
+                </Text>
+                <View className="h-px w-full bg-border-tint" />
+                <Text variant="body" className="text-text-default">
+                  {project.roles.join(', ')}
+                </Text>
+              </View>
+            )}
           </View>
-
-          {/* Tabs */}
-          <PagerTabView
-            routes={tabs}
-            renderScene={renderScene}
-            initialKey="team"
-            tabStyle="pill"
-            tabContainerClassName="sticky top-0 bg-background-gradient-filled"
-          />
         </View>
-      </ScrollView>
+      </View>
+
+      {/* Tabs - Only show if there are tabs with content */}
+      {tabs.length > 0 && (
+        <>
+          {tabs.length === 1 ? (
+            // Single tab: show as header only
+            <View style={{ flex: 1 }} className="gap-4">
+              <Text variant="header5" className="px-6 text-text-low">
+                {tabs[0].title}
+              </Text>
+              <View style={{ flex: 1 }}>{renderScene(tabs[0])}</View>
+            </View>
+          ) : (
+            // Multiple tabs: show PagerTabView
+            <View style={{ flex: 1 }}>
+              <PagerTabView
+                routes={tabs}
+                renderScene={renderScene}
+                initialKey={tabs[0].key}
+                tabStyle="pill"
+                tabContainerClassName="px-6"
+              />
+            </View>
+          )}
+        </>
+      )}
     </View>
   );
 }
@@ -120,7 +164,7 @@ function TeamTab({ project }: { project: any }) {
 
   if (!hasTeamData) {
     return (
-      <View className="py-8">
+      <View className="px-6 py-8">
         <Text variant="body" className="text-center text-text-low">
           No team information available
         </Text>
@@ -129,7 +173,7 @@ function TeamTab({ project }: { project: any }) {
   }
 
   return (
-    <View className="gap-8">
+    <View className="gap-8 px-6">
       {teamFields.map(
         (field) =>
           field.data &&
@@ -164,18 +208,21 @@ function TeamTab({ project }: { project: any }) {
 
 // Details Tab Component
 function DetailsTab({ project }: { project: any }) {
-  const details = [
-    { label: 'Start Date', value: formatProjectDate(project.startDate) },
-    { label: 'End Date', value: formatProjectDate(project.endDate) },
-    { label: 'Duration', value: project.duration },
-    { label: 'Production Company', value: project.productionCompany },
-  ];
+  const startDate = formatProjectDate(project.startDate);
+  const endDate = formatProjectDate(project.endDate);
+  const duration = project.duration;
+  const productionCompany = project.productionCompany;
 
-  const visibleDetails = details.filter((detail) => detail.value && detail.value !== '-');
+  const hasStartDate = startDate && startDate !== '-';
+  const hasEndDate = endDate && endDate !== '-';
+  const hasDuration = duration && duration !== '-';
+  const hasProductionCompany = productionCompany && productionCompany !== '-';
 
-  if (visibleDetails.length === 0) {
+  const hasAnyDetails = hasStartDate || hasEndDate || hasDuration || hasProductionCompany;
+
+  if (!hasAnyDetails) {
     return (
-      <View className="py-8">
+      <View className="px-6 py-8">
         <Text variant="body" className="text-center text-text-low">
           No additional details available
         </Text>
@@ -184,18 +231,65 @@ function DetailsTab({ project }: { project: any }) {
   }
 
   return (
-    <View className="gap-6">
-      {visibleDetails.map((detail, index) => (
-        <View key={index} className="gap-4">
+    <View className="gap-6 px-6">
+      {hasStartDate && hasEndDate ? (
+        <DateRangeField startDate={startDate} endDate={endDate} />
+      ) : (
+        <>
+          {hasStartDate && <DetailField label="Start Date" value={startDate} />}
+          {hasEndDate && <DetailField label="End Date" value={endDate} />}
+        </>
+      )}
+      {hasDuration && <DetailField label="Duration" value={duration} />}
+      {hasProductionCompany && <DetailField label="Production Company" value={productionCompany} />}
+    </View>
+  );
+}
+
+// Detail Field Component
+function DetailField({ label, value }: { label: string; value: string }) {
+  return (
+    <View className="gap-4">
+      <Text variant="labelSm" className="uppercase text-text-low">
+        {label}
+      </Text>
+      <View className="h-px w-full bg-border-tint" />
+      <Text variant="body" className="text-text-default">
+        {value}
+      </Text>
+    </View>
+  );
+}
+
+// Date Range Field Component (side-by-side dates)
+function DateRangeField({ startDate, endDate }: { startDate: string; endDate: string }) {
+  return (
+    <View className="gap-4">
+      <View className="flex-row gap-4">
+        <View className="flex-1">
           <Text variant="labelSm" className="uppercase text-text-low">
-            {detail.label}
-          </Text>
-          <View className="h-px w-full bg-border-tint" />
-          <Text variant="body" className="text-text-default">
-            {detail.value}
+            Start Date
           </Text>
         </View>
-      ))}
+        <View className="flex-1">
+          <Text variant="labelSm" className="uppercase text-text-low">
+            End Date
+          </Text>
+        </View>
+      </View>
+      <View className="h-px w-full bg-border-tint" />
+      <View className="flex-row gap-4">
+        <View className="flex-1">
+          <Text variant="body" className="text-text-default">
+            {startDate}
+          </Text>
+        </View>
+        <View className="flex-1">
+          <Text variant="body" className="text-text-default">
+            {endDate}
+          </Text>
+        </View>
+      </View>
     </View>
   );
 }
@@ -218,7 +312,7 @@ function LinkTab({ link }: { link?: string }) {
   };
 
   return (
-    <View className="gap-6">
+    <View className="gap-6 px-6">
       <View className="gap-4">
         <Text variant="labelSm" className="uppercase text-text-low">
           Project Link
