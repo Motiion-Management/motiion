@@ -80,7 +80,10 @@
       "Bash(eas workflow:run:list:*)",
       "Bash(eas workflow --help:*)",
       "Bash(eas workflow:runs:*)",
-      "Bash(eas workflow:validate:*)"
+      "Bash(eas workflow:validate:*)",
+      "Bash(eas build:list:*)",
+      "Bash(eas build:view:*)",
+      "Bash(eas update:list:*)"
     ]
   },
   "enableAllProjectMcpServers": true
