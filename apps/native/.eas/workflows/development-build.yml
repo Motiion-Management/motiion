@@ -14,9 +14,9 @@ jobs:
     type: get-build
     needs: [fingerprint]
     params:
-      platform: ios
       fingerprint_hash: ${{ needs.fingerprint.outputs.ios_fingerprint_hash }}
       profile: development
+      wait_for_in_progress: true
 
   build_ios:
     type: build
