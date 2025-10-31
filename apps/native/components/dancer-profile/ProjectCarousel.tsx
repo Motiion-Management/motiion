@@ -1,14 +1,16 @@
 import React from 'react';
 import { ScrollView, View, ImageBackground, TouchableOpacity } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
+import { router } from 'expo-router';
 import { Text } from '~/components/ui/text';
 import { getProjectDisplayTitle } from '~/config/projectTypes';
 
 interface ProjectCarouselProps {
   projects: Array<any>;
+  dancerId?: string;
 }
 
-export function ProjectCarousel({ projects }: ProjectCarouselProps) {
+export function ProjectCarousel({ projects, dancerId }: ProjectCarouselProps) {
   if (projects.length === 0) return null;
 
   return (
@@ -17,23 +19,28 @@ export function ProjectCarousel({ projects }: ProjectCarouselProps) {
       showsHorizontalScrollIndicator={false}
       contentContainerStyle={{ paddingHorizontal: 16, gap: 12 }}>
       {projects.map((project, index) => (
-        <ProjectCard key={project._id || index} project={project} />
+        <ProjectCard key={project._id || index} project={project} dancerId={dancerId} />
       ))}
     </ScrollView>
   );
 }
 
-function ProjectCard({ project }: { project: any }) {
+function ProjectCard({ project, dancerId }: { project: any; dancerId?: string }) {
   const title = getProjectDisplayTitle(project);
   const subtitle = getProjectSubtitle(project);
   const label = getProjectLabel(project.type);
 
-  // TODO: Get actual project images from storage
-  // For now using placeholder
-  const imageUrl = null;
+  // Get image URL from project (passed from highlights)
+  const imageUrl = project.imageUrl || null;
+
+  const handlePress = () => {
+    if (dancerId && project._id) {
+      router.push(`/app/dancers/${dancerId}/projects/${project._id}`);
+    }
+  };
 
   return (
-    <TouchableOpacity activeOpacity={0.9}>
+    <TouchableOpacity activeOpacity={0.9} onPress={handlePress}>
       <View
         style={{
           width: 177,

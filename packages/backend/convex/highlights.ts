@@ -79,7 +79,9 @@ export const addHighlight = authMutation({
     // Verify project exists and belongs to the profile
     const project = await ctx.db.get(args.projectId)
     if (!project || project.profileId !== args.profileId) {
-      throw new ConvexError('Project not found or does not belong to this profile')
+      throw new ConvexError(
+        'Project not found or does not belong to this profile'
+      )
     }
 
     // Check max highlights limit
@@ -132,7 +134,9 @@ export const removeHighlight = authMutation({
 
     const profile = await ctx.db.get(highlight.profileId)
     if (!profile || profile.userId !== user._id) {
-      throw new ConvexError('Unauthorized - highlight does not belong to your profile')
+      throw new ConvexError(
+        'Unauthorized - highlight does not belong to your profile'
+      )
     }
 
     // Delete the highlight

@@ -20,7 +20,7 @@ export const SectionCard = React.forwardRef<ViewRef, SectionCardProps>(
       <View
         ref={ref}
         className={cn(
-          'h-[86px] flex-col justify-end rounded-lg border border-border-tint bg-surface-tint-accent p-4',
+          'aspect-video flex-col justify-end overflow-hidden rounded-lg p-2 shadow',
           className
         )}
         {...props}>
@@ -35,25 +35,28 @@ export const SectionCard = React.forwardRef<ViewRef, SectionCardProps>(
                 left: 0,
                 right: 0,
                 bottom: 0,
-                borderRadius: 8,
               }}
             />
             <View className="absolute inset-0 rounded-lg bg-white" style={{ opacity: 0.15 }} />
           </>
         )}
+        <View className="absolute bottom-0 left-0 right-0 top-0 bg-surface-overlay opacity-70" />
 
-        <View className="relative z-10 flex-row justify-between">
+        <View className="align relative z-10 flex-1 justify-between">
+          <View className="flex-row justify-end">
+            {icon ? (
+              <View className="">{icon}</View>
+            ) : count !== undefined ? (
+              <Text
+                variant="header4"
+                className="align-self-start text-center text-text-low opacity-50">
+                {count}
+              </Text>
+            ) : null}
+          </View>
           <Text variant="header5" className="text-text-default">
             {title}
           </Text>
-
-          {icon ? (
-            <View className="">{icon}</View>
-          ) : count !== undefined ? (
-            <Text variant="header4" className="text-center text-text-low opacity-50">
-              {count}
-            </Text>
-          ) : null}
         </View>
       </View>
     );

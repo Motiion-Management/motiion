@@ -73,7 +73,20 @@
       "WebFetch(domain:raw.githubusercontent.com)",
       "Read(//Users/jshebert/Downloads/**)",
       "WebFetch(domain:reactnativereusables.com)",
-      "mcp__figma-dev-mode-mcp-server__get_design_context"
+      "mcp__figma-dev-mode-mcp-server__get_design_context",
+      "Bash(eas branch:list:*)",
+      "Bash(gh pr checks:*)",
+      "Bash(eas workflow:list:*)",
+      "Bash(eas workflow:run:list:*)",
+      "Bash(eas workflow --help:*)",
+      "Bash(eas workflow:runs:*)",
+      "Bash(eas workflow:validate:*)",
+      "Bash(eas build:list:*)",
+      "Bash(eas build:view:*)",
+      "Bash(eas update:list:*)",
+      "Bash(eas channel:view:*)",
+      "Bash(eas branch:view:*)",
+      "Bash(eas channel:edit:*)"
     ]
   },
   "enableAllProjectMcpServers": true

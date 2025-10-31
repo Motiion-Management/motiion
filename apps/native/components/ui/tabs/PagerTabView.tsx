@@ -2,9 +2,11 @@ import React, { useMemo, useRef, useState, forwardRef, useImperativeHandle } fro
 import { View } from 'react-native';
 import PagerView from 'react-native-pager-view';
 import { useSharedValue } from 'react-native-reanimated';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { TabBar } from './TabBar';
 import { PillTabs } from './PillTabs';
 import { TextTabs } from './TextTabs';
+import { ScrollShadow } from '~/components/ui/scroll-shadow';
 
 export type TabRoute = { key: string; title: string };
 
@@ -51,6 +53,7 @@ export const PagerTabView = forwardRef<PagerTabViewRef, TabsViewProps>(function 
   const [activeIndex, setActiveIndex] = useState<number>(initialIndex);
   const indexDecimal = useSharedValue<number>(initialIndex);
   const pagerRef = useRef<React.ElementRef<typeof PagerView> | null>(null);
+  const insets = useSafeAreaInsets();
 
   const titles = useMemo(() => routes.map((r) => r.title), [routes]);
   const disabledIndices = useMemo(
@@ -135,7 +138,15 @@ export const PagerTabView = forwardRef<PagerTabViewRef, TabsViewProps>(function 
         }}>
         {routes.map((r) => (
           <View key={r.key} className={contentClassName ?? 'flex-1'}>
-            {renderScene(r)}
+            <ScrollShadow
+              showsVerticalScrollIndicator={false}
+              size={40}
+              contentContainerStyle={{
+                paddingTop: 30,
+                paddingBottom: Math.max(insets.bottom, 60),
+              }}>
+              {renderScene(r)}
+            </ScrollShadow>
           </View>
         ))}
       </PagerView>

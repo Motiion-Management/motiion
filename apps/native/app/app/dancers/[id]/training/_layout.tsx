@@ -10,7 +10,7 @@ import { Icon } from '~/lib/icons/Icon';
 import { Button } from '~/components/ui/button';
 import { Text } from '~/components/ui/text';
 
-const ProjectsHeader = ({ route }: { route: any }) => {
+const TrainingHeader = ({ route }: { route: any }) => {
   const dancerId = route.params?.id as Id<'dancers'>;
   const profileData = useQuery(
     api.dancers.getDancerProfileWithDetails,
@@ -43,7 +43,7 @@ const ProjectsHeader = ({ route }: { route: any }) => {
             {profileData?.dancer.displayName || ''}
           </Text>
           <Text variant="header5" className="text-white">
-            Dancer
+            Training
           </Text>
         </View>
 
@@ -53,7 +53,7 @@ const ProjectsHeader = ({ route }: { route: any }) => {
   );
 };
 
-export default function ProjectsLayout() {
+export default function TrainingLayout() {
   return (
     <Stack
       screenOptions={{
@@ -64,14 +64,14 @@ export default function ProjectsLayout() {
         name="index"
         options={{
           headerShown: true,
-          header: (props) => <ProjectsHeader route={props.route} />,
+          header: (props) => <TrainingHeader route={props.route} />,
         }}
       />
       <Stack.Screen
-        name="[projectId]"
+        name="[trainingId]"
         options={{
           headerShown: true,
-          header: (props) => <ProjectsHeader route={props.route} />,
+          header: (props) => <TrainingHeader route={props.route} />,
         }}
       />
     </Stack>

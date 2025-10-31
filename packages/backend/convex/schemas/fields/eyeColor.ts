@@ -10,9 +10,11 @@ export const EYE_COLOR = [
 ] as const
 
 export const eyeColorFormSchema = z.object({
-  eyeColor: z.enum(EYE_COLOR, {
-    message: 'Please select an eye color'
-  }).optional()
+  eyeColor: z
+    .enum(EYE_COLOR, {
+      message: 'Please select an eye color'
+    })
+    .optional()
 })
 
 export const eyeColorDbField = z.enum(EYE_COLOR).optional()

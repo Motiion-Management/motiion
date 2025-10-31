@@ -24,7 +24,7 @@ interface HeadshotCarouselProps {
   onIndexChange?: (index: number) => void;
 }
 
-const SCREEN_HEIGHT_MODIFIER = 0.88;
+const SCREEN_HEIGHT_MODIFIER = 0.865;
 const IMAGE_HEIGHT = SCREEN_HEIGHT * SCREEN_HEIGHT_MODIFIER;
 const COLLAPSED_WIDTH = SCREEN_WIDTH - 12;
 const EXPANDED_WIDTH = SCREEN_WIDTH;
@@ -42,32 +42,45 @@ const HeadshotItem = React.memo<{
   const imageStyle = useAnimatedStyle<ImageStyle>(() => ({
     width: animatedWidth.value,
     height: animatedHeight.value,
-    borderRadius: interpolate(animatedIndex?.value || 0, [0, 1], [25, 0], Extrapolate.CLAMP),
+    borderTopLeftRadius: interpolate(animatedIndex?.value || 0, [0, 1], [25, 0], Extrapolate.CLAMP),
+    borderTopRightRadius: interpolate(animatedIndex?.value || 0, [0, 1], [25, 0], Extrapolate.CLAMP),
+    borderBottomLeftRadius: interpolate(animatedIndex?.value || 0, [0, 1], [50, 0], Extrapolate.CLAMP),
+    borderBottomRightRadius: interpolate(animatedIndex?.value || 0, [0, 1], [50, 0], Extrapolate.CLAMP),
+  }));
+
+  const firstImageWrapperStyle = useAnimatedStyle(() => ({
+    width: animatedWidth.value,
+    height: animatedHeight.value,
   }));
 
   if (isFirst) {
     return (
       <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-        <Transition.Pressable
-          sharedBoundTag="dancer-avatar"
-          onPress={onPress || (() => {})}
-          collapsable={false}
-          style={{
-            width: COLLAPSED_WIDTH,
-            height: IMAGE_HEIGHT,
-            borderRadius: 25,
-            overflow: 'hidden',
-          }}>
-          <ExpoImage
-            source={{ uri: item }}
-            style={{ width: '100%', height: '100%' }}
-            contentFit="cover"
-            cachePolicy="memory-disk"
-            transition={0}
-            priority="high"
-            placeholderContentFit="cover"
-          />
-        </Transition.Pressable>
+        <Animated.View style={firstImageWrapperStyle}>
+          <Transition.Pressable
+            sharedBoundTag="dancer-avatar"
+            onPress={onPress || (() => {})}
+            collapsable={false}
+            style={{
+              width: '100%',
+              height: '100%',
+              borderTopLeftRadius: 28,
+              borderTopRightRadius: 28,
+              borderBottomLeftRadius: 50,
+              borderBottomRightRadius: 50,
+              overflow: 'hidden',
+            }}>
+            <ExpoImage
+              source={{ uri: item }}
+              style={{ width: '100%', height: '100%' }}
+              contentFit="cover"
+              cachePolicy="memory-disk"
+              transition={0}
+              priority="high"
+              placeholderContentFit="cover"
+            />
+          </Transition.Pressable>
+        </Animated.View>
       </View>
     );
   }
@@ -163,7 +176,7 @@ export function HeadshotCarousel({
     const top = interpolate(
       animatedIndex.value,
       [0, 1],
-      [IMAGE_BOTTOM - 72, IMAGE_BOTTOM],
+      [IMAGE_BOTTOM - 100, IMAGE_BOTTOM],
       Extrapolate.CLAMP
     );
 

@@ -1,5 +1,6 @@
 import React from 'react';
 import { View, Dimensions } from 'react-native';
+import Animated, { useAnimatedStyle, interpolate, Extrapolate } from 'react-native-reanimated';
 import BottomSheet, { BottomSheetView, BottomSheetBackdrop } from '@gorhom/bottom-sheet';
 import { ProfileSheetHandle } from './ProfileSheetHandle';
 import { ProfileSheetBackground } from './ProfileSheetBackground';
@@ -16,12 +17,46 @@ export function ProfileSheet({
   onHeaderLayout,
   title,
   subtitle,
+  agencyLogoUrl,
   leftButton,
   rightButton,
   children,
   enableBackdrop = true,
   enableOverDrag = false,
 }: ProfileSheetProps) {
+  // Animated style for content height and border radius
+  const contentStyle = useAnimatedStyle(() => {
+    // Match the background's margin animations to keep content in sync
+    const marginHorizontal = interpolate(animatedIndex.value, [0, 1], [8, 0], Extrapolate.CLAMP);
+
+    const height = interpolate(
+      animatedIndex.value,
+      [0, 1],
+      [headerHeight, SCREEN_HEIGHT],
+      Extrapolate.CLAMP
+    );
+
+    // Border radius: pill shape at collapsed → rounded corners at expanded
+    const borderTopRadius = interpolate(
+      animatedIndex.value,
+      [0, 1],
+      [headerHeight / 2, 34],
+      Extrapolate.CLAMP
+    );
+    const borderBottomRadius = headerHeight / 2;
+
+    return {
+      paddingTop: 24,
+      marginTop: -24,
+      marginHorizontal,
+      height,
+      borderTopLeftRadius: borderTopRadius,
+      borderTopRightRadius: borderTopRadius,
+      borderBottomLeftRadius: borderBottomRadius,
+      borderBottomRightRadius: borderBottomRadius,
+    };
+  });
+
   return (
     <BottomSheet
       ref={bottomSheetRef}
@@ -34,7 +69,15 @@ export function ProfileSheet({
       handleComponent={() => <ProfileSheetHandle animatedIndex={animatedIndex} />}
       backdropComponent={
         enableBackdrop
-          ? (props) => <BottomSheetBackdrop {...props} appearsOnIndex={2} disappearsOnIndex={1} />
+          ? (props) => (
+            <BottomSheetBackdrop
+              {...props}
+              appearsOnIndex={1}
+              disappearsOnIndex={0}
+              pressBehavior="collapse"
+              opacity={0.6}
+            />
+          )
           : undefined
       }
       backgroundComponent={() => (
@@ -44,19 +87,26 @@ export function ProfileSheet({
           headerHeight={headerHeight}
         />
       )}>
-      <BottomSheetView
-        className="h-[90vh] pb-10"
-        style={{ flex: 1, backgroundColor: 'transparent', position: 'relative' }}>
-        <View className="flex-1">
+      <BottomSheetView>
+        <Animated.View
+          style={[
+            contentStyle,
+            {
+              backgroundColor: 'transparent',
+              position: 'relative',
+              overflow: 'hidden',
+            },
+          ]}>
           <ProfileSheetHeader
             title={title}
             subtitle={subtitle}
+            agencyLogoUrl={agencyLogoUrl}
             leftButton={leftButton}
             rightButton={rightButton}
             onLayout={onHeaderLayout}
           />
           {children}
-        </View>
+        </Animated.View>
       </BottomSheetView>
     </BottomSheet>
   );

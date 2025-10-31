@@ -9,6 +9,7 @@ import { crud } from 'convex-helpers/server/crud'
 import schema from './schema'
 import { attributesPlainObject } from './schemas/attributes'
 import { sizingPlainObject } from './schemas/sizing'
+import { type Id } from './_generated/dataModel'
 
 export const { create, read, update, destroy, paginate } = crud(
   schema,
@@ -34,7 +35,31 @@ export const getDancerProfileWithDetails = zq({
       recentProjects: z.array(z.any()),
       allProjects: z.array(z.any()),
       training: z.array(z.any()),
-      agency: Agencies.zDoc.nullable(),
+      highlights: z.array(
+        z.object({
+          _id: zid('highlights'),
+          _creationTime: z.number(),
+          profileId: zid('dancers'),
+          projectId: zid('projects'),
+          imageId: zid('_storage'),
+          position: z.number(),
+          createdAt: z.string(),
+          project: z
+            .object({
+              _id: zid('projects'),
+              title: z.string().optional(),
+              studio: z.string().nullable().optional(),
+              artists: z.array(z.string()).nullable().optional(),
+              tourArtist: z.string().nullable().optional(),
+              companyName: z.string().nullable().optional(),
+              type: z.enum(['tv-film', 'music-video', 'live-performance', 'commercial']),
+              venue: z.string().nullable().optional()
+            })
+            .nullable(),
+          imageUrl: z.string().nullable()
+        })
+      ),
+      agency: Agencies.zDoc.extend({ logoUrl: z.string().nullable() }).nullable(),
       isOwnProfile: z.boolean()
     })
     .nullable(),
@@ -62,7 +87,18 @@ export const getDancerProfileWithDetails = zq({
     // Get agency information if represented
     let agency = null
     if (dancer.representation?.agencyId) {
-      agency = await ctx.db.get(dancer.representation.agencyId)
+      const agencyDoc = await ctx.db.get(dancer.representation.agencyId)
+      if (agencyDoc) {
+        // Convert logo storage ID to URL if present
+        let logoUrl = null
+        if (agencyDoc.logo) {
+          logoUrl = await ctx.storage.getUrl(agencyDoc.logo)
+        }
+        agency = {
+          ...agencyDoc,
+          logoUrl
+        }
+      }
     }
 
     // Get all projects for this profile
@@ -81,12 +117,52 @@ export const getDancerProfileWithDetails = zq({
       .withIndex('by_profileId', (q) => q.eq('profileId', dancerId))
       .collect()
 
+    // Fetch highlights sorted by position
+    const highlights = await ctx.db
+      .query('highlights')
+      .withIndex('by_profileId', (q) => q.eq('profileId', dancerId))
+      .collect()
+
+    const sortedHighlights = highlights.sort((a, b) => a.position - b.position)
+
+    // Resolve project data and image URLs for each highlight
+    const highlightsWithData = await Promise.all(
+      sortedHighlights.map(async (highlight) => {
+        const project = await ctx.db.get(highlight.projectId)
+        const imageUrl = await ctx.storage.getUrl(highlight.imageId)
+
+        return {
+          _id: highlight._id,
+          _creationTime: highlight._creationTime,
+          profileId: highlight.profileId,
+          projectId: highlight.projectId,
+          imageId: highlight.imageId,
+          position: highlight.position,
+          createdAt: highlight.createdAt,
+          project: project
+            ? {
+                _id: project._id,
+                title: project.title,
+                studio: project.studio,
+                artists: project.artists,
+                tourArtist: project.tourArtist,
+                companyName: project.companyName,
+                type: project.type,
+                venue: project.venue
+              }
+            : null,
+          imageUrl
+        }
+      })
+    )
+
     return {
       dancer,
       headshotUrls,
       recentProjects,
       allProjects,
       training,
+      highlights: highlightsWithData,
       agency,
       isOwnProfile
     }
@@ -100,7 +176,27 @@ export type DancerProfileData = {
   recentProjects: Array<any>
   allProjects: Array<any>
   training: Array<any>
-  agency: typeof Agencies.zDoc._output | null
+  highlights: Array<{
+    _id: Id<'highlights'>
+    _creationTime: number
+    profileId: Id<'dancers'>
+    projectId: Id<'projects'>
+    imageId: Id<'_storage'>
+    position: number
+    createdAt: string
+    project: {
+      _id: Id<'projects'>
+      title?: string
+      studio?: string | null
+      artists?: string[] | null
+      tourArtist?: string | null
+      companyName?: string | null
+      type: 'tv-film' | 'music-video' | 'live-performance' | 'commercial'
+      venue?: string | null
+    } | null
+    imageUrl: string | null
+  }>
+  agency: (typeof Agencies.zDoc._output & { logoUrl: string | null }) | null
   isOwnProfile: boolean
 }
 
@@ -506,6 +602,70 @@ export const removeFavoriteChoreographer = zAuthMutation({
       favoriteChoreographers: existing.filter((id) => id !== choreographerId)
     })
     return null
+  }
+})
+
+// List dancers for discover page (paginated)
+export const listDiscoverDancers = zq({
+  args: {
+    limit: z.number().optional().default(5),
+    cursor: z.string().nullable().optional()
+  },
+  returns: z.object({
+    dancers: z.array(
+      z.object({
+        _id: zid('dancers'),
+        _creationTime: z.number(),
+        displayName: z.string(),
+        userId: zid('users'),
+        headshotUrl: z.string().nullable()
+      })
+    ),
+    continueCursor: z.string().nullable(),
+    isDone: z.boolean()
+  }),
+  handler: async (ctx, { limit, cursor }) => {
+    // Query dancers ordered by creation time (most recent first)
+    let query = ctx.db.query('dancers').order('desc')
+
+    // Apply pagination with cursor handling
+    const paginationOpts = cursor
+      ? { cursor, numItems: limit }
+      : { numItems: limit }
+    const result = await query.paginate(paginationOpts as any)
+
+    // Resolve headshot URLs for each dancer
+    const dancers = await Promise.all(
+      result.page.map(async (dancer) => {
+        let headshotUrl: string | null = null
+
+        // Get first headshot URL if available
+        if (
+          dancer.headshots &&
+          Array.isArray(dancer.headshots) &&
+          dancer.headshots.length > 0
+        ) {
+          const firstHeadshot = dancer.headshots[0]
+          if (firstHeadshot?.storageId) {
+            headshotUrl = await ctx.storage.getUrl(firstHeadshot.storageId)
+          }
+        }
+
+        return {
+          _id: dancer._id,
+          _creationTime: dancer._creationTime,
+          displayName: dancer.displayName || 'Dancer',
+          userId: dancer.userId,
+          headshotUrl
+        }
+      })
+    )
+
+    return {
+      dancers,
+      continueCursor: result.continueCursor,
+      isDone: result.isDone
+    }
   }
 })
 

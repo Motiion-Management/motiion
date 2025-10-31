@@ -6,9 +6,9 @@ import Animated, {
   useSharedValue,
   useDerivedValue,
   useAnimatedStyle,
+  useAnimatedScrollHandler,
   interpolate,
   Extrapolate,
-  withTiming,
   type SharedValue,
 } from 'react-native-reanimated';
 import { BlurView } from 'expo-blur';
@@ -51,14 +51,9 @@ export interface TabScreenLayoutHeaderProps {
 interface TabScreenLayoutProps {
   children: ReactNode;
   header?: TabScreenLayoutHeaderProps;
-  headerCollapsed?: boolean;
 }
 
-export function TabScreenLayout({
-  children,
-  header,
-  headerCollapsed = false,
-}: TabScreenLayoutProps) {
+export function TabScreenLayout({ children, header }: TabScreenLayoutProps) {
   const { top: safeAreaTop, bottom: safeAreaBottom } = useSafeAreaInsets();
 
   // Extract header props
@@ -70,16 +65,19 @@ export function TabScreenLayout({
     onBackPress = () => router.back(),
   } = header ?? {};
 
-  // Header collapse progress (0 = expanded, 1 = collapsed)
-  const collapseProgress = useSharedValue(0);
+  // Track scroll position
+  const scrollY = useSharedValue(0);
 
-  // Update collapse progress when prop changes
-  React.useEffect(() => {
-    collapseProgress.value = withTiming(headerCollapsed ? 1 : 0, { duration: 300 });
-  }, [headerCollapsed]);
+  // Scroll handler to update scrollY
+  const scrollHandler = useAnimatedScrollHandler({
+    onScroll: (event) => {
+      scrollY.value = event.contentOffset.y;
+    },
+  });
 
+  // Derive scroll progress from scroll position (0 = expanded, 1 = collapsed)
   const scrollProgress = useDerivedValue(() => {
-    return collapseProgress.value;
+    return Math.min(Math.max(scrollY.value / SCROLL_THRESHOLD, 0), 1);
   });
 
   const renderSlotComponent = (SlotComponent?: HeaderSlotComponent) => {
@@ -208,6 +206,8 @@ export function TabScreenLayout({
 
         {/* Scrollable Content */}
         <AnimatedScrollView
+          onScroll={scrollHandler}
+          scrollEventThrottle={16}
           showsVerticalScrollIndicator={false}
           contentContainerStyle={{
             paddingTop: HEADER_HEIGHT + safeAreaTop,

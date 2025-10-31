@@ -1,15 +1,18 @@
 import React from 'react';
-import { ScrollView, View } from 'react-native';
+import { View } from 'react-native';
 import { router } from 'expo-router';
 import { SectionCard } from '~/components/ui/section-card';
+import { ProjectCarousel } from './ProjectCarousel';
 import { type DancerProfileData } from '@packages/backend/convex/dancers';
+import { Separator } from '../ui/separator';
+import { Text } from '../ui/text';
 
 interface ProfileResumeTabProps {
   profileData: DancerProfileData;
 }
 
 export function ProfileResumeTab({ profileData }: ProfileResumeTabProps) {
-  const { dancer, allProjects } = profileData;
+  const { dancer, allProjects, highlights } = profileData;
 
   // Count projects by type
   const tvFilmCount = allProjects.filter((p) => p.type === 'tv-film').length;
@@ -24,7 +27,24 @@ export function ProfileResumeTab({ profileData }: ProfileResumeTabProps) {
   const trainingCount = dancer.training?.length || 0;
 
   const handleCategoryPress = (category: string) => {
-    // Navigate to projects screen with category filter
+    // Route to dedicated pages for training and skills
+    if (category === 'training') {
+      router.push({
+        pathname: '/app/dancers/[id]/training',
+        params: { id: dancer._id },
+      });
+      return;
+    }
+
+    if (category === 'skills') {
+      router.push({
+        pathname: '/app/dancers/[id]/skills',
+        params: { id: dancer._id },
+      });
+      return;
+    }
+
+    // Navigate to projects screen with category filter for project types
     router.push({
       pathname: '/app/dancers/[id]/projects',
       params: { id: dancer._id, category },
@@ -32,8 +52,31 @@ export function ProfileResumeTab({ profileData }: ProfileResumeTabProps) {
   };
 
   return (
-    <ScrollView className="flex-1 px-4" showsVerticalScrollIndicator={false}>
-      <View className="gap-4 pb-4">
+    <View className="gap-8">
+      {highlights && highlights.length > 0 && (
+        <>
+          <Separator className="-mx-4 w-[110%] bg-border-tint" />
+          <Text variant="header5" className="px-4 text-text-low">
+            Highlights
+          </Text>
+          <ProjectCarousel
+            projects={highlights
+              .map(h => h.project ? {
+                ...h.project,
+                imageUrl: h.imageUrl
+              } : null)
+              .filter((p): p is NonNullable<typeof p> => p !== null)}
+            dancerId={dancer._id}
+          />
+        </>
+      )}
+
+      <Separator className="-mx-4 w-[110%] bg-border-tint" />
+      <Text variant="header5" className="px-4 text-text-low">
+        Experience
+      </Text>
+      {/* Grid cards */}
+      <View className="gap-4 px-4">
         {/* Row 1: TV/Film & Music Videos */}
         <View className="flex-row gap-4">
           <SectionCard
@@ -82,6 +125,6 @@ export function ProfileResumeTab({ profileData }: ProfileResumeTabProps) {
           />
         </View>
       </View>
-    </ScrollView>
+    </View>
   );
 }

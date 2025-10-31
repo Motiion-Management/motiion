@@ -155,7 +155,7 @@ export default function AppLayout() {
         />
       </Stack>
       {/* Dev-only floating tools for onboarding iteration */}
-      <DevOnboardingTools />
+      {/* <DevOnboardingTools /> */}
       {!isLoaded && (
         <View className="absolute inset-0 items-center justify-center">
           <ActivityIndicator size="large" />

@@ -92,16 +92,13 @@ function CustomTabsLayout() {
 function NativeTabsLayout() {
   return (
     <BackgroundGradientView>
-      <NativeTabs
-        // iconColor="#8B8B8B"
-        // tintColor="white"
-        // disableTransparentOnScrollEdge
-        minimizeBehavior="onScrollDown">
+      <NativeTabs minimizeBehavior="onScrollDown">
         <NativeTabs.Trigger name="home" options={{ backgroundColor: 'transparent' }}>
           <NativeTabIcon sf="house.fill" drawable="custom_android_drawable" selectedColor="white" />
           <Label hidden />
         </NativeTabs.Trigger>
-        <NativeTabs.Trigger name="discover" role="search">
+        {/* <NativeTabs.Trigger name="discover" role="search"> */}
+        <NativeTabs.Trigger name="discover">
           <NativeTabIcon
             sf="magnifyingglass"
             drawable="custom_search_drawable"

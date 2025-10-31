@@ -7,22 +7,27 @@ import {
 } from 'react-native-reanimated';
 import type BottomSheet from '@gorhom/bottom-sheet';
 import { type UseProfileSheetConfig, type UseProfileSheetReturn } from './types';
+import { PROFILE_SHEET_EXPANDED_HEIGHT } from './constants';
 
 export function useProfileSheet(config?: UseProfileSheetConfig): UseProfileSheetReturn {
   const { initialIndex = 0, snapPoints: customSnapPoints, defaultHeaderHeight = 80 } = config || {};
 
   const bottomSheetRef = useRef<BottomSheet>(null);
   const animatedIndex = useSharedValue(initialIndex);
-  const snapPoints = useMemo(() => customSnapPoints || ['11%', '43%', '90%'], [customSnapPoints]);
+  const snapPoints = useMemo(
+    () => customSnapPoints || ['15%', `${PROFILE_SHEET_EXPANDED_HEIGHT}%`],
+    [customSnapPoints]
+  );
   const [headerHeight, setHeaderHeight] = useState(defaultHeaderHeight);
 
   // Navigation methods
   const snapToDefault = () => bottomSheetRef.current?.snapToIndex(0);
   const snapToExpanded = () => bottomSheetRef.current?.snapToIndex(1);
-  const toggle = () =>
-    animatedIndex.value
-      ? bottomSheetRef.current?.snapToIndex(0)
-      : bottomSheetRef.current?.snapToIndex(1);
+  const toggle = () => {
+    // Toggle between default (0 = 30%) and expanded (1 = 70%)
+    const targetIndex = animatedIndex.value >= 0.5 ? 0 : 1;
+    bottomSheetRef.current?.snapToIndex(targetIndex);
+  };
 
   // Animated styles for toggle button icons
   const arrowIconStyle = useAnimatedStyle(() => {

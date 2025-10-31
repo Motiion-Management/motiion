@@ -2,7 +2,7 @@ import React from 'react';
 import { View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import Animated from 'react-native-reanimated';
-import { useAnimatedScrollHeaderContext } from './AnimatedScrollHeader';
+import { useAnimatedScrollHeaderContext } from './context';
 import type { AnimatedScrollViewProps } from './types';
 
 export function ScrollView({ children, ...scrollViewProps }: AnimatedScrollViewProps) {

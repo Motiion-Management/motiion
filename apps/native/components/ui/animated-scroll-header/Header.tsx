@@ -3,7 +3,7 @@ import { View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import Animated, { useAnimatedStyle, interpolate, Extrapolate } from 'react-native-reanimated';
 import { BlurView } from 'expo-blur';
-import { useAnimatedScrollHeaderContext } from './AnimatedScrollHeader';
+import { useAnimatedScrollHeaderContext } from './context';
 import type { HeaderProps } from './types';
 
 export function Header({ left, middle, right }: HeaderProps) {

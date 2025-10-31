@@ -1,16 +1,22 @@
-import React, { useEffect, useMemo, useRef, useState } from 'react';
-import { View, Share } from 'react-native';
-import Animated, { FadeIn, FadeOut, useAnimatedStyle } from 'react-native-reanimated';
+import React, { useEffect, useMemo, useState } from 'react';
+import { View } from 'react-native';
+import Animated, {
+  FadeIn,
+  FadeOut,
+  useAnimatedStyle,
+  interpolate,
+  Extrapolate,
+  type SharedValue,
+} from 'react-native-reanimated';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useLocalSearchParams, router, Redirect } from 'expo-router';
-import { captureRef } from 'react-native-view-shot';
-import * as DropdownMenu from 'zeego/dropdown-menu';
 import * as Haptics from 'expo-haptics';
 import Transition, { useScreenAnimation } from 'react-native-screen-transitions';
 import { Image as ExpoImage } from 'expo-image';
 import { type Id } from '@packages/backend/convex/_generated/dataModel';
 import { useDancerProfileQuery } from '~/hooks/queries/useDancerProfileQuery';
-import { ProjectCarousel } from '~/components/dancer-profile/ProjectCarousel';
+import { useDancerView } from '~/hooks/useDancerView';
+import { useProfileShare } from '~/hooks/useProfileShare';
 import { HeadshotCarousel } from '~/components/dancer-profile/HeadshotCarousel';
 import { ProfileDetailsSheet } from '~/components/dancer-profile/ProfileDetailsSheet';
 import { ProfileSheet, useProfileSheet } from '~/components/profile-sheet';
@@ -18,12 +24,15 @@ import { ProfileShareCard } from '~/components/dancer-profile/share/ProfileShare
 import { HeadshotShareCard } from '~/components/dancer-profile/share/HeadshotShareCard';
 import { ShareBottomSheet } from '~/components/dancer-profile/share/ShareBottomSheet';
 import { QRCodeDialog } from '~/components/dancer-profile/qr';
+import { DancerProfileActions } from '~/components/dancer-profile/DancerProfileActions';
+import { DancerProfileHeader } from '~/components/dancer-profile/DancerProfileHeader';
 import { Icon } from '~/lib/icons/Icon';
 import { Button } from '~/components/ui/button';
 import { Text } from '~/components/ui/text';
 import { BackgroundGradientView } from '~/components/ui/background-gradient-view';
+import { MotiionLogo } from '~/lib/icons/MotiionLogo';
 
-function TopBar({ profileUrl }: { profileUrl: string }) {
+function TopBar({ animatedIndex }: { animatedIndex: SharedValue<number> }) {
   const handleClose = () => {
     if (router.canGoBack()) {
       router.back();
@@ -31,22 +40,31 @@ function TopBar({ profileUrl }: { profileUrl: string }) {
       router.replace('/');
     }
   };
+
+  const animatedStyle = useAnimatedStyle(() => {
+    const opacity = interpolate(animatedIndex.value, [0, 1], [1, 0], Extrapolate.CLAMP);
+    return { opacity };
+  });
+
   return (
     <Animated.View
       entering={FadeIn.duration(200).delay(200)}
-      style={{ position: 'absolute', top: 0, left: 0, right: 0 }}>
+      style={[{ position: 'absolute', top: 0, left: 0, right: 0 }, animatedStyle]}>
       <SafeAreaView edges={['top', 'left', 'right']}>
         <View
           style={{
             flexDirection: 'row',
-            justifyContent: 'space-between',
+            // justifyContent: 'space-between',
+            alignItems: 'center',
             paddingHorizontal: 16,
             paddingTop: 0,
           }}>
           <Button onPress={handleClose} variant="tertiary">
             <Icon name="xmark" size={20} className="text-icon-default" />
           </Button>
-          <QRCodeDialog profileUrl={profileUrl} />
+          <View className="mr-12 flex-1 items-center">
+            <MotiionLogo />
+          </View>
         </View>
       </SafeAreaView>
     </Animated.View>
@@ -63,11 +81,7 @@ export default function DancerScreen() {
       ? initialHeadshotParam
       : undefined;
   const [currentHeadshotIndex, setCurrentHeadshotIndex] = useState(0);
-  const [shareSheetVisible, setShareSheetVisible] = useState(false);
-  const [shareData, setShareData] = useState<{ imageUri: string; shareUrl: string } | null>(null);
-
-  const profileShareCardRef = useRef<View>(null);
-  const headshotShareCardRef = useRef<View>(null);
+  const [qrDialogVisible, setQRDialogVisible] = useState(false);
 
   const {
     bottomSheetRef,
@@ -76,8 +90,6 @@ export default function DancerScreen() {
     headerHeight,
     setHeaderHeight,
     snapToDefault,
-    toggle,
-    animations,
   } = useProfileSheet();
 
   // Get screen transition progress
@@ -115,6 +127,46 @@ export default function DancerScreen() {
   const profileQuery = useDancerProfileQuery(id as Id<'dancers'>);
   const profileData = profileQuery.data;
 
+  // Initialize hooks with dancer view logic and share functionality
+  const { config, actions } = useDancerView({
+    targetDancerId: id as Id<'dancers'>,
+    targetUserId: profileData?.dancer.userId,
+    onQRCodePress: () => {
+      snapToDefault(); // Collapse sheet to 30%
+      setQRDialogVisible(true); // Then open QR dialog
+    },
+    onAddPress: () => {
+      // TODO: Implement add to list functionality
+      console.log('Add pressed');
+    },
+    onFavoritePress: () => {
+      // TODO: Implement favorite functionality
+      console.log('Favorite pressed');
+    },
+    onBookPress: () => {
+      // TODO: Implement booking functionality
+      console.log('Book pressed');
+    },
+    onRequestPress: () => {
+      // TODO: Implement request functionality
+      console.log('Request pressed');
+    },
+  });
+
+  const {
+    shareProfile,
+    shareHeadshot,
+    shareProfileLink,
+    closeShareSheet,
+    shareSheetVisible,
+    shareData,
+    profileShareCardRef,
+    headshotShareCardRef,
+  } = useProfileShare({
+    profileId: id as Id<'dancers'>,
+    enabled: config.canShare,
+  });
+
   useEffect(() => {
     if (!profileData?.headshotUrls?.length) return;
 
@@ -138,62 +190,6 @@ export default function DancerScreen() {
     }
   }, [currentHeadshotIndex, headshotUrls.length]);
 
-  const handleShareProfile = async () => {
-    if (!id || !profileData || !profileShareCardRef.current) return;
-
-    // Wait for view to be fully mounted and rendered
-    await new Promise((resolve) => setTimeout(resolve, 100));
-
-    try {
-      const imageUri = await captureRef(profileShareCardRef, {
-        result: 'tmpfile',
-        quality: 1,
-        format: 'png',
-      });
-      const shareUrl = `https://motiion.io/app/dancers/${id}`;
-      setShareData({ imageUri, shareUrl });
-      setShareSheetVisible(true);
-    } catch (error) {
-      console.error('Error capturing profile card:', error);
-    }
-  };
-
-  const handleShareHeadshot = async () => {
-    if (!id || !profileData || !headshotShareCardRef.current) return;
-
-    // Wait for view to be fully mounted and rendered
-    await new Promise((resolve) => setTimeout(resolve, 100));
-
-    try {
-      const imageUri = await captureRef(headshotShareCardRef, {
-        result: 'tmpfile',
-        quality: 1,
-        format: 'png',
-      });
-
-      // Share directly with native share sheet
-      await Share.share({
-        url: imageUri,
-        message: `Check out this photo on Motiion!\n\nhttps://motiion.io/app/dancers/${id}`,
-      });
-    } catch (error) {
-      console.error('Error sharing headshot:', error);
-    }
-  };
-
-  const handleShareProfileLink = async () => {
-    if (!id) return;
-
-    try {
-      const profileLink = `https://motiion.io/app/dancers/${id}`;
-      await Share.share({
-        message: `Check out my profile on Motiion\n\n${profileLink}`,
-      });
-    } catch (error) {
-      console.error('Error sharing profile link:', error);
-    }
-  };
-
   // Redirect if dancer doesn't exist (query resolved to null)
   if (profileQuery.isStable && profileData === null) {
     return <Redirect href="/app/home" />;
@@ -201,6 +197,14 @@ export default function DancerScreen() {
 
   const currentHeadshotUrl = headshotUrls[currentHeadshotIndex];
   const profileUrl = `https://motiion.io/app/dancers/${id}`;
+
+  // Get header buttons from DancerProfileHeader
+  const headerButtons = DancerProfileHeader({
+    config,
+    onShareProfile: shareProfile,
+    onShareHeadshot: shareHeadshot,
+    onShareProfileLink: shareProfileLink,
+  });
 
   return (
     <View style={{ flex: 1 }}>
@@ -226,7 +230,9 @@ export default function DancerScreen() {
           <View style={{ flex: 1, backgroundColor: 'black' }} />
         )}
 
-        <TopBar profileUrl={profileUrl} />
+        <TopBar animatedIndex={animatedIndex} />
+        {/* Action buttons - positioned in top 30% overlay area */}
+        <DancerProfileActions config={config} actions={actions} animatedIndex={animatedIndex} />
 
         <ProfileSheet
           bottomSheetRef={bottomSheetRef}
@@ -240,46 +246,8 @@ export default function DancerScreen() {
               ? `${profileData.dancer.location.city}, ${profileData.dancer.location.state}`
               : undefined
           }
-          leftButton={
-            <Button variant="secondary" size="icon" onPress={toggle}>
-              <View style={{ position: 'relative', width: 24, height: 24 }}>
-                <Animated.View style={[animations.arrowIcon, { position: 'absolute' }]}>
-                  <Icon name="arrow.up.to.line" size={24} className="text-icon-default" />
-                </Animated.View>
-                <Animated.View style={[animations.personIcon, { position: 'absolute' }]}>
-                  <Icon
-                    name="person.crop.square.on.square.angled.fill"
-                    size={24}
-                    className="text-icon-default"
-                  />
-                </Animated.View>
-              </View>
-            </Button>
-          }
-          rightButton={
-            <DropdownMenu.Root>
-              <DropdownMenu.Trigger>
-                <Button variant="secondary" size="icon">
-                  <Icon
-                    name="arrowshape.turn.up.right.fill"
-                    size={24}
-                    className="text-icon-default"
-                  />
-                </Button>
-              </DropdownMenu.Trigger>
-              <DropdownMenu.Content>
-                <DropdownMenu.Item key="profile-card" onSelect={handleShareProfile}>
-                  <DropdownMenu.ItemTitle>Send Profile Card</DropdownMenu.ItemTitle>
-                </DropdownMenu.Item>
-                <DropdownMenu.Item key="headshot" onSelect={handleShareHeadshot}>
-                  <DropdownMenu.ItemTitle>Send this Headshot</DropdownMenu.ItemTitle>
-                </DropdownMenu.Item>
-                <DropdownMenu.Item key="profile-link" onSelect={handleShareProfileLink}>
-                  <DropdownMenu.ItemTitle>Share Profile Link</DropdownMenu.ItemTitle>
-                </DropdownMenu.Item>
-              </DropdownMenu.Content>
-            </DropdownMenu.Root>
-          }>
+          agencyLogoUrl={profileData?.agency?.logoUrl}
+          rightButton={headerButtons.rightButton}>
           {profileQuery.isError ? (
             <Animated.View
               entering={FadeIn.duration(300)}
@@ -316,8 +284,11 @@ export default function DancerScreen() {
             </Animated.View>
           ) : profileData ? (
             <Animated.View entering={FadeIn.duration(300).delay(100)} style={{ flex: 1 }}>
-              <ProjectCarousel projects={profileData.recentProjects} />
-              <ProfileDetailsSheet profileData={profileData} />
+              <ProfileDetailsSheet
+                profileData={profileData}
+                animatedIndex={animatedIndex}
+                headerHeight={headerHeight}
+              />
             </Animated.View>
           ) : null}
         </ProfileSheet>
@@ -350,9 +321,16 @@ export default function DancerScreen() {
           visible={shareSheetVisible}
           imageUri={shareData.imageUri}
           shareUrl={shareData.shareUrl}
-          onClose={() => setShareSheetVisible(false)}
+          onClose={closeShareSheet}
         />
       )}
+
+      {/* QR Code Dialog - Controlled */}
+      <QRCodeDialog
+        profileUrl={profileUrl}
+        open={qrDialogVisible}
+        onOpenChange={setQRDialogVisible}
+      />
     </View>
   );
 }

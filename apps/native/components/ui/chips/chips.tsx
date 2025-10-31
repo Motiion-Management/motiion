@@ -6,7 +6,7 @@ import { cn } from '~/lib/cn';
 import X from '~/lib/icons/X';
 
 const chipVariants = cva(
-  'flex-row items-center gap-2 rounded-full border px-3 py-1 overflow-hidden',
+  'flex-row items-center gap-2 rounded-full border px-3 py-2 overflow-hidden',
   {
     variants: {
       variant: {
