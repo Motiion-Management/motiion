@@ -53,7 +53,7 @@ export function ProfileDetailsSheet({
         renderScene={renderScene}
         initialKey="resume"
         tabStyle="pill"
-        tabContainerClassName="px-4 "
+        tabContainerClassName="px-4"
       />
     </View>
   );

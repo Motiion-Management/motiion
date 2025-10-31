@@ -17,7 +17,7 @@ export function PillTabs({ tabs, activeIndex, onTabPress }: PillTabsProps) {
           <Pressable
             key={tab}
             onPress={() => onTabPress(index)}
-            className={`h-8 flex-1 items-center justify-center rounded-2xl px-4 py-2 ${
+            className={`flex-1 items-center justify-center rounded-2xl px-4 py-2 ${
               isActive ? 'bg-button-surface-default' : 'bg-transparent'
             }`}>
             <Text

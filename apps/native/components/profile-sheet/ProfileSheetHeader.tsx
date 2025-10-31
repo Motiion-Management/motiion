@@ -23,7 +23,7 @@ export function ProfileSheetHeader({
   return (
     <View
       id="profile-sheet-header"
-      className="z-10 -mb-6 px-8 pb-12"
+      className="z-9 -mb-6 px-8 pb-12"
       onLayout={(event) => {
         const measuredHeight = event.nativeEvent.layout.height;
         onLayout(measuredHeight);
