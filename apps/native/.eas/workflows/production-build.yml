@@ -9,6 +9,9 @@ jobs:
   # Calculate the fingerprint for the current code state
   fingerprint:
     type: fingerprint
+    environment: production
+    env:
+      APP_VARIANT: production
 
   # Check if a build already exists with this fingerprint
   get_ios_build:

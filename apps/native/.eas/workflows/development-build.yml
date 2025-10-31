@@ -9,6 +9,9 @@ on:
 jobs:
   fingerprint:
     type: fingerprint
+    environment: development
+    env:
+      APP_VARIANT: development
 
   get_ios_build:
     type: get-build
