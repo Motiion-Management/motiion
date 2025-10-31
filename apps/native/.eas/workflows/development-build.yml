@@ -7,33 +7,17 @@ on:
     types: [opened, synchronize, reopened]
 
 jobs:
-  # Calculate the fingerprint for the current code state
-  fingerprint:
-    type: fingerprint
-
-  # Check if a build already exists with this fingerprint
-  get_ios_build:
-    type: get-build
-    needs: [fingerprint]
-    params:
-      platform: ios
-      fingerprint_hash: ${{ needs.fingerprint.outputs.ios_fingerprint_hash }}
-      profile: development
-
-  # Create a new build ONLY if no existing build was found
-  build_ios:
+  # Build on PR open, update on subsequent commits
+  build_or_update:
     type: build
-    needs: [get_ios_build]
-    if: ${{ !needs.get_ios_build.outputs.build_id }}
+    if: ${{ github.event.action == 'opened' }}
     params:
       platform: ios
       profile: development
 
-  # Publish an OTA update ONLY if an existing build was found
   publish_update:
     type: update
-    needs: [get_ios_build]
-    if: ${{ needs.get_ios_build.outputs.build_id }}
+    if: ${{ github.event.action == 'synchronize' || github.event.action == 'reopened' }}
     params:
       branch: development
       platform: ios
