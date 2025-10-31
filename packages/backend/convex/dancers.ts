@@ -47,7 +47,7 @@ export const getDancerProfileWithDetails = zq({
           project: z
             .object({
               _id: zid('projects'),
-              title: z.string(),
+              title: z.string().optional(),
               studio: z.string().nullable().optional(),
               artists: z.array(z.string()).nullable().optional(),
               tourArtist: z.string().nullable().optional(),
@@ -186,7 +186,7 @@ export type DancerProfileData = {
     createdAt: string
     project: {
       _id: Id<'projects'>
-      title: string
+      title?: string
       studio?: string | null
       artists?: string[] | null
       tourArtist?: string | null
