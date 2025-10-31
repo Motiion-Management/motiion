@@ -23,11 +23,11 @@ function ChipsSection({ items, label }: { items?: string[]; label: string }) {
     return null;
   }
   return (
-    <View className="gap-4">
+    <View>
       <Text variant="labelSm" className="uppercase text-text-low">
         {label}
       </Text>
-      <Chips items={items} variant="filter" />
+      <Chips items={items} variant="filter" className="mt-3" />
     </View>
   );
 }
@@ -65,7 +65,7 @@ export function ProfileAboutTab({ profileData }: ProfileAboutTabProps) {
   };
 
   return (
-    <View className="flex-1 gap-8 px-4">
+    <View className="flex-1 gap-6 px-4">
       <TypecastDetails dancer={dancer} />
 
       <Separator className="-mx-4 w-[110%] bg-border-tint" />
@@ -78,9 +78,9 @@ export function ProfileAboutTab({ profileData }: ProfileAboutTabProps) {
 
       {/* Socials Section */}
       {dancer.links?.socials &&
-        Object.keys(dancer.links.socials).some(
-          (key) => dancer.links?.socials?.[key as keyof typeof dancer.links.socials]
-        ) ? (
+      Object.keys(dancer.links.socials).some(
+        (key) => dancer.links?.socials?.[key as keyof typeof dancer.links.socials]
+      ) ? (
         <View className="flex-row justify-center gap-4">
           {dancer.links?.socials?.instagram && (
             <TouchableOpacity
