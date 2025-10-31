@@ -75,7 +75,12 @@
       "WebFetch(domain:reactnativereusables.com)",
       "mcp__figma-dev-mode-mcp-server__get_design_context",
       "Bash(eas branch:list:*)",
-      "Bash(gh pr checks:*)"
+      "Bash(gh pr checks:*)",
+      "Bash(eas workflow:list:*)",
+      "Bash(eas workflow:run:list:*)",
+      "Bash(eas workflow --help:*)",
+      "Bash(eas workflow:runs:*)",
+      "Bash(eas workflow:validate:*)"
     ]
   },
   "enableAllProjectMcpServers": true
