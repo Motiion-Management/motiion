@@ -25,6 +25,9 @@ jobs:
     type: build
     needs: [get_ios_build]
     if: ${{ !needs.get_ios_build.outputs.build_id }}
+    environment: development
+    env:
+      APP_VARIANT: development
     params:
       platform: ios
       profile: development
@@ -33,6 +36,9 @@ jobs:
     type: update
     needs: [get_ios_build]
     if: ${{ needs.get_ios_build.outputs.build_id }}
+    environment: development
+    env:
+      APP_VARIANT: development
     params:
       branch: development
       platform: ios
